@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03 Mock Exam Engine</title>
+<style>
+  :root{
+    --vue-navy:#23303f;--vue-blue:#2f6db5;--vue-blue-d:#235691;
+    --vue-bar:#eef1f4;--vue-line:#c9d1da;--vue-text:#1f2730;--vue-muted:#5b6772;
+    --vue-flag:#d9534f;--vue-flag-bg:#fff4f3;
+    --ok:#2e7d32;--bad:#c62828;--ok-bg:#edf7ee;--bad-bg:#fdeeee;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;color:var(--vue-text);
+    background:#7d8893;font-size:15px;line-height:1.5;display:flex;justify-content:center;-webkit-font-smoothing:antialiased}
+  .exam{width:100%;max-width:980px;height:100vh;max-height:780px;margin:auto;background:#fff;
+    display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,.45);border:1px solid #000;overflow:hidden}
+  @media(max-width:600px){.exam{max-height:none;height:100vh}}
+  .topbar{background:var(--vue-navy);color:#fff;display:flex;justify-content:space-between;align-items:center;
+    padding:7px 16px;font-size:13px;border-bottom:2px solid #000}
+  .topbar .exam-name{font-weight:bold}
+  .topbar .candidate{opacity:.8;font-size:12px}
+  .statusbar{background:var(--vue-bar);border-bottom:1px solid var(--vue-line);display:flex;align-items:center;
+    justify-content:space-between;padding:8px 16px;font-size:13px}
+  .qcount{font-weight:bold;color:var(--vue-navy)}
+  .statusbar .right{display:flex;align-items:center;gap:18px}
+  .flag-toggle{display:flex;align-items:center;gap:7px;cursor:pointer;color:var(--vue-muted);user-select:none;padding:3px 8px;border-radius:3px}
+  .flag-toggle:hover{background:#e2e7ec}
+  .flag-toggle .flagicon{width:14px;height:16px;display:inline-block;position:relative}
+  .flag-toggle .flagicon::before{content:"";position:absolute;left:0;top:0;width:2px;height:16px;background:#8a96a2}
+  .flag-toggle .flagicon::after{content:"";position:absolute;left:2px;top:1px;width:9px;height:7px;background:#b9c2cc;
+    clip-path:polygon(0 0,100% 0,75% 50%,100% 100%,0 100%)}
+  .flag-toggle.active{color:var(--vue-flag);font-weight:bold}
+  .flag-toggle.active .flagicon::before{background:var(--vue-flag)}
+  .flag-toggle.active .flagicon::after{background:var(--vue-flag)}
+  .timer{font-variant-numeric:tabular-nums;font-weight:bold;color:var(--vue-navy);background:#fff;
+    border:1px solid var(--vue-line);padding:3px 10px;border-radius:3px}
+  .timer.low{color:var(--vue-flag);border-color:var(--vue-flag)}
+  .body{flex:1;overflow-y:auto;padding:22px 26px}
+  .domain{font-size:11.5px;color:var(--vue-muted);margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px}
+  .qstem{font-size:15.5px;margin-bottom:6px}
+  .qhint{font-size:12.5px;color:var(--vue-muted);font-style:italic;margin-bottom:16px}
+  .options{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+  .opt{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--vue-line);border-radius:4px;
+    padding:11px 14px;cursor:pointer;background:#fff;transition:background .08s,border-color .08s}
+  .opt:hover{background:#f5f8fb;border-color:#aebccb}
+  .opt.selected{background:#eaf2fb;border-color:var(--vue-blue)}
+  .opt input{margin-top:3px;width:16px;height:16px;flex:none;accent-color:var(--vue-blue)}
+  .opt .label{flex:none;font-weight:bold;color:var(--vue-muted)}
+  .opt.selected .label{color:var(--vue-blue-d)}
+  .opt .otext{flex:1}
+  .opt.correct{border-color:var(--ok);background:var(--ok-bg)}
+  .opt.wrongpick{border-color:var(--bad);background:var(--bad-bg)}
+  .tag{font-size:11px;font-weight:bold;padding:1px 7px;border-radius:3px;margin-left:8px;vertical-align:middle}
+  .tag.ok{background:var(--ok);color:#fff}
+  .tag.bad{background:var(--bad);color:#fff}
+  .explain{margin-top:14px;padding:13px 15px;border-radius:5px;font-size:13.5px;border:1px solid var(--vue-line);background:#fafbfc}
+  .explain h4{font-size:12px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;color:var(--vue-muted)}
+  .explain .opt-why{font-size:13px;margin:3px 0;padding-left:4px}
+  .explain .opt-why b{color:var(--vue-navy)}
+  .footer{background:var(--vue-bar);border-top:1px solid var(--vue-line);display:flex;justify-content:space-between;
+    align-items:center;padding:10px 16px;gap:10px}
+  .footer .left,.footer .right{display:flex;gap:10px}
+  button{font-family:inherit;font-size:13px;cursor:pointer;border:1px solid var(--vue-navy);background:#fff;
+    color:var(--vue-navy);padding:8px 18px;border-radius:3px;font-weight:bold}
+  button:hover{background:#e7ecf1}
+  button.primary{background:var(--vue-blue);border-color:var(--vue-blue-d);color:#fff}
+  button.primary:hover{background:var(--vue-blue-d)}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  .panel{flex:1;overflow-y:auto;padding:26px 30px}
+  .panel h2{font-size:19px;color:var(--vue-navy);margin-bottom:6px}
+  .panel p.sub{color:var(--vue-muted);font-size:13.5px;margin-bottom:18px}
+  .reviewgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:8px;margin-bottom:22px}
+  .reviewcell{border:1px solid var(--vue-line);border-radius:4px;text-align:center;padding:9px 4px;font-size:13px;
+    cursor:pointer;font-weight:bold;background:#fff}
+  .reviewcell:hover{border-color:var(--vue-blue)}
+  .reviewcell.answered{background:#eef6ee;border-color:#bcd9bc}
+  .reviewcell.flagged{background:var(--vue-flag-bg);border-color:#e6b3b1;color:var(--vue-flag)}
+  .reviewcell .mini{display:block;font-size:10px;font-weight:normal;color:var(--vue-muted);margin-top:2px}
+  .legend{display:flex;gap:20px;font-size:12.5px;color:var(--vue-muted);margin-bottom:20px;flex-wrap:wrap}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .sw{width:14px;height:14px;border-radius:3px;border:1px solid var(--vue-line);display:inline-block}
+  .scorebox{text-align:center;padding:24px;border:1px solid var(--vue-line);border-radius:8px;margin-bottom:22px}
+  .scorebox .pct{font-size:54px;font-weight:bold;line-height:1}
+  .scorebox .pct.pass{color:var(--ok)}.scorebox .pct.fail{color:var(--bad)}
+  .scorebox .verdict{font-size:15px;margin-top:8px;font-weight:bold}
+  .scorebox .note{font-size:12.5px;color:var(--vue-muted);margin-top:6px}
+  .barwrap{height:10px;background:#e6eaee;border-radius:6px;margin:18px auto 4px;max-width:420px;overflow:hidden}
+  .barfill{height:100%;border-radius:6px}
+  .passline{font-size:11.5px;color:var(--vue-muted);max-width:420px;margin:0 auto;text-align:right}
+  .breakdown table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+  .breakdown th,.breakdown td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--vue-line)}
+  .breakdown th{color:var(--vue-muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.4px}
+  .jsonwrap{margin-top:18px}
+  .jsonwrap h3{font-size:14px;color:var(--vue-navy);margin-bottom:6px}
+  .jsonwrap p{font-size:12.5px;color:var(--vue-muted);margin-bottom:8px}
+  textarea{width:100%;min-height:230px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:12px;
+    border:1px solid var(--vue-line);border-radius:6px;padding:12px;background:#0f1721;color:#cfe3ff;resize:vertical;line-height:1.45}
+  .copied{color:var(--ok);font-size:12.5px;margin-left:10px;font-weight:bold}
+
+  /* LOADER SCREEN */
+  .loader{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center}
+  .loader h1{font-size:22px;color:var(--vue-navy);margin-bottom:6px}
+  .loader p{color:var(--vue-muted);font-size:14px;max-width:520px;margin-bottom:24px}
+  .drop{border:2px dashed var(--vue-line);border-radius:12px;padding:44px 30px;width:100%;max-width:520px;
+    transition:.15s;cursor:pointer;background:#fafbfc}
+  .drop:hover,.drop.over{border-color:var(--vue-blue);background:#eef5fc}
+  .drop strong{color:var(--vue-blue-d)}
+  .drop .big{font-size:40px;margin-bottom:10px}
+  .err{color:var(--bad);font-size:13px;margin-top:14px;font-weight:bold;min-height:18px}
+  .hint2{font-size:12px;color:var(--vue-muted);margin-top:18px}
+</style>
+</head>
+<body>
+<div class="exam" id="exam">
+
+  <div class="topbar">
+    <span class="exam-name" id="examName">AWS Certified Solutions Architect – Associate (SAA-C03)</span>
+    <span class="candidate">Candidate: You</span>
+  </div>
+
+  <!-- LOADER -->
+  <div id="loaderView" class="loader">
+    <h1>SAA-C03 Mock Exam Engine</h1>
+    <p>Load today's <strong>mock.json</strong> file. The engine builds the whole exam from it — questions, answers, explanations, count, and timing are all controlled by the JSON.</p>
+    <div class="drop" id="drop">
+      <div class="big">📄</div>
+      <div>Drop <strong>mock.json</strong> here, or <strong>click to choose a file</strong></div>
+      <input type="file" id="fileInput" accept=".json,application/json" style="display:none">
+    </div>
+    <div class="err" id="loadErr"></div>
+    <div class="hint2">Time is auto-calculated: <span id="spqHint">seconds_per_question</span> × number of questions.</div>
+  </div>
+
+  <!-- EXAM VIEW -->
+  <div id="examView" style="display:none;flex-direction:column;flex:1;min-height:0">
+    <div class="statusbar">
+      <span class="qcount" id="qcount">Question 1 of 1</span>
+      <div class="right">
+        <span class="flag-toggle" id="flagBtn" onclick="toggleFlag()"><span class="flagicon"></span><span>Flag for Review</span></span>
+        <span class="timer" id="timer">00:00</span>
+      </div>
+    </div>
+    <div class="body" id="qbody"></div>
+    <div class="footer">
+      <div class="left"><button id="prevBtn" onclick="go(-1)">‹ Previous</button></div>
+      <div class="right">
+        <button onclick="showReview()">Review Screen</button>
+        <button class="primary" id="nextBtn" onclick="go(1)">Next ›</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEW VIEW -->
+  <div id="reviewView" style="display:none;flex-direction:column;flex:1;min-height:0">
+    <div class="panel">
+      <h2>Review Screen</h2>
+      <p class="sub">Click any question to return to it. When ready, end the exam to see your score, explanations, and the JSON report.</p>
+      <div class="legend">
+        <span><i class="sw" style="background:#eef6ee;border-color:#bcd9bc"></i> Answered</span>
+        <span><i class="sw" style="background:#fff"></i> Not answered</span>
+        <span><i class="sw" style="background:#fff4f3;border-color:#e6b3b1"></i> Flagged</span>
+      </div>
+      <div class="reviewgrid" id="reviewGrid"></div>
+    </div>
+    <div class="footer">
+      <div class="left"><button onclick="backToExam()">‹ Back to Questions</button></div>
+      <div class="right"><button class="primary" onclick="submitExam()">End Exam &amp; Score</button></div>
+    </div>
+  </div>
+
+  <!-- RESULT VIEW -->
+  <div id="resultView" style="display:none;flex-direction:column;flex:1;min-height:0">
+    <div class="panel" id="resultPanel"></div>
+    <div class="footer">
+      <div class="left"><button onclick="reviewAnswers()">Review My Answers</button></div>
+      <div class="right"><button class="primary" onclick="restart()">Retake (re-randomized)</button></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ================= ENGINE — everything is driven by mock.json ================= */
+let DATA=null;          // raw loaded JSON
+let Q=[];               // working questions: {topic,domain,stem,multi,options:[{text,correct,why}],_origIndex}
+let cur=0, scored=false;
+let answers=[], flags=[], timeOnQ=[];
+let timeLeft=0, totalTime=0, timerId=null, lastTs=0, startedAt="";
+const LETTERS=['A','B','C','D','E','F','G','H'];
+
+/* ===== COURSE MAP — full Cantrill SAA-C03 section list, in order (for the next-day prompt) ===== */
+const COURSE_SECTIONS = [
+  "Introduction & Scenario",
+  "Course Fundamentals and AWS Accounts (AWS accounts, MFA, IAM basics, access keys, CLI)",
+  "Cloud, Networking & Technical Fundamentals (moved to free course)",
+  "AWS Fundamentals (Public vs Private services, Global Infrastructure, Default VPC, EC2 Basics, S3 Basics, CloudFormation Basics, CloudWatch Basics, Shared Responsibility, HA vs FT vs DR, Route53 Fundamentals, DNS Record Types)",
+  "IAM, Accounts and AWS Organisations (Identity Policies, Users/ARNs, Groups, Roles, SCPs, Organizations, CloudWatch Logs, CloudTrail, Control Tower)",
+  "Simple Storage Service (S3) — deep dive (Security, Static Hosting, Versioning, Performance, KMS, encryption SSE/CSE, Storage Classes, Lifecycle, Replication, Presigned URLs, Select, Events, Access Logs, Object Lock, Access Points, MRAP)",
+  "Virtual Private Cloud (VPC) Basics (Sizing/Structure, Custom VPCs, Subnets, Routing/IGW/Bastion, Stateful vs Stateless, NACLs, Security Groups, NAT Gateway)",
+  "Elastic Compute Cloud (EC2) — deep dive (Virtualization, Architecture/Resilience, Instance Types, SSH vs Instance Connect, EBS architecture & volume types, Instance Store, Snapshots/FSR, EBS Encryption, ENIs/IPs/DNS, AMIs, Purchase Options, Reserved Instances, Status Checks/Auto Recovery, Horizontal vs Vertical Scaling, Instance Metadata)",
+  "Containers & ECS (Containers intro, Docker, ECS Concepts, Cluster Mode, Fargate, ECR, Kubernetes 101, EKS 101)",
+  "Advanced EC2 (Bootstrapping/User Data, CFN-INIT, Instance Roles & Profiles, SSM Parameter Store, logging/CloudWatch Agent, Placement Groups, Dedicated Hosts, Enhanced Networking/EBS Optimized)",
+  "Route 53 — Global DNS (Public/Private Hosted Zones, CNAME vs Alias, routing policies: Simple/Failover/Multi-Value/Weighted/Latency/Geolocation/Geoproximity, Health Checks, Interoperability, DNSSEC)",
+  "Relational Database Service (RDS) (DB models, ACID vs BASE, DBs on EC2, RDS Architecture, Multi-AZ, Backups/Snapshots, Read Replicas, Data Security, Aurora, Aurora Serverless, Global DB, RDS Proxy, DMS)",
+  "Network Storage & Data Lifecycle (EFS Architecture, EFS with WordPress, AWS Backup)",
+  "HA & Scaling (Regional/Global Architecture, ELB evolution, ALB vs NLB, Launch Templates, Auto Scaling Groups, Scaling Policies, Lifecycle Hooks, Health Checks, SSL Offload/Stickiness, Architecture Evolution stages, Gateway Load Balancer)",
+  "Serverless and Application Services (Architecture Deep Dive, Lambda, EventBridge, Serverless Architecture, SNS, Step Functions, API Gateway, Pet-Cuddle-o-Tron project, SQS + FIFO/Delay/DLQ, Kinesis Data Streams/Firehose/Analytics/Video, Cognito, Glue, MQ, AppFlow)",
+  "Global Content Delivery & Optimization (CloudFront Architecture, Behaviours, TTL/Invalidations, ACM, CloudFront SSL/TLS, Origins, OAI/OAC, Private Distributions, Lambda@Edge, Global Accelerator)",
+  "Advanced VPC Networking (Flow Logs, Egress-Only IGW, VPC Endpoints Gateway/Interface, VPC Peering)",
+  "Hybrid Environments and Migration (BGP, IPSec VPN, Site-to-Site VPN, Direct Connect, Transit Gateway, Storage Gateway Volume/Tape/File, Snowball, Directory Service, DataSync, FSx for Windows, FSx for Lustre, Transfer Family)",
+  "Security, Deployment & Operations (Secrets Manager, L7 Firewall, WAF, Shield, CloudHSM, Config, Macie, Inspector, GuardDuty)",
+  "Infrastructure as Code (CloudFormation) — deep dive (Physical/Logical Resources, Pseudo Params, Intrinsic Functions, Mappings, Outputs, Conditions, DependsOn, Wait Conditions/cfn-signal, Nested Stacks, Cross-Stack Refs, StackSets, Deletion Policy, Stack Roles, CFN-INIT, cfn-hup, ChangeSets, Custom Resources)",
+  "NoSQL Databases & DynamoDB (Architecture, Operations/Consistency/Performance, LSI/GSI, Streams & Triggers, Global Tables, DAX, TTL, Athena, ElastiCache, Redshift)",
+  "Machine Learning 101 (Comprehend, Kendra, Lex, Polly, Rekognition, Textract, Transcribe, Translate, Forecast, Fraud Detector, SageMaker)",
+  "Other Services & Features (Local Zones)",
+  "Exam (Exam Technique, Question Technique, Practice Exam #1 & #2)"
+];
+
+/* Builds the prompt the user pastes to Claude the next day to get a new mock.json */
+function buildNextDayPrompt(report){
+  const courseList = COURSE_SECTIONS.map((s,i)=>`${i+1}. ${s}`).join("\n");
+  const schema =
+`{
+  "exam_id": "cantrill-saa-c03-daily",
+  "day": <int, yesterday's day + 1>,
+  "date": "<YYYY-MM-DD>",
+  "title": "SAA-C03 Daily Mock",
+  "subtitle": "Day <n> — <today's topic names>",
+  "topics_covered": ["<topic>", "..."],
+  "config": { "seconds_per_question": 120, "pass_percent": 70, "randomize_questions": true, "randomize_options": true },
+  "questions": [
+    {
+      "topic": "<short topic label matching a lesson>",
+      "domain": "<one of: Resilient | High-Performing | Secure | Cost-Optimized | Operations/IaC>",
+      "stem": "<scenario-style question. For multi-answer, end with '(Select TWO.)'>",
+      "options": [
+        { "text": "<option>", "correct": true|false, "why": "Correct — ... / Wrong — ..." }
+        // 4 options for single-answer (exactly 1 correct); 5 options for multi-answer (exactly 2 correct).
+        // EVERY option must have a 'why' explaining why it is right or wrong.
+      ]
+    }
+  ]
+}`;
+  return (
+`SAA-C03 DAILY MOCK — GENERATE TOMORROW'S mock.json
+
+CONTEXT (carry this forward; reuse this same chat each day):
+- I'm studying Adrian Cantrill's "AWS Certified Solutions Architect – Associate (SAA-C03)" course on learn.cantrill.io and sitting the SAA-C03 exam.
+- I take one mock exam per day, scoped ONLY to the lessons I watched that day, at real-exam difficulty (scenario-based, "pick the BEST answer").
+- I use a fixed HTML engine (SAA-c03.html) that renders a mock.json. You only ever produce a new mock.json; never change the template.
+- Difficulty should ramp toward real-exam level as sections build on each other. Mix in "two technically-correct, pick the best" traps once competing services have been covered.
+
+FULL COURSE MAP (sections in order, so you know exactly where today's topics sit and what is FAIR GAME vs NOT-YET-COVERED — never test a service from a later section than I've reached):
+${courseList}
+
+MY LATEST RESULT (yesterday's report — use weak_topics + any 'wrong'/'blank' questions to decide review weighting):
+\`\`\`json
+${JSON.stringify(report,null,2)}
+\`\`\`
+
+TODAY I WATCHED (I will paste the lesson list/titles here):
+<<< PASTE TODAY'S LESSON TITLES HERE >>>
+
+WHAT TO GENERATE:
+1. A new mock.json (valid JSON only, in a downloadable file) scoped to TODAY's lessons above.
+2. 10–12 questions by default (scale up if I watched a lot). Time is auto-derived by the engine (120s × question count), so don't set time yourself.
+3. Include 1–2 multi-answer "(Select TWO.)" questions when the topics support it.
+4. RANDOMLY mix in 2–3 REVIEW questions targeting my weak_topics from the report above (test the underlying concept, not the exact same wording).
+5. Single-answer = exactly 4 options, 1 correct. Multi-answer = exactly 5 options, 2 correct. EVERY option needs a "why" (start with "Correct —" or "Wrong —").
+6. Only test services from sections at or before my current point in the course map. Do NOT introduce services I haven't reached yet.
+
+EXACT JSON SCHEMA TO MATCH (the engine depends on this shape):
+\`\`\`json
+${schema}
+\`\`\`
+
+Output: just the new mock.json file, ready to drop into the engine.`
+  );
+}
+
+/* ---- file loading (works from file:// via picker / drag-drop) ---- */
+const drop=document.getElementById('drop');
+const fileInput=document.getElementById('fileInput');
+drop.onclick=()=>fileInput.click();
+fileInput.onchange=e=>{ if(e.target.files[0]) readFile(e.target.files[0]); };
+['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');}));
+drop.addEventListener('drop',e=>{ const f=e.dataTransfer.files[0]; if(f) readFile(f); });
+
+function readFile(file){
+  const r=new FileReader();
+  r.onload=()=>{ try{ startExam(JSON.parse(r.result)); }catch(err){ showErr("Could not parse JSON: "+err.message); } };
+  r.onerror=()=>showErr("Could not read the file.");
+  r.readAsText(file);
+}
+function showErr(m){ document.getElementById('loadErr').textContent=m; }
+
+/* auto-load a JSON file named in the URL, e.g. SAA-c03.html?file=mock02.json
+   (works when served over http; falls back to drag-and-drop otherwise) */
+(function(){
+  const params = new URLSearchParams(location.search);
+  const fileName = params.get('file') || 'mock.json';   // default if none specified
+  fetch(fileName)
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(j => startExam(j))
+    .catch(() => { /* no file, or blocked by file:// -> use the drag-and-drop loader */ });
+})();
+
+/* ---- shuffle ---- */
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---- build working set from JSON ---- */
+function buildQuestions(){
+  Q = DATA.questions.map((q,idx)=>{
+    let opts = q.options.map(o=>({text:o.text, correct:!!o.correct, why:o.why||""}));
+    if(DATA.config && DATA.config.randomize_options!==false) shuffle(opts);
+    const correctCount = opts.filter(o=>o.correct).length;
+    return { topic:q.topic||"General", domain:q.domain||"", stem:q.stem, options:opts,
+             multi:correctCount>1, correctCount, _origIndex:idx };
+  });
+  if(!DATA.config || DATA.config.randomize_questions!==false) shuffle(Q);
+}
+
+function startExam(json){
+  DATA=json;
+  if(!DATA.questions || !DATA.questions.length){ showErr("JSON has no questions."); return; }
+  buildQuestions();
+
+  const spq = (DATA.config && DATA.config.seconds_per_question) || 120;
+  totalTime = spq * Q.length;          // TIME derived from question count
+  timeLeft = totalTime;
+
+  answers = Q.map(()=>[]);
+  flags   = Q.map(()=>false);
+  timeOnQ = Q.map(()=>0);
+  cur=0; scored=false; startedAt=new Date().toISOString();
+
+  document.getElementById('examName').textContent =
+     (DATA.title||"SAA-C03 Mock") + (DATA.subtitle? " · "+DATA.subtitle : "");
+  document.getElementById('loaderView').style.display='none';
+  document.getElementById('examView').style.display='flex';
+
+  clearInterval(timerId); lastTs=Date.now(); timerId=setInterval(tick,1000);
+  document.getElementById('timer').classList.remove('low');
+  document.getElementById('timer').textContent=fmt(timeLeft);
+  renderQ();
+}
+
+/* ---- timer ---- */
+function fmt(s){const m=Math.floor(s/60),x=s%60;return `${String(m).padStart(2,'0')}:${String(x).padStart(2,'0')}`;}
+function accrue(){const now=Date.now();timeOnQ[cur]+=Math.round((now-lastTs)/1000);lastTs=now;}
+function tick(){
+  if(scored)return;
+  timeLeft--;
+  const t=document.getElementById('timer');
+  t.textContent=fmt(Math.max(0,timeLeft));
+  if(timeLeft<=Math.min(120,totalTime*0.1))t.classList.add('low');
+  if(timeLeft<=0){clearInterval(timerId);submitExam();}   // hard stop at end of time
+}
+
+/* ---- render ---- */
+function renderQ(){
+  const q=Q[cur];
+  document.getElementById('qcount').textContent=`Question ${cur+1} of ${Q.length}`;
+  const flagBtn=document.getElementById('flagBtn');
+  flagBtn.classList.toggle('active',flags[cur]);
+  flagBtn.querySelector('span:last-child').textContent=flags[cur]?'Flagged':'Flag for Review';
+
+  let html=`<div class="domain">Topic: ${q.topic}${q.domain? " · Domain: "+q.domain:""}</div>`;
+  html+=`<div class="qstem">${q.stem}</div>`;
+  html+=`<div class="qhint">${q.multi? "Choose "+numWord(q.correctCount)+" answers." : "Choose ONE answer."}</div><div class="options">`;
+  const type=q.multi?'checkbox':'radio';
+  q.options.forEach((opt,i)=>{
+    const sel=answers[cur].includes(i);
+    let cls='opt'+(sel?' selected':'');
+    let tag='';
+    if(scored){
+      if(opt.correct){cls+=' correct';tag='<span class="tag ok">Correct</span>';}
+      else if(sel){cls+=' wrongpick';tag='<span class="tag bad">Your choice</span>';}
+    }
+    html+=`<label class="${cls}"><input type="${type}" name="opt" ${sel?'checked':''} ${scored?'disabled':''} onchange="pick(${i})">
+      <span class="label">${LETTERS[i]}</span><span class="otext">${opt.text}${tag}</span></label>`;
+  });
+  html+=`</div>`;
+  if(scored){
+    let perOpt='';
+    q.options.forEach((opt,i)=>{ if(opt.why) perOpt+=`<div class="opt-why"><b>${LETTERS[i]}.</b> ${opt.why}</div>`; });
+    if(perOpt) html+=`<div class="explain"><h4>Why each option is right or wrong</h4>${perOpt}</div>`;
+  }
+  document.getElementById('qbody').innerHTML=html;
+  document.getElementById('prevBtn').disabled=(cur===0);
+  document.getElementById('nextBtn').disabled=(cur===Q.length-1);
+}
+function numWord(n){return ({2:"TWO",3:"THREE",4:"FOUR"})[n]||n;}
+
+/* ---- interactions ---- */
+function pick(i){
+  if(scored)return;
+  const q=Q[cur];
+  if(q.multi){
+    const idx=answers[cur].indexOf(i);
+    if(idx>=0)answers[cur].splice(idx,1);
+    else{ if(answers[cur].length>=q.correctCount)answers[cur].shift(); answers[cur].push(i); }
+  }else{ answers[cur]=[i]; }
+  renderQ();
+}
+function toggleFlag(){flags[cur]=!flags[cur];renderQ();}
+function go(d){accrue();const n=cur+d;if(n<0||n>=Q.length)return;cur=n;renderQ();}
+
+/* ---- review screen ---- */
+function showReview(){
+  accrue();
+  document.getElementById('examView').style.display='none';
+  document.getElementById('reviewView').style.display='flex';
+  const grid=document.getElementById('reviewGrid');grid.innerHTML='';
+  Q.forEach((q,i)=>{
+    const answered=answers[i].length>0 && (!q.multi || answers[i].length===q.correctCount);
+    let cls='reviewcell';if(answered)cls+=' answered';if(flags[i])cls+=' flagged';
+    const status=flags[i]?'Flagged':(answered?'Answered':'—');
+    const cell=document.createElement('div');cell.className=cls;
+    cell.innerHTML=`${i+1}<span class="mini">${status}</span>`;
+    cell.onclick=()=>{cur=i;backToExam();};
+    grid.appendChild(cell);
+  });
+}
+function backToExam(){
+  document.getElementById('reviewView').style.display='none';
+  document.getElementById('resultView').style.display='none';
+  document.getElementById('examView').style.display='flex';
+  lastTs=Date.now();renderQ();
+}
+
+/* ---- scoring ---- */
+function setEqual(a,correctIdxs){
+  const A=[...a].sort().join(','), B=[...correctIdxs].sort().join(',');
+  return A===B && a.length>0;
+}
+function correctIndexes(q){ return q.options.map((o,i)=>o.correct?i:-1).filter(i=>i>=0); }
+
+function buildReport(correctCount){
+  const perQ=Q.map((q,i)=>{
+    const ci=correctIndexes(q);
+    const correct=setEqual(answers[i],ci);
+    return {
+      shown_position:i+1,
+      source_index:q._origIndex,
+      topic:q.topic, domain:q.domain,
+      type:q.multi?"multi":"single",
+      your_answer:answers[i].map(x=>LETTERS[x]),
+      your_answer_text:answers[i].map(x=>q.options[x].text),
+      correct_answer:ci.map(x=>LETTERS[x]),
+      correct_answer_text:ci.map(x=>q.options[x].text),
+      result: answers[i].length===0 ? "blank" : (correct?"correct":"wrong"),
+      seconds_spent:timeOnQ[i],
+      flagged:flags[i]
+    };
+  });
+  const byTopic={};
+  perQ.forEach(r=>{ byTopic[r.topic]=byTopic[r.topic]||{correct:0,total:0};
+    byTopic[r.topic].total++; if(r.result==="correct")byTopic[r.topic].correct++; });
+  const weak=Object.keys(byTopic).filter(t=>byTopic[t].correct/byTopic[t].total<0.7);
+  return {
+    exam_id:DATA.exam_id||"saa-c03-daily",
+    day:DATA.day||null, date:DATA.date||new Date().toISOString().slice(0,10),
+    started_at:startedAt,
+    topics_covered:DATA.topics_covered||Object.keys(byTopic),
+    score:{correct:correctCount,total:Q.length,percent:Math.round(correctCount/Q.length*100)},
+    time:{allotted_seconds:totalTime,used_seconds:totalTime-Math.max(0,timeLeft)},
+    by_topic:byTopic,
+    weak_topics:weak,
+    questions:perQ,
+    note_to_claude:"Use weak_topics + wrong/blank questions to weight tomorrow's NEW exam (scoped to tomorrow's lessons) and to randomly mix in 2-3 review questions on these weak concepts. Reproduce the exam by editing only mock.json; keep the template unchanged."
+  };
+}
+
+function submitExam(){
+  accrue();scored=true;clearInterval(timerId);
+  let correct=0;Q.forEach((q,i)=>{ if(setEqual(answers[i],correctIndexes(q)))correct++; });
+  const pct=Math.round(correct/Q.length*100);
+  const passMark=(DATA.config&&DATA.config.pass_percent)||70;
+  const pass=pct>=passMark;
+  const report=buildReport(correct);
+  const json=JSON.stringify(report,null,2);
+  const nextPrompt=buildNextDayPrompt(report);
+
+  let rows='';
+  Object.keys(report.by_topic).forEach(t=>{const b=report.by_topic[t];const p=Math.round(b.correct/b.total*100);
+    rows+=`<tr><td>${t}</td><td>${b.correct}/${b.total}</td><td style="color:${p>=passMark?'var(--ok)':'var(--bad)'};font-weight:bold">${p}%</td></tr>`;});
+
+  document.getElementById('examView').style.display='none';
+  document.getElementById('reviewView').style.display='none';
+  document.getElementById('resultView').style.display='flex';
+  document.getElementById('resultPanel').innerHTML=`
+    <h2>Results — ${(DATA.subtitle||DATA.title||"SAA-C03 Mock")}</h2>
+    <p class="sub">Practice score. The real SAA-C03 is a scaled 100–1000 with a 720 pass mark.</p>
+    <div class="scorebox">
+      <div class="pct ${pass?'pass':'fail'}">${pct}%</div>
+      <div class="verdict" style="color:${pass?'var(--ok)':'var(--bad)'}">${pass?'PASS (practice)':'NOT YET (practice)'}</div>
+      <div class="note">${correct} of ${Q.length} correct · time used ${fmt(report.time.used_seconds)} of ${fmt(totalTime)}</div>
+      <div class="barwrap"><div class="barfill" style="width:${pct}%;background:${pass?'var(--ok)':'var(--bad)'}"></div></div>
+      <div class="passline">▲ pass line ≈ ${passMark}%</div>
+    </div>
+    <div class="breakdown"><table><thead><tr><th>Topic</th><th>Score</th><th>%</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="sub" style="text-align:center;margin-top:12px">Click <b>Review My Answers</b> to step through every question with the correct choice and per-option explanations.</p>
+    <div class="jsonwrap">
+      <h3>📋 JSON report — copy and paste to Claude</h3>
+      <p>Score, time per question, and weak topics so tomorrow's exam can be tuned and old weak spots randomly retested.</p>
+      <textarea id="jsonOut" readonly>${json.replace(/</g,'&lt;')}</textarea>
+      <button class="primary" style="margin-top:8px" onclick="copyJSON()">Copy JSON</button>
+      <span class="copied" id="copiedMsg" style="display:none">Copied ✓</span>
+    </div>
+    <div class="jsonwrap">
+      <h3>🤖 Next-day prompt — paste this to Claude tomorrow to get the next mock.json</h3>
+      <p>This already contains the full course map, where you are in it, your latest result, and the exact JSON schema. <b>Just paste it, then paste the titles of the lessons you watched that day where it says &lt;&lt;&lt; PASTE TODAY'S LESSON TITLES HERE &gt;&gt;&gt;.</b></p>
+      <textarea id="promptOut" readonly>${nextPrompt.replace(/</g,'&lt;')}</textarea>
+      <button class="primary" style="margin-top:8px" onclick="copyPrompt()">Copy Next-Day Prompt</button>
+      <span class="copied" id="copiedMsg2" style="display:none">Copied ✓</span>
+    </div>`;
+}
+function copyJSON(){
+  const ta=document.getElementById('jsonOut');ta.select();ta.setSelectionRange(0,99999);
+  try{ navigator.clipboard.writeText(ta.value).then(flash,()=>{document.execCommand('copy');flash();}); }
+  catch(e){ document.execCommand('copy');flash(); }
+}
+function flash(){const m=document.getElementById('copiedMsg');m.style.display='inline';setTimeout(()=>m.style.display='none',2000);}
+function copyPrompt(){
+  const ta=document.getElementById('promptOut');ta.select();ta.setSelectionRange(0,99999);
+  const done=()=>{const m=document.getElementById('copiedMsg2');m.style.display='inline';setTimeout(()=>m.style.display='none',2000);};
+  try{ navigator.clipboard.writeText(ta.value).then(done,()=>{document.execCommand('copy');done();}); }
+  catch(e){ document.execCommand('copy');done(); }
+}
+function reviewAnswers(){cur=0;backToExam();}
+function restart(){ if(DATA) startExam(DATA); }   // re-randomizes order + options
+</script>
+</body>
+</html>
