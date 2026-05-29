@@ -1,3 +1,23 @@
+#!/usr/bin/env bash
+#
+# setup.sh — initialise the AWS-mock-exams repo and push it to GitHub.
+# Safe to re-run: it overwrites README/LICENSE, only commits when there are
+# changes, and only creates the remote if one isn't wired up yet.
+#
+set -euo pipefail
+
+REPO_NAME="AWS-mock-exams"
+REPO_DESC="Daily AWS SAA-C03 mock exams: a single-file HTML engine + daily mock JSON files."
+LICENSE_YEAR="2026"
+LICENSE_HOLDER="sys-dev-amin"   # <-- change to your name if you prefer
+
+# --- sanity checks -----------------------------------------------------------
+command -v git >/dev/null || { echo "git not found"; exit 1; }
+command -v gh  >/dev/null || { echo "gh (GitHub CLI) not found"; exit 1; }
+[ -d .git ] || git init -b main
+
+# --- README ------------------------------------------------------------------
+cat > README.md << 'README_EOF'
 # AWS SAA-C03 Daily Mock Exams
 
 A lightweight, **single-file** browser-based mock-exam engine for the **AWS Certified Solutions Architect – Associate (SAA-C03)** exam, plus a growing set of daily practice mocks.
@@ -69,3 +89,60 @@ Engine rules: single-answer = **4 options, exactly 1 correct**; multi-answer = *
 
 ## License
 Released under the [MIT License](LICENSE) — you're free to reuse, modify, and redistribute the engine.
+README_EOF
+
+# --- LICENSE (MIT) -----------------------------------------------------------
+cat > LICENSE << LICENSE_EOF
+MIT License
+
+Copyright (c) ${LICENSE_YEAR} ${LICENSE_HOLDER}
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+LICENSE_EOF
+
+# --- move mock JSON files into mocks/ ----------------------------------------
+mkdir -p mocks
+shopt -s nullglob
+for f in mock*.json; do
+  echo "moving $f -> mocks/"
+  mv -f "$f" mocks/
+done
+shopt -u nullglob
+
+# --- commit (only if there is something to commit) ---------------------------
+git add -A
+git branch -M main
+if git diff --cached --quiet; then
+  echo "Nothing new to commit."
+else
+  git commit -m "Set up SAA-C03 mock engine: README, MIT license, mocks/ layout"
+fi
+
+# --- create remote + push ----------------------------------------------------
+if git remote get-url origin >/dev/null 2>&1; then
+  echo "Remote 'origin' already exists — pushing main..."
+  git push -u origin main
+else
+  echo "Creating public repo '${REPO_NAME}' and pushing..."
+  gh repo create "${REPO_NAME}" --public --source=. --remote=origin --push \
+    --description "${REPO_DESC}"
+fi
+
+echo
+echo "Done. View it with: gh repo view --web"
