@@ -1,0 +1,412 @@
+{
+  "exam_id": "cantrill-saa-c03-daily",
+  "day": 3,
+  "date": "2026-06-01",
+  "title": "SAA-C03 Daily Mock",
+  "subtitle": "Day 3 — S3, CloudFormation, CloudWatch, Shared Responsibility, HA/FT/DR, Route 53 & DNS",
+  "topics_covered": [
+    "S3 Basics",
+    "CloudFormation Basics",
+    "CloudWatch Basics",
+    "Shared Responsibility Model",
+    "HA vs Fault Tolerance vs Disaster Recovery",
+    "Route 53 Fundamentals & DNS Record Types",
+    "Review: AWS Default VPC"
+  ],
+  "config": {
+    "seconds_per_question": 120,
+    "pass_percent": 70,
+    "randomize_questions": true,
+    "randomize_options": true
+  },
+  "questions": [
+    {
+      "topic": "S3 Basics",
+      "domain": "Resilient",
+      "stem": "A team needs to store large numbers of files such as images, logs, and backups using a service built specifically for that purpose. Which description matches Amazon S3?",
+      "options": [
+        {
+          "text": "Object storage that keeps objects in buckets, where each object has a key and its data, scoped to a Region.",
+          "correct": true,
+          "why": "Correct — S3 is Region-based object storage; objects (a key plus data) live inside buckets."
+        },
+        {
+          "text": "Block storage that presents raw, unformatted volumes which you attach to a single server and then format and manage yourself.",
+          "correct": false,
+          "why": "Wrong — that describes block storage, not S3's object model."
+        },
+        {
+          "text": "A shared file system you mount over the network so many servers can use it at once.",
+          "correct": false,
+          "why": "Wrong — that describes network file storage, not S3."
+        },
+        {
+          "text": "A relational database service that stores structured tables you query with SQL.",
+          "correct": false,
+          "why": "Wrong — that describes a database service, not object storage."
+        }
+      ]
+    },
+    {
+      "topic": "S3 Basics",
+      "domain": "High-Performing",
+      "stem": "An architect is checking whether S3 fits a requirement. For which of the following is S3 the LEAST suitable choice?",
+      "options": [
+        {
+          "text": "Acting as the boot disk that an instance's operating system runs from.",
+          "correct": true,
+          "why": "Correct — S3 is object storage, not block storage, so it cannot serve as an instance's running OS boot volume."
+        },
+        {
+          "text": "Holding a large library of media files that users download over the web.",
+          "correct": false,
+          "why": "Wrong — this is a classic, well-suited use of S3."
+        },
+        {
+          "text": "Keeping nightly database backup files for durable long-term retention.",
+          "correct": false,
+          "why": "Wrong — storing backup objects durably is a good fit for S3."
+        },
+        {
+          "text": "Storing user-uploaded documents for an application to retrieve later.",
+          "correct": false,
+          "why": "Wrong — storing and retrieving uploaded objects is exactly what S3 is for."
+        }
+      ]
+    },
+    {
+      "topic": "S3 Basics",
+      "domain": "Operations/IaC",
+      "stem": "A developer is creating an S3 bucket. Which statement about S3 buckets is correct?",
+      "options": [
+        {
+          "text": "The bucket name must be globally unique across all AWS accounts, and the bucket resides in one Region.",
+          "correct": true,
+          "why": "Correct — bucket names share a single global namespace, while the bucket itself is created in a specific Region."
+        },
+        {
+          "text": "The bucket name only has to be unique within your own account, and the bucket spans every Region.",
+          "correct": false,
+          "why": "Wrong — names are globally unique, and a bucket lives in one Region, not all of them."
+        },
+        {
+          "text": "Buckets are created separately within each Availability Zone, and the chosen name only needs to be unique inside that particular zone.",
+          "correct": false,
+          "why": "Wrong — buckets are Region-scoped, not per-AZ, and naming is global."
+        },
+        {
+          "text": "Bucket names are generated automatically by AWS and cannot be chosen by the user.",
+          "correct": false,
+          "why": "Wrong — you choose the bucket name (subject to the global-uniqueness and DNS rules)."
+        }
+      ]
+    },
+    {
+      "topic": "CloudFormation Basics",
+      "domain": "Operations/IaC",
+      "stem": "A team wants to define their AWS infrastructure in a text file and have AWS create and manage those resources from it. Which service is designed for this?",
+      "options": [
+        {
+          "text": "CloudFormation, which reads a template and provisions the described resources as a stack.",
+          "correct": true,
+          "why": "Correct — CloudFormation turns a template into a managed stack of real resources."
+        },
+        {
+          "text": "CloudWatch, which continuously gathers operational metrics and log data and can raise alarms whenever they cross a threshold.",
+          "correct": false,
+          "why": "Wrong — that is a true description of CloudWatch, but it does not provision infrastructure."
+        },
+        {
+          "text": "S3, which can store the template file durably as an object inside a bucket.",
+          "correct": false,
+          "why": "Wrong — S3 can hold the file, but it does not create the resources the template describes."
+        },
+        {
+          "text": "IAM, which controls which identities are permitted to create the resources.",
+          "correct": false,
+          "why": "Wrong — IAM governs permissions, not the provisioning of the infrastructure itself."
+        }
+      ]
+    },
+    {
+      "topic": "CloudFormation Basics",
+      "domain": "Operations/IaC",
+      "stem": "In CloudFormation, what is the relationship between a template and a stack?",
+      "options": [
+        {
+          "text": "A template describes the resources, and a stack is the set of resources created and managed from that template.",
+          "correct": true,
+          "why": "Correct — the template is the definition; the stack is the live set of resources built from it."
+        },
+        {
+          "text": "A stack describes the resources, and a template is the running infrastructure created from the stack.",
+          "correct": false,
+          "why": "Wrong — this reverses the two terms."
+        },
+        {
+          "text": "A template and a stack are simply two names for the same single object.",
+          "correct": false,
+          "why": "Wrong — they are distinct: one is the definition, the other is the deployed result."
+        },
+        {
+          "text": "A template stores the monitoring data for resources, while a stack keeps the billing and cost records that AWS generates for them over time.",
+          "correct": false,
+          "why": "Wrong — neither stores monitoring or billing data; that is unrelated to CloudFormation's role."
+        }
+      ]
+    },
+    {
+      "topic": "CloudWatch Basics",
+      "domain": "Operations/IaC",
+      "stem": "An EC2 instance sends CPU utilization to CloudWatch automatically, but the team also needs memory usage and free disk space from inside the instance. How are those values collected?",
+      "options": [
+        {
+          "text": "Install the CloudWatch agent on the instance to publish the in-OS metrics.",
+          "correct": true,
+          "why": "Correct — memory and disk are inside the guest OS, so the CloudWatch agent is needed to publish them."
+        },
+        {
+          "text": "They are already included automatically in the default set of EC2 metrics.",
+          "correct": false,
+          "why": "Wrong — default EC2 metrics do not include in-OS values like memory or disk usage."
+        },
+        {
+          "text": "Turn on detailed monitoring, which adds memory and disk usage at one-minute granularity.",
+          "correct": false,
+          "why": "Wrong — detailed monitoring only increases metric frequency; it does not add in-OS metrics."
+        },
+        {
+          "text": "Create a CloudWatch alarm on the instance and the metrics will then appear.",
+          "correct": false,
+          "why": "Wrong — alarms only watch metrics that already exist; they do not generate new ones."
+        }
+      ]
+    },
+    {
+      "topic": "CloudWatch Basics",
+      "domain": "Operations/IaC",
+      "stem": "Which TWO of the following are core capabilities of CloudWatch? (Select TWO.)",
+      "options": [
+        {
+          "text": "Collecting and storing metrics, such as resource utilization measured over time.",
+          "correct": true,
+          "why": "Correct — gathering and retaining metrics is a primary CloudWatch function."
+        },
+        {
+          "text": "Ingesting and storing log data from AWS services and from applications.",
+          "correct": true,
+          "why": "Correct — CloudWatch Logs ingests and stores log data, another core capability."
+        },
+        {
+          "text": "Provisioning entire sets of infrastructure from a declarative template and then managing them together as a single stack.",
+          "correct": false,
+          "why": "Wrong — that is CloudFormation's job, not CloudWatch's."
+        },
+        {
+          "text": "Registering domain names and hosting the DNS records for them.",
+          "correct": false,
+          "why": "Wrong — that is Route 53, not CloudWatch."
+        },
+        {
+          "text": "Storing objects durably inside Region-scoped buckets.",
+          "correct": false,
+          "why": "Wrong — that is S3, not CloudWatch."
+        }
+      ]
+    },
+    {
+      "topic": "Shared Responsibility Model",
+      "domain": "Secure",
+      "stem": "Under the AWS shared responsibility model, which task is the CUSTOMER's responsibility rather than AWS's?",
+      "options": [
+        {
+          "text": "Patching the guest operating system and the applications on an EC2 instance.",
+          "correct": true,
+          "why": "Correct — for EC2 the customer manages the guest OS and applications, including patching."
+        },
+        {
+          "text": "Maintaining the physical security and environmental controls of the AWS data center facilities.",
+          "correct": false,
+          "why": "Wrong — physical security of facilities is AWS's responsibility (security 'of' the cloud)."
+        },
+        {
+          "text": "Replacing failed physical disks within the underlying hardware.",
+          "correct": false,
+          "why": "Wrong — the physical hardware is managed entirely by AWS."
+        },
+        {
+          "text": "Securing the hypervisor that keeps customer instances isolated.",
+          "correct": false,
+          "why": "Wrong — the virtualization layer is AWS's responsibility, not the customer's."
+        }
+      ]
+    },
+    {
+      "topic": "HA vs Fault Tolerance vs Disaster Recovery",
+      "domain": "Resilient",
+      "stem": "A payment system must keep operating without any interruption even if an individual component fails in the middle of a transaction. Which design goal does this BEST describe?",
+      "options": [
+        {
+          "text": "Fault tolerance — the system keeps operating through component failures.",
+          "correct": true,
+          "why": "Correct — fault tolerance means continuing to operate with no interruption despite failures."
+        },
+        {
+          "text": "High availability — downtime is kept small and recovery happens quickly after a failure.",
+          "correct": false,
+          "why": "Wrong — high availability accepts brief downtime, whereas this requirement allows none."
+        },
+        {
+          "text": "Disaster recovery — procedures exist to restore the service after a major event.",
+          "correct": false,
+          "why": "Wrong — disaster recovery is about recovering after an event, not running through one uninterrupted."
+        },
+        {
+          "text": "Elasticity — capacity scales automatically up and down with changing demand.",
+          "correct": false,
+          "why": "Wrong — elasticity is a true concept but addresses scaling, not uninterrupted operation."
+        }
+      ]
+    },
+    {
+      "topic": "HA vs Fault Tolerance vs Disaster Recovery",
+      "domain": "Resilient",
+      "stem": "An internal tool may be briefly unavailable during a failure as long as it returns quickly and outages are rare. Which design goal fits this requirement BEST?",
+      "options": [
+        {
+          "text": "High availability — maximize uptime and recover fast, tolerating short outages.",
+          "correct": true,
+          "why": "Correct — high availability targets minimal downtime while accepting occasional brief outages, matching the requirement."
+        },
+        {
+          "text": "Fault tolerance — keep running through failures with no interruption whatsoever.",
+          "correct": false,
+          "why": "Wrong — this is stronger and costlier than needed; the requirement permits short outages, so it is not the best fit."
+        },
+        {
+          "text": "Disaster recovery — bring the service back after a significant disaster event.",
+          "correct": false,
+          "why": "Wrong — disaster recovery addresses major events, not routine quick recovery from small failures."
+        },
+        {
+          "text": "Durability — guarantee that stored data is not lost over the long term.",
+          "correct": false,
+          "why": "Wrong — durability is a true concept but concerns data loss, not service uptime."
+        }
+      ]
+    },
+    {
+      "topic": "Route 53 Fundamentals",
+      "domain": "Resilient",
+      "stem": "Which statement BEST describes Amazon Route 53?",
+      "options": [
+        {
+          "text": "A globally resilient service that can register domains and host their DNS records.",
+          "correct": true,
+          "why": "Correct — Route 53 is a global DNS service offering domain registration and hosted zones."
+        },
+        {
+          "text": "A Region-scoped service that stores DNS records only within a single Region.",
+          "correct": false,
+          "why": "Wrong — Route 53 is global and globally resilient, not confined to one Region."
+        },
+        {
+          "text": "A service that gathers performance metrics and triggers alarms whenever configured thresholds are crossed over time.",
+          "correct": false,
+          "why": "Wrong — that describes CloudWatch, not Route 53."
+        },
+        {
+          "text": "A service that stores objects in buckets and serves them out over HTTP.",
+          "correct": false,
+          "why": "Wrong — that describes S3, not a DNS service."
+        }
+      ]
+    },
+    {
+      "topic": "DNS Record Types",
+      "domain": "Operations/IaC",
+      "stem": "You need a DNS record that points the name 'shop.example.com' to another DNS name, 'web.provider.net', instead of to an IP address. Which record type fits?",
+      "options": [
+        {
+          "text": "CNAME, which maps a name to another name.",
+          "correct": true,
+          "why": "Correct — a CNAME points one name at another name, which is exactly what is required here."
+        },
+        {
+          "text": "A, which maps a name directly to an IPv4 address.",
+          "correct": false,
+          "why": "Wrong — an A record resolves to an IPv4 address, not to another name."
+        },
+        {
+          "text": "AAAA, which maps a name directly to an IPv6 address.",
+          "correct": false,
+          "why": "Wrong — an AAAA record resolves to an IPv6 address, not to another name."
+        },
+        {
+          "text": "MX, which directs email for a domain toward its mail servers.",
+          "correct": false,
+          "why": "Wrong — MX records route mail and are unrelated to pointing one name at another."
+        }
+      ]
+    },
+    {
+      "topic": "AWS Default VPC",
+      "domain": "Operations/IaC",
+      "stem": "A cloud engineer reviews the default VPC in one Region. Which TWO statements about the default VPC are correct? (Select TWO.)",
+      "options": [
+        {
+          "text": "Each Region has at most one default VPC, and it can be removed and regenerated later.",
+          "correct": true,
+          "why": "Correct — there is a single default VPC per Region, and it can be deleted and recreated from the console."
+        },
+        {
+          "text": "It is ready for connectivity, with an internet gateway and a default subnet in each Availability Zone.",
+          "correct": true,
+          "why": "Correct — the default VPC comes preconfigured with an IGW and a default subnet per AZ."
+        },
+        {
+          "text": "A single default VPC is shared across every Region in the account at once.",
+          "correct": false,
+          "why": "Wrong — VPCs are Region-scoped, so a default VPC exists within one Region only."
+        },
+        {
+          "text": "Reaching the internet from any of its subnets first requires you to manually create and then attach an internet gateway.",
+          "correct": false,
+          "why": "Wrong — the default VPC already has its internet gateway attached."
+        },
+        {
+          "text": "It is the setup AWS recommends for hosting production workloads.",
+          "correct": false,
+          "why": "Wrong — custom VPCs are preferred for production; the default VPC is mainly a convenience."
+        }
+      ]
+    },
+    {
+      "topic": "AWS Default VPC",
+      "domain": "Operations/IaC",
+      "stem": "Which statement about the default VPC's IP addressing is correct?",
+      "options": [
+        {
+          "text": "It uses a predefined IPv4 CIDR block of 172.31.0.0/16.",
+          "correct": true,
+          "why": "Correct — every default VPC is created with the fixed 172.31.0.0/16 CIDR range."
+        },
+        {
+          "text": "It uses a 10.0.0.0/16 block that the account owner selects at creation time.",
+          "correct": false,
+          "why": "Wrong — the default VPC's range is fixed and is not chosen by the user."
+        },
+        {
+          "text": "It is created with no CIDR block until one is assigned afterwards.",
+          "correct": false,
+          "why": "Wrong — the default VPC always has its predefined CIDR from the start."
+        },
+        {
+          "text": "Its CIDR block shifts automatically to avoid overlapping with other VPCs.",
+          "correct": false,
+          "why": "Wrong — the CIDR is static; AWS does not change it to prevent overlaps."
+        }
+      ]
+    }
+  ]
+}
