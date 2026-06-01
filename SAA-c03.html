@@ -101,7 +101,7 @@
   .copied{color:var(--ok);font-size:12.5px;margin-left:10px;font-weight:bold}
 
   /* LOADER SCREEN */
-  .loader{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center}
+  .loader{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:34px 30px 40px;text-align:center;overflow-y:auto}
   .loader h1{font-size:22px;color:var(--vue-navy);margin-bottom:6px}
   .loader p{color:var(--vue-muted);font-size:14px;max-width:520px;margin-bottom:24px}
   .drop{border:2px dashed var(--vue-line);border-radius:12px;padding:44px 30px;width:100%;max-width:520px;
@@ -111,6 +111,32 @@
   .drop .big{font-size:40px;margin-bottom:10px}
   .err{color:var(--bad);font-size:13px;margin-top:14px;font-weight:bold;min-height:18px}
   .hint2{font-size:12px;color:var(--vue-muted);margin-top:18px}
+
+  /* HOME tabs + create form */
+  .home-tabs{display:flex;gap:8px;margin-bottom:20px}
+  .tab{background:#fff;border:1px solid var(--vue-line);color:var(--vue-muted);padding:7px 18px;border-radius:20px;font-weight:bold;font-size:13px}
+  .tab:hover{background:#eef1f4}
+  .tab.active{background:var(--vue-navy);border-color:var(--vue-navy);color:#fff}
+  .home-card{width:100%;max-width:560px;display:flex;flex-direction:column}
+  .pathhint{font-size:12px;color:var(--vue-muted);margin-top:12px}
+  code{background:#eef1f4;border:1px solid var(--vue-line);border-radius:4px;padding:1px 6px;
+    font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:12px;color:var(--vue-navy)}
+  .fieldlabel{display:block;text-align:left;font-size:13px;font-weight:bold;color:var(--vue-navy);margin-bottom:7px}
+  .topicsbox{min-height:120px;background:#fff;color:var(--vue-text);
+    font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;font-size:13.5px}
+  .promptarea{margin-top:18px;text-align:left}
+  .promptarea h3{font-size:14px;color:var(--vue-navy);margin-bottom:6px}
+  .minierr{color:var(--bad);font-size:12.5px;font-weight:bold;min-height:16px;text-align:left;margin-top:8px}
+
+  /* READY screen */
+  .readygrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:8px 0 20px}
+  .readygrid .cell{border:1px solid var(--vue-line);border-radius:8px;padding:14px 16px;background:#fafbfc;text-align:left}
+  .readygrid .cell .k{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--vue-muted)}
+  .readygrid .cell .v{font-size:22px;font-weight:bold;color:var(--vue-navy);margin-top:4px;line-height:1.1}
+  .readytopics{font-size:13.5px}
+  .readytopics b{color:var(--vue-navy)}
+  .readytopics ul{margin:8px 0 0 20px}
+  .readytopics li{margin:3px 0}
 </style>
 </head>
 <body>
@@ -121,17 +147,55 @@
     <span class="candidate">Candidate: You</span>
   </div>
 
-  <!-- LOADER -->
+  <!-- HOME / LOADER -->
   <div id="loaderView" class="loader">
     <h1>SAA-C03 Mock Exam Engine</h1>
-    <p>Load today's <strong>mock.json</strong> file. The engine builds the whole exam from it — questions, answers, explanations, count, and timing are all controlled by the JSON.</p>
-    <div class="drop" id="drop">
-      <div class="big">📄</div>
-      <div>Drop <strong>mock.json</strong> here, or <strong>click to choose a file</strong></div>
-      <input type="file" id="fileInput" accept=".json,application/json" style="display:none">
+    <p>Start a mock from an existing <strong>mock.json</strong>, or create a prompt to generate a new one that targets the topics you choose.</p>
+
+    <div class="home-tabs">
+      <button class="tab active" id="tabUpload" onclick="homeTab('upload')">Upload a mock</button>
+      <button class="tab" id="tabCreate" onclick="homeTab('create')">Create a new mock</button>
     </div>
-    <div class="err" id="loadErr"></div>
-    <div class="hint2">Time is auto-calculated: <span id="spqHint">seconds_per_question</span> × number of questions.</div>
+
+    <!-- UPLOAD CARD -->
+    <div class="home-card" id="cardUpload">
+      <div class="drop" id="drop">
+        <div class="big">📄</div>
+        <div>Drop <strong>mock.json</strong> here, or <strong>click to choose a file</strong></div>
+        <input type="file" id="fileInput" accept=".json,application/json" style="display:none">
+      </div>
+      <div class="pathhint">Default location: <code>~/projects/AWS-mock-exams/mocks/</code></div>
+      <div class="err" id="loadErr"></div>
+      <div class="hint2">Time is auto-calculated: <span id="spqHint">seconds_per_question</span> × number of questions. You'll see a start screen before the timer begins.</div>
+    </div>
+
+    <!-- CREATE CARD -->
+    <div class="home-card" id="cardCreate" style="display:none">
+      <label class="fieldlabel" for="topicsInput">Topics to target in the new mock</label>
+      <textarea id="topicsInput" class="topicsbox" placeholder="Paste the lesson titles / topics this mock should cover, e.g.&#10;- EC2 Instance Types&#10;- EBS volume types (gp3, io2)&#10;- Snapshots &amp; FSR"></textarea>
+      <div class="minierr" id="createErr"></div>
+      <button class="primary" onclick="genCreatePrompt()">Generate prompt</button>
+      <div class="promptarea" id="createPromptArea" style="display:none">
+        <h3>Prompt — paste this to Claude to get your mock.json</h3>
+        <textarea id="createPromptOut" readonly></textarea>
+        <button class="primary" style="margin-top:8px" onclick="copyCreatePrompt()">Copy prompt</button>
+        <span class="copied" id="createCopied" style="display:none">Copied ✓</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- READY / START -->
+  <div id="readyView" style="display:none;flex-direction:column;flex:1;min-height:0">
+    <div class="panel">
+      <h2 id="readyTitle">Ready to start</h2>
+      <p class="sub">Review the details below. The timer starts only when you click Start — nothing is running yet.</p>
+      <div class="readygrid" id="readyGrid"></div>
+      <div class="readytopics" id="readyTopics"></div>
+    </div>
+    <div class="footer">
+      <div class="left"><button onclick="showView('loaderView')">‹ Back</button></div>
+      <div class="right"><button class="primary" onclick="beginExam()">▶ Start Exam</button></div>
+    </div>
   </div>
 
   <!-- EXAM VIEW -->
@@ -219,13 +283,15 @@ const COURSE_SECTIONS = [
   "Exam (Exam Technique, Question Technique, Practice Exam #1 & #2)"
 ];
 
-/* Builds the prompt the user pastes to Claude the next day to get a new mock.json */
-function buildNextDayPrompt(report){
+/* Builds the prompt the user pastes to Claude to get a new mock.json.
+   report: a results report object, or null for a fresh/standalone mock.
+   topicsText: lesson titles to target (fills the placeholder), or null. */
+function buildPrompt(report, topicsText){
   const courseList = COURSE_SECTIONS.map((s,i)=>`${i+1}. ${s}`).join("\n");
   const schema =
 `{
   "exam_id": "cantrill-saa-c03-daily",
-  "day": <int, yesterday's day + 1>,
+  "day": <int>,
   "date": "<YYYY-MM-DD>",
   "title": "SAA-C03 Daily Mock",
   "subtitle": "Day <n> — <today's topic names>",
@@ -240,37 +306,50 @@ function buildNextDayPrompt(report){
         { "text": "<option>", "correct": true|false, "why": "Correct — ... / Wrong — ..." }
         // 4 options for single-answer (exactly 1 correct); 5 options for multi-answer (exactly 2 correct).
         // EVERY option must have a 'why' explaining why it is right or wrong.
+        // Keep options similar in LENGTH; the correct one must NOT be the longest. Distractors must be plausible.
       ]
     }
   ]
 }`;
+  const reportBlock = report
+    ? "MY LATEST RESULT (use weak_topics + any 'wrong'/'blank' questions to decide review weighting):\n```json\n" + JSON.stringify(report,null,2) + "\n```"
+    : "MY LATEST RESULT:\n(No prior report — this is a standalone/fresh mock. Skip weak-topic review weighting and just scope to the topics below.)";
+  const topicsBlock = (topicsText && topicsText.trim()) ? topicsText.trim() : "<<< PASTE TODAY'S LESSON TITLES HERE >>>";
+  const reviewItem = report
+    ? "4. RANDOMLY mix in 2–3 REVIEW questions targeting my weak_topics from the report above (test the underlying concept, not the exact same wording)."
+    : "4. No prior report this time, so no weak-topic review questions are needed — just cover the topics above.";
   return (
-`SAA-C03 DAILY MOCK — GENERATE TOMORROW'S mock.json
+`SAA-C03 DAILY MOCK — GENERATE A mock.json
 
 CONTEXT (carry this forward; reuse this same chat each day):
 - I'm studying Adrian Cantrill's "AWS Certified Solutions Architect – Associate (SAA-C03)" course on learn.cantrill.io and sitting the SAA-C03 exam.
 - I take one mock exam per day, scoped ONLY to the lessons I watched that day, at real-exam difficulty (scenario-based, "pick the BEST answer").
 - I use a fixed HTML engine (SAA-c03.html) that renders a mock.json. You only ever produce a new mock.json; never change the template.
-- Difficulty should ramp toward real-exam level as sections build on each other. Mix in "two technically-correct, pick the best" traps once competing services have been covered.
+- Difficulty should ramp toward real-exam level as sections build on each other.
+
+QUESTION QUALITY — THIS MATTERS. MAKE THE OPTIONS GENUINELY HARD TO TELL APART:
+- LENGTH: keep every option roughly the same length and sentence structure. The correct option must NOT be the longest or most detailed — vary which option is longest, and sometimes make a WRONG option the longest. Length must never hint at the answer.
+- NO GIVEAWAYS: no absurd "absolutely wrong" options, and don't let absolute words ("always/never/all/none") signal the answer. Every distractor must look plausible to someone who only half-understands the topic.
+- BEST-ANSWER design: in most questions include (a) at least one distractor that is a TRUE statement but does NOT answer the specific question asked, and (b) where the topic allows, at least one option that is technically correct yet inferior to the best answer for this scenario. Force me to stay focused on exactly what is being asked.
+- TONE: write the correct option in the same register as the distractors — don't make it read more "official" or textbook-perfect.
+- Apply all of the above to single- AND multi-answer questions (for multi-answer, the two correct options must not both be the longest).
 
 FULL COURSE MAP (sections in order, so you know exactly where today's topics sit and what is FAIR GAME vs NOT-YET-COVERED — never test a service from a later section than I've reached):
 ${courseList}
 
-MY LATEST RESULT (yesterday's report — use weak_topics + any 'wrong'/'blank' questions to decide review weighting):
-\`\`\`json
-${JSON.stringify(report,null,2)}
-\`\`\`
+${reportBlock}
 
-TODAY I WATCHED (I will paste the lesson list/titles here):
-<<< PASTE TODAY'S LESSON TITLES HERE >>>
+TODAY I WATCHED (lessons this mock must be scoped to):
+${topicsBlock}
 
 WHAT TO GENERATE:
-1. A new mock.json (valid JSON only, in a downloadable file) scoped to TODAY's lessons above.
+1. A new mock.json (valid JSON only, in a downloadable file) scoped to the lessons above.
 2. 10–12 questions by default (scale up if I watched a lot). Time is auto-derived by the engine (120s × question count), so don't set time yourself.
 3. Include 1–2 multi-answer "(Select TWO.)" questions when the topics support it.
-4. RANDOMLY mix in 2–3 REVIEW questions targeting my weak_topics from the report above (test the underlying concept, not the exact same wording).
+${reviewItem}
 5. Single-answer = exactly 4 options, 1 correct. Multi-answer = exactly 5 options, 2 correct. EVERY option needs a "why" (start with "Correct —" or "Wrong —").
 6. Only test services from sections at or before my current point in the course map. Do NOT introduce services I haven't reached yet.
+7. Apply the QUESTION QUALITY rules above to every question — balanced option lengths and plausible, best-answer distractors.
 
 EXACT JSON SCHEMA TO MATCH (the engine depends on this shape):
 \`\`\`json
@@ -280,6 +359,7 @@ ${schema}
 Output: just the new mock.json file, ready to drop into the engine.`
   );
 }
+function buildNextDayPrompt(report){ return buildPrompt(report, null); }
 
 /* ---- file loading (works from file:// via picker / drag-drop) ---- */
 const drop=document.getElementById('drop');
@@ -292,7 +372,7 @@ drop.addEventListener('drop',e=>{ const f=e.dataTransfer.files[0]; if(f) readFil
 
 function readFile(file){
   const r=new FileReader();
-  r.onload=()=>{ try{ startExam(JSON.parse(r.result)); }catch(err){ showErr("Could not parse JSON: "+err.message); } };
+  r.onload=()=>{ try{ loadMock(JSON.parse(r.result)); }catch(err){ showErr("Could not parse JSON: "+err.message); } };
   r.onerror=()=>showErr("Could not read the file.");
   r.readAsText(file);
 }
@@ -301,12 +381,15 @@ function showErr(m){ document.getElementById('loadErr').textContent=m; }
 /* auto-load a JSON file named in the URL, e.g. SAA-c03.html?file=mock02.json
    (works when served over http; falls back to drag-and-drop otherwise) */
 (function(){
-  const params = new URLSearchParams(location.search);
-  const fileName = params.get('file') || 'mock.json';   // default if none specified
-  fetch(fileName)
-    .then(r => r.ok ? r.json() : Promise.reject())
-    .then(j => startExam(j))
-    .catch(() => { /* no file, or blocked by file:// -> use the drag-and-drop loader */ });
+  if(typeof fetch!=='function') return;            // e.g. opened in a context without fetch
+  try{
+    const params = new URLSearchParams(location.search);
+    const fileName = params.get('file') || 'mock.json';   // default if none specified
+    fetch(fileName)
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(j => loadMock(j))
+      .catch(() => { /* no file, or blocked by file:// -> use the drag-and-drop loader */ });
+  }catch(e){ /* ignore -> use the loader */ }
 })();
 
 /* ---- shuffle ---- */
@@ -324,28 +407,53 @@ function buildQuestions(){
   if(!DATA.config || DATA.config.randomize_questions!==false) shuffle(Q);
 }
 
-function startExam(json){
+/* ---- single source of truth for which screen is visible (fixes view stacking) ---- */
+function showView(id){
+  ['loaderView','readyView','examView','reviewView','resultView'].forEach(v=>{
+    document.getElementById(v).style.display = (v===id ? 'flex' : 'none');
+  });
+}
+function resetAttempt(){
+  answers = Q.map(()=>[]);
+  flags   = Q.map(()=>false);
+  timeOnQ = Q.map(()=>0);
+  cur=0; scored=false; timeLeft=totalTime;
+}
+
+/* Validate + build, then show the READY screen. Does NOT start the timer. */
+function loadMock(json){
   DATA=json;
-  if(!DATA.questions || !DATA.questions.length){ showErr("JSON has no questions."); return; }
+  if(!DATA || !DATA.questions || !DATA.questions.length){ homeTab('upload'); showErr("This file has no \"questions\" array."); return; }
   buildQuestions();
 
   const spq = (DATA.config && DATA.config.seconds_per_question) || 120;
   totalTime = spq * Q.length;          // TIME derived from question count
-  timeLeft = totalTime;
-
-  answers = Q.map(()=>[]);
-  flags   = Q.map(()=>false);
-  timeOnQ = Q.map(()=>0);
-  cur=0; scored=false; startedAt=new Date().toISOString();
+  resetAttempt();
 
   document.getElementById('examName').textContent =
      (DATA.title||"SAA-C03 Mock") + (DATA.subtitle? " · "+DATA.subtitle : "");
-  document.getElementById('loaderView').style.display='none';
-  document.getElementById('examView').style.display='flex';
+  document.getElementById('readyTitle').textContent = DATA.subtitle || DATA.title || "Ready to start";
+  document.getElementById('readyGrid').innerHTML = `
+    <div class="cell"><div class="k">Questions</div><div class="v">${Q.length}</div></div>
+    <div class="cell"><div class="k">Time limit</div><div class="v">${fmt(totalTime)}</div></div>
+    <div class="cell"><div class="k">Pass mark</div><div class="v">${(DATA.config&&DATA.config.pass_percent)||70}%</div></div>
+    <div class="cell"><div class="k">Mock</div><div class="v">${DATA.day?("Day "+DATA.day):"—"}</div></div>`;
+  const tops = (DATA.topics_covered&&DATA.topics_covered.length) ? DATA.topics_covered : [];
+  document.getElementById('readyTopics').innerHTML = tops.length
+    ? `<b>Topics covered:</b><ul>${tops.map(t=>`<li>${String(t).replace(/</g,'&lt;')}</li>`).join("")}</ul>`
+    : "";
+  showErr("");
+  showView('readyView');
+}
 
+/* Actually begin the exam — starts the timer and shows the question view. */
+function beginExam(){
+  if(!Q.length) return;
+  startedAt=new Date().toISOString();
+  scored=false;
+  showView('examView');
   clearInterval(timerId); lastTs=Date.now(); timerId=setInterval(tick,1000);
-  document.getElementById('timer').classList.remove('low');
-  document.getElementById('timer').textContent=fmt(timeLeft);
+  const t=document.getElementById('timer'); t.classList.remove('low'); t.textContent=fmt(timeLeft);
   renderQ();
 }
 
@@ -413,8 +521,7 @@ function go(d){accrue();const n=cur+d;if(n<0||n>=Q.length)return;cur=n;renderQ()
 /* ---- review screen ---- */
 function showReview(){
   accrue();
-  document.getElementById('examView').style.display='none';
-  document.getElementById('reviewView').style.display='flex';
+  showView('reviewView');
   const grid=document.getElementById('reviewGrid');grid.innerHTML='';
   Q.forEach((q,i)=>{
     const answered=answers[i].length>0 && (!q.multi || answers[i].length===q.correctCount);
@@ -427,9 +534,7 @@ function showReview(){
   });
 }
 function backToExam(){
-  document.getElementById('reviewView').style.display='none';
-  document.getElementById('resultView').style.display='none';
-  document.getElementById('examView').style.display='flex';
+  showView('examView');
   lastTs=Date.now();renderQ();
 }
 
@@ -483,6 +588,7 @@ function submitExam(){
   const passMark=(DATA.config&&DATA.config.pass_percent)||70;
   const pass=pct>=passMark;
   const report=buildReport(correct);
+  window._report=report;
   const json=JSON.stringify(report,null,2);
   const nextPrompt=buildNextDayPrompt(report);
 
@@ -490,9 +596,7 @@ function submitExam(){
   Object.keys(report.by_topic).forEach(t=>{const b=report.by_topic[t];const p=Math.round(b.correct/b.total*100);
     rows+=`<tr><td>${t}</td><td>${b.correct}/${b.total}</td><td style="color:${p>=passMark?'var(--ok)':'var(--bad)'};font-weight:bold">${p}%</td></tr>`;});
 
-  document.getElementById('examView').style.display='none';
-  document.getElementById('reviewView').style.display='none';
-  document.getElementById('resultView').style.display='flex';
+  showView('resultView');
   document.getElementById('resultPanel').innerHTML=`
     <h2>Results — ${(DATA.subtitle||DATA.title||"SAA-C03 Mock")}</h2>
     <p class="sub">Practice score. The real SAA-C03 is a scaled 100–1000 with a 720 pass mark.</p>
@@ -513,10 +617,13 @@ function submitExam(){
       <span class="copied" id="copiedMsg" style="display:none">Copied ✓</span>
     </div>
     <div class="jsonwrap">
-      <h3>🤖 Next-day prompt — paste this to Claude tomorrow to get the next mock.json</h3>
-      <p>This already contains the full course map, where you are in it, your latest result, and the exact JSON schema. <b>Just paste it, then paste the titles of the lessons you watched that day where it says &lt;&lt;&lt; PASTE TODAY'S LESSON TITLES HERE &gt;&gt;&gt;.</b></p>
+      <h3>🤖 Next mock — paste your next lessons, then copy the prompt</h3>
+      <p>This already contains the full course map, where you are in it, your latest result, and the exact JSON schema. Paste the lessons you watched for the next mock below and click <b>Insert topics</b> — it fills the placeholder for you. (Or edit the prompt directly.)</p>
+      <label class="fieldlabel" for="nextTopicsInput">Next lessons / topics watched</label>
+      <textarea id="nextTopicsInput" class="topicsbox" placeholder="Paste the next session's lesson titles here, e.g.&#10;- EBS volume types (gp3, io2)&#10;- Snapshots &amp; FSR&#10;- Instance Store"></textarea>
+      <button style="margin:8px 0" onclick="fillNextTopics()">Insert topics into prompt ↓</button>
       <textarea id="promptOut" readonly>${nextPrompt.replace(/</g,'&lt;')}</textarea>
-      <button class="primary" style="margin-top:8px" onclick="copyPrompt()">Copy Next-Day Prompt</button>
+      <button class="primary" style="margin-top:8px" onclick="copyPrompt()">Copy Next Prompt</button>
       <span class="copied" id="copiedMsg2" style="display:none">Copied ✓</span>
     </div>`;
 }
@@ -533,7 +640,39 @@ function copyPrompt(){
   catch(e){ document.execCommand('copy');done(); }
 }
 function reviewAnswers(){cur=0;backToExam();}
-function restart(){ if(DATA) startExam(DATA); }   // re-randomizes order + options
+function restart(){ if(!DATA) return; buildQuestions(); resetAttempt(); beginExam(); }   // re-randomized retake
+
+/* ---- home tabs (Upload vs Create) ---- */
+function homeTab(which){
+  const up = which==='upload';
+  document.getElementById('tabUpload').classList.toggle('active',up);
+  document.getElementById('tabCreate').classList.toggle('active',!up);
+  document.getElementById('cardUpload').style.display = up?'flex':'none';
+  document.getElementById('cardCreate').style.display = up?'none':'flex';
+  showErr("");
+}
+
+/* ---- create a fresh prompt from typed topics ---- */
+function genCreatePrompt(){
+  const topics=document.getElementById('topicsInput').value.trim();
+  const err=document.getElementById('createErr');
+  if(!topics){ err.textContent="Enter at least one topic to target."; return; }
+  err.textContent="";
+  document.getElementById('createPromptOut').value = buildPrompt(null, topics);
+  document.getElementById('createPromptArea').style.display='block';
+}
+function copyCreatePrompt(){
+  const ta=document.getElementById('createPromptOut');ta.select();ta.setSelectionRange(0,99999);
+  const done=()=>{const m=document.getElementById('createCopied');m.style.display='inline';setTimeout(()=>m.style.display='none',2000);};
+  try{ navigator.clipboard.writeText(ta.value).then(done,()=>{document.execCommand('copy');done();}); }
+  catch(e){ document.execCommand('copy');done(); }
+}
+
+/* ---- on the results screen: fold the next lessons into the next-mock prompt ---- */
+function fillNextTopics(){
+  const topics=document.getElementById('nextTopicsInput').value.trim();
+  document.getElementById('promptOut').value = buildPrompt(window._report||null, topics||null);
+}
 </script>
 </body>
 </html>
