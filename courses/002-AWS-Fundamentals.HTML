@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03 · 002 · AWS Fundamentals</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+:root{
+  --bg:#101418;--bg2:#161b21;--surface:#1b2128;--surface2:#212934;
+  --line:#2c3540;--line2:#3a4654;--text:#e7edf3;--muted:#9fb0c0;
+  --primary:#2dd4bf;--primary-d:#0f3b39;--exam:#fbbf24;--exam-d:#3a2f0c;
+  --demo:#60a5fa;--demo-d:#0e2647;--term:#c084fc;--term-d:#2a1640;
+  --warn:#fb7185;--warn-d:#3a151c;--ok:#34d399;
+  --radius:16px;--shadow:0 6px 22px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.25;margin:0}
+a{color:var(--primary);text-decoration:none}
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(16,20,24,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .badge{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--bg);background:var(--primary);padding:4px 9px;border-radius:8px}
+.topbar .ttl{font-family:'Sora';font-weight:600;font-size:15px}
+.topbar .ttl small{display:block;color:var(--muted);font-weight:500;font-size:11.5px;font-family:'Manrope'}
+.menu-btn{margin-left:auto;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+.menu-btn:active{transform:scale(.97)}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
+.drawer-bg.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(86vw,340px);background:var(--bg2);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .28s ease;z-index:80;overflow-y:auto;padding:18px 16px 40px}
+.drawer.open{transform:translateX(0)}
+.drawer h3{font-size:11.5px;color:var(--muted);margin:14px 4px 8px;text-transform:uppercase;letter-spacing:1px}
+.drawer a{display:block;color:var(--text);padding:11px 12px;border-radius:10px;font-weight:500;font-size:14.5px;border:1px solid transparent}
+.drawer a:active{background:var(--surface)}
+.drawer a .n{color:var(--primary);font-family:'Sora';font-weight:700;margin-right:8px}
+.drawer .close{width:100%;margin-top:18px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 90px}
+.hero{background:radial-gradient(120% 90% at 100% 0%, rgba(45,212,191,.16), transparent 55%),radial-gradient(120% 90% at 0% 100%, rgba(96,165,250,.12), transparent 55%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+.hero .eyebrow{color:var(--primary);font-weight:700;font-size:12.5px;letter-spacing:1.5px;font-family:'Sora'}
+.hero h1{font-size:25px;margin:6px 0 8px}
+.hero p{color:var(--muted);margin:0;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;margin-top:18px;box-shadow:var(--shadow)}
+.lesson-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.lesson-head .num{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:'Sora';font-weight:700;background:var(--primary);color:var(--bg);font-size:15px}
+.lesson-head h2{font-size:19px}
+.lesson-head .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+h3.block{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+h3.block::before{content:"";width:14px;height:3px;border-radius:3px;background:var(--primary)}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:360px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface2);color:var(--text);font-family:'Sora';font-weight:600;font-size:12.5px;letter-spacing:.3px}
+tr:last-child td{border-bottom:none}
+td b{color:var(--primary)}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{position:relative;padding:6px 0 6px 22px;font-size:15px;border-bottom:1px dashed var(--line)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"▸";position:absolute;left:2px;top:6px;color:var(--primary)}
+.two-col{display:grid;gap:12px}
+@media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+.box{border-radius:12px;padding:13px 14px;margin:12px 0;border:1px solid;font-size:14.5px}
+.box .tag{font-family:'Sora';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
+.box.exam{background:var(--exam-d);border-color:#6b551a}.box.exam .tag{color:var(--exam)}
+.box.term{background:var(--term-d);border-color:#4a2d6b}.box.term .tag{color:var(--term)}
+.box.warn{background:var(--warn-d);border-color:#6b2630}.box.warn .tag{color:var(--warn)}
+.box.demo{background:var(--demo-d);border-color:#1d4a82}.box.demo .tag{color:var(--demo)}
+.box ul{margin:4px 0 0;padding-left:18px}.box li{margin:3px 0}
+.mer{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;overflow-x:auto}
+.mermaid{display:flex;justify-content:center;min-width:fit-content}
+.code{position:relative;background:#0c1117;border:1px solid var(--line2);border-radius:10px;margin:10px 0}
+.code pre{margin:0;padding:13px 14px;overflow-x:auto;font-size:13px;line-height:1.55}
+.code code{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;color:#cfe9e6;white-space:pre}
+.code .cp{position:absolute;top:7px;right:7px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:7px;font-size:11px;padding:4px 9px;cursor:pointer;font-weight:600}
+.code .cp:active{color:var(--primary)}
+.expect{font-size:13px;color:var(--ok);background:rgba(52,211,153,.08);border-left:3px solid var(--ok);padding:7px 11px;margin:0 0 12px;border-radius:0 8px 8px 0}
+.expect b{color:var(--ok)}
+.step{counter-increment:st;margin:14px 0}
+.step .sh{display:flex;align-items:center;gap:9px;font-family:'Sora';font-weight:600;font-size:14.5px;margin-bottom:4px}
+.step .sh::before{content:counter(st);background:var(--demo);color:var(--bg);width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12.5px;flex:0 0 auto}
+.demo-wrap{counter-reset:st}
+.fc-grid{display:grid;gap:10px}
+.fc{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:13px 14px;cursor:pointer;transition:border-color .2s;user-select:none}
+.fc:active{border-color:var(--primary)}
+.fc .q{font-weight:600;font-size:14.5px;display:flex;gap:8px;align-items:flex-start}
+.fc .q::before{content:"Q";font-family:'Sora';color:var(--primary);font-weight:700;flex:0 0 auto}
+.fc .a{display:none;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);color:var(--muted);font-size:14px}
+.fc .a::before{content:"A ";color:var(--ok);font-weight:700;font-family:'Sora'}
+.fc.show .a{display:block}
+.fc .hint{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600}
+.quiz{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:14px;margin:10px 0}
+.quiz .qq{font-weight:600;font-size:15px;margin-bottom:8px}
+.quiz .opt{display:block;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin:6px 0;font-size:14px;cursor:pointer}
+.quiz .opt:active{border-color:var(--primary)}
+.quiz .reveal{margin-top:6px;background:var(--surface);color:var(--primary);border:1px solid var(--line2);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px;width:100%}
+.quiz .ans{display:none;margin-top:10px;border-left:3px solid var(--ok);background:rgba(52,211,153,.08);padding:9px 12px;border-radius:0 8px 8px 0;font-size:14px}
+.quiz .ans b{color:var(--ok)}
+.quiz.show .ans{display:block}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;line-height:1.7}
+.pill{display:inline-block;background:var(--surface2);border:1px solid var(--line2);color:var(--muted);font-size:11px;padding:2px 8px;border-radius:20px;margin:2px}
+.toTop{position:fixed;right:14px;bottom:16px;z-index:50;background:var(--primary);color:var(--bg);border:none;width:46px;height:46px;border-radius:50%;font-size:20px;box-shadow:var(--shadow);cursor:pointer;display:none}
+.toTop.show{display:block}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="badge">SAA-C03</span>
+  <div class="ttl">Section 002<small>AWS Fundamentals</small></div>
+  <button class="menu-btn" onclick="openDrawer()">☰ Lessons</button>
+</header>
+
+<div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer">
+  <h3>Network position</h3>
+  <a href="#l1" onclick="closeDrawer()"><span class="n">1</span>Public vs Private Services</a>
+  <h3>Where things live</h3>
+  <a href="#l2" onclick="closeDrawer()"><span class="n">2</span>Global Infrastructure</a>
+  <a href="#l3" onclick="closeDrawer()"><span class="n">3</span>Default VPC</a>
+  <h3>Core building blocks</h3>
+  <a href="#l4" onclick="closeDrawer()"><span class="n">4</span>EC2 Basics</a>
+  <a href="#l5" onclick="closeDrawer()"><span class="n">5</span>S3 Basics</a>
+  <a href="#l6" onclick="closeDrawer()"><span class="n">6</span>CloudFormation Basics</a>
+  <a href="#l7" onclick="closeDrawer()"><span class="n">7</span>CloudWatch Basics</a>
+  <h3>Key concepts</h3>
+  <a href="#l8" onclick="closeDrawer()"><span class="n">8</span>Shared Responsibility</a>
+  <a href="#l9" onclick="closeDrawer()"><span class="n">9</span>HA vs FT vs DR</a>
+  <h3>DNS</h3>
+  <a href="#l10" onclick="closeDrawer()"><span class="n">10</span>Route 53 Fundamentals</a>
+  <a href="#l11" onclick="closeDrawer()"><span class="n">11</span>DNS Record Types</a>
+  <button class="close" onclick="closeDrawer()">Close</button>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">SECTION GOAL</div>
+    <h1>Meet the core AWS building blocks and the words used to talk about them.</h1>
+    <p>This is a wide, shallow tour. You'll touch EC2, S3, VPC, CloudFormation, CloudWatch, Route 53 and key design words. Each one gets a deep section later — here you just need the shape of it.</p>
+  </section>
+
+  <div class="card">
+    <h3 class="block">Section Map · how the lessons connect</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  P[1. Public vs Private services] --> G[2. Global Infrastructure]
+  G --> V[3. Default VPC]
+  V --> EC2[4. EC2 - compute]
+  G --> S3[5. S3 - storage]
+  EC2 --> CFN[6. CloudFormation - automate]
+  EC2 --> CW[7. CloudWatch - monitor]
+  SRM[8. Shared Responsibility] --- EC2
+  HA[9. HA / FT / DR] --- G
+  R53[10. Route 53 - DNS] --> REC[11. DNS Record Types]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class P,G,V,SRM,HA a;
+  class EC2,S3,CFN,CW,R53,REC b;
+    </pre></div>
+  </div>
+
+  <div class="card">
+    <h3 class="block">Quick Understanding · whole section</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Lesson</th><th>What + why it matters for the exam</th></tr>
+      <tr><td>1 Public/Private</td><td>"Public" = network position, not "open to all". Sets up VPC thinking.</td></tr>
+      <tr><td>2 Global Infra</td><td>Regions, AZs, Edge locations + 3 resilience levels. High-value foundation.</td></tr>
+      <tr><td>3 Default VPC</td><td>Free starter network: 172.31.0.0/16, 1 subnet per AZ. Used in early demos.</td></tr>
+      <tr><td>4 EC2</td><td>Virtual servers (instances). States + AMI + connect. Huge later topic.</td></tr>
+      <tr><td>5 S3</td><td>Object storage. Globally-unique bucket names, region-based, private by default.</td></tr>
+      <tr><td>6 CloudFormation</td><td>Infrastructure as Code: template → stack → resources.</td></tr>
+      <tr><td>7 CloudWatch</td><td>Metrics, logs, alarms. Memory needs the agent.</td></tr>
+      <tr><td>8 Shared Resp.</td><td>AWS secures OF the cloud; you secure IN the cloud. Common Q.</td></tr>
+      <tr><td>9 HA/FT/DR</td><td>Don't confuse them. HA = minimise downtime, FT = no downtime, DR = recover.</td></tr>
+      <tr><td>10 Route 53</td><td>Managed DNS + domain registration. Global, globally resilient.</td></tr>
+      <tr><td>11 DNS Records</td><td>A, AAAA, CNAME, MX, TXT, NS + TTL. CNAME can't sit at the apex.</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ===== LESSON 1 ===== -->
+  <article class="card" id="l1">
+    <div class="lesson-head"><div class="num">1</div><div><h2>Public vs Private Services</h2><div class="sub">"Public" means where it sits on the network — not who can use it.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Public service</td><td>Sits in the AWS Public Zone; reachable from the internet (but still needs permission).</td><td>Common trap: "public" ≠ "open to everyone".</td></tr>
+      <tr><td>Private service</td><td>Runs inside a VPC (private network).</td><td>Needs network access into the VPC.</td></tr>
+      <tr><td>3 network zones</td><td>Public Internet · AWS Public Zone · AWS Private Zone (VPC).</td><td>Mental model for all networking.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>VPC</td><td>Virtual Private Cloud — your own private network inside AWS.</td></tr>
+      <tr><td>AWS Public Zone</td><td>AWS-run network that sits between the internet and AWS; public services attach here (e.g. S3).</td></tr>
+      <tr><td>Permissions</td><td>Rules that decide who is allowed to use a service, separate from the network.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  NET[Public Internet] --> PUB[AWS Public Zone]
+  PUB --> S3[S3 - a public service]
+  PUB -. gateway .-> VPC[AWS Private Zone - VPC]
+  VPC --> EC2[EC2 - a private service]
+  classDef p fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef v fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class PUB,S3 p; class VPC,EC2 v;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Public service</b> (e.g. S3): attaches to the AWS Public Zone, reachable over the internet — but access is still <b>controlled by permissions</b>.</li>
+      <li><b>Private service</b> (e.g. EC2): lives <b>inside a VPC</b> and is private by default.</li>
+      <li>"Public" describes the <b>network position</b>, not whether the public can read your data.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (read-only)</span><b>Situation:</b> prove a public service (S3) is reachable straight over the internet from your laptop. <b>Check first:</b> CLI configured (<code>aws sts get-caller-identity</code> works).</div>
+      <div class="step"><div class="sh">Talk to S3 (public service) over the internet</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3 ls</code></pre></div>
+      <div class="expect"><b>Expect:</b> a list of your buckets (or empty). No VPC needed — that's a public service.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Reaching S3 still required valid credentials. "Public" got you to the door; <b>permissions</b> opened it.</div>
+      <div class="box term"><span class="tag">Clean up</span>Nothing created — read-only. No cost.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Sets up the VPC idea in Lesson 3.</li><li>Explains why EC2 (private) needs networking but S3 (public) doesn't.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>VPC endpoints, NAT gateways, and "private access to public services" all build on these zones.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul><li>"Public service" = network location only. S3 is a public service but is <b>private by default</b>.</li><li>Private services need a path into the VPC (gateway, VPN, endpoint).</li></ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Does "public service" mean anyone can access it?<span class="hint">tap</span></div><div class="a">No. It means it sits in the public zone. Permissions still control access.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Where does a private service like EC2 live?<span class="hint">tap</span></div><div class="a">Inside a VPC (the AWS private zone).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Name the 3 network zones.<span class="hint">tap</span></div><div class="a">Public internet, AWS public zone, AWS private zone (VPC).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">S3 is described as a "public service". What does that mean?</div>
+      <span class="opt">A) Anyone on the internet can read your data</span>
+      <span class="opt">B) It sits in the public zone; permissions still control access</span>
+      <span class="opt">C) It is free</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Network position is public; access is still permission-controlled.</div></div>
+  </article>
+
+  <!-- ===== LESSON 2 ===== -->
+  <article class="card" id="l2">
+    <div class="lesson-head"><div class="num">2</div><div><h2>AWS Global Infrastructure</h2><div class="sub">Regions, Availability Zones, Edge Locations + resilience levels.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Region</td><td>A separate geographic area (e.g. us-east-1) with multiple AZs.</td><td>Isolation, data sovereignty, latency.</td></tr>
+      <tr><td>Availability Zone (AZ)</td><td>One or more isolated data centres inside a region.</td><td>Spread across AZs = high availability.</td></tr>
+      <tr><td>Edge Location</td><td>Small site near users for caching/delivery (CDN).</td><td>CloudFront / low-latency delivery.</td></tr>
+      <tr><td>Resilience levels</td><td>Globally / Region / AZ resilient.</td><td>Know which services are which.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Region code</td><td>Short name like <code>us-east-1</code> (location) — the "1" is just an ID.</td></tr>
+      <tr><td>AZ name</td><td>Region code + letter, e.g. <code>us-east-1a</code>.</td></tr>
+      <tr><td>Resilient</td><td>Able to keep working when part of it fails.</td></tr>
+      <tr><td>Latency</td><td>Delay/time for data to travel. Lower = faster.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  GLOBE[AWS Global Network] --> R1[Region: us-east-1]
+  GLOBE --> R2[Region: eu-west-1]
+  R1 --> AZ1[AZ us-east-1a]
+  R1 --> AZ2[AZ us-east-1b]
+  R1 --> AZ3[AZ us-east-1c]
+  GLOBE --> EDGE[Many Edge Locations<br/>near users]
+  classDef g fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class GLOBE g;
+    </pre></div>
+    <div class="tbl-scroll"><table>
+      <tr><th>Level</th><th>Survives</th><th>Example services</th></tr>
+      <tr><td><b>Globally resilient</b></td><td>Loss of a whole region</td><td>IAM, Route 53</td></tr>
+      <tr><td><b>Region resilient</b></td><td>Loss of an AZ (data copied across AZs)</td><td>S3, DynamoDB</td></tr>
+      <tr><td><b>AZ resilient</b></td><td>Hardware failures within that one AZ only</td><td>EBS volume, a single EC2</td></tr>
+    </table></div>
+    <ul class="clean">
+      <li>A region has <b>multiple AZs</b> (usually 3+), physically separated but close.</li>
+      <li>Put copies in <b>different AZs</b> for high availability inside a region.</li>
+      <li>Use <b>multiple regions</b> for global reach and disaster recovery.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (read-only)</span><b>Situation:</b> list AWS regions and the AZs in one region. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">List all regions</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 describe-regions --query "Regions[].RegionName" --output table</code></pre></div>
+      <div class="expect"><b>Expect:</b> a table of region codes (us-east-1, eu-west-1, …).</div>
+      <div class="step"><div class="sh">List AZs in one region</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 describe-availability-zones \
+  --region us-east-1 \
+  --query "AvailabilityZones[].ZoneName" --output table</code></pre></div>
+      <div class="expect"><b>Expect:</b> us-east-1a, us-east-1b, … — the AZs of that region.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>AZ letters (a, b, c) are <b>mapped differently per account</b>, so "us-east-1a" may be a different physical AZ for someone else.</div>
+      <div class="box term"><span class="tag">Clean up</span>Read-only. Nothing to delete, no cost.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Default VPC (Lesson 3) puts one subnet in each AZ.</li><li>EC2 (Lesson 4) lives in one AZ.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Multi-AZ RDS, Auto Scaling, Load Balancers, and DR strategies all rely on AZs/regions.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Need to survive a <b>whole region</b> failing → think <b>multi-region</b> / globally resilient services.</li>
+      <li>Need cheap HA <b>inside one region</b> → spread across <b>AZs</b>.</li>
+      <li><b>IAM &amp; Route 53 are global</b>; CloudFront uses <b>edge locations</b>; most other services are regional.</li>
+    </ul></div>
+    <div class="box warn"><span class="tag">Easy to confuse</span><b>Region</b> = big geographic area. <b>AZ</b> = data centre(s) inside it. <b>Edge location</b> = tiny cache site for fast delivery, not for running servers.</div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is an Availability Zone?<span class="hint">tap</span></div><div class="a">One or more isolated data centres inside a region.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which two services are globally resilient?<span class="hint">tap</span></div><div class="a">IAM and Route 53.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What are edge locations for?<span class="hint">tap</span></div><div class="a">Caching/delivering content close to users (low latency, e.g. CloudFront).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How to get HA cheaply inside one region?<span class="hint">tap</span></div><div class="a">Spread resources across multiple AZs.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An app must keep running even if an entire AWS region fails. Best approach?</div>
+      <span class="opt">A) Deploy across multiple AZs in one region</span>
+      <span class="opt">B) Deploy across multiple regions</span>
+      <span class="opt">C) Use a bigger instance</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Multi-AZ survives an AZ loss, not a region loss. Region failure needs multi-region.</div></div>
+    <div class="quiz"><div class="qq">Which is true about edge locations?</div>
+      <span class="opt">A) They run your databases</span>
+      <span class="opt">B) They cache/deliver content near users</span>
+      <span class="opt">C) They replace AZs</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Edge locations are for fast content delivery, not running workloads.</div></div>
+  </article>
+
+  <!-- ===== LESSON 3 ===== -->
+  <article class="card" id="l3">
+    <div class="lesson-head"><div class="num">3</div><div><h2>Default VPC</h2><div class="sub">The ready-made network in each region.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Default VPC</td><td>A pre-built network, one per region, made automatically.</td><td>Used in beginner demos.</td></tr>
+      <tr><td>Fixed CIDR</td><td>Always uses IP range <code>172.31.0.0/16</code>.</td><td>Remember the range.</td></tr>
+      <tr><td>1 subnet per AZ</td><td>A default subnet in each AZ, sized /20.</td><td>Links to AZ concept.</td></tr>
+      <tr><td>Internet-ready</td><td>Has internet gateway + auto public IPs.</td><td>Why default instances reach the net.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>CIDR</td><td>A way to write a block of IP addresses, e.g. <code>172.31.0.0/16</code>.</td></tr>
+      <tr><td>Subnet</td><td>A smaller slice of the VPC's IP range, placed in one AZ.</td></tr>
+      <tr><td>Internet Gateway (IGW)</td><td>The door that lets the VPC talk to the internet.</td></tr>
+      <tr><td>Route table</td><td>Rules that say where network traffic should go.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  DV[Default VPC 172.31.0.0/16] --> IGW[Internet Gateway]
+  DV --> SA[Subnet /20 in AZ-a]
+  DV --> SB[Subnet /20 in AZ-b]
+  DV --> SC[Subnet /20 in AZ-c]
+  SA --> PUBIP[Auto-assign public IPs]
+  classDef k fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class DV k;
+    </pre></div>
+    <ul class="clean">
+      <li>Exactly <b>one default VPC per region</b>; you can <b>delete and recreate</b> it from the console.</li>
+      <li>Always the same range <b>172.31.0.0/16</b> and <b>one /20 subnet per AZ</b>.</li>
+      <li>Comes with IGW, route table, default security group and NACL, and <b>auto public IPs</b>.</li>
+      <li>Fine for quick tests; <b>custom VPCs</b> are best for real/production work.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (read-only)</span><b>Situation:</b> inspect your region's default VPC and its subnets. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Find the default VPC + its CIDR</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 describe-vpcs \
+  --filters "Name=isDefault,Values=true" \
+  --query "Vpcs[].{VpcId:VpcId,Cidr:CidrBlock}" --output table</code></pre></div>
+      <div class="expect"><b>Expect:</b> one VPC with CIDR <code>172.31.0.0/16</code>.</div>
+      <div class="step"><div class="sh">List its default subnets (one per AZ)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 describe-subnets \
+  --filters "Name=defaultForAz,Values=true" \
+  --query "Subnets[].{AZ:AvailabilityZone,Cidr:CidrBlock}" --output table</code></pre></div>
+      <div class="expect"><b>Expect:</b> one /20 subnet per AZ (e.g. 172.31.0.0/20, 172.31.16.0/20 …).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>If a region has <b>no default VPC</b> (someone deleted it), you can recreate it: <code>aws ec2 create-default-vpc</code>.</div>
+      <div class="box term"><span class="tag">Clean up</span>Read-only — nothing to delete. <b>Don't</b> delete your default VPC if early demos rely on it.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>EC2 (4), CloudFormation (6) and CloudWatch (7) demos launch into this VPC.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>The big VPC section (custom CIDR, public/private subnets, NAT) replaces this default approach.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Default VPC CIDR = <b>172.31.0.0/16</b> (memorise).</li>
+      <li><b>One per region</b>, deletable and recreatable.</li>
+      <li>Default subnets auto-assign <b>public IPs</b> — that's why default instances reach the internet.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What CIDR does a default VPC always use?<span class="hint">tap</span></div><div class="a">172.31.0.0/16.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How many default VPCs per region?<span class="hint">tap</span></div><div class="a">One. It can be deleted and recreated.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How many default subnets and where?<span class="hint">tap</span></div><div class="a">One /20 subnet per Availability Zone.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Your instance in the default VPC got a public IP automatically. Why?</div>
+      <span class="opt">A) Default subnets auto-assign public IPs</span>
+      <span class="opt">B) Public IPs are random</span>
+      <span class="opt">C) IAM gave it one</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Default subnets have auto-assign public IPv4 turned on.</div></div>
+  </article>
+
+  <!-- ===== LESSON 4 ===== -->
+  <article class="card" id="l4">
+    <div class="lesson-head"><div class="num">4</div><div><h2>EC2 Basics</h2><div class="sub">Virtual servers you rent — called instances.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>EC2 = IaaS</td><td>You rent virtual machines (instances) and manage the OS.</td><td>Core compute service.</td></tr>
+      <tr><td>AMI</td><td>A template (OS + config) used to launch instances.</td><td>Where instances come from.</td></tr>
+      <tr><td>Instance states</td><td>pending → running → stopping/stopped → terminated.</td><td>Billing differs per state.</td></tr>
+      <tr><td>Connect</td><td>Linux = SSH (22) + key pair; Windows = RDP (3389).</td><td>Ports + key pairs tested.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Instance</td><td>One running virtual machine.</td></tr>
+      <tr><td>AMI</td><td>Amazon Machine Image — the "recipe" to build an instance.</td></tr>
+      <tr><td>Instance type</td><td>The size/power, e.g. <code>t2.micro</code> (free-tier friendly).</td></tr>
+      <tr><td>Key pair</td><td>Public key on the instance + private key you keep, used for SSH login.</td></tr>
+      <tr><td>Security group</td><td>A virtual firewall around the instance.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+stateDiagram-v2
+  [*] --> pending
+  pending --> running
+  running --> stopping
+  stopping --> stopped
+  stopped --> pending: start
+  running --> shutting_down
+  stopped --> shutting_down: terminate
+  shutting_down --> terminated
+  terminated --> [*]
+    </pre></div>
+    <ul class="clean">
+      <li>An instance runs in <b>one subnet</b>, in <b>one AZ</b> — it is <b>AZ-resilient only</b>.</li>
+      <li><b>running</b> = you pay for compute. <b>stopped</b> = no compute charge, but you still pay for its <b>EBS storage</b>. <b>terminated</b> = gone.</li>
+      <li>Launch from an <b>AMI</b>; choose an <b>instance type</b>, key pair, and security group.</li>
+      <li>Connect to Linux with <b>SSH (port 22)</b> using your private key.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> launch a tiny Animals4life test server, then remove it. <b>Check first:</b> CLI configured; default VPC exists; use a free-tier type.</div>
+      <div class="step"><div class="sh">Create an SSH key pair (saved locally)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 create-key-pair --key-name a4l-key \
+  --query "KeyMaterial" --output text > a4l-key.pem
+chmod 400 a4l-key.pem</code></pre></div>
+      <div class="expect"><b>Expect:</b> a file <code>a4l-key.pem</code> created. Keep it safe — it's your only copy of the private key.</div>
+      <div class="step"><div class="sh">Get the latest Amazon Linux 2023 AMI ID</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>AMI=$(aws ssm get-parameters \
+  --names /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64 \
+  --query "Parameters[0].Value" --output text)
+echo $AMI</code></pre></div>
+      <div class="expect"><b>Expect:</b> an AMI ID like <code>ami-0abc123…</code> stored in <code>$AMI</code>.</div>
+      <div class="step"><div class="sh">Launch one t2.micro instance</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 run-instances \
+  --image-id $AMI \
+  --instance-type t2.micro \
+  --key-name a4l-key \
+  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=a4l-test}]'</code></pre></div>
+      <div class="expect"><b>Expect:</b> JSON with an <code>InstanceId</code> (e.g. <code>i-0123…</code>) and state <code>pending</code>.</div>
+      <div class="step"><div class="sh">Check it is running + get its public IP</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 describe-instances \
+  --filters "Name=tag:Name,Values=a4l-test" \
+  --query "Reservations[].Instances[].{State:State.Name,IP:PublicIpAddress,Id:InstanceId}" \
+  --output table</code></pre></div>
+      <div class="expect"><b>Expect:</b> State <code>running</code> and a public IP. (Connect with <code>ssh -i a4l-key.pem ec2-user@PUBLIC_IP</code> if your default security group allows port 22.)</div>
+
+      <div class="box demo"><span class="tag">Fix / Key info</span><ul>
+        <li>Use <code>t2.micro</code> (or <code>t3.micro</code>) to stay in free tier. Bigger types cost money.</li>
+        <li>If SSH fails, your security group probably blocks <b>port 22</b> from your IP.</li>
+        <li><b>Stopping</b> still bills the EBS volume; <b>terminate</b> to stop all charges.</li>
+      </ul></div>
+
+      <div class="box term"><span class="tag">Clean up</span>Terminate the instance and delete the key:</div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>ID=$(aws ec2 describe-instances \
+  --filters "Name=tag:Name,Values=a4l-test" "Name=instance-state-name,Values=running,stopped,pending" \
+  --query "Reservations[].Instances[].InstanceId" --output text)
+aws ec2 terminate-instances --instance-ids $ID
+aws ec2 wait instance-terminated --instance-ids $ID
+aws ec2 delete-key-pair --key-name a4l-key
+rm -f a4l-key.pem</code></pre></div>
+      <div class="expect"><b>Expect:</b> instance moves to <code>terminated</code>; key pair removed. No more charges.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Launches into the default VPC (Lesson 3).</li><li>CloudWatch (7) monitors this instance; CloudFormation (6) can build it for you.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Instance types, EBS, AMIs, auto-scaling, instance roles — a whole EC2 section builds on this.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>stopped</b> instances still cost <b>EBS storage</b>; only <b>terminate</b> stops all cost.</li>
+      <li>EC2 lives in <b>one AZ</b> → not highly available on its own.</li>
+      <li>SSH = <b>port 22</b> (Linux); RDP = <b>port 3389</b> (Windows).</li>
+      <li>You keep the <b>private key</b>; the public key sits on the instance.</li>
+    </ul></div>
+    <div class="box warn"><span class="tag">Trap</span>"Stop" ≠ "Terminate". Stop = pause (data on EBS kept, EBS billed). Terminate = delete (root volume usually deleted too).</div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is an AMI?<span class="hint">tap</span></div><div class="a">A template (OS + config) used to launch EC2 instances.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Are you billed for a stopped instance?<span class="hint">tap</span></div><div class="a">No compute charge, but yes for the attached EBS storage.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which port for SSH to Linux?<span class="hint">tap</span></div><div class="a">Port 22.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How many AZs does one instance span?<span class="hint">tap</span></div><div class="a">One — it runs in a single AZ.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You stopped an instance to save money but still get a bill. Why?</div>
+      <span class="opt">A) AWS error</span>
+      <span class="opt">B) The attached EBS volume is still charged</span>
+      <span class="opt">C) Stopped instances cost more</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Stopping ends compute charges but EBS storage keeps billing. Terminate to stop all cost.</div></div>
+    <div class="quiz"><div class="qq">Which is AZ-resilient only (fails if its AZ fails)?</div>
+      <span class="opt">A) Route 53</span><span class="opt">B) A single EC2 instance</span><span class="opt">C) S3</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A single EC2 lives in one AZ. Route 53 is global; S3 is region-resilient.</div></div>
+  </article>
+
+  <!-- ===== LESSON 5 ===== -->
+  <article class="card" id="l5">
+    <div class="lesson-head"><div class="num">5</div><div><h2>S3 Basics</h2><div class="sub">Object storage that scales almost without limit.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Object storage</td><td>Store whole files ("objects") in "buckets". Not a disk, not a file share.</td><td>Know what S3 is / isn't.</td></tr>
+      <tr><td>Bucket name</td><td>Must be <b>globally unique</b>, lowercase, DNS-style.</td><td>Common detail question.</td></tr>
+      <tr><td>Region-based</td><td>A bucket is created in one region.</td><td>Data location matters.</td></tr>
+      <tr><td>Private by default</td><td>Block Public Access is ON when created.</td><td>Security default.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Object</td><td>One stored item = key (name) + value (data) + metadata.</td></tr>
+      <tr><td>Bucket</td><td>A container that holds objects.</td></tr>
+      <tr><td>Prefix ("folder")</td><td>Folders aren't real — they're just part of the object's key/name.</td></tr>
+      <tr><td>ARN</td><td>Unique ID for the bucket, e.g. <code>arn:aws:s3:::my-bucket</code>.</td></tr>
+      <tr><td>Block Public Access</td><td>A safety switch that keeps buckets/objects private.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  REG[Region] --> B[Bucket - globally unique name]
+  B --> O1[Object key: photos/cat.jpg]
+  B --> O2[Object key: report.pdf]
+  O1 --> V[value = file data]
+  O1 --> M[metadata]
+  classDef k fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class B k;
+    </pre></div>
+    <ul class="clean">
+      <li>An <b>object</b> = a key (its name) + the data + metadata. Size <b>0 bytes to 5 TB</b>.</li>
+      <li>Bucket names are <b>globally unique</b> across <b>all</b> AWS accounts, 3–63 chars, lowercase.</li>
+      <li>"Folders" are just <b>prefixes</b> in the key — there are no real folders.</li>
+      <li>Buckets are <b>private by default</b> (Block Public Access on).</li>
+      <li>S3 is <b>not</b> a disk you mount and <b>not</b> a file share — it's object storage.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> store an Animals4life file in S3, then remove it. <b>Check first:</b> CLI configured. Pick a <b>unique</b> bucket name (add random digits).</div>
+      <div class="step"><div class="sh">Create a uniquely-named bucket</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>BUCKET=a4l-demo-$RANDOM$RANDOM
+aws s3 mb s3://$BUCKET --region us-east-1
+echo $BUCKET</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>make_bucket: a4l-demo-XXXX</code>. If the name is taken, run again (names are global).</div>
+      <div class="step"><div class="sh">Upload an object</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>echo "hello animals4life" > cat.txt
+aws s3 cp cat.txt s3://$BUCKET/photos/cat.txt</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>upload: ./cat.txt to s3://…/photos/cat.txt</code>. ("photos/" is just a prefix, not a real folder.)</div>
+      <div class="step"><div class="sh">List what's inside</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3 ls s3://$BUCKET --recursive</code></pre></div>
+      <div class="expect"><b>Expect:</b> one line showing <code>photos/cat.txt</code> with size and date.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span><ul>
+        <li>The full object name (key) is <code>photos/cat.txt</code> — the "folder" is part of the name.</li>
+        <li>By default the object is <b>private</b>; nobody can read it without permission.</li>
+      </ul></div>
+      <div class="box term"><span class="tag">Clean up</span>Empty then delete the bucket (a bucket must be empty to delete):</div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3 rm s3://$BUCKET --recursive
+aws s3 rb s3://$BUCKET
+rm -f cat.txt</code></pre></div>
+      <div class="expect"><b>Expect:</b> objects deleted, then <code>remove_bucket: a4l-demo-XXXX</code>. No cost left.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>S3 is a <b>public service</b> (Lesson 1) — reached over the internet.</li><li>CloudFormation templates and logs often land in S3.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Storage classes, versioning, encryption, static hosting, replication — the big S3 section.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Bucket names are <b>globally unique</b> (across all accounts), lowercase, DNS-style.</li>
+      <li>Objects up to <b>5 TB</b>; storage is <b>unlimited</b> in practice.</li>
+      <li>S3 is <b>object storage</b> — you can't mount it as an OS disk (that's EBS/EFS).</li>
+      <li>Private by default; "make it public" means changing Block Public Access + permissions.</li>
+    </ul></div>
+    <div class="box warn"><span class="tag">Easy to confuse</span>S3 (object) vs EBS (block disk for one EC2) vs EFS (shared file system). If the question says "mount as a drive", it's <b>not</b> S3.</div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How unique must a bucket name be?<span class="hint">tap</span></div><div class="a">Globally unique across every AWS account.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Are S3 folders real?<span class="hint">tap</span></div><div class="a">No. They're prefixes — part of the object key/name.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Max size of a single object?<span class="hint">tap</span></div><div class="a">5 TB.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Is a new bucket public or private?<span class="hint">tap</span></div><div class="a">Private by default (Block Public Access is on).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You need storage you can mount as a disk on one EC2 instance. Is S3 right?</div>
+      <span class="opt">A) Yes, mount the bucket</span>
+      <span class="opt">B) No — use EBS; S3 is object storage</span>
+      <span class="opt">C) Yes, with a folder</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> S3 can't be mounted as a block disk; EBS is the disk for one instance.</div></div>
+    <div class="quiz"><div class="qq">Your <code>mb</code> command failed with "bucket already exists". Likely cause?</div>
+      <span class="opt">A) Region down</span>
+      <span class="opt">B) The name is taken somewhere globally</span>
+      <span class="opt">C) No internet</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Bucket names are globally unique — pick another name.</div></div>
+  </article>
+
+  <!-- ===== LESSON 6 ===== -->
+  <article class="card" id="l6">
+    <div class="lesson-head"><div class="num">6</div><div><h2>CloudFormation Basics</h2><div class="sub">Build, change and delete infrastructure from code.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>IaC</td><td>Infrastructure as Code — describe resources in a file, AWS builds them.</td><td>Automation/repeatability.</td></tr>
+      <tr><td>Template</td><td>A YAML or JSON file listing what to create.</td><td>Format options tested.</td></tr>
+      <tr><td>Stack</td><td>The live group of resources made from a template.</td><td>Lifecycle unit.</td></tr>
+      <tr><td>Logical vs physical</td><td>Name in template (logical) → real resource (physical).</td><td>Wording trap.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>YAML / JSON</td><td>Two text formats for writing templates.</td></tr>
+      <tr><td>Resource</td><td>One thing to create (an EC2, a bucket…). The only required template part.</td></tr>
+      <tr><td>Logical resource</td><td>The name you give a resource inside the template.</td></tr>
+      <tr><td>Physical resource</td><td>The real AWS thing created (with a real ID).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  T[Template YAML/JSON] --> S[Stack]
+  S --> R1[Physical resource: EC2]
+  S --> R2[Physical resource: SG]
+  T -. defines .-> L[Logical resources]
+  L -. become .-> R1
+  classDef k fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class S k;
+    </pre></div>
+    <ul class="clean">
+      <li>Write a <b>template</b> (YAML/JSON) → CloudFormation makes a <b>stack</b> → the stack creates <b>resources</b>.</li>
+      <li>Update the template → the stack updates only what changed.</li>
+      <li><b>Delete the stack</b> → it removes all its resources (great for clean-up).</li>
+      <li>Only the <b>Resources</b> section is required in a template.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 + course template</span><b>Situation:</b> use the course's template to create an EC2 instance as a stack, then delete it all in one step. <b>Check first:</b> CLI configured; default VPC exists.</div>
+      <div class="step"><div class="sh">Download the course template</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>curl -o ec2instance.yaml \
+  https://learn-cantrill-labs.s3.amazonaws.com/awscoursedemos/0058-aws-simplecfn/ec2instance.yaml
+head -20 ec2instance.yaml</code></pre></div>
+      <div class="expect"><b>Expect:</b> a YAML file; the top shows <code>AWSTemplateFormatVersion</code> and a <code>Resources:</code> section.</div>
+      <div class="step"><div class="sh">Create the stack</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws cloudformation create-stack \
+  --stack-name a4l-cfn-demo \
+  --template-body file://ec2instance.yaml</code></pre></div>
+      <div class="expect"><b>Expect:</b> JSON with a <code>StackId</code>. Creation has started.</div>
+      <div class="step"><div class="sh">Wait until it finishes, then list resources</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws cloudformation wait stack-create-complete --stack-name a4l-cfn-demo
+aws cloudformation describe-stack-resources --stack-name a4l-cfn-demo \
+  --query "StackResources[].{Logical:LogicalResourceId,Physical:PhysicalResourceId,Status:ResourceStatus}" \
+  --output table</code></pre></div>
+      <div class="expect"><b>Expect:</b> a table showing the <b>logical</b> name (from the template) next to the real <b>physical</b> ID (e.g. <code>i-0abc…</code>).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span><ul>
+        <li>The instance was created by the <b>stack</b>, not by you directly — so let the stack manage it.</li>
+        <li>If create fails, run <code>describe-stack-events</code> to see the first error.</li>
+      </ul></div>
+      <div class="box term"><span class="tag">Clean up</span>Deleting the stack deletes everything it made — no leftovers:</div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws cloudformation delete-stack --stack-name a4l-cfn-demo
+aws cloudformation wait stack-delete-complete --stack-name a4l-cfn-demo
+rm -f ec2instance.yaml</code></pre></div>
+      <div class="expect"><b>Expect:</b> the stack and its EC2 instance are removed. No running resources, no cost.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Automates the EC2 from Lesson 4.</li><li>Builds resources into the default VPC (Lesson 3).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>The full CloudFormation section: parameters, functions, mappings, nested stacks, change sets.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Templates are <b>YAML or JSON</b>. Only the <b>Resources</b> block is required.</li>
+      <li><b>Logical</b> name = in the template; <b>physical</b> ID = the real resource.</li>
+      <li>"Repeatable, automated, easy clean-up" infra → think <b>CloudFormation</b>.</li>
+      <li>Delete the <b>stack</b> to remove all its resources together.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Two formats for a CloudFormation template?<span class="hint">tap</span></div><div class="a">YAML and JSON.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is a stack?<span class="hint">tap</span></div><div class="a">The live set of resources created from a template.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Logical vs physical resource?<span class="hint">tap</span></div><div class="a">Logical = name in the template; physical = the real created resource/ID.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which template section is required?<span class="hint">tap</span></div><div class="a">The Resources section.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You want to create the same set of resources many times, reliably. Best tool?</div>
+      <span class="opt">A) Click the console each time</span>
+      <span class="opt">B) CloudFormation template</span>
+      <span class="opt">C) CloudWatch</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> IaC gives repeatable, automated, version-controlled infrastructure.</div></div>
+  </article>
+
+  <!-- ===== LESSON 7 ===== -->
+  <article class="card" id="l7">
+    <div class="lesson-head"><div class="num">7</div><div><h2>CloudWatch Basics</h2><div class="sub">Metrics, logs and alarms for your AWS resources.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Metrics</td><td>Numbers over time (e.g. CPU %).</td><td>What you alarm on.</td></tr>
+      <tr><td>Logs</td><td>Text log lines collected centrally (via the agent).</td><td>Needs CloudWatch Agent on EC2.</td></tr>
+      <tr><td>Alarm</td><td>Watches a metric and changes state when a threshold is crossed.</td><td>States are tested.</td></tr>
+      <tr><td>Agent for memory</td><td>Memory/disk metrics need the CloudWatch Agent.</td><td>Classic trap.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Namespace</td><td>A folder for related metrics, e.g. <code>AWS/EC2</code>.</td></tr>
+      <tr><td>Dimension</td><td>A label that picks one item, e.g. a specific InstanceId.</td></tr>
+      <tr><td>Datapoint</td><td>One measured value at a time.</td></tr>
+      <tr><td>Alarm state</td><td>OK · ALARM · INSUFFICIENT_DATA.</td></tr>
+      <tr><td>CloudWatch Agent</td><td>Software on the instance to send OS-level metrics + logs.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  EC2[EC2 instance] -->|CPU metric| CW[CloudWatch]
+  AGENT[CloudWatch Agent] -->|memory, disk, logs| CW
+  CW --> AL{Alarm threshold}
+  AL -->|below| OK[State: OK]
+  AL -->|above| ALARM[State: ALARM]
+  ALARM --> ACT[Action: notify / scale]
+  classDef k fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class CW k;
+    </pre></div>
+    <ul class="clean">
+      <li>CloudWatch collects <b>metrics</b>, <b>logs</b> and <b>events</b> from AWS services.</li>
+      <li>Basic EC2 metrics (CPU, network) come for free; <b>memory + disk + logs need the agent</b>.</li>
+      <li>An <b>alarm</b> compares a metric to a threshold and sits in <b>OK / ALARM / INSUFFICIENT_DATA</b>.</li>
+      <li>Standard monitoring = every <b>5 min</b>; detailed monitoring = every <b>1 min</b> (extra cost).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> alarm when an Animals4life instance's CPU goes above 15%, then push CPU up with <code>stress</code> to trigger it. <b>Check first:</b> you have a running t2.micro (reuse the Lesson 4 demo) and its <code>InstanceId</code>.</div>
+      <div class="step"><div class="sh">On the instance: install and run stress</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code># run these INSIDE the instance over SSH
+sudo dnf install -y stress    # (Amazon Linux 2 uses: sudo yum install stress -y)
+stress -c 2</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>stress</code> keeps running and loads 2 CPU cores. Leave it running for a few minutes.</div>
+      <div class="step"><div class="sh">From your laptop: create the CPU alarm</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws cloudwatch put-metric-alarm \
+  --alarm-name a4l-cpu-high \
+  --namespace AWS/EC2 \
+  --metric-name CPUUtilization \
+  --dimensions Name=InstanceId,Value=i-REPLACE_ME \
+  --statistic Average --period 60 --evaluation-periods 1 \
+  --threshold 15 --comparison-operator GreaterThanThreshold</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output = alarm created.</div>
+      <div class="step"><div class="sh">Watch the alarm move to ALARM</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws cloudwatch describe-alarms --alarm-names a4l-cpu-high \
+  --query "MetricAlarms[].StateValue" --output text</code></pre></div>
+      <div class="expect"><b>Expect:</b> first <code>OK</code> or <code>INSUFFICIENT_DATA</code>, then <code>ALARM</code> once CPU passes 15%. Press <kbd>Ctrl+C</kbd> on stress → it returns to <code>OK</code>.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span><ul>
+        <li>CPU is a <b>built-in</b> EC2 metric — no agent needed. <b>Memory is not</b>; that would need the agent.</li>
+        <li>A new alarm starts as <code>INSUFFICIENT_DATA</code> until enough datapoints arrive.</li>
+      </ul></div>
+      <div class="box term"><span class="tag">Clean up</span>Delete the alarm (and terminate the instance from the Lesson 4 clean-up):</div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws cloudwatch delete-alarms --alarm-names a4l-cpu-high</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output = alarm deleted. Then terminate the EC2 to stop all charges.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Monitors the EC2 from Lesson 4.</li><li>Alarms can trigger scaling later (HA/Lesson 9 ideas).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>CloudWatch Logs, EventBridge, agent install, and Auto Scaling alarms.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Memory metrics need the CloudWatch Agent</b> — they are NOT collected by default.</li>
+      <li>Alarm states: <b>OK, ALARM, INSUFFICIENT_DATA</b>.</li>
+      <li>Detailed monitoring = <b>1-minute</b> data (costs more) vs standard <b>5-minute</b>.</li>
+    </ul></div>
+    <div class="box warn"><span class="tag">Trap</span>If a question asks to monitor <b>RAM/memory or disk space</b> on EC2, the answer involves installing the <b>CloudWatch Agent</b>, not default metrics.</div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Three alarm states?<span class="hint">tap</span></div><div class="a">OK, ALARM, INSUFFICIENT_DATA.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Does default EC2 monitoring include memory?<span class="hint">tap</span></div><div class="a">No. Memory and disk need the CloudWatch Agent.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Standard vs detailed monitoring interval?<span class="hint">tap</span></div><div class="a">Standard = 5 minutes; detailed = 1 minute (extra cost).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must alarm on an EC2 instance's free memory. What's needed?</div>
+      <span class="opt">A) Nothing — it's a default metric</span>
+      <span class="opt">B) Install the CloudWatch Agent to send memory metrics</span>
+      <span class="opt">C) Enable detailed monitoring</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Memory isn't a default EC2 metric; the agent reports it.</div></div>
+    <div class="quiz"><div class="qq">A brand-new alarm shows INSUFFICIENT_DATA. Why?</div>
+      <span class="opt">A) It's broken</span>
+      <span class="opt">B) Not enough datapoints yet</span>
+      <span class="opt">C) Wrong region</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Until enough metric data arrives, the state is INSUFFICIENT_DATA.</div></div>
+  </article>
+
+  <!-- ===== LESSON 8 ===== -->
+  <article class="card" id="l8">
+    <div class="lesson-head"><div class="num">8</div><div><h2>Shared Responsibility Model</h2><div class="sub">Who secures what — AWS vs you.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>AWS responsibility</td><td>Security <b>OF</b> the cloud (hardware, facilities, global infra).</td><td>Know the split.</td></tr>
+      <tr><td>Customer responsibility</td><td>Security <b>IN</b> the cloud (your data, OS, config, access).</td><td>Most-tested line.</td></tr>
+      <tr><td>Depends on service</td><td>More-managed services shift more work to AWS.</td><td>IaaS vs PaaS vs SaaS.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Security OF the cloud</td><td>Protecting the AWS-owned parts (the building, servers, network).</td></tr>
+      <tr><td>Security IN the cloud</td><td>Protecting what you put in it (data, settings, users).</td></tr>
+      <tr><td>Patching</td><td>Applying updates to fix software security holes.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  subgraph AWS [AWS secures OF the cloud]
+    H[Hardware / data centres]
+    N[Global network]
+    HV[Virtualization / hypervisor]
+  end
+  subgraph YOU [You secure IN the cloud]
+    D[Your data + encryption]
+    OS[Guest OS + patches]
+    APP[Apps + config]
+    IAM[IAM users / permissions]
+    FW[Firewall / security groups]
+  end
+    </pre></div>
+    <ul class="clean">
+      <li><b>AWS</b> = the cloud's foundation: buildings, servers, networking, hypervisor.</li>
+      <li><b>You</b> = everything you put in: data, OS patches (on EC2), app config, IAM, firewall rules, encryption.</li>
+      <li>The more <b>managed</b> the service (e.g. S3, Lambda), the <b>less</b> you manage.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>This is a responsibility concept, not something you build. Just memorise the OF/IN split.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>On EC2 (Lesson 4) <b>you</b> patch the OS; AWS handles the host hardware.</li><li>With S3 (Lesson 5) AWS handles much more; you mainly handle data + access.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Every security topic (encryption, IAM, patch management) maps back to this model.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>AWS = security <b>OF</b> the cloud. Customer = security <b>IN</b> the cloud.</li>
+      <li><b>OS patching on EC2 is YOUR job</b> (common question).</li>
+      <li><b>Your data is always your responsibility</b>, on every service.</li>
+    </ul></div>
+    <div class="box warn"><span class="tag">Easy to confuse</span>For a <b>managed database (RDS)</b>, AWS patches the DB engine/OS, but <b>you</b> still control data, access and (often) encryption settings.</div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">AWS is responsible for security ___ the cloud?<span class="hint">tap</span></div><div class="a">OF the cloud (hardware, facilities, global infra, hypervisor).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Who patches the OS on an EC2 instance?<span class="hint">tap</span></div><div class="a">You, the customer.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Who is responsible for your data?<span class="hint">tap</span></div><div class="a">Always you, on every service.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Who must apply OS security patches on an EC2 instance?</div>
+      <span class="opt">A) AWS automatically</span>
+      <span class="opt">B) The customer</span>
+      <span class="opt">C) Nobody</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> The guest OS is "in the cloud" — your responsibility on EC2.</div></div>
+  </article>
+
+  <!-- ===== LESSON 9 ===== -->
+  <article class="card" id="l9">
+    <div class="lesson-head"><div class="num">9</div><div><h2>HA vs FT vs DR</h2><div class="sub">Three resilience words people mix up.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>High Availability (HA)</td><td><b>Minimise</b> downtime; recover fast (short outage allowed).</td><td>Most-tested distinction.</td></tr>
+      <tr><td>Fault Tolerance (FT)</td><td><b>No</b> downtime; keep working through failure.</td><td>More costly, full redundancy.</td></tr>
+      <tr><td>Disaster Recovery (DR)</td><td>Plan to <b>recover</b> after a big failure.</td><td>RPO / RTO.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Downtime</td><td>Time the system is not working.</td></tr>
+      <tr><td>Redundancy</td><td>Spare copies that take over if one fails.</td></tr>
+      <tr><td>Failover</td><td>Switching to a backup when the main thing fails.</td></tr>
+      <tr><td>RPO</td><td>Recovery Point Objective — how much data loss you can accept. <span style="color:var(--muted)">[added for exam]</span></td></tr>
+      <tr><td>RTO</td><td>Recovery Time Objective — how long recovery may take. <span style="color:var(--muted)">[added for exam]</span></td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  F[Something fails] --> HA[HA: quick failover<br/>brief outage OK]
+  F --> FT[FT: keeps running<br/>zero interruption]
+  F --> DR[DR: restore from<br/>backups / other region]
+  classDef k fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class HA,FT,DR k;
+    </pre></div>
+    <ul class="clean">
+      <li><b>HA</b> = aim for maximum uptime. A short outage + fast recovery is acceptable (users may need to retry/re-login).</li>
+      <li><b>FT</b> = the system <b>keeps working with no interruption</b>, even during a failure. Needs full redundancy → more expensive.</li>
+      <li><b>DR</b> = your plan + tools to <b>recover</b> after a serious failure (measured by <b>RPO</b> and <b>RTO</b>).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>These are design concepts, not a build step. You'll apply them in later HA/Scaling demos.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses AZs/regions (Lesson 2) as the building blocks for resilience.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Multi-AZ RDS, Load Balancers, Auto Scaling (HA) and backup/replication (DR) sections.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Keyword <b>"minimise downtime / fast recovery"</b> → <b>HA</b>.</li>
+      <li>Keyword <b>"no interruption / always on"</b> → <b>FT</b> (and it costs more).</li>
+      <li>Keyword <b>"recover after disaster / backups / RPO / RTO"</b> → <b>DR</b>.</li>
+    </ul></div>
+    <div class="box warn"><span class="tag">Easy to confuse</span>HA is <b>not</b> FT. HA accepts a brief outage during failover; FT allows <b>none</b>. FT is harder and pricier.</div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">HA in one line?<span class="hint">tap</span></div><div class="a">Maximise uptime; a short outage with fast recovery is acceptable.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">FT in one line?<span class="hint">tap</span></div><div class="a">Keep operating through failure with zero interruption (costly).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">DR in one line?<span class="hint">tap</span></div><div class="a">A plan to recover after a major failure (RPO/RTO).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What do RPO and RTO measure?<span class="hint">tap</span></div><div class="a">RPO = acceptable data loss; RTO = acceptable recovery time.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A medical system must never stop, even during a component failure. Which concept?</div>
+      <span class="opt">A) High Availability</span>
+      <span class="opt">B) Fault Tolerance</span>
+      <span class="opt">C) Disaster Recovery</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> "Never stops" = zero interruption = Fault Tolerance.</div></div>
+    <div class="quiz"><div class="qq">A site can tolerate a 2-minute failover. What is the cheapest fitting goal?</div>
+      <span class="opt">A) Fault Tolerance</span>
+      <span class="opt">B) High Availability</span>
+      <span class="opt">C) Neither</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A short outage is acceptable, so HA is enough — and cheaper than FT.</div></div>
+  </article>
+
+  <!-- ===== LESSON 10 ===== -->
+  <article class="card" id="l10">
+    <div class="lesson-head"><div class="num">10</div><div><h2>Route 53 Fundamentals</h2><div class="sub">AWS managed DNS + domain registration.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Route 53</td><td>AWS's managed DNS service; also registers domains.</td><td>Global, globally resilient.</td></tr>
+      <tr><td>Hosted zone</td><td>A container of DNS records for one domain.</td><td>Public vs private zones.</td></tr>
+      <tr><td>Registrar vs registry</td><td>Registrar sells domains; registry runs the TLD.</td><td>How registration works.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>DNS</td><td>The internet's phone book — turns names into IP addresses.</td></tr>
+      <tr><td>Hosted zone</td><td>Where a domain's DNS records live in Route 53.</td></tr>
+      <tr><td>Public hosted zone</td><td>Records the whole internet can look up.</td></tr>
+      <tr><td>Private hosted zone</td><td>Records only visible inside chosen VPCs.</td></tr>
+      <tr><td>TLD</td><td>Top-Level Domain — the ending, like <code>.com</code> or <code>.org</code>.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+sequenceDiagram
+  participant U as You
+  participant REG as Registrar (Route 53)
+  participant TLD as .org Registry
+  participant HZ as Hosted Zone
+  U->>REG: Register animals4life.org
+  REG->>TLD: Tell registry the nameservers (NS)
+  TLD-->>HZ: .org now points lookups to your zone
+  Note over HZ: Add records (A, MX, ...) here
+    </pre></div>
+    <ul class="clean">
+      <li>Route 53 is <b>global</b> and <b>globally resilient</b>.</li>
+      <li>Two jobs: <b>register domains</b> and <b>host DNS</b> (hosted zones).</li>
+      <li>A <b>hosted zone</b> holds the records for a domain; it can be <b>public</b> or <b>private</b>.</li>
+      <li>Registering sets <b>NS records</b> at the TLD registry so lookups reach your zone.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (read-only — avoid charges)</span><b>Situation:</b> see any hosted zones in the account. <b>Note:</b> registering a domain and creating a hosted zone <b>cost money</b> (a hosted zone is ~$0.50/month). So this demo only <b>reads</b>.</div>
+      <div class="step"><div class="sh">List hosted zones</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws route53 list-hosted-zones \
+  --query "HostedZones[].{Name:Name,Private:Config.PrivateZone}" --output table</code></pre></div>
+      <div class="expect"><b>Expect:</b> a table of zones (or empty if you have none). The <code>Private</code> column shows public vs private.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Route 53 is a <b>global</b> service — there is no <code>--region</code> for these zones.</div>
+      <div class="box term"><span class="tag">Clean up</span>Read-only — nothing created, nothing billable. Don't create a zone/domain just to test.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Global/resilient idea from Lesson 2.</li><li>Leads straight into record types (Lesson 11).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Routing policies (failover, latency, weighted), health checks, and Alias records.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Route 53 = <b>global</b> service, <b>globally resilient</b>.</li>
+      <li>It does <b>both</b> domain registration <b>and</b> DNS hosting.</li>
+      <li><b>Private hosted zones</b> are visible only inside the VPCs you associate.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Is Route 53 regional or global?<span class="hint">tap</span></div><div class="a">Global, and globally resilient.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Two main jobs of Route 53?<span class="hint">tap</span></div><div class="a">Register domains and host DNS (hosted zones).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Public vs private hosted zone?<span class="hint">tap</span></div><div class="a">Public = whole internet can resolve; private = only chosen VPCs.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You need DNS records only resolvable inside your VPC. What do you use?</div>
+      <span class="opt">A) Public hosted zone</span>
+      <span class="opt">B) Private hosted zone</span>
+      <span class="opt">C) Edge location</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A private hosted zone resolves only inside associated VPCs.</div></div>
+  </article>
+
+  <!-- ===== LESSON 11 ===== -->
+  <article class="card" id="l11">
+    <div class="lesson-head"><div class="num">11</div><div><h2>DNS Record Types</h2><div class="sub">A, AAAA, CNAME, MX, TXT, NS + TTL.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Record types</td><td>Different records do different jobs in DNS.</td><td>Match type to need.</td></tr>
+      <tr><td>CNAME limit</td><td>A CNAME can't sit at the zone apex (naked domain).</td><td>Classic trap → use Alias.</td></tr>
+      <tr><td>TTL</td><td>How long a resolver caches a record.</td><td>Affects change speed.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Resolver</td><td>The service that looks up DNS for you (often your ISP).</td></tr>
+      <tr><td>Apex / naked domain</td><td>The bare domain with no prefix, e.g. <code>animals4life.org</code>.</td></tr>
+      <tr><td>TTL</td><td>Time To Live — seconds a record stays cached.</td></tr>
+      <tr><td>Alias record</td><td>AWS-only record that works at the apex (use instead of CNAME). <span style="color:var(--muted)">[added for exam]</span></td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Record</th><th>Maps…</th><th>Example use</th></tr>
+      <tr><td><b>A</b></td><td>name → IPv4 address</td><td>www → 1.2.3.4</td></tr>
+      <tr><td><b>AAAA</b></td><td>name → IPv6 address</td><td>www → 2606:…</td></tr>
+      <tr><td><b>CNAME</b></td><td>name → another name</td><td>www → app.example.com</td></tr>
+      <tr><td><b>MX</b></td><td>domain → mail servers (+priority)</td><td>email delivery</td></tr>
+      <tr><td><b>TXT</b></td><td>domain → text data</td><td>domain verification, SPF</td></tr>
+      <tr><td><b>NS</b></td><td>zone → its nameservers</td><td>delegation between zones</td></tr>
+    </table></div>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  Q[Lookup www.animals4life.org] --> A[A record -> IPv4]
+  Q --> AAAA[AAAA record -> IPv6]
+  C[CNAME] --> OTHER[points to another NAME, not an IP]
+  TTL[TTL] --> CACHE[how long resolvers cache the answer]
+  classDef k fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class A,AAAA k;
+    </pre></div>
+    <ul class="clean">
+      <li><b>A</b> = IPv4, <b>AAAA</b> = IPv6 (note the double-A is the "bigger" address).</li>
+      <li><b>CNAME</b> points a name to <b>another name</b> — never directly to an IP, and <b>not at the apex</b>.</li>
+      <li><b>MX</b> carries a <b>priority</b> number — <b>lower number = higher priority</b>.</li>
+      <li><b>TTL</b> high = fewer lookups but slower to change; low = faster changes, more lookups.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · dig (free, local tool — no AWS resource)</span><b>Situation:</b> see real record types live. <b>Check first:</b> <code>dig</code> installed (macOS/Linux have it; on Windows use <code>nslookup</code> or WSL). No AWS cost, nothing created.</div>
+      <div class="step"><div class="sh">Look up A and AAAA records</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>dig amazon.com A +short
+dig google.com AAAA +short</code></pre></div>
+      <div class="expect"><b>Expect:</b> one or more IPv4 addresses, then IPv6 addresses.</div>
+      <div class="step"><div class="sh">Look up MX, TXT and NS</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>dig gmail.com MX +short
+dig google.com TXT +short
+dig amazon.com NS +short</code></pre></div>
+      <div class="expect"><b>Expect:</b> MX lines start with a <b>priority number</b>; TXT shows quoted text (e.g. SPF); NS lists nameserver names.</div>
+      <div class="step"><div class="sh">See the TTL on a record</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>dig example.com A</code></pre></div>
+      <div class="expect"><b>Expect:</b> in the ANSWER section, the number before the type (e.g. <code>300 IN A</code>) is the <b>TTL in seconds</b>.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>You can't create a CNAME at the apex. In Route 53 the fix is an <b>Alias record</b> (covered later).</div>
+      <div class="box term"><span class="tag">Clean up</span>Nothing created — <code>dig</code> only reads public DNS. No cost.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>These records live inside Route 53 hosted zones (Lesson 10).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Alias records, routing policies, health checks, and CloudFront/ALB targets.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>A = IPv4, AAAA = IPv6.</b></li>
+      <li><b>CNAME cannot be used at the zone apex</b> → use a Route 53 <b>Alias</b> record.</li>
+      <li><b>MX priority: lower = preferred.</b></li>
+      <li><b>TXT</b> is often used for <b>domain verification / SPF</b>.</li>
+      <li><b>NS</b> records <b>delegate</b> a zone to its nameservers.</li>
+    </ul></div>
+    <div class="box warn"><span class="tag">Trap</span>"Point the naked/root domain to an ELB or CloudFront" → a CNAME won't work at the apex. The answer is an <b>Alias</b> record.</div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">A vs AAAA?<span class="hint">tap</span></div><div class="a">A = IPv4 address; AAAA = IPv6 address.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can a CNAME sit at the apex domain?<span class="hint">tap</span></div><div class="a">No. Use a Route 53 Alias record instead.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">In MX, which priority wins?<span class="hint">tap</span></div><div class="a">The lower number is preferred.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does TTL control?<span class="hint">tap</span></div><div class="a">How long resolvers cache a record before checking again.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which record is commonly used for domain verification?<span class="hint">tap</span></div><div class="a">TXT.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must point <code>animals4life.org</code> (the naked domain) at a load balancer. Best record?</div>
+      <span class="opt">A) CNAME</span>
+      <span class="opt">B) Route 53 Alias record</span>
+      <span class="opt">C) MX</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> CNAME can't be at the apex; an Alias record can.</div></div>
+    <div class="quiz"><div class="qq">Which record maps a name to an IPv6 address?</div>
+      <span class="opt">A) A</span><span class="opt">B) AAAA</span><span class="opt">C) CNAME</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> AAAA = IPv6 (A is IPv4).</div></div>
+    <div class="quiz"><div class="qq">An MX record has values priority 10 and priority 20. Which mail server is tried first?</div>
+      <span class="opt">A) Priority 20</span><span class="opt">B) Priority 10</span><span class="opt">C) Random</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Lower priority number is preferred, so 10 is tried first.</div></div>
+  </article>
+
+  <div class="foot">
+    <div>
+      <span class="pill">IAM &amp; R53 = global</span><span class="pill">Default VPC 172.31.0.0/16</span>
+      <span class="pill">Bucket names global-unique</span><span class="pill">A=IPv4 / AAAA=IPv6</span>
+      <span class="pill">Memory needs CW Agent</span><span class="pill">HA ≠ FT</span>
+    </div>
+    <p>Section 002 · AWS Fundamentals · built for SAA-C03 self-study.<br>
+    Tap a flashcard or "Show answer" to reveal. Use ☰ Lessons to jump around.</p>
+  </div>
+</main>
+
+<button class="toTop" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawerBg').classList.add('open');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerBg').classList.remove('open');}
+function cp(btn){
+  const code=btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard?.writeText(code).then(()=>{const t=btn.innerText;btn.innerText='copied!';setTimeout(()=>btn.innerText=t,1200);})
+  .catch(()=>{btn.innerText='select & copy';});
+}
+const tt=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{tt.classList.toggle('show',window.scrollY>500);});
+window.addEventListener('load',()=>{
+  try{
+    mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{
+      fontFamily:'Manrope, sans-serif',primaryColor:'#1b2128',primaryTextColor:'#e7edf3',
+      primaryBorderColor:'#2dd4bf',lineColor:'#60a5fa',secondaryColor:'#212934',tertiaryColor:'#161b21'}});
+  }catch(e){console.warn('mermaid init',e);}
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+# ROLE
+You are an expert AWS instructor building a single self-contained HTML study + revision 
+document for ONE section of Adrian Cantrill's AWS Solutions Architect Associate (SAA-C03) 
+course. The document must teach me from zero and also work as exam-revision later.
+
+# WHO I AM (design for this exactly)
+- 0 AWS knowledge, 0 work experience. Everything is new to me.
+- English level B1. Use simple, clear English. Short sentences.
+- I am preparing for the SAA-C03 exam, so depth = exam level (not deeper, not shallower).
+- I run demos myself on my laptop using AWS CLI v2 (already installed and configured).
+
+# INPUT
+I will paste one full course SECTION below. A section contains several lessons.
+Treat each lesson as one teaching unit. Build the document lesson by lesson, in order.
+
+# OUTPUT = ONE HTML FILE
+- ONE single HTML file for the WHOLE section, no matter how many lessons (even 20+). 
+  Do not split into parts.
+- Material UI look, DARK MODE, MOBILE-FIRST (single column, large tap targets, readable font).
+- Load Mermaid from CDN and render diagrams (graph/flowchart/sequence as fits the idea).
+- Self-contained: all CSS + JS inline, opens offline in a browser.
+- Sticky top bar + collapsible section menu so I can jump between lessons.
+- Clean spacing, cards for each lesson, color accents for "exam tip" / "demo" / "term" blocks.
+
+# FORMATTING PRINCIPLES (follow strictly, in priority order)
+1. Mermaid diagram  >  paragraph  (always try a diagram first for any flow/relationship)
+2. Outline / bullet list  >  paragraph
+3. Key–value table  >  paragraph
+4. Structured  >  unstructured
+Only use a paragraph when none of the above fit. Keep paragraphs to 2–3 short sentences.
+
+# LANGUAGE & TERMS
+- B1 English. When a technical word first appears, do ONE of:
+  (a) short explanation in parentheses right after it, OR
+  (b) add it to a "Key Terms" table at the TOP of the lesson (term | simple meaning).
+- Prefer the Key Terms table at the entry of each lesson for the main technical words.
+
+# DOCUMENT STRUCTURE
+## Top of document (once)
+- Section title + 1-line goal.
+- "Section Map": a Mermaid diagram showing how the lessons connect.
+- A "Quick Understanding" table for the WHOLE section (lesson | one-line what + why it matters for exam).
+
+## For EACH lesson (repeat this block)
+1. **Quick Understanding table** — fast TL;DR of the lesson (concept | meaning | exam relevance).
+2. **Key Terms table** — the technical words used, in B1 plain meaning.
+3. **Explanation** — diagram-led (Mermaid), then bullets/tables. Minimal prose.
+4. **Demo** (see DEMO SPEC) — directly after the explanation.
+   Demo EVERY lesson that can possibly be demoed with AWS CLI v2 / CloudFormation.
+   Only skip when the lesson is pure theory with nothing to build — then write 
+   "No demo — theory only" and say in 1 line why.
+5. **Build Knowledge** — 2 short lists:
+   - "Connects to NOW" (how this links to other lessons in this section)
+   - "Needed LATER" (which future course topics depend on this).
+6. **Exam Pointers** — bullets of common SAA-C03 traps, "remember this", and easy-confusions.
+7. **Flashcards** — 4–6 active-recall Q→A pairs (HTML click-to-flip or show/hide).
+8. **Mini Quiz** — 2–3 exam-style multiple-choice questions with the correct answer + 
+   1-line why (hidden until clicked).
+
+# DEMO SPEC (use AWS CLI v2; CloudFormation allowed for fast setup/cleanup)
+Each demo follows this exact order:
+1. **Situation** — the real scenario (tie it to Animals4life when natural) and the goal.
+2. **Check first** — prerequisites / what state I should be in before starting.
+3. **Steps** — numbered. For EVERY command:
+   - the exact AWS CLI v2 command (in a copyable code block),
+   - "What you expect" — what output/result I should see after running it.
+4. **Fix / Key info** — correct any course misunderstanding, note real-world gotchas.
+5. **Clean up** — exact commands to delete everything (use CloudFormation delete or CLI 
+   delete commands) so I leave NO running/billable resources.
+
+# QUALITY BAR
+- Accurate to current SAA-C03 scope. If something is exam-relevant but missing from the 
+  pasted text, add it briefly and mark it "[added for exam]".
+- No fluff. Everything must help me learn OR revise. Remove anything that doesn't.
+- The file must be ready to use as my single source for studying and revising this section.
+
+# SECTION TO BUILD
+ Relational Database Service (RDS)
+
+1 - Database Refresher & MODELS
+
+This 2-part lesson steps through some DB fundamentals with Part 1 focussing on the architectural fundamentals of Relational Database systems - looking at tables and how data is structured.
+
+steps through some alternative database models - and some potential scenarios where they might be used
+
+    Key-Value
+    Wide Column
+    Document
+    Column Databases
+    Graph
+
+
+2 - ACID vs BASE 
+
+This lesson steps through the ACID and BASE Database transaction models and introduces the CAP Theorem
+
+https://en.wikipedia.org/wiki/CAP_theorem
+
+https://en.wikipedia.org/wiki/ACID#Consistency
+
+https://en.wikipedia.org/wiki/Eventual_consistency
+
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transactions.html
+
+3 - Databases on EC2 
+
+This lesson steps through the architecture of running DB's on EC2
+
+The lesson reviews the reasons FOR and AGAINST running DBMS systems directly on EC2.
+
+Splitting Wordpress Monolith => APP & DB
+
+you will migrate the database for the monolithic animals4life Wordpress instance to a dedicated MariaDB platform running on EC2.
+
+The outcome of this lesson is to understand the process for performing a simple database migration manually...
+
+Deployment Time ~15 minutes
+
+Demo Time ~15 minutes
+
+4 - Relational Database Service (RDS) Architecture 
+
+The Relational Database Service (RDS) is a Database(server) as a service product from AWS which allows the creation of managed databases instances.
+
+This lesson steps through the high level architecture of the product and details what engines are supported, the access methods and some other key concepts.
+
+you will create a MySQL RDS instance and migrate the Wordpress Database from the self-managed MariaDB server running on EC2 into this RDS instance.
+
+Due to the time required to work with RDS please ensure you have at least 1 hour to work through this demo.
+
+For engine version you should be fine using MySQL 8.4.X for now.
+
+Deployment Time ~15 mins
+
+Lesson Time ~40 mins
+
+you will create a MySQL RDS instance and migrate the Wordpress Database from the self-managed MariaDB server running on EC2 into this RDS instance.
+
+Due to the time required to work with RDS please ensure you have at least 1 hour to work through this demo.
+
+For engine version you should be fine using MySQL 8.4.X for now.
+
+
+5 - Relational Database Service (RDS) MultiAZ - Instance and Cluster 
+
+MultiAZ is a feature of RDS which provisions a highly available instance set.
+
+The product provides MultiAZ instance .. where a standby replica is kept in sync Synchronously with the primary instance.The standby replica cannot be used for any performance scaling ... only availability.
+
+it also provides MultiAZ cluster mode, where a write and two reader instances are kept in sync Synchronously. The reader instances can be used for read operations ..allowing for limited read scaling.
+
+Backups, software updates and restarts can take advantage of MultiAZ to reduce user disruption.
+
+6 - RDS Automatic Backup, RDS Snapshots and Restore 
+ 
+RDS is capable of performing Manual Snapshots and Automatic backups
+
+Manual snapshots are performed manually and live past the termination of an RDS instance
+
+Automatic backups can be taken of an RDS instance with a 0 (Disabled) to 35 Day retention.
+
+Automatic backups also use S3 for storing transaction logs every 5 minutes - allowing for point in time recovery.
+
+Snapshots can be restored .. but create a new RDS instance.
+
+7 - RDS Read-Replicas 
+
+RDS Read Replicas can be added to an RDS Instance - 5 direct per primary instance.
+
+They can be in the same region, or cross-region replicas.
+
+They provide read performance scaling for the instance, but also offer low RTO recovery for any instance failure issues
+
+N.B they don't help with data corruption as the corruption will be replicated to the RR.
+
+MultiAZ & Snapshot Restore with RDS
+
+you will get experience in working with RDS Multi AZ mode and snapshot restores
+CALL YOUR SNAPSHOT : "a4lwordpress-with-cat-post-mysql-8-4"
+
+9 - RDS Data Security 
+
+This lesson steps through RDS Encryption at rest and RDS IAM authentication
+
+10 - RDS Custom 
+
+Amazon RDS Custom is a managed database service for applications that require customization of the underlying operating system and database environment. Benefits of RDS automation with the access needed for legacy, packaged, and custom applications.
+
+11 - Aurora Architecture 
+
+Aurora is a AWS designed database engine officially part of RDS
+
+Aurora implements a number of radical design changes which offer significant performance and feature improvements over other RDS database engines.
+
+This lesson steps through the changes introduced with the Aurora architecture.
+
+12 - Aurora Serverless 
+
+This lesson reviews the architecture of Aurora Serverless and compares it against Aurora Provisioned.
+
+13 - Aurora Global Database 
+
+Aurora global databases are a feature of Aurora Provisioned clusters which allow data to be replicated globally providing significant RPO and RTO improvements for BC and DR planning. Additionally global databases can provide performance improvements for customers .. with data being located closer to them, in a read-only form.
+
+Replication occurs at the storage layer and is generally ~1second between all AWS regions.
+
+14 - Multi-master writes 
+
+Multi-master write is a mode of Aurora Provisioned Clusters which allows multiple instances to perform reads and writes at the same time - rather than only one primary instance having write capability in a single-master cluster. This lesson steps through the architecture and explains how the conflict resolution works.
+
+
+15 - Relational Database Service (RDS) - RDS Proxy 
+
+Amazon RDS Proxy is a fully managed, highly available database proxy for Amazon Relational Database Service (RDS) that makes applications more scalable, more resilient to database failures, and more secure.
+
+16 - Database Migration Service (DMS) 
+
+The Database Migration Service (DMS) is a managed service which allows for 0 data loss, low or 0 downtime migrations between 2 database endpoints.
+
+The service is capable of moving databases INTO or OUT of AWS.
+
+17 - 14  -  mock exam level for this section "Relational Database Service (RDS) " implement old courses ["IAM, ACCOUNTS AND AWS ORGANISATIONS", "SIMPLE STORAGE SERVICE  (S3) ", "VIRTUAL PRIVATE CLOUD (VPC) BASICS " , "ELASTIC COMPUTE CLOUD (EC2) BASICS ","CONTAINERS & ECS " , "ADVANCED EC2 " , "Route 53 - Global DNS"]
+

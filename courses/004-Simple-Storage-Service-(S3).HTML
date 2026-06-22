@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03 · 004 · Simple Storage Service (S3)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+:root{
+  --bg:#101418;--bg2:#161b21;--surface:#1b2128;--surface2:#212934;
+  --line:#2c3540;--line2:#3a4654;--text:#e7edf3;--muted:#9fb0c0;
+  --primary:#2dd4bf;--primary-d:#0f3b39;--exam:#fbbf24;--exam-d:#3a2f0c;
+  --demo:#60a5fa;--demo-d:#0e2647;--term:#c084fc;--term-d:#2a1640;
+  --warn:#fb7185;--warn-d:#3a151c;--ok:#34d399;
+  --radius:16px;--shadow:0 6px 22px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.25;margin:0}
+a{color:var(--primary);text-decoration:none}
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(16,20,24,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .badge{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--bg);background:var(--primary);padding:4px 9px;border-radius:8px}
+.topbar .ttl{font-family:'Sora';font-weight:600;font-size:15px}
+.topbar .ttl small{display:block;color:var(--muted);font-weight:500;font-size:11.5px;font-family:'Manrope'}
+.menu-btn{margin-left:auto;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+.menu-btn:active{transform:scale(.97)}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
+.drawer-bg.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(86vw,340px);background:var(--bg2);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .28s ease;z-index:80;overflow-y:auto;padding:18px 16px 40px}
+.drawer.open{transform:translateX(0)}
+.drawer h3{font-size:11.5px;color:var(--muted);margin:14px 4px 8px;text-transform:uppercase;letter-spacing:1px}
+.drawer a{display:block;color:var(--text);padding:10px 12px;border-radius:10px;font-weight:500;font-size:14px;border:1px solid transparent}
+.drawer a:active{background:var(--surface)}
+.drawer a .n{color:var(--primary);font-family:'Sora';font-weight:700;margin-right:8px}
+.drawer .close{width:100%;margin-top:18px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 90px}
+.hero{background:radial-gradient(120% 90% at 100% 0%, rgba(45,212,191,.16), transparent 55%),radial-gradient(120% 90% at 0% 100%, rgba(96,165,250,.12), transparent 55%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+.hero .eyebrow{color:var(--primary);font-weight:700;font-size:12.5px;letter-spacing:1.5px;font-family:'Sora'}
+.hero h1{font-size:25px;margin:6px 0 8px}
+.hero p{color:var(--muted);margin:0;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;margin-top:18px;box-shadow:var(--shadow)}
+.lesson-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.lesson-head .num{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:'Sora';font-weight:700;background:var(--primary);color:var(--bg);font-size:15px}
+.lesson-head h2{font-size:19px}
+.lesson-head .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+h3.block{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+h3.block::before{content:"";width:14px;height:3px;border-radius:3px;background:var(--primary)}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:360px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface2);color:var(--text);font-family:'Sora';font-weight:600;font-size:12.5px;letter-spacing:.3px}
+tr:last-child td{border-bottom:none}
+td b{color:var(--primary)}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{position:relative;padding:6px 0 6px 22px;font-size:15px;border-bottom:1px dashed var(--line)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"▸";position:absolute;left:2px;top:6px;color:var(--primary)}
+.two-col{display:grid;gap:12px}
+@media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+.box{border-radius:12px;padding:13px 14px;margin:12px 0;border:1px solid;font-size:14.5px}
+.box .tag{font-family:'Sora';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
+.box.exam{background:var(--exam-d);border-color:#6b551a}.box.exam .tag{color:var(--exam)}
+.box.term{background:var(--term-d);border-color:#4a2d6b}.box.term .tag{color:var(--term)}
+.box.warn{background:var(--warn-d);border-color:#6b2630}.box.warn .tag{color:var(--warn)}
+.box.demo{background:var(--demo-d);border-color:#1d4a82}.box.demo .tag{color:var(--demo)}
+.box ul{margin:4px 0 0;padding-left:18px}.box li{margin:3px 0}
+.mer{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;overflow-x:auto}
+.mermaid{display:flex;justify-content:center;min-width:fit-content}
+.code{position:relative;background:#0c1117;border:1px solid var(--line2);border-radius:10px;margin:10px 0}
+.code pre{margin:0;padding:13px 14px;overflow-x:auto;font-size:13px;line-height:1.55}
+.code code{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;color:#cfe9e6;white-space:pre}
+.code .cp{position:absolute;top:7px;right:7px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:7px;font-size:11px;padding:4px 9px;cursor:pointer;font-weight:600}
+.code .cp:active{color:var(--primary)}
+.expect{font-size:13px;color:var(--ok);background:rgba(52,211,153,.08);border-left:3px solid var(--ok);padding:7px 11px;margin:0 0 12px;border-radius:0 8px 8px 0}
+.expect b{color:var(--ok)}
+.step{counter-increment:st;margin:14px 0}
+.step .sh{display:flex;align-items:center;gap:9px;font-family:'Sora';font-weight:600;font-size:14.5px;margin-bottom:4px}
+.step .sh::before{content:counter(st);background:var(--demo);color:var(--bg);width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12.5px;flex:0 0 auto}
+.demo-wrap{counter-reset:st}
+.fc-grid{display:grid;gap:10px}
+.fc{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:13px 14px;cursor:pointer;transition:border-color .2s;user-select:none}
+.fc:active{border-color:var(--primary)}
+.fc .q{font-weight:600;font-size:14.5px;display:flex;gap:8px;align-items:flex-start}
+.fc .q::before{content:"Q";font-family:'Sora';color:var(--primary);font-weight:700;flex:0 0 auto}
+.fc .a{display:none;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);color:var(--muted);font-size:14px}
+.fc .a::before{content:"A ";color:var(--ok);font-weight:700;font-family:'Sora'}
+.fc.show .a{display:block}
+.fc .hint{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600}
+.quiz{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:14px;margin:10px 0}
+.quiz .qq{font-weight:600;font-size:15px;margin-bottom:8px}
+.quiz .opt{display:block;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin:6px 0;font-size:14px;cursor:pointer}
+.quiz .opt:active{border-color:var(--primary)}
+.quiz .reveal{margin-top:6px;background:var(--surface);color:var(--primary);border:1px solid var(--line2);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px;width:100%}
+.quiz .ans{display:none;margin-top:10px;border-left:3px solid var(--ok);background:rgba(52,211,153,.08);padding:9px 12px;border-radius:0 8px 8px 0;font-size:14px}
+.quiz .ans b{color:var(--ok)}
+.quiz.show .ans{display:block}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;line-height:1.7}
+.pill{display:inline-block;background:var(--surface2);border:1px solid var(--line2);color:var(--muted);font-size:11px;padding:2px 8px;border-radius:20px;margin:2px}
+.toTop{position:fixed;right:14px;bottom:16px;z-index:50;background:var(--primary);color:var(--bg);border:none;width:46px;height:46px;border-radius:50%;font-size:20px;box-shadow:var(--shadow);cursor:pointer;display:none}
+.toTop.show{display:block}
+kbd{background:var(--surface2);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-size:12px;font-family:monospace}
+.examcard{border-color:#6b551a;background:linear-gradient(180deg,var(--exam-d),var(--surface))}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="badge">SAA-C03</span>
+  <div class="ttl">Section 004<small>Simple Storage Service (S3)</small></div>
+  <button class="menu-btn" onclick="openDrawer()">☰ Lessons</button>
+</header>
+
+<div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer">
+  <h3>Security &amp; access</h3>
+  <a href="#l1" onclick="closeDrawer()"><span class="n">1</span>S3 Security (Policies & ACLs)</a>
+  <a href="#l2" onclick="closeDrawer()"><span class="n">2</span>Static Website Hosting</a>
+  <h3>Data protection</h3>
+  <a href="#l3" onclick="closeDrawer()"><span class="n">3</span>Versioning & MFA Delete</a>
+  <a href="#l4" onclick="closeDrawer()"><span class="n">4</span>Performance Optimization</a>
+  <h3>Encryption</h3>
+  <a href="#l5" onclick="closeDrawer()"><span class="n">5</span>KMS</a>
+  <a href="#l6" onclick="closeDrawer()"><span class="n">6</span>Object Encryption CSE/SSE</a>
+  <a href="#l7" onclick="closeDrawer()"><span class="n">7</span>S3 Bucket Keys</a>
+  <h3>Storage cost &amp; movement</h3>
+  <a href="#l8" onclick="closeDrawer()"><span class="n">8</span>Storage Classes</a>
+  <a href="#l9" onclick="closeDrawer()"><span class="n">9</span>Lifecycle Configuration</a>
+  <a href="#l10" onclick="closeDrawer()"><span class="n">10</span>Replication (CRR/SRR)</a>
+  <h3>Access patterns &amp; ops</h3>
+  <a href="#l11" onclick="closeDrawer()"><span class="n">11</span>Pre-Signed URLs</a>
+  <a href="#l12" onclick="closeDrawer()"><span class="n">12</span>S3 / Glacier Select</a>
+  <a href="#l13" onclick="closeDrawer()"><span class="n">13</span>S3 Events</a>
+  <a href="#l14" onclick="closeDrawer()"><span class="n">14</span>Access Logs</a>
+  <a href="#l15" onclick="closeDrawer()"><span class="n">15</span>Object Lock (WORM)</a>
+  <a href="#l16" onclick="closeDrawer()"><span class="n">16</span>Access Points / MRAP</a>
+  <h3>Revision</h3>
+  <a href="#mock" onclick="closeDrawer()"><span class="n">★</span>Mock Exam (S3 + IAM/Orgs)</a>
+  <button class="close" onclick="closeDrawer()">Close</button>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">SECTION GOAL</div>
+    <h1>Know S3 deeply — security, encryption, cost classes, replication and access tools.</h1>
+    <p>S3 is one of the most-tested services on SAA-C03. This section covers every feature you need, with safe CLI demos, then a mock exam over S3 plus the IAM/Accounts/Organisations section.</p>
+  </section>
+
+  <div class="card">
+    <h3 class="block">Section Map · how the lessons connect</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  SEC[1. Security] --> HOST[2. Static Hosting]
+  SEC --> VER[3. Versioning]
+  VER --> LOCK[15. Object Lock]
+  KMS[5. KMS] --> ENC[6. Object Encryption]
+  ENC --> BK[7. Bucket Keys]
+  CLS[8. Storage Classes] --> LC[9. Lifecycle]
+  VER --> REP[10. Replication]
+  PERF[4. Performance] --> SEC
+  SEC --> PRE[11. Pre-Signed URLs]
+  SEC --> AP[16. Access Points]
+  SEL[12. Select] --- CLS
+  EV[13. Events] --- LOG[14. Access Logs]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class SEC,VER,CLS,LC,REP,PERF,LOCK a;
+  class KMS,ENC,BK,HOST,PRE,AP,SEL,EV,LOG b;
+    </pre></div>
+  </div>
+
+  <div class="card">
+    <h3 class="block">Quick Understanding · whole section</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Lesson</th><th>What + why it matters for the exam</th></tr>
+      <tr><td>1 Security</td><td>Identity vs bucket policies vs ACLs (legacy). Block Public Access. Core.</td></tr>
+      <tr><td>2 Static Hosting</td><td>Turn a bucket into a website (HTTP only). Cheap hosting / failover pages.</td></tr>
+      <tr><td>3 Versioning</td><td>Keep object versions; delete adds a marker. Can't disable, only suspend.</td></tr>
+      <tr><td>4 Performance</td><td>Multipart upload + Transfer Acceleration for big/far uploads.</td></tr>
+      <tr><td>5 KMS</td><td>Managed encryption keys, regional, envelope encryption. Used by SSE-KMS.</td></tr>
+      <tr><td>6 Encryption CSE/SSE</td><td>CSE, SSE-C, SSE-S3, SSE-KMS. Role separation with KMS.</td></tr>
+      <tr><td>7 Bucket Keys</td><td>Cut SSE-KMS request cost up to 99%.</td></tr>
+      <tr><td>8 Storage Classes</td><td>Standard, IA, One Zone-IA, Glacier tiers, Intelligent-Tiering.</td></tr>
+      <tr><td>9 Lifecycle</td><td>Auto move to cheaper classes or expire objects.</td></tr>
+      <tr><td>10 Replication</td><td>CRR/SRR. Needs versioning. Not retroactive, not chained.</td></tr>
+      <tr><td>11 Pre-Signed URLs</td><td>Time-limited URL with the creator's permissions baked in.</td></tr>
+      <tr><td>12 Select</td><td>SQL-like partial retrieval to save cost/bandwidth.</td></tr>
+      <tr><td>13 Events</td><td>Notify SNS/SQS/Lambda/EventBridge on bucket events.</td></tr>
+      <tr><td>14 Access Logs</td><td>Detailed request records to a target bucket.</td></tr>
+      <tr><td>15 Object Lock</td><td>WORM: Governance/Compliance retention + Legal Hold.</td></tr>
+      <tr><td>16 Access Points</td><td>Per-app hostnames + policies; MRAP global routing.</td></tr>
+      <tr><td>★ Mock Exam</td><td>Exam-style questions over S3 + IAM/Accounts/Orgs.</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ===== LESSON 1 ===== -->
+  <article class="card" id="l1">
+    <div class="lesson-head"><div class="num">1</div><div><h2>S3 Security (Resource Policies & ACLs)</h2><div class="sub">Three ways to control access — and which to use.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Identity policy</td><td>Attached to an IAM user/role; controls what they can do.</td><td>Same-account access.</td></tr>
+      <tr><td>Bucket policy</td><td>Resource policy on the bucket; can allow anonymous + cross-account.</td><td>Most flexible — favourite.</td></tr>
+      <tr><td>ACL (legacy)</td><td>Old per-object/bucket access list. Avoid.</td><td>"Don't use ACLs" trap.</td></tr>
+      <tr><td>Block Public Access</td><td>Master safety switch; blocks public even if policy allows.</td><td>Overrides everything.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Resource policy</td><td>A policy attached to the resource (the bucket), naming who can use it.</td></tr>
+      <tr><td>Principal</td><td>The "who" — an account, user, role, or <code>*</code> (anyone).</td></tr>
+      <tr><td>Anonymous</td><td>A request with no AWS identity (the public).</td></tr>
+      <tr><td>ACL</td><td>Access Control List — a simple, legacy grant list.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  Q{Who needs access?} --> A[Your IAM users, many buckets] --> IP[Use IDENTITY policy]
+  Q --> B[Anonymous public OR another account] --> BP[Use BUCKET policy]
+  Q --> C[Old per-object grants] --> ACL[ACL - legacy, avoid]
+  BPA[Block Public Access] -. can override .-> BP
+  classDef g fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef w fill:#3a151c,stroke:#fb7185,color:#e7edf3;
+  class IP,BP g; class ACL w;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Identity policy</b>: best when controlling <b>your own</b> account's users across many resources.</li>
+      <li><b>Bucket policy</b>: needed for <b>anonymous</b> access or <b>cross-account</b>, and to set rules for a whole bucket.</li>
+      <li><b>ACLs</b> are <b>legacy</b> — AWS recommends not using them (now off by default).</li>
+      <li><b>Block Public Access (BPA)</b> is a safety net: if on, public access is blocked even if a policy allows it.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> add a bucket policy that allows only your own account to read, then view it. <b>Check first:</b> CLI configured as admin.</div>
+      <div class="step"><div class="sh">Make a bucket + get your account ID</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>ACC=$(aws sts get-caller-identity --query Account --output text)
+BUCKET=a4l-sec-$RANDOM$RANDOM
+aws s3 mb s3://$BUCKET --region us-east-1</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>make_bucket</code> success.</div>
+      <div class="step"><div class="sh">Apply a bucket policy (resource policy)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>cat > bp.json <<EOF
+{ "Version":"2012-10-17","Statement":[{
+  "Sid":"OwnAccountRead","Effect":"Allow",
+  "Principal":{"AWS":"arn:aws:iam::$ACC:root"},
+  "Action":"s3:GetObject","Resource":"arn:aws:s3:::$BUCKET/*" }]}
+EOF
+aws s3api put-bucket-policy --bucket $BUCKET --policy file://bp.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output = policy set. Read it back: <code>aws s3api get-bucket-policy --bucket $BUCKET</code>.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>We allowed our own account here (safe). Setting <code>Principal:"*"</code> would try public access — but <b>Block Public Access</b> would still block it unless turned off.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3 rb s3://$BUCKET --force
+rm -f bp.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> bucket removed. No cost.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Static hosting (L2) needs a public bucket policy.</li><li>Encryption (L6) and access points (L16) layer on top of this.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>CloudFront OAC, VPC endpoint policies, cross-account data sharing.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Anonymous or cross-account</b> → <b>bucket policy</b> (identity policies can't grant to anonymous).</li>
+      <li><b>Block Public Access overrides</b> any allow — check it first when "bucket is still private".</li>
+      <li>ACLs are <b>legacy</b>; prefer policies.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which controls anonymous access?<span class="hint">tap</span></div><div class="a">A bucket (resource) policy — identity policies can't grant to anonymous.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Bucket policy allows public, but access fails. Likely cause?<span class="hint">tap</span></div><div class="a">Block Public Access is on and overrides the allow.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Should you use ACLs for new work?<span class="hint">tap</span></div><div class="a">No — they're legacy. Use bucket/identity policies.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must let another AWS account read your bucket. Best method?</div>
+      <span class="opt">A) An ACL</span><span class="opt">B) A bucket policy naming their account as principal</span><span class="opt">C) Your own identity policy</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Bucket policies handle cross-account access cleanly.</div></div>
+    <div class="quiz"><div class="qq">A bucket should serve public web files but stays private. First thing to check?</div>
+      <span class="opt">A) Region</span><span class="opt">B) Block Public Access settings</span><span class="opt">C) Storage class</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> BPA blocks public access regardless of the policy.</div></div>
+  </article>
+
+  <!-- ===== LESSON 2 ===== -->
+  <article class="card" id="l2">
+    <div class="lesson-head"><div class="num">2</div><div><h2>Static Website Hosting</h2><div class="sub">Serve a simple website straight from a bucket.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Static hosting</td><td>Bucket serves files over an HTTP website endpoint.</td><td>Cheap site / failover page.</td></tr>
+      <tr><td>Index + error docs</td><td>The home page + the page shown on errors.</td><td>Required settings.</td></tr>
+      <tr><td>HTTP only</td><td>Website endpoint is HTTP, not HTTPS.</td><td>Add CloudFront for HTTPS.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Static website</td><td>A site made of fixed files (HTML/CSS/images), no server code.</td></tr>
+      <tr><td>Website endpoint</td><td>The special URL S3 gives a hosting bucket.</td></tr>
+      <tr><td>Index document</td><td>Default page (e.g. <code>index.html</code>).</td></tr>
+      <tr><td>Error document</td><td>Page shown for 404/errors.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  USER[Visitor] --> EP[S3 Website Endpoint - HTTP]
+  EP --> IDX[index.html]
+  EP --> ERR[error.html on failure]
+  NOTE[Needs: BPA off + public bucket policy] -. setup .-> EP
+  HTTPS[Want HTTPS / custom domain?] --> CF[Add CloudFront]
+  classDef k fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class EP k;
+    </pre></div>
+    <ul class="clean">
+      <li>Enable hosting, set <b>index</b> and <b>error</b> documents.</li>
+      <li>To be public: turn <b>off Block Public Access</b> + add a <b>public-read bucket policy</b>.</li>
+      <li>The website endpoint is <b>HTTP only</b> → use <b>CloudFront</b> for HTTPS and a custom domain.</li>
+      <li>Great for cheap sites, offloading, and <b>failover / maintenance pages</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> host the Animals4life "Top 10" page. <b>Check first:</b> CLI configured. <b>Note:</b> this makes a bucket public — clean up after.</div>
+      <div class="step"><div class="sh">Create bucket + turn off Block Public Access</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>BUCKET=a4l-top10-$RANDOM$RANDOM
+aws s3 mb s3://$BUCKET --region us-east-1
+aws s3api put-public-access-block --bucket $BUCKET \
+  --public-access-block-configuration BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false</code></pre></div>
+      <div class="expect"><b>Expect:</b> bucket made; BPA turned off (needed for a public website).</div>
+      <div class="step"><div class="sh">Add index + error pages and upload</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>echo "&lt;h1&gt;A4L Top 10 Animals&lt;/h1&gt;" > index.html
+echo "&lt;h1&gt;Oops - not found&lt;/h1&gt;" > error.html
+aws s3 cp index.html s3://$BUCKET/
+aws s3 cp error.html s3://$BUCKET/</code></pre></div>
+      <div class="expect"><b>Expect:</b> two uploads succeed.</div>
+      <div class="step"><div class="sh">Enable website + public-read policy</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3 website s3://$BUCKET/ --index-document index.html --error-document error.html
+cat > pub.json <<EOF
+{ "Version":"2012-10-17","Statement":[{ "Effect":"Allow","Principal":"*",
+  "Action":"s3:GetObject","Resource":"arn:aws:s3:::$BUCKET/*" }]}
+EOF
+aws s3api put-bucket-policy --bucket $BUCKET --policy file://pub.json
+echo "http://$BUCKET.s3-website-us-east-1.amazonaws.com"</code></pre></div>
+      <div class="expect"><b>Expect:</b> a website URL printed — open it in a browser to see the page (HTTP only).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>The <b>website endpoint</b> (<code>s3-website-...</code>) differs from the normal REST endpoint. It serves index/error docs and is HTTP only.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3 rb s3://$BUCKET --force
+rm -f index.html error.html pub.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> bucket + files removed. No cost.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses the bucket policy from L1.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>CloudFront (HTTPS + caching), Route 53 alias to the site, CRR for a failover region.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>S3 website endpoint = <b>HTTP only</b>. Need HTTPS/custom domain → <b>CloudFront</b>.</li>
+      <li>Must set <b>index</b> and <b>error</b> documents.</li>
+      <li>Good for <b>cheap static sites</b> and <b>failover pages</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Does the S3 website endpoint support HTTPS?<span class="hint">tap</span></div><div class="a">No — HTTP only. Use CloudFront for HTTPS.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Two documents you must set?<span class="hint">tap</span></div><div class="a">Index document and error document.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">To make the site public, what two things?<span class="hint">tap</span></div><div class="a">Turn off Block Public Access + add a public-read bucket policy.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You need an S3 static site served over HTTPS with your own domain. What do you add?</div>
+      <span class="opt">A) Nothing, S3 does HTTPS</span><span class="opt">B) CloudFront in front of the bucket</span><span class="opt">C) A second bucket</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> The S3 website endpoint is HTTP only; CloudFront adds HTTPS + custom domain.</div></div>
+  </article>
+
+  <!-- ===== LESSON 3 ===== -->
+  <article class="card" id="l3">
+    <div class="lesson-head"><div class="num">3</div><div><h2>Object Versioning & MFA Delete</h2><div class="sub">Keep old versions; recover from mistakes.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Versioning</td><td>Bucket keeps every version of an object.</td><td>Recovery + replication need it.</td></tr>
+      <tr><td>Delete marker</td><td>Delete just hides the object with a marker; data stays.</td><td>Common trap.</td></tr>
+      <tr><td>Can't disable</td><td>Once enabled, you can only Suspend, not turn off.</td><td>Detail question.</td></tr>
+      <tr><td>MFA Delete</td><td>Requires MFA to change versioning / delete versions.</td><td>Extra protection.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Version ID</td><td>A unique ID for each version of an object.</td></tr>
+      <tr><td>Current version</td><td>The newest version (returned when no ID given).</td></tr>
+      <tr><td>Delete marker</td><td>A special "latest version" that hides the object.</td></tr>
+      <tr><td>Suspend</td><td>Stop making new versions, but keep existing ones.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  P1[Upload v1] --> P2[Upload v2 - now current]
+  P2 --> DEL[Delete object]
+  DEL --> DM[Delete marker = current<br/>v1 + v2 still stored]
+  DM --> REC[Remove marker = object back]
+  classDef k fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class DM k;
+    </pre></div>
+    <ul class="clean">
+      <li>With versioning on, each upload makes a new <b>version</b>; the newest is the <b>current</b> one.</li>
+      <li>A plain delete just adds a <b>delete marker</b> — old versions stay (and still cost storage).</li>
+      <li>Restore by <b>deleting the delete marker</b>.</li>
+      <li>Versioning can be <b>Enabled</b> or <b>Suspended</b>, never fully off again.</li>
+      <li><b>MFA Delete</b> forces MFA to suspend versioning or permanently delete versions.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> "Animal of the week" page — recover after an accidental delete. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Create bucket + enable versioning</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>BUCKET=a4l-ver-$RANDOM$RANDOM
+aws s3 mb s3://$BUCKET --region us-east-1
+aws s3api put-bucket-versioning --bucket $BUCKET \
+  --versioning-configuration Status=Enabled</code></pre></div>
+      <div class="expect"><b>Expect:</b> bucket made; versioning enabled (no output).</div>
+      <div class="step"><div class="sh">Upload two versions, then delete</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>echo "cat v1" > animal.txt && aws s3 cp animal.txt s3://$BUCKET/animal.txt
+echo "cat v2" > animal.txt && aws s3 cp animal.txt s3://$BUCKET/animal.txt
+aws s3 rm s3://$BUCKET/animal.txt</code></pre></div>
+      <div class="expect"><b>Expect:</b> two uploads; the rm adds a delete marker (object now "gone").</div>
+      <div class="step"><div class="sh">List all versions (see the marker)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3api list-object-versions --bucket $BUCKET \
+  --query "{Versions:Versions[].VersionId,Markers:DeleteMarkers[].VersionId}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> two version IDs + one delete-marker ID — proof nothing was truly deleted.</div>
+      <div class="step"><div class="sh">Recover by deleting the delete marker</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>MID=$(aws s3api list-object-versions --bucket $BUCKET \
+  --query "DeleteMarkers[0].VersionId" --output text)
+aws s3api delete-object --bucket $BUCKET --key animal.txt --version-id $MID
+aws s3 cp s3://$BUCKET/animal.txt -   # prints "cat v2"</code></pre></div>
+      <div class="expect"><b>Expect:</b> the object is back; reading it shows <code>cat v2</code>.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Old versions <b>cost storage</b> until removed. Use lifecycle rules (L9) to expire non-current versions.</div>
+      <div class="box term"><span class="tag">Clean up</span><code>rb --force</code> deletes all versions + markers:</div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3 rb s3://$BUCKET --force
+rm -f animal.txt</code></pre></div>
+      <div class="expect"><b>Expect:</b> bucket and all versions removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Replication (L10) and Object Lock (L15) require versioning.</li><li>Lifecycle (L9) cleans up old versions.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Backup/DR strategies built on versioned buckets.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Delete with versioning = a <b>delete marker</b>; data isn't gone.</li>
+      <li>Versioning can be <b>suspended but never disabled</b>.</li>
+      <li>Old versions <b>still cost money</b>.</li>
+      <li><b>MFA Delete</b> = MFA required to suspend versioning or delete versions.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What happens on delete with versioning on?<span class="hint">tap</span></div><div class="a">A delete marker is added; older versions remain stored.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can you turn versioning off?<span class="hint">tap</span></div><div class="a">No — only suspend it. Existing versions stay.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How to recover a "deleted" object?<span class="hint">tap</span></div><div class="a">Delete its delete marker.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does MFA Delete protect?<span class="hint">tap</span></div><div class="a">Suspending versioning and permanently deleting versions.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A user "deleted" a file in a versioned bucket. How do you restore it?</div>
+      <span class="opt">A) Re-upload it</span><span class="opt">B) Delete the delete marker</span><span class="opt">C) Disable versioning</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> The data still exists; removing the delete marker brings it back.</div></div>
+    <div class="quiz"><div class="qq">Your bill grew after enabling versioning. Why?</div>
+      <span class="opt">A) Versioning has a flat fee</span><span class="opt">B) All old versions are stored and billed</span><span class="opt">C) Region change</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Every version consumes storage; use lifecycle rules to expire them.</div></div>
+  </article>
+
+  <!-- ===== LESSON 4 ===== -->
+  <article class="card" id="l4">
+    <div class="lesson-head"><div class="num">4</div><div><h2>S3 Performance Optimization</h2><div class="sub">Faster, more reliable uploads.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Single PUT</td><td>Upload an object in one request (max 5 GB).</td><td>Simple but fragile for big files.</td></tr>
+      <tr><td>Multipart upload</td><td>Split into parts, upload in parallel, reassemble.</td><td>Big files / reliability.</td></tr>
+      <tr><td>Transfer Acceleration</td><td>Use edge + AWS backbone for fast long-distance uploads.</td><td>Remote users, big data.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Multipart</td><td>Breaking a big upload into smaller pieces.</td></tr>
+      <tr><td>Part</td><td>One piece of a multipart upload.</td></tr>
+      <tr><td>Transfer Acceleration (TA)</td><td>Speeds far-away uploads via the nearest edge location.</td></tr>
+      <tr><td>Edge location</td><td>An AWS site close to users (also used by CloudFront).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  F[File to upload] --> SZ{Size?}
+  SZ -->|Up to 5GB| SP[Single PUT]
+  SZ -->|Large / want resilience| MP[Multipart: parallel parts]
+  MP --> FAST[Faster + retry single parts]
+  FAR[User far from bucket region] --> TA[Transfer Acceleration via edge]
+  classDef k fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class MP,TA k;
+    </pre></div>
+    <ul class="clean">
+      <li>Single PUT max <b>5 GB</b>. For bigger or more reliable uploads use <b>multipart</b>.</li>
+      <li>Multipart: recommended over <b>100 MB</b>, required over <b>5 GB</b>; up to <b>10,000 parts</b>, uploaded in parallel; a failed part can be retried alone.</li>
+      <li><b>Transfer Acceleration</b> sends data to the nearest <b>edge</b>, then over AWS's fast network — great for <b>remote users</b> and <b>large datasets</b> (extra cost).</li>
+      <li>TA needs a <b>DNS-compatible bucket name with no dots</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> enable Transfer Acceleration for Animals4life remote workers. <b>Check first:</b> CLI configured; bucket name has no dots.</div>
+      <div class="step"><div class="sh">Create a bucket + enable acceleration</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>BUCKET=a4l-accel-$RANDOM$RANDOM
+aws s3 mb s3://$BUCKET --region us-east-1
+aws s3api put-bucket-accelerate-configuration \
+  --bucket $BUCKET --accelerate-configuration Status=Enabled</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output = acceleration on.</div>
+      <div class="step"><div class="sh">Confirm it's enabled</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3api get-bucket-accelerate-configuration --bucket $BUCKET</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>{ "Status": "Enabled" }</code>. The accelerate endpoint is <code>$BUCKET.s3-accelerate.amazonaws.com</code>.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>The AWS speed-comparison tool shows direct vs accelerated upload times from your location. TA helps most when you're <b>far</b> from the bucket's region.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3 rb s3://$BUCKET --force</code></pre></div>
+      <div class="expect"><b>Expect:</b> bucket removed. (Enabling TA itself has no cost; only accelerated transfers cost extra.)</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Edge locations also power CloudFront (later).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>CloudFront, global delivery, large data ingestion patterns.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Single PUT limit = <b>5 GB</b>; large uploads → <b>multipart</b>.</li>
+      <li>Slow uploads from <b>far-away users</b> → <b>Transfer Acceleration</b>.</li>
+      <li>Multipart improves <b>speed</b> (parallel) and <b>reliability</b> (retry one part).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Max size for a single PUT?<span class="hint">tap</span></div><div class="a">5 GB.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Two benefits of multipart upload?<span class="hint">tap</span></div><div class="a">Faster (parallel parts) and more reliable (retry a failed part).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Best feature for remote users uploading big files?<span class="hint">tap</span></div><div class="a">S3 Transfer Acceleration.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Remote teams worldwide upload large files to a us-east-1 bucket, slowly. Best fix?</div>
+      <span class="opt">A) Bigger instance</span><span class="opt">B) Enable Transfer Acceleration</span><span class="opt">C) One Zone-IA</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> TA routes via the nearest edge and AWS backbone for faster far uploads.</div></div>
+  </article>
+
+  <!-- ===== LESSON 5 ===== -->
+  <article class="card" id="l5">
+    <div class="lesson-head"><div class="num">5</div><div><h2>Key Management Service (KMS)</h2><div class="sub">Create and control encryption keys.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>KMS</td><td>Service to create/manage cryptographic keys.</td><td>Used by SSE-KMS + many services.</td></tr>
+      <tr><td>Regional</td><td>Keys never leave their region (or KMS).</td><td>Multi-region needs care.</td></tr>
+      <tr><td>Envelope encryption</td><td>KMS key encrypts a data key; data key encrypts your data.</td><td>How big data is encrypted.</td></tr>
+      <tr><td>Key policy</td><td>Resource policy on the key; controls who can use it.</td><td>Access needs both IAM + key policy.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>KMS key (CMK)</td><td>The main key KMS holds; its material never leaves KMS unencrypted.</td></tr>
+      <tr><td>Data key (DEK)</td><td>A key KMS gives you to encrypt large data locally.</td></tr>
+      <tr><td>Alias</td><td>A friendly name for a key, e.g. <code>alias/catrobot</code>.</td></tr>
+      <tr><td>Customer managed key</td><td>A key you create and fully control.</td></tr>
+      <tr><td>Key policy</td><td>The policy on the key saying who may use/manage it.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  CMK[KMS Key - stays in KMS/region] -->|GenerateDataKey| DEK[Data Key]
+  DEK --> ENC[Encrypt big data locally]
+  CMK -->|encrypt up to 4KB| SMALL[Small data direct]
+  POL[Key policy + IAM] --> USE[Who may use the key]
+  classDef k fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class CMK k;
+    </pre></div>
+    <ul class="clean">
+      <li>KMS keys are <b>regional</b>; the key material <b>never leaves KMS</b> unencrypted.</li>
+      <li>KMS can encrypt/decrypt <b>small data (up to 4 KB)</b> directly.</li>
+      <li>For big data: KMS gives a <b>data key</b> (envelope encryption) used locally.</li>
+      <li>Using a key needs permission in <b>both</b> the <b>key policy</b> and the caller's IAM policy.</li>
+      <li>Keys can be backed by FIPS 140-2 validated hardware security modules.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> the course "battleplans" demo — make a key, encrypt and decrypt a file. <b>Check first:</b> CLI configured as admin.</div>
+      <div class="step"><div class="sh">Create a key + a friendly alias</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>KID=$(aws kms create-key --description "a4l catrobot" \
+  --query KeyMetadata.KeyId --output text)
+aws kms create-alias --alias-name alias/catrobot --target-key-id $KID
+echo $KID</code></pre></div>
+      <div class="expect"><b>Expect:</b> a key ID (UUID) and the alias created (no output for alias).</div>
+      <div class="step"><div class="sh">Encrypt a file using the alias</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>echo "find all the doggos, distract them with the yumz" > battleplans.txt
+aws kms encrypt --key-id alias/catrobot \
+  --plaintext fileb://battleplans.txt \
+  --output text --query CiphertextBlob | base64 --decode > not_battleplans.enc</code></pre></div>
+      <div class="expect"><b>Expect:</b> a binary file <code>not_battleplans.enc</code> — the encrypted data.</div>
+      <div class="step"><div class="sh">Decrypt it back</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws kms decrypt --ciphertext-blob fileb://not_battleplans.enc \
+  --output text --query Plaintext | base64 --decode > decryptedplans.txt
+cat decryptedplans.txt</code></pre></div>
+      <div class="expect"><b>Expect:</b> the original sentence printed — decryption worked.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Decrypt doesn't need <code>--key-id</code>: the ciphertext records which key made it. KMS just checks you're allowed to use that key.</div>
+      <div class="box term"><span class="tag">Clean up</span>You can't delete a key instantly — schedule deletion (7–30 days):</div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws kms delete-alias --alias-name alias/catrobot
+aws kms schedule-key-deletion --key-id $KID --pending-window-in-days 7
+rm -f battleplans.txt not_battleplans.enc decryptedplans.txt</code></pre></div>
+      <div class="expect"><b>Expect:</b> alias removed; key scheduled for deletion in 7 days (you can cancel within the window). A pending key is free.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>SSE-KMS (L6) uses these keys; Bucket Keys (L7) cut their cost.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>EBS encryption, RDS encryption, Secrets Manager — all use KMS.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>KMS keys are <b>regional</b> and never leave KMS.</li>
+      <li>KMS directly handles only <b>small data (≤4 KB)</b>; bigger data uses <b>data keys</b> (envelope).</li>
+      <li>Access needs <b>key policy + IAM</b> both to allow.</li>
+      <li>Key deletion has a <b>waiting period (7–30 days)</b> — no instant delete.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Are KMS keys regional or global?<span class="hint">tap</span></div><div class="a">Regional — keys don't leave their region/KMS.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Max data KMS encrypts directly?<span class="hint">tap</span></div><div class="a">4 KB. Larger data uses a data key (envelope encryption).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can you delete a KMS key instantly?<span class="hint">tap</span></div><div class="a">No — there's a 7–30 day waiting period.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What two things must allow key use?<span class="hint">tap</span></div><div class="a">The key policy and the caller's IAM policy.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You need to encrypt a 1 GB file with KMS. How?</div>
+      <span class="opt">A) Send it all to KMS encrypt</span>
+      <span class="opt">B) Use a data key (envelope encryption)</span>
+      <span class="opt">C) KMS can't do it</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> KMS encrypts only ≤4 KB directly; large data uses a generated data key.</div></div>
+  </article>
+
+  <!-- ===== LESSON 6 ===== -->
+  <article class="card" id="l6">
+    <div class="lesson-head"><div class="num">6</div><div><h2>S3 Object Encryption (CSE / SSE)</h2><div class="sub">Four ways objects can be encrypted at rest.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>CSE</td><td>Client-Side Encryption: you encrypt before upload.</td><td>AWS never sees plaintext.</td></tr>
+      <tr><td>SSE-S3</td><td>S3 manages keys (AES-256). Simple default.</td><td>Now the minimum default.</td></tr>
+      <tr><td>SSE-KMS</td><td>Uses KMS keys → control + audit + role separation.</td><td>Most flexible. Heavily tested.</td></tr>
+      <tr><td>SSE-C</td><td>You supply the key on each request; S3 does the work.</td><td>You manage keys yourself.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>At rest</td><td>Data stored on disk (vs "in transit" = moving over network).</td></tr>
+      <tr><td>SSE</td><td>Server-Side Encryption — S3 encrypts for you.</td></tr>
+      <tr><td>Role separation</td><td>Different people control the key vs the data.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Method</th><th>Who encrypts</th><th>Who holds keys</th><th>Use when…</th></tr>
+      <tr><td><b>CSE</b></td><td>You (client)</td><td>You</td><td>AWS must never see plaintext.</td></tr>
+      <tr><td><b>SSE-S3</b></td><td>S3</td><td>AWS (AES-256)</td><td>Simple, hands-off encryption.</td></tr>
+      <tr><td><b>SSE-KMS</b></td><td>S3 + KMS</td><td>KMS (you control)</td><td>Need control, audit, role separation.</td></tr>
+      <tr><td><b>SSE-C</b></td><td>S3</td><td>You (provide each request)</td><td>You want to manage the keys but not the crypto.</td></tr>
+    </table></div>
+    <ul class="clean">
+      <li>All S3 objects are now <b>encrypted at rest by default</b> (SSE-S3 at minimum). <span style="color:var(--muted)">[added for exam]</span></li>
+      <li><b>SSE-KMS role separation</b>: to read an encrypted object you need <b>S3 permission AND KMS key permission</b>. Deny KMS → can't read, even with S3 access.</li>
+      <li><b>SSE-C</b>: you send the key with every upload/download; lose the key = lose the data.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> upload objects with SSE-S3 and SSE-KMS, then prove role separation. <b>Check first:</b> CLI as admin; a KMS key (reuse alias <code>alias/catrobot</code> from L5 or make one).</div>
+      <div class="step"><div class="sh">Bucket + an SSE-S3 object</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>BUCKET=a4l-enc-$RANDOM$RANDOM
+aws s3 mb s3://$BUCKET --region us-east-1
+echo "plain" > a.txt
+aws s3 cp a.txt s3://$BUCKET/a.txt --sse AES256</code></pre></div>
+      <div class="expect"><b>Expect:</b> upload succeeds; object is encrypted with SSE-S3 (AES256).</div>
+      <div class="step"><div class="sh">An SSE-KMS object</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>echo "secret" > b.txt
+aws s3 cp b.txt s3://$BUCKET/b.txt --sse aws:kms --sse-kms-key-id alias/catrobot</code></pre></div>
+      <div class="expect"><b>Expect:</b> upload succeeds; this object needs the KMS key to be read.</div>
+      <div class="step"><div class="sh">Prove role separation: deny KMS, then try to read</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code># Apply this inline policy to a TEST user (not yourself):
+# { "Version":"2012-10-17","Statement":[
+#   {"Sid":"DenyKMS","Effect":"Deny","Action":"kms:*","Resource":"*"} ] }
+# That user can still GET a.txt (SSE-S3) but CANNOT GET b.txt (SSE-KMS).
+aws s3 cp s3://$BUCKET/b.txt -   # works for you (you have KMS access)</code></pre></div>
+      <div class="expect"><b>Expect:</b> with KMS denied, reading the SSE-KMS object returns <b>AccessDenied</b>, while the SSE-S3 object still reads — that's role separation.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>SSE-KMS ties data access to <b>key</b> access. This is why it's chosen for sensitive data + audit needs.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3 rb s3://$BUCKET --force
+rm -f a.txt b.txt</code></pre></div>
+      <div class="expect"><b>Expect:</b> bucket removed. (Remember to also schedule the KMS key for deletion if you're done — see L5.)</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses KMS (L5). Bucket Keys (L7) reduce SSE-KMS cost.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Default bucket encryption, compliance, KMS across services.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>SSE-KMS = role separation + audit</b> (CloudTrail logs key use).</li>
+      <li><b>SSE-C</b>: customer provides the key each request; AWS does the encryption.</li>
+      <li><b>CSE</b>: AWS never sees plaintext (you encrypt before sending).</li>
+      <li>"Read object needs key access too" → that's <b>SSE-KMS</b>.</li>
+    </ul></div>
+    <div class="box warn"><span class="tag">Easy to confuse</span><b>SSE-C</b> (you give the key) vs <b>SSE-KMS</b> (KMS holds the key) vs <b>CSE</b> (you encrypt yourself before upload).</div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which SSE gives role separation + audit?<span class="hint">tap</span></div><div class="a">SSE-KMS.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">In SSE-C, who provides the key?<span class="hint">tap</span></div><div class="a">The customer, on every request; AWS does the encryption.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which method means AWS never sees plaintext?<span class="hint">tap</span></div><div class="a">Client-Side Encryption (CSE).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Default minimum encryption now?<span class="hint">tap</span></div><div class="a">SSE-S3 (all objects encrypted at rest by default).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You need full control over keys, key rotation and an audit log of who decrypts objects. Which?</div>
+      <span class="opt">A) SSE-S3</span><span class="opt">B) SSE-KMS</span><span class="opt">C) SSE-C</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> SSE-KMS gives control, rotation and CloudTrail audit of key usage.</div></div>
+    <div class="quiz"><div class="qq">A user has S3 read but can't open SSE-KMS objects. Most likely fix?</div>
+      <span class="opt">A) Give bucket policy</span><span class="opt">B) Grant access to the KMS key</span><span class="opt">C) Enable versioning</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> SSE-KMS needs key permission too (role separation).</div></div>
+  </article>
+
+  <!-- ===== LESSON 7 ===== -->
+  <article class="card" id="l7">
+    <div class="lesson-head"><div class="num">7</div><div><h2>S3 Bucket Keys</h2><div class="sub">Cut SSE-KMS costs at high volume.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Problem</td><td>SSE-KMS calls KMS for every object → many requests = cost + throttling.</td><td>Why bucket keys exist.</td></tr>
+      <tr><td>Bucket Key</td><td>A bucket-level key reduces calls to KMS.</td><td>Up to 99% fewer KMS requests.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>KMS request cost</td><td>You pay per KMS API call (encrypt/decrypt/generate).</td></tr>
+      <tr><td>Throttling</td><td>Being slowed down when you make too many requests.</td></tr>
+      <tr><td>Bucket Key</td><td>A shared key at the bucket level so S3 calls KMS far less.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  WO[Without bucket key] --> MANY[1 KMS call per object = $$ + throttle]
+  WK[With bucket key] --> FEW[Few KMS calls, S3 reuses a bucket-level key]
+  FEW --> SAVE[Up to 99% fewer KMS requests]
+  classDef g fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class WK g;
+    </pre></div>
+    <ul class="clean">
+      <li>Only relevant to <b>SSE-KMS</b> at <b>high object volume</b>.</li>
+      <li>Reduces KMS API requests (and cost) by up to <b>99%</b>, and lowers throttling risk.</li>
+      <li>Enabled per bucket (or per object on upload).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> turn on a bucket key for an SSE-KMS bucket. <b>Check first:</b> CLI as admin; a KMS key (e.g. <code>alias/catrobot</code>).</div>
+      <div class="step"><div class="sh">Set default SSE-KMS encryption with Bucket Key enabled</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>BUCKET=a4l-bk-$RANDOM$RANDOM
+aws s3 mb s3://$BUCKET --region us-east-1
+cat > enc.json <<EOF
+{ "Rules":[{ "ApplyServerSideEncryptionByDefault":{
+  "SSEAlgorithm":"aws:kms","KMSMasterKeyID":"alias/catrobot"},
+  "BucketKeyEnabled": true }] }
+EOF
+aws s3api put-bucket-encryption --bucket $BUCKET \
+  --server-side-encryption-configuration file://enc.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output = default SSE-KMS + Bucket Key set.</div>
+      <div class="step"><div class="sh">Confirm</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3api get-bucket-encryption --bucket $BUCKET</code></pre></div>
+      <div class="expect"><b>Expect:</b> JSON showing <code>"BucketKeyEnabled": true</code>.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>No behaviour change for users — same encryption, just far fewer KMS calls behind the scenes.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3 rb s3://$BUCKET --force
+rm -f enc.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> bucket removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Optimises SSE-KMS from L6.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Cost-optimisation scenarios with heavy KMS use.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span>"Lots of SSE-KMS objects, KMS costs/throttling too high" → enable <b>S3 Bucket Keys</b> (up to 99% fewer KMS requests).</div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What do S3 Bucket Keys reduce?<span class="hint">tap</span></div><div class="a">KMS API requests (and cost) for SSE-KMS — up to 99%.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which encryption type do they apply to?<span class="hint">tap</span></div><div class="a">SSE-KMS only.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A data lake on SSE-KMS has huge KMS bills from millions of objects. Cheapest fix keeping SSE-KMS?</div>
+      <span class="opt">A) Switch to SSE-C</span><span class="opt">B) Enable S3 Bucket Keys</span><span class="opt">C) Disable encryption</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Bucket Keys cut KMS request costs by up to 99% with no security loss.</div></div>
+  </article>
+
+  <!-- ===== LESSON 8 ===== -->
+  <article class="card" id="l8">
+    <div class="lesson-head"><div class="num">8</div><div><h2>S3 Storage Classes</h2><div class="sub">Pick the right cost/access trade-off.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Storage class</td><td>How/where an object is stored, balancing cost vs access.</td><td>Very common cost question.</td></tr>
+      <tr><td>Durability</td><td>All classes: 11 nines (99.999999999%).</td><td>Durability is the same.</td></tr>
+      <tr><td>Availability / AZs</td><td>Most use ≥3 AZs; One Zone-IA uses 1 AZ.</td><td>One Zone trade-off.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>IA</td><td>Infrequent Access — cheaper storage, but you pay to retrieve.</td></tr>
+      <tr><td>Retrieval fee</td><td>A charge to read data back (IA + Glacier classes).</td></tr>
+      <tr><td>Minimum duration</td><td>Minimum days you're billed even if you delete early.</td></tr>
+      <tr><td>Intelligent-Tiering</td><td>Auto-moves objects between tiers based on usage.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Class</th><th>Best for</th><th>Notes (min days / retrieval)</th></tr>
+      <tr><td><b>S3 Standard</b></td><td>Hot, frequent data</td><td>No min, no retrieval fee, ≥3 AZ.</td></tr>
+      <tr><td><b>Standard-IA</b></td><td>Infrequent but quick</td><td>Min 30 days; retrieval fee; ≥3 AZ.</td></tr>
+      <tr><td><b>One Zone-IA</b></td><td>Infrequent + re-creatable</td><td>Min 30 days; <b>1 AZ</b> (less resilient); cheaper.</td></tr>
+      <tr><td><b>Glacier Instant Retrieval</b></td><td>Archive, need it in ms</td><td>Min 90 days; instant access.</td></tr>
+      <tr><td><b>Glacier Flexible Retrieval</b></td><td>Archive, mins–hours OK</td><td>Min 90 days; minutes to hours.</td></tr>
+      <tr><td><b>Glacier Deep Archive</b></td><td>Cheapest, rarely read</td><td>Min 180 days; hours (12+) to restore.</td></tr>
+      <tr><td><b>Intelligent-Tiering</b></td><td>Unknown/changing access</td><td>Auto-tiers; small monitor fee; no retrieval fee.</td></tr>
+    </table></div>
+    <ul class="clean">
+      <li><b>Durability is the same (11 nines)</b> everywhere — the difference is cost, access speed and AZ count.</li>
+      <li><b>One Zone-IA</b> stores in a single AZ → cheaper but lost if that AZ is destroyed. Use for data you can re-create.</li>
+      <li><b>Don't know the access pattern?</b> → <b>Intelligent-Tiering</b> (it moves objects automatically).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> store an object directly in Standard-IA. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Upload with a chosen storage class</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>BUCKET=a4l-cls-$RANDOM$RANDOM
+aws s3 mb s3://$BUCKET --region us-east-1
+echo "cold data" > old.txt
+aws s3 cp old.txt s3://$BUCKET/old.txt --storage-class STANDARD_IA</code></pre></div>
+      <div class="expect"><b>Expect:</b> upload succeeds in STANDARD_IA.</div>
+      <div class="step"><div class="sh">Confirm the class</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3api head-object --bucket $BUCKET --key old.txt --query StorageClass</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>"STANDARD_IA"</code>.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>For automatic moves over time, use <b>Lifecycle rules</b> (L9) instead of picking the class by hand.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3 rb s3://$BUCKET --force
+rm -f old.txt</code></pre></div>
+      <div class="expect"><b>Expect:</b> bucket removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Lifecycle (L9) automates moving between these classes.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Cost-optimisation design questions across the whole exam.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Unknown/changing access</b> → <b>Intelligent-Tiering</b>.</li>
+      <li><b>Re-creatable, infrequent</b> → <b>One Zone-IA</b> (cheaper, single AZ).</li>
+      <li><b>Cheapest archive</b> → <b>Glacier Deep Archive</b> (slowest restore, 180-day min).</li>
+      <li>Watch <b>minimum durations + retrieval fees</b> on IA/Glacier.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Durability across S3 classes?<span class="hint">tap</span></div><div class="a">The same — 11 nines (99.999999999%).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Cheapest class for rarely-read archive?<span class="hint">tap</span></div><div class="a">Glacier Deep Archive (slow restore, 180-day min).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Best class when access pattern is unknown?<span class="hint">tap</span></div><div class="a">Intelligent-Tiering.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Risk of One Zone-IA?<span class="hint">tap</span></div><div class="a">Single AZ — data lost if that AZ is destroyed. Use for re-creatable data.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Logs must be kept 7 years, almost never read, lowest cost. Class?</div>
+      <span class="opt">A) Standard</span><span class="opt">B) Glacier Deep Archive</span><span class="opt">C) One Zone-IA</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Deep Archive is cheapest for rarely-accessed long-term data.</div></div>
+    <div class="quiz"><div class="qq">Access pattern is unpredictable and you want no retrieval fees. Class?</div>
+      <span class="opt">A) Intelligent-Tiering</span><span class="opt">B) Standard-IA</span><span class="opt">C) Glacier</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Intelligent-Tiering auto-moves objects and has no retrieval fees.</div></div>
+  </article>
+
+  <!-- ===== LESSON 9 ===== -->
+  <article class="card" id="l9">
+    <div class="lesson-head"><div class="num">9</div><div><h2>S3 Lifecycle Configuration</h2><div class="sub">Automatically move or delete objects over time.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Lifecycle rule</td><td>Auto transition to cheaper classes or expire (delete) objects.</td><td>Cost-saving favourite.</td></tr>
+      <tr><td>Transition</td><td>Move objects to another storage class after N days.</td><td>Set the timing.</td></tr>
+      <tr><td>Expiration</td><td>Delete objects (or old versions) after N days.</td><td>Cleanup automation.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Filter</td><td>Which objects the rule applies to (prefix/tags or all).</td></tr>
+      <tr><td>Current version</td><td>The latest version of an object.</td></tr>
+      <tr><td>Noncurrent version</td><td>Older versions (when versioning is on).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  NEW[Object created] -->|30 days| IA[Standard-IA]
+  IA -->|90 days| GL[Glacier]
+  GL -->|365 days| DEL[Expire / delete]
+  classDef k fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class IA,GL k;
+    </pre></div>
+    <ul class="clean">
+      <li>Rules can <b>transition</b> objects to cheaper classes and/or <b>expire</b> them.</li>
+      <li>Apply to the <b>whole bucket</b> or a <b>prefix/tags</b>.</li>
+      <li>Can clean up <b>old (noncurrent) versions</b> and incomplete multipart uploads.</li>
+      <li>Lifecycle is <b>automatic and free to configure</b> — it just runs.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> auto-move objects to Standard-IA after 30 days and delete after 365. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Create bucket + apply a lifecycle rule</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>BUCKET=a4l-lc-$RANDOM$RANDOM
+aws s3 mb s3://$BUCKET --region us-east-1
+cat > lc.json <<EOF
+{ "Rules":[{
+  "ID":"archive-then-delete","Status":"Enabled","Filter":{"Prefix":""},
+  "Transitions":[{"Days":30,"StorageClass":"STANDARD_IA"}],
+  "Expiration":{"Days":365} }] }
+EOF
+aws s3api put-bucket-lifecycle-configuration \
+  --bucket $BUCKET --lifecycle-configuration file://lc.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output = rule applied.</div>
+      <div class="step"><div class="sh">Read the rule back</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3api get-bucket-lifecycle-configuration --bucket $BUCKET</code></pre></div>
+      <div class="expect"><b>Expect:</b> JSON showing the transition (30 days → STANDARD_IA) and expiration (365 days).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Rules act on object <b>age</b>, not on access. For access-based moving, use <b>Intelligent-Tiering</b> instead.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3 rb s3://$BUCKET --force
+rm -f lc.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> bucket removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Moves objects between classes from L8; cleans versions from L3.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Long-term cost design and compliance retention.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Lifecycle = <b>age-based</b> transitions/expirations. Access-based = <b>Intelligent-Tiering</b>.</li>
+      <li>Can expire <b>old versions</b> and <b>incomplete multipart uploads</b> to save cost.</li>
+      <li>Cheapest "auto-archive then delete" pattern → lifecycle rules.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Two actions a lifecycle rule can do?<span class="hint">tap</span></div><div class="a">Transition to a cheaper class, and expire (delete) objects.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Lifecycle vs Intelligent-Tiering trigger?<span class="hint">tap</span></div><div class="a">Lifecycle = by age (days); Intelligent-Tiering = by access pattern.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can lifecycle clean old versions?<span class="hint">tap</span></div><div class="a">Yes — it can expire noncurrent versions and incomplete uploads.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Cheapest way to move logs to Glacier after 90 days then delete at 1 year, automatically?</div>
+      <span class="opt">A) Manual moves</span><span class="opt">B) A lifecycle rule</span><span class="opt">C) Replication</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Lifecycle rules transition then expire objects by age, hands-free.</div></div>
+  </article>
+
+  <!-- ===== LESSON 10 ===== -->
+  <article class="card" id="l10">
+    <div class="lesson-head"><div class="num">10</div><div><h2>S3 Replication (CRR / SRR)</h2><div class="sub">Copy objects to another bucket automatically.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>CRR</td><td>Cross-Region Replication: source + dest in different regions.</td><td>DR, latency, compliance.</td></tr>
+      <tr><td>SRR</td><td>Same-Region Replication.</td><td>Log aggregation, prod→test.</td></tr>
+      <tr><td>Needs versioning</td><td>Both buckets must have versioning on.</td><td>Common requirement.</td></tr>
+      <tr><td>Not retroactive</td><td>Only new objects replicate (unless batch).</td><td>Big trap.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Source / Destination</td><td>The bucket copied from / copied to.</td></tr>
+      <tr><td>Replication role</td><td>An IAM role S3 uses to copy the objects.</td></tr>
+      <tr><td>RTC</td><td>Replication Time Control — a 15-minute SLA for replication.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  SRC[Source bucket - versioning on] -->|IAM replication role| DST[Destination bucket - versioning on]
+  SRC -. SRR .- SAME[Same region]
+  SRC -. CRR .- DIFF[Different region]
+  NOTE[Only NEW objects replicate by default] -. limit .-> DST
+  classDef k fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class SRC,DST k;
+    </pre></div>
+    <ul class="clean">
+      <li>Needs <b>versioning on both</b> buckets + an <b>IAM role</b> for S3 to copy.</li>
+      <li><b>Not retroactive</b>: only objects added <b>after</b> setup replicate (use <b>Batch Replication</b> for existing).</li>
+      <li><b>Not chained</b>: A→B→C, objects from A don't auto-flow to C.</li>
+      <li>By default it <b>doesn't</b> copy: SSE-C objects, or objects encrypted with KMS unless you enable it; delete markers are optional.</li>
+      <li>Uses: <b>SRR</b> for log aggregation / prod→test; <b>CRR</b> for DR, lower latency, data sovereignty.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> set up CRR from N. Virginia to N. California. <b>Check first:</b> CLI as admin. This creates a role + 2 buckets — clean up after.</div>
+      <div class="step"><div class="sh">Make source + destination buckets with versioning</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>SRC=a4l-src-$RANDOM$RANDOM ; DST=a4l-dst-$RANDOM$RANDOM
+aws s3 mb s3://$SRC --region us-east-1
+aws s3 mb s3://$DST --region us-west-1
+for B in $SRC $DST; do aws s3api put-bucket-versioning --bucket $B \
+  --versioning-configuration Status=Enabled; done</code></pre></div>
+      <div class="expect"><b>Expect:</b> two buckets created, versioning enabled on both.</div>
+      <div class="step"><div class="sh">Create the replication IAM role</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>cat > rtrust.json <<'EOF'
+{ "Version":"2012-10-17","Statement":[{ "Effect":"Allow",
+  "Principal":{"Service":"s3.amazonaws.com"},"Action":"sts:AssumeRole" }]}
+EOF
+ROLE_ARN=$(aws iam create-role --role-name a4l-rep \
+  --assume-role-policy-document file://rtrust.json \
+  --query Role.Arn --output text)
+aws iam attach-role-policy --role-name a4l-rep \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess   # demo only - tighten in real life
+echo $ROLE_ARN</code></pre></div>
+      <div class="expect"><b>Expect:</b> a role ARN. (In production, scope the policy to just the two buckets, not FullAccess.)</div>
+      <div class="step"><div class="sh">Apply the replication rule on the source</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>cat > rep.json <<EOF
+{ "Role":"$ROLE_ARN","Rules":[{ "ID":"crr","Status":"Enabled","Priority":1,
+  "DeleteMarkerReplication":{"Status":"Disabled"},"Filter":{},
+  "Destination":{"Bucket":"arn:aws:s3:::$DST"} }] }
+EOF
+aws s3api put-bucket-replication --bucket $SRC --replication-configuration file://rep.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output. Now upload a new object to $SRC and it appears in $DST after a short delay.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Objects already in $SRC before this rule will <b>not</b> replicate — only new ones (unless you run Batch Replication).</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3api delete-bucket-replication --bucket $SRC
+aws s3 rb s3://$SRC --force
+aws s3 rb s3://$DST --force
+aws iam detach-role-policy --role-name a4l-rep \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess
+aws iam delete-role --role-name a4l-rep
+rm -f rtrust.json rep.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> buckets, role and policy removed. No cost.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Requires versioning (L3) + an IAM role (Section 003).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>DR strategies, multi-region apps, MRAP (L16).</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Replication needs <b>versioning on both</b> buckets.</li>
+      <li>Default is <b>new objects only</b> (not retroactive) and <b>not chained</b>.</li>
+      <li><b>SRR</b> = same region (log aggregation, sovereignty, prod→test). <b>CRR</b> = cross region (DR, latency).</li>
+      <li>Need a guaranteed replication time → <b>RTC (15-min SLA)</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Prerequisite for S3 replication?<span class="hint">tap</span></div><div class="a">Versioning enabled on both source and destination buckets.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Does replication copy existing objects?<span class="hint">tap</span></div><div class="a">No, only new ones — unless you use Batch Replication.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">CRR vs SRR?<span class="hint">tap</span></div><div class="a">CRR = different regions; SRR = same region.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Feature for a 15-minute replication SLA?<span class="hint">tap</span></div><div class="a">Replication Time Control (RTC).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You enabled CRR but old files didn't copy. Why?</div>
+      <span class="opt">A) Wrong region</span><span class="opt">B) Replication isn't retroactive</span><span class="opt">C) Versioning off</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Only new objects replicate; use Batch Replication for existing ones.</div></div>
+    <div class="quiz"><div class="qq">Logs from many regional buckets must collect into one bucket in the same region. Use?</div>
+      <span class="opt">A) CRR</span><span class="opt">B) SRR</span><span class="opt">C) Lifecycle</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Same-Region Replication is ideal for log aggregation in one region.</div></div>
+  </article>
+
+  <!-- ===== LESSON 11 ===== -->
+  <article class="card" id="l11">
+    <div class="lesson-head"><div class="num">11</div><div><h2>S3 Pre-Signed URLs</h2><div class="sub">Time-limited access to one object via a URL.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Pre-signed URL</td><td>A URL with access + expiry encoded in it.</td><td>Share private objects safely.</td></tr>
+      <tr><td>Uses creator's perms</td><td>The URL acts as the identity that made it.</td><td>Key behaviour.</td></tr>
+      <tr><td>Upload or download</td><td>Can allow GET (download) or PUT (upload).</td><td>Both directions.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Pre-signed</td><td>Already "signed" with credentials so no login is needed to use it.</td></tr>
+      <tr><td>Expiry</td><td>How long the URL works before it stops.</td></tr>
+      <tr><td>Unauthenticated user</td><td>Someone with no AWS account/login.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  APP[Your app/identity] -->|creates| URL[Pre-signed URL<br/>permissions + expiry inside]
+  URL --> USER[Anyone with the URL]
+  USER -->|GET or PUT until expiry| OBJ[The specific S3 object]
+  classDef k fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class URL k;
+    </pre></div>
+    <ul class="clean">
+      <li>Lets an <b>unauthenticated</b> person access <b>one specific object</b> for a <b>limited time</b>.</li>
+      <li>The URL carries the <b>permissions of whoever created it</b>.</li>
+      <li>Works for <b>downloads (GET)</b> and <b>uploads (PUT)</b>.</li>
+      <li>If made with a <b>role's temporary creds</b>, the URL stops working when those creds expire.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> share one private object for 5 minutes. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Bucket + a private object</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>BUCKET=a4l-pre-$RANDOM$RANDOM
+aws s3 mb s3://$BUCKET --region us-east-1
+echo "members only" > secret.txt
+aws s3 cp secret.txt s3://$BUCKET/secret.txt</code></pre></div>
+      <div class="expect"><b>Expect:</b> object uploaded (private by default).</div>
+      <div class="step"><div class="sh">Generate a pre-signed URL (300s)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3 presign s3://$BUCKET/secret.txt --expires-in 300</code></pre></div>
+      <div class="expect"><b>Expect:</b> a long HTTPS URL. Open it in a private browser (no AWS login) within 5 min → the file downloads. After 5 min it fails.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Anyone with the URL can use it until it expires — treat it like a temporary password.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3 rb s3://$BUCKET --force
+rm -f secret.txt</code></pre></div>
+      <div class="expect"><b>Expect:</b> bucket removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>An alternative to public buckets (L1) for sharing single files.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>App patterns: direct browser upload/download without exposing the bucket.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Share a <b>private object temporarily</b> with someone with no AWS account → <b>pre-signed URL</b>.</li>
+      <li>The URL has the <b>creator's permissions</b> and an <b>expiry</b>.</li>
+      <li>Can be for <b>upload (PUT)</b> too, not just download.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Whose permissions does a pre-signed URL carry?<span class="hint">tap</span></div><div class="a">The identity that created the URL.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can a pre-signed URL be used to upload?<span class="hint">tap</span></div><div class="a">Yes — it can allow PUT (upload), not just GET.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How is access limited?<span class="hint">tap</span></div><div class="a">By an expiry time baked into the URL.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A customer with no AWS account must download one private file for 1 hour. Best option?</div>
+      <span class="opt">A) Make the bucket public</span><span class="opt">B) A pre-signed URL</span><span class="opt">C) Give them an IAM user</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A pre-signed URL grants time-limited access to one object, no login needed.</div></div>
+  </article>
+
+  <!-- ===== LESSON 12 ===== -->
+  <article class="card" id="l12">
+    <div class="lesson-head"><div class="num">12</div><div><h2>S3 Select & Glacier Select</h2><div class="sub">Get only the part of an object you need.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>S3 Select</td><td>Use SQL to fetch part of a single object (filter server-side).</td><td>Save bandwidth + cost.</td></tr>
+      <tr><td>Glacier Select</td><td>Same idea, for archived data in Glacier.</td><td>Query archives.</td></tr>
+      <tr><td>Single object only</td><td>Works on one object; no joins across files.</td><td>Common limit.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>SQL-like</td><td>A query language to filter rows/columns.</td></tr>
+      <tr><td>CSV / JSON / Parquet</td><td>Common data file formats S3 Select can read.</td></tr>
+      <tr><td>Server-side filtering</td><td>S3 filters before sending → less data over the network.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  BIG[Big CSV object in S3] --> SEL[S3 Select - SQL filter]
+  SEL --> SMALL[Only matching rows/columns returned]
+  SMALL --> SAVE[Less data = lower cost + faster]
+  classDef k fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class SEL k;
+    </pre></div>
+    <ul class="clean">
+      <li>Filter with <b>SQL-like</b> queries on <b>CSV/JSON/Parquet</b> objects.</li>
+      <li>S3 does the filtering, so you <b>transfer less data</b> (cheaper, faster).</li>
+      <li>Works on a <b>single object</b> only — no joins, no whole-bucket queries (that's Athena).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> pull only matching rows from a CSV. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Upload a small CSV</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>BUCKET=a4l-sel-$RANDOM$RANDOM
+aws s3 mb s3://$BUCKET --region us-east-1
+printf "name,type\nThor,dog\nMerlin,cat\nWhiskers,cat\n" > animals.csv
+aws s3 cp animals.csv s3://$BUCKET/animals.csv</code></pre></div>
+      <div class="expect"><b>Expect:</b> CSV uploaded.</div>
+      <div class="step"><div class="sh">Select only the cats</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3api select-object-content --bucket $BUCKET --key animals.csv \
+  --expression "SELECT s.name FROM s3object s WHERE s.type='cat'" \
+  --expression-type SQL \
+  --input-serialization '{"CSV":{"FileHeaderInfo":"USE"}}' \
+  --output-serialization '{"CSV":{}}' /dev/stdout</code></pre></div>
+      <div class="expect"><b>Expect:</b> only <code>Merlin</code> and <code>Whiskers</code> returned — not the whole file.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>For querying <b>many objects</b> or joins, use <b>Amazon Athena</b>, not S3 Select.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3 rb s3://$BUCKET --force
+rm -f animals.csv</code></pre></div>
+      <div class="expect"><b>Expect:</b> bucket removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Works with storage classes (L8), incl. Glacier Select for archives.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Athena (whole-dataset SQL), analytics patterns.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Need <b>part of one big object</b> cheaply → <b>S3 Select</b>.</li>
+      <li>Need to query <b>across many objects</b> → <b>Athena</b> (not S3 Select).</li>
+      <li>Glacier Select = the same idea for <b>archived</b> data.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does S3 Select do?<span class="hint">tap</span></div><div class="a">Uses SQL to return only part of a single object, filtered server-side.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">S3 Select vs Athena?<span class="hint">tap</span></div><div class="a">Select = one object; Athena = query across many objects.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Why use it?<span class="hint">tap</span></div><div class="a">Less data transferred → lower cost and faster results.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An app reads 10 rows from a 5 GB CSV in S3 repeatedly. Cheapest retrieval?</div>
+      <span class="opt">A) Download the whole file</span><span class="opt">B) S3 Select</span><span class="opt">C) Replication</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> S3 Select filters server-side so you only transfer the rows you need.</div></div>
+  </article>
+
+  <!-- ===== LESSON 13 ===== -->
+  <article class="card" id="l13">
+    <div class="lesson-head"><div class="num">13</div><div><h2>S3 Events</h2><div class="sub">React automatically when things happen in a bucket.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Event notification</td><td>S3 sends a message when an object is created/removed/etc.</td><td>Event-driven designs.</td></tr>
+      <tr><td>Destinations</td><td>SNS, SQS, Lambda — or EventBridge.</td><td>Know the targets.</td></tr>
+      <tr><td>EventBridge</td><td>Newer, richer option with more event types + filtering.</td><td>Often the better answer.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>SNS</td><td>Pub/sub messaging — fan out notifications.</td></tr>
+      <tr><td>SQS</td><td>A queue that holds messages for workers.</td></tr>
+      <tr><td>Lambda</td><td>Run code with no servers, triggered by events.</td></tr>
+      <tr><td>EventBridge</td><td>An event bus that routes events to many targets.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  S3[S3 bucket event<br/>created / removed / restore] --> SNS[SNS]
+  S3 --> SQS[SQS]
+  S3 --> LAM[Lambda]
+  S3 --> EB[EventBridge - more event types + filtering]
+  classDef k fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class S3 k;
+    </pre></div>
+    <ul class="clean">
+      <li>S3 can notify on events like <b>object created</b>, <b>removed</b>, <b>restore</b>, <b>replication</b>.</li>
+      <li>Targets: <b>SNS</b>, <b>SQS</b>, <b>Lambda</b>, or <b>EventBridge</b>.</li>
+      <li><b>EventBridge</b> supports more event types and advanced filtering — often preferred for complex routing.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (light)</span><b>Situation:</b> turn on EventBridge notifications for a bucket (one switch). <b>Check first:</b> CLI configured. Full SNS/SQS/Lambda wiring is covered in later sections.</div>
+      <div class="step"><div class="sh">Enable EventBridge on the bucket</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>BUCKET=a4l-evt-$RANDOM$RANDOM
+aws s3 mb s3://$BUCKET --region us-east-1
+aws s3api put-bucket-notification-configuration --bucket $BUCKET \
+  --notification-configuration '{"EventBridgeConfiguration":{}}'</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output. S3 will now send all events to EventBridge (you'd add a rule + target to act on them).</div>
+      <div class="step"><div class="sh">Confirm</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3api get-bucket-notification-configuration --bucket $BUCKET</code></pre></div>
+      <div class="expect"><b>Expect:</b> JSON showing <code>EventBridgeConfiguration</code> present.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>For SNS/SQS/Lambda directly, S3 also needs <b>permission</b> on that target (a topic/queue policy or Lambda permission).</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3 rb s3://$BUCKET --force</code></pre></div>
+      <div class="expect"><b>Expect:</b> bucket removed. No cost.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Often pairs with replication/versioning workflows.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Serverless section: SNS, SQS, Lambda, EventBridge in depth.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Event targets: <b>SNS, SQS, Lambda, EventBridge</b>.</li>
+      <li>Need rich filtering / many event types → <b>EventBridge</b>.</li>
+      <li>Direct SNS/SQS/Lambda need a <b>resource policy</b> letting S3 publish/invoke.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Four S3 event destinations?<span class="hint">tap</span></div><div class="a">SNS, SQS, Lambda, EventBridge.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which target gives the most event types + filtering?<span class="hint">tap</span></div><div class="a">EventBridge.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Uploading an image should trigger code to make a thumbnail. Simplest design?</div>
+      <span class="opt">A) S3 event → Lambda</span><span class="opt">B) Lifecycle rule</span><span class="opt">C) Replication</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> An S3 "object created" event invoking Lambda is the classic pattern.</div></div>
+  </article>
+
+  <!-- ===== LESSON 14 ===== -->
+  <article class="card" id="l14">
+    <div class="lesson-head"><div class="num">14</div><div><h2>S3 Access Logs</h2><div class="sub">Detailed records of requests to a bucket.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Server access logging</td><td>S3 writes a log of every request to a target bucket.</td><td>Audit + usage analysis.</td></tr>
+      <tr><td>Best effort</td><td>Logs are delivered, but can be delayed/incomplete.</td><td>Not real-time.</td></tr>
+      <tr><td>Target bucket</td><td>A separate bucket that receives the logs.</td><td>Don't log to itself.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Source bucket</td><td>The bucket you want to log requests for.</td></tr>
+      <tr><td>Target bucket</td><td>Where the log files are written.</td></tr>
+      <tr><td>Audit</td><td>Checking who accessed what, for security/compliance.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  REQ[Requests to Source bucket] --> LOGSVC[S3 logging - best effort]
+  LOGSVC --> TGT[Target bucket - log files]
+  TGT --> USE[Security audit, billing analysis]
+  classDef k fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class LOGSVC k;
+    </pre></div>
+    <ul class="clean">
+      <li>Logs <b>detailed request records</b> (who, what, when) to a <b>target bucket</b>.</li>
+      <li>Delivery is <b>best-effort</b> — can be delayed, so not for real-time alerting.</li>
+      <li>Good for <b>security audits</b>, <b>usage analysis</b>, and <b>understanding your S3 bill</b>.</li>
+      <li>For richer API-level auditing, use <b>CloudTrail data events</b> instead/as well.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> log requests from a source bucket into a target bucket. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Make source + target buckets</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>SRC=a4l-logsrc-$RANDOM$RANDOM ; TGT=a4l-logtgt-$RANDOM$RANDOM
+aws s3 mb s3://$SRC --region us-east-1
+aws s3 mb s3://$TGT --region us-east-1</code></pre></div>
+      <div class="expect"><b>Expect:</b> two buckets created.</div>
+      <div class="step"><div class="sh">Let the S3 logging service write to the target</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>cat > tgtpol.json <<EOF
+{ "Version":"2012-10-17","Statement":[{ "Sid":"S3ServerAccessLogs",
+  "Effect":"Allow","Principal":{"Service":"logging.s3.amazonaws.com"},
+  "Action":"s3:PutObject","Resource":"arn:aws:s3:::$TGT/*" }]}
+EOF
+aws s3api put-bucket-policy --bucket $TGT --policy file://tgtpol.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output = target allows the logging service.</div>
+      <div class="step"><div class="sh">Enable logging on the source</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3api put-bucket-logging --bucket $SRC --bucket-logging-status \
+  "{\"LoggingEnabled\":{\"TargetBucket\":\"$TGT\",\"TargetPrefix\":\"logs/\"}}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output. Requests to $SRC will appear under <code>logs/</code> in $TGT (with some delay).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Logs can take time to show up — it's best-effort, not instant. Don't log a bucket to itself.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3 rb s3://$SRC --force
+aws s3 rb s3://$TGT --force
+rm -f tgtpol.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> both buckets removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Complements CloudTrail (Section 003) for auditing.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Athena to query the logs; security/forensics workflows.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>S3 access logs = <b>best-effort</b>, delivered to a <b>separate target bucket</b>.</li>
+      <li>For real-time / API-level audit, prefer <b>CloudTrail (data events)</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Where do S3 access logs go?<span class="hint">tap</span></div><div class="a">To a separate target bucket you choose.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Are access logs real-time?<span class="hint">tap</span></div><div class="a">No — delivery is best-effort and can be delayed.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You want a record of every request made to a bucket for a security audit. Enable?</div>
+      <span class="opt">A) Versioning</span><span class="opt">B) Server access logging (to a target bucket)</span><span class="opt">C) Transfer Acceleration</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Server access logging records request details to a target bucket.</div></div>
+  </article>
+
+  <!-- ===== LESSON 15 ===== -->
+  <article class="card" id="l15">
+    <div class="lesson-head"><div class="num">15</div><div><h2>S3 Object Lock (WORM)</h2><div class="sub">Stop objects being deleted or changed.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Object Lock (WORM)</td><td>Write-once-read-many: can't delete/overwrite for a set time.</td><td>Compliance question.</td></tr>
+      <tr><td>Needs versioning</td><td>Must be enabled (usually at bucket creation).</td><td>Prerequisite.</td></tr>
+      <tr><td>Retention modes</td><td>Governance (override with perms) vs Compliance (no one).</td><td>Key difference.</td></tr>
+      <tr><td>Legal Hold</td><td>On/off lock with no time limit.</td><td>Separate from retention.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>WORM</td><td>Write Once, Read Many — can't change after writing.</td></tr>
+      <tr><td>Governance mode</td><td>Protected, but special permission can override/remove.</td></tr>
+      <tr><td>Compliance mode</td><td>Locked for the period — <b>nobody</b> (even root) can delete early.</td></tr>
+      <tr><td>Legal Hold</td><td>A simple on/off block with no end date.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  OL[Object Lock - needs versioning] --> RET[Retention period]
+  RET --> GOV[Governance: override with s3:BypassGovernanceRetention]
+  RET --> COMP[Compliance: no override, even root]
+  OL --> LH[Legal Hold: on/off, no time limit]
+  classDef w fill:#3a151c,stroke:#fb7185,color:#e7edf3;
+  class COMP w;
+    </pre></div>
+    <ul class="clean">
+      <li><b>WORM</b>: objects can't be deleted/overwritten for a set time or indefinitely.</li>
+      <li><b>Governance</b> mode: protected, but users with special permission can bypass.</li>
+      <li><b>Compliance</b> mode: <b>nobody</b> — not even root — can delete until the period ends.</li>
+      <li><b>Legal Hold</b>: an on/off flag, independent of any retention period.</li>
+      <li>Requires <b>versioning</b>; usually turned on when the bucket is created.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> protect an object with Governance retention (so we can still clean up). <b>Check first:</b> CLI as admin. <b>Use Governance, not Compliance</b> — Compliance can't be removed early.</div>
+      <div class="step"><div class="sh">Create a bucket WITH object lock + versioning</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>BUCKET=a4l-lock-$RANDOM$RANDOM
+aws s3api create-bucket --bucket $BUCKET --region us-east-1 \
+  --object-lock-enabled-for-bucket
+aws s3api put-bucket-versioning --bucket $BUCKET \
+  --versioning-configuration Status=Enabled</code></pre></div>
+      <div class="expect"><b>Expect:</b> bucket created with object lock; versioning on.</div>
+      <div class="step"><div class="sh">Upload an object with Governance retention (1 day)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>echo "do not delete" > rec.txt
+WHEN=$(date -u -d "+1 day" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u -v+1d +%Y-%m-%dT%H:%M:%SZ)
+aws s3api put-object --bucket $BUCKET --key rec.txt --body rec.txt \
+  --object-lock-mode GOVERNANCE --object-lock-retain-until-date $WHEN</code></pre></div>
+      <div class="expect"><b>Expect:</b> object stored; a normal delete of this version is now blocked.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>With <b>Compliance</b> mode you could NOT delete until the date — even as root. That's why we used <b>Governance</b> for a removable demo.</div>
+      <div class="box term"><span class="tag">Clean up</span>Governance lets you bypass with the right permission:</div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>VID=$(aws s3api list-object-versions --bucket $BUCKET \
+  --query "Versions[0].VersionId" --output text)
+aws s3api delete-object --bucket $BUCKET --key rec.txt \
+  --version-id $VID --bypass-governance-retention
+aws s3 rb s3://$BUCKET --force
+rm -f rec.txt</code></pre></div>
+      <div class="expect"><b>Expect:</b> object removed using bypass, bucket deleted. (A Compliance object would refuse this.)</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Builds on versioning (L3).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Compliance/regulatory storage, ransomware-resistant backups.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Compliance mode = nobody can delete</b> (even root) until retention ends.</li>
+      <li><b>Governance mode</b> can be bypassed with <code>s3:BypassGovernanceRetention</code>.</li>
+      <li><b>Legal Hold</b> = on/off, no time period.</li>
+      <li>Object Lock <b>requires versioning</b> (set at bucket creation).</li>
+    </ul></div>
+    <div class="box warn"><span class="tag">Trap</span>"Regulator requires data un-deletable for 5 years, no exceptions" → <b>Compliance</b> mode. If "admins may override in emergencies" → <b>Governance</b>.</div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is WORM?<span class="hint">tap</span></div><div class="a">Write Once Read Many — can't change/delete for a period.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Governance vs Compliance mode?<span class="hint">tap</span></div><div class="a">Governance can be bypassed with permission; Compliance can't, even by root.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Object Lock require?<span class="hint">tap</span></div><div class="a">Versioning (usually enabled at bucket creation).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is a Legal Hold?<span class="hint">tap</span></div><div class="a">An on/off protection with no time limit.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A law requires records be un-deletable for 7 years with no override at all. Which mode?</div>
+      <span class="opt">A) Governance</span><span class="opt">B) Compliance</span><span class="opt">C) Legal Hold</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Compliance mode blocks deletion for the period, even for root.</div></div>
+  </article>
+
+  <!-- ===== LESSON 16 ===== -->
+  <article class="card" id="l16">
+    <div class="lesson-head"><div class="num">16</div><div><h2>S3 Access Points & MRAP</h2><div class="sub">Simpler access management for shared data; global routing.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Access Point</td><td>A named hostname with its own policy + network rules for a bucket.</td><td>Manage access at scale.</td></tr>
+      <tr><td>Per-app access</td><td>Give each app/team its own access point + policy.</td><td>No giant bucket policy.</td></tr>
+      <tr><td>MRAP</td><td>Multi-Region Access Point: one global endpoint over many buckets.</td><td>Global routing + failover.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Access point</td><td>A custom entry point to a bucket with its own permissions.</td></tr>
+      <tr><td>Access point policy</td><td>Permissions just for that access point.</td></tr>
+      <tr><td>VPC restriction</td><td>An access point can be locked to a specific VPC.</td></tr>
+      <tr><td>MRAP</td><td>A single global endpoint that routes to buckets in several regions.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  B[One bucket - shared data] --> AP1[Access Point: team-A<br/>own policy / VPC only]
+  B --> AP2[Access Point: team-B<br/>own policy]
+  MRAP[Multi-Region Access Point] --> R1[Bucket in us-east-1]
+  MRAP --> R2[Bucket in eu-west-1]
+  classDef k fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class AP1,AP2,MRAP k;
+    </pre></div>
+    <ul class="clean">
+      <li>An <b>access point</b> = a unique hostname + its own policy + optional <b>VPC-only</b> rule.</li>
+      <li>Instead of one huge bucket policy, give each app/team a tailored access point.</li>
+      <li><b>MRAP</b> gives <b>one global endpoint</b> that routes requests to buckets across regions (latency-based, with failover).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> create an access point on a bucket, then remove it. <b>Check first:</b> CLI as admin; know your account ID.</div>
+      <div class="step"><div class="sh">Bucket + access point</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>ACC=$(aws sts get-caller-identity --query Account --output text)
+BUCKET=a4l-ap-$RANDOM$RANDOM
+aws s3 mb s3://$BUCKET --region us-east-1
+aws s3control create-access-point --account-id $ACC \
+  --name team-a --bucket $BUCKET</code></pre></div>
+      <div class="expect"><b>Expect:</b> JSON with the access point ARN/alias. Apps can now use this access point instead of the bucket directly.</div>
+      <div class="step"><div class="sh">List access points on the bucket</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3control list-access-points --account-id $ACC --bucket $BUCKET \
+  --query "AccessPointList[].Name"</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>["team-a"]</code>.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Each access point has its <b>own policy</b>; you can also force it to be reachable <b>only from a VPC</b> — great for isolating teams/apps.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3control delete-access-point --account-id $ACC --name team-a
+aws s3 rb s3://$BUCKET --force</code></pre></div>
+      <div class="expect"><b>Expect:</b> access point + bucket removed. (MRAP is best explored via the course's GitHub mini-project.)</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>An alternative to giant bucket policies (L1); MRAP builds on replication (L10).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>VPC endpoints + PrivateLink, multi-region app designs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Many apps/teams sharing one bucket, each needing different access → <b>Access Points</b>.</li>
+      <li>Lock access to a specific VPC → access point with a <b>VPC restriction</b>.</li>
+      <li>One <b>global endpoint</b> across multi-region buckets → <b>MRAP</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is an S3 Access Point?<span class="hint">tap</span></div><div class="a">A named hostname for a bucket with its own policy and network rules.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How to restrict an access point to a VPC?<span class="hint">tap</span></div><div class="a">Create it with a VPC restriction so it's only reachable from that VPC.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does MRAP provide?<span class="hint">tap</span></div><div class="a">A single global endpoint routing to buckets across multiple regions.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Dozens of apps share one big bucket and the bucket policy is unmanageable. Better approach?</div>
+      <span class="opt">A) One huge ACL</span><span class="opt">B) An access point per app with its own policy</span><span class="opt">C) More buckets only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Access points split access management per app, each with a small policy.</div></div>
+    <div class="quiz"><div class="qq">You want one endpoint that serves users from the nearest of several regional buckets. Use?</div>
+      <span class="opt">A) MRAP</span><span class="opt">B) Lifecycle</span><span class="opt">C) Pre-signed URL</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Multi-Region Access Points give one global endpoint with latency routing + failover.</div></div>
+  </article>
+
+  <!-- ===== MOCK EXAM ===== -->
+  <article class="card examcard" id="mock">
+    <div class="lesson-head"><div class="num">★</div><div><h2>Mock Exam</h2><div class="sub">Exam-style questions over S3 + IAM / Accounts / Organisations.</div></div></div>
+    <div class="box exam"><span class="tag">How to use</span>Answer in your head first, then tap <b>Show answer</b>. Aim for the <b>best</b> option, not just a correct one. 14 questions.</div>
+
+    <div class="quiz"><div class="qq">1. A bucket policy allows public read, but objects return Access Denied. What's the most likely cause?</div>
+      <span class="opt">A) Wrong storage class</span><span class="opt">B) Block Public Access is enabled</span><span class="opt">C) Versioning is off</span><span class="opt">D) No lifecycle rule</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Block Public Access overrides any policy that grants public access.</div></div>
+
+    <div class="quiz"><div class="qq">2. An EC2 app must read objects from S3. What is best practice?</div>
+      <span class="opt">A) Store IAM user access keys on the instance</span><span class="opt">B) Attach an IAM role to the instance</span><span class="opt">C) Use the root user keys</span><span class="opt">D) Make the bucket public</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Instance roles give temporary, rotating credentials — no stored keys to leak.</div></div>
+
+    <div class="quiz"><div class="qq">3. You must keep audit records un-deletable for 3 years, with NO exceptions even for admins. Which feature?</div>
+      <span class="opt">A) Versioning</span><span class="opt">B) Object Lock — Governance</span><span class="opt">C) Object Lock — Compliance</span><span class="opt">D) Lifecycle expiration</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> Compliance mode prevents deletion until the period ends, even for root.</div></div>
+
+    <div class="quiz"><div class="qq">4. A user has an Allow for s3:* but an SCP on their account denies s3:*. Can they use S3?</div>
+      <span class="opt">A) Yes, identity Allow wins</span><span class="opt">B) No, the SCP boundary blocks it</span><span class="opt">C) Only reads</span><span class="opt">D) Only in us-east-1</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Action must be allowed by both the SCP and the identity policy; the SCP deny wins.</div></div>
+
+    <div class="quiz"><div class="qq">5. Cheapest storage for backups kept 10 years, accessed maybe once, restore in 12+ hours is fine.</div>
+      <span class="opt">A) S3 Standard</span><span class="opt">B) Standard-IA</span><span class="opt">C) Glacier Deep Archive</span><span class="opt">D) One Zone-IA</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> Deep Archive is cheapest for rarely-read, slow-restore long-term data.</div></div>
+
+    <div class="quiz"><div class="qq">6. Give a partner in another AWS account read access to your bucket. Best method?</div>
+      <span class="opt">A) ACL</span><span class="opt">B) Bucket policy naming their account</span><span class="opt">C) Your identity policy</span><span class="opt">D) Pre-signed URL forever</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Bucket policies handle cross-account access; identity policies can't grant to other accounts' principals directly.</div></div>
+
+    <div class="quiz"><div class="qq">7. Replication was enabled, but files uploaded before it didn't copy. Why?</div>
+      <span class="opt">A) Replication isn't retroactive</span><span class="opt">B) Wrong region</span><span class="opt">C) ACL blocked it</span><span class="opt">D) No lifecycle</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Only new objects replicate; use Batch Replication for existing ones.</div></div>
+
+    <div class="quiz"><div class="qq">8. Millions of mobile app users need temporary, limited AWS access. Best design?</div>
+      <span class="opt">A) One IAM user each</span><span class="opt">B) Web identity federation + role</span><span class="opt">C) Shared access key</span><span class="opt">D) Root credentials</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> IAM users cap at 5000; federation (e.g. Cognito) + roles scales to millions.</div></div>
+
+    <div class="quiz"><div class="qq">9. Share a single private file with a customer who has no AWS account, for 1 hour.</div>
+      <span class="opt">A) Make bucket public</span><span class="opt">B) Pre-signed URL</span><span class="opt">C) New IAM user</span><span class="opt">D) Access point</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A pre-signed URL gives time-limited access to one object, no login.</div></div>
+
+    <div class="quiz"><div class="qq">10. A regulator audit asks "who deleted this IAM role last month?" Where do you look?</div>
+      <span class="opt">A) CloudWatch metrics</span><span class="opt">B) CloudTrail</span><span class="opt">C) S3 access logs</span><span class="opt">D) Cost Explorer</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> CloudTrail logs API calls and account events — who did what.</div></div>
+
+    <div class="quiz"><div class="qq">11. SSE-KMS bucket with millions of objects has huge KMS costs. Keep SSE-KMS but cut cost?</div>
+      <span class="opt">A) Switch to SSE-C</span><span class="opt">B) Enable S3 Bucket Keys</span><span class="opt">C) Turn off encryption</span><span class="opt">D) Use One Zone-IA</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Bucket Keys cut KMS requests up to 99% with no security change.</div></div>
+
+    <div class="quiz"><div class="qq">12. Restrict ALL member accounts in an org to only the eu-west-1 region. Best tool?</div>
+      <span class="opt">A) IAM group</span><span class="opt">B) SCP at the org root/OU</span><span class="opt">C) Bucket policy</span><span class="opt">D) Pre-signed URL</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> An SCP sets an org-wide boundary (note: the management account is not affected).</div></div>
+
+    <div class="quiz"><div class="qq">13. You need an S3 static website served over HTTPS with a custom domain. What do you add?</div>
+      <span class="opt">A) Nothing, S3 supports HTTPS</span><span class="opt">B) CloudFront in front of S3</span><span class="opt">C) Transfer Acceleration</span><span class="opt">D) MRAP</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> The S3 website endpoint is HTTP only; CloudFront adds HTTPS + custom domain.</div></div>
+
+    <div class="quiz"><div class="qq">14. A user has S3 read but can't open SSE-KMS objects. Quickest correct fix?</div>
+      <span class="opt">A) Enable versioning</span><span class="opt">B) Grant the user access to the KMS key</span><span class="opt">C) Make the object public</span><span class="opt">D) Add a lifecycle rule</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> SSE-KMS uses role separation — reading needs KMS key permission too.</div></div>
+  </article>
+
+  <div class="foot">
+    <div>
+      <span class="pill">BPA overrides policy</span><span class="pill">Versioning needed for replication</span>
+      <span class="pill">SSE-KMS = role separation</span><span class="pill">Compliance lock = no delete</span>
+      <span class="pill">Deep Archive = cheapest</span><span class="pill">Pre-signed = creator's perms</span>
+    </div>
+    <p>Section 004 · Simple Storage Service (S3) + Mock Exam · built for SAA-C03 self-study.<br>
+    Tap a flashcard or "Show answer" to reveal. Use ☰ Lessons to jump around.</p>
+  </div>
+</main>
+
+<button class="toTop" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawerBg').classList.add('open');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerBg').classList.remove('open');}
+function cp(btn){
+  const code=btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard?.writeText(code).then(()=>{const t=btn.innerText;btn.innerText='copied!';setTimeout(()=>btn.innerText=t,1200);})
+  .catch(()=>{btn.innerText='select & copy';});
+}
+const tt=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{tt.classList.toggle('show',window.scrollY>500);});
+window.addEventListener('load',()=>{
+  try{
+    mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{
+      fontFamily:'Manrope, sans-serif',primaryColor:'#1b2128',primaryTextColor:'#e7edf3',
+      primaryBorderColor:'#2dd4bf',lineColor:'#60a5fa',secondaryColor:'#212934',tertiaryColor:'#161b21'}});
+  }catch(e){console.warn('mermaid init',e);}
+});
+</script>
+</body>
+</html>

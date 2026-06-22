@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03 · 014 · Global Content Delivery & Optimization</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+:root{
+  --bg:#101418;--bg2:#161b21;--surface:#1b2128;--surface2:#212934;
+  --line:#2c3540;--line2:#3a4654;--text:#e7edf3;--muted:#9fb0c0;
+  --primary:#2dd4bf;--primary-d:#0f3b39;--exam:#fbbf24;--exam-d:#3a2f0c;
+  --demo:#60a5fa;--demo-d:#0e2647;--term:#c084fc;--term-d:#2a1640;
+  --warn:#fb7185;--warn-d:#3a151c;--ok:#34d399;
+  --radius:16px;--shadow:0 6px 22px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.25;margin:0}
+a{color:var(--primary);text-decoration:none}
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(16,20,24,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .badge{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--bg);background:var(--primary);padding:4px 9px;border-radius:8px}
+.topbar .ttl{font-family:'Sora';font-weight:600;font-size:15px}
+.topbar .ttl small{display:block;color:var(--muted);font-weight:500;font-size:11.5px;font-family:'Manrope'}
+.menu-btn{margin-left:auto;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+.menu-btn:active{transform:scale(.97)}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
+.drawer-bg.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(86vw,340px);background:var(--bg2);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .28s ease;z-index:80;overflow-y:auto;padding:18px 16px 40px}
+.drawer.open{transform:translateX(0)}
+.drawer h3{font-size:11.5px;color:var(--muted);margin:14px 4px 8px;text-transform:uppercase;letter-spacing:1px}
+.drawer a{display:block;color:var(--text);padding:9px 12px;border-radius:10px;font-weight:500;font-size:13.5px;border:1px solid transparent}
+.drawer a:active{background:var(--surface)}
+.drawer a .n{color:var(--primary);font-family:'Sora';font-weight:700;margin-right:8px}
+.drawer .close{width:100%;margin-top:18px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 90px}
+.hero{background:radial-gradient(120% 90% at 100% 0%, rgba(45,212,191,.16), transparent 55%),radial-gradient(120% 90% at 0% 100%, rgba(96,165,250,.12), transparent 55%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+.hero .eyebrow{color:var(--primary);font-weight:700;font-size:12.5px;letter-spacing:1.5px;font-family:'Sora'}
+.hero h1{font-size:25px;margin:6px 0 8px}
+.hero p{color:var(--muted);margin:0;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;margin-top:18px;box-shadow:var(--shadow)}
+.lesson-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.lesson-head .num{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:'Sora';font-weight:700;background:var(--primary);color:var(--bg);font-size:15px}
+.lesson-head h2{font-size:19px}
+.lesson-head .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+h3.block{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+h3.block::before{content:"";width:14px;height:3px;border-radius:3px;background:var(--primary)}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:360px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface2);color:var(--text);font-family:'Sora';font-weight:600;font-size:12.5px;letter-spacing:.3px}
+tr:last-child td{border-bottom:none}
+td b{color:var(--primary)}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{position:relative;padding:6px 0 6px 22px;font-size:15px;border-bottom:1px dashed var(--line)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"▸";position:absolute;left:2px;top:6px;color:var(--primary)}
+.two-col{display:grid;gap:12px}
+@media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+.box{border-radius:12px;padding:13px 14px;margin:12px 0;border:1px solid;font-size:14.5px}
+.box .tag{font-family:'Sora';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
+.box.exam{background:var(--exam-d);border-color:#6b551a}.box.exam .tag{color:var(--exam)}
+.box.term{background:var(--term-d);border-color:#4a2d6b}.box.term .tag{color:var(--term)}
+.box.warn{background:var(--warn-d);border-color:#6b2630}.box.warn .tag{color:var(--warn)}
+.box.demo{background:var(--demo-d);border-color:#1d4a82}.box.demo .tag{color:var(--demo)}
+.box ul{margin:4px 0 0;padding-left:18px}.box li{margin:3px 0}
+.mer{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;overflow-x:auto}
+.mermaid{display:flex;justify-content:center;min-width:fit-content}
+.code{position:relative;background:#0c1117;border:1px solid var(--line2);border-radius:10px;margin:10px 0}
+.code pre{margin:0;padding:13px 14px;overflow-x:auto;font-size:13px;line-height:1.55}
+.code code{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;color:#cfe9e6;white-space:pre}
+.code .cp{position:absolute;top:7px;right:7px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:7px;font-size:11px;padding:4px 9px;cursor:pointer;font-weight:600}
+.code .cp:active{color:var(--primary)}
+.expect{font-size:13px;color:var(--ok);background:rgba(52,211,153,.08);border-left:3px solid var(--ok);padding:7px 11px;margin:0 0 12px;border-radius:0 8px 8px 0}
+.expect b{color:var(--ok)}
+.step{counter-increment:st;margin:14px 0}
+.step .sh{display:flex;align-items:center;gap:9px;font-family:'Sora';font-weight:600;font-size:14.5px;margin-bottom:4px}
+.step .sh::before{content:counter(st);background:var(--demo);color:var(--bg);width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12.5px;flex:0 0 auto}
+.demo-wrap{counter-reset:st}
+.fc-grid{display:grid;gap:10px}
+.fc{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:13px 14px;cursor:pointer;transition:border-color .2s;user-select:none}
+.fc:active{border-color:var(--primary)}
+.fc .q{font-weight:600;font-size:14.5px;display:flex;gap:8px;align-items:flex-start}
+.fc .q::before{content:"Q";font-family:'Sora';color:var(--primary);font-weight:700;flex:0 0 auto}
+.fc .a{display:none;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);color:var(--muted);font-size:14px}
+.fc .a::before{content:"A ";color:var(--ok);font-weight:700;font-family:'Sora'}
+.fc.show .a{display:block}
+.fc .hint{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600}
+.quiz{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:14px;margin:10px 0}
+.quiz .qq{font-weight:600;font-size:15px;margin-bottom:8px}
+.quiz .opt{display:block;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin:6px 0;font-size:14px;cursor:pointer}
+.quiz .opt:active{border-color:var(--primary)}
+.quiz .reveal{margin-top:6px;background:var(--surface);color:var(--primary);border:1px solid var(--line2);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px;width:100%}
+.quiz .ans{display:none;margin-top:10px;border-left:3px solid var(--ok);background:rgba(52,211,153,.08);padding:9px 12px;border-radius:0 8px 8px 0;font-size:14px}
+.quiz .ans b{color:var(--ok)}
+.quiz.show .ans{display:block}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;line-height:1.7}
+.pill{display:inline-block;background:var(--surface2);border:1px solid var(--line2);color:var(--muted);font-size:11px;padding:2px 8px;border-radius:20px;margin:2px}
+.toTop{position:fixed;right:14px;bottom:16px;z-index:50;background:var(--primary);color:var(--bg);border:none;width:46px;height:46px;border-radius:50%;font-size:20px;box-shadow:var(--shadow);cursor:pointer;display:none}
+.toTop.show{display:block}
+kbd{background:var(--surface2);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-size:12px;font-family:monospace}
+.examcard{border-color:#6b551a;background:linear-gradient(180deg,var(--exam-d),var(--surface))}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="badge">SAA-C03</span>
+  <div class="ttl">Section 014<small>Global Content Delivery</small></div>
+  <button class="menu-btn" onclick="openDrawer()">☰ Lessons</button>
+</header>
+
+<div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer">
+  <h3>CloudFront core</h3>
+  <a href="#l1" onclick="closeDrawer()"><span class="n">1</span>CloudFront Architecture</a>
+  <a href="#l2" onclick="closeDrawer()"><span class="n">2</span>Behaviours</a>
+  <a href="#l3" onclick="closeDrawer()"><span class="n">3</span>TTL & Invalidations</a>
+  <h3>Certificates & SSL</h3>
+  <a href="#l4" onclick="closeDrawer()"><span class="n">4</span>ACM</a>
+  <a href="#l5" onclick="closeDrawer()"><span class="n">5</span>CloudFront & SSL/TLS</a>
+  <h3>Origins & security</h3>
+  <a href="#l6" onclick="closeDrawer()"><span class="n">6</span>Origin Types & Architecture</a>
+  <a href="#l7" onclick="closeDrawer()"><span class="n">7</span>Securing CF & S3 (OAI)</a>
+  <a href="#l8" onclick="closeDrawer()"><span class="n">8</span>Private Distros & OAC</a>
+  <h3>Edge & optimization</h3>
+  <a href="#l9" onclick="closeDrawer()"><span class="n">9</span>Lambda@Edge</a>
+  <a href="#l10" onclick="closeDrawer()"><span class="n">10</span>Global Accelerator</a>
+  <h3>Revision</h3>
+  <a href="#mock" onclick="closeDrawer()"><span class="n">★</span>Mock Exam</a>
+  <button class="close" onclick="closeDrawer()">Close</button>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">SECTION GOAL</div>
+    <h1>Deliver content fast and securely, worldwide.</h1>
+    <p>Learn CloudFront (AWS's CDN), how caching and SSL work, how to lock origins to CloudFront with OAC, edge compute with Lambda@Edge, and how Global Accelerator speeds up any TCP/UDP app.</p>
+  </section>
+
+  <div class="card">
+    <h3 class="block">Section Map · how the lessons connect</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  ARCH[1. CF architecture] --> BEH[2. Behaviours]
+  BEH --> TTL[3. TTL + invalidations]
+  ACM[4. ACM certs] --> SSL[5. CF + SSL/TLS]
+  SSL --> ORI[6. Origin types]
+  ORI --> OAI[7. OAI / securing]
+  OAI --> OAC[8. Private + OAC]
+  ARCH --> EDGE[9. Lambda@Edge]
+  ARCH --> GA[10. Global Accelerator]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class ARCH,BEH,TTL,ACM,SSL a;
+  class ORI,OAI,OAC,EDGE,GA b;
+    </pre></div>
+  </div>
+
+  <div class="card">
+    <h3 class="block">Quick Understanding · whole section</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Lesson</th><th>What + why it matters for the exam</th></tr>
+      <tr><td>1 Architecture</td><td>CDN, edge locations, origins, distributions.</td></tr>
+      <tr><td>2 Behaviours</td><td>Per-path settings: protocol, TTL, methods, privacy.</td></tr>
+      <tr><td>3 TTL & Invalidations</td><td>Cache expiry; invalidate vs versioned files.</td></tr>
+      <tr><td>4 ACM</td><td>Free public certs; CloudFront needs us-east-1.</td></tr>
+      <tr><td>5 CF & SSL</td><td>Viewer + origin certs; SNI vs dedicated IP.</td></tr>
+      <tr><td>6 Origins</td><td>S3 vs custom origins.</td></tr>
+      <tr><td>7 OAI</td><td>Lock S3/custom origins to CloudFront only.</td></tr>
+      <tr><td>8 Private & OAC</td><td>Signed URLs/cookies; OAC replaces OAI.</td></tr>
+      <tr><td>9 Lambda@Edge</td><td>Run code at the edge to change requests.</td></tr>
+      <tr><td>10 Global Accelerator</td><td>Anycast IPs over AWS network for any TCP/UDP.</td></tr>
+      <tr><td>★ Mock Exam</td><td>CDN + all prior sections.</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ===== LESSON 1 ===== -->
+  <article class="card" id="l1">
+    <div class="lesson-head"><div class="num">1</div><div><h2>CloudFront Architecture</h2><div class="sub">AWS's content delivery network (CDN).</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>CDN</td><td>Cache content near users to cut latency.</td><td>Faster delivery.</td></tr>
+      <tr><td>Distribution</td><td>The CloudFront config unit.</td><td>What you create.</td></tr>
+      <tr><td>Origin</td><td>Where the real content lives (S3 or HTTP).</td><td>Source of truth.</td></tr>
+      <tr><td>Edge location</td><td>Cache site close to users (400+).</td><td>Serves cached copies.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Edge location</td><td>A small AWS site near users that caches content.</td></tr>
+      <tr><td>Regional edge cache</td><td>A bigger mid-tier cache between edge and origin.</td></tr>
+      <tr><td>Cache hit / miss</td><td>Found in cache / had to fetch from origin.</td></tr>
+      <tr><td>Viewer</td><td>The user/browser requesting content.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  V[Viewer] --> EDGE[Nearest edge location]
+  EDGE -->|cache miss| REC[Regional edge cache]
+  REC -->|cache miss| ORI[Origin: S3 or HTTP server]
+  EDGE -->|cache hit| V
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class EDGE a;
+    </pre></div>
+    <ul class="clean">
+      <li>A <b>viewer</b> connects to the <b>nearest edge location</b>. On a <b>cache hit</b> it's served instantly; on a <b>miss</b> CloudFront fetches from the <b>regional edge cache</b>, then the <b>origin</b>.</li>
+      <li>You create a <b>distribution</b> pointing at one or more <b>origins</b> (S3 bucket or any HTTP server).</li>
+      <li>Caching near users lowers <b>latency</b> and reduces load on the origin.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Architecture overview; the hands-on build is L6 (S3 origin + distribution).</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Behaviours (L2), TTL (L3), origins (L6) all build on this.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Edge compute (L9), global optimisation (L10).</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"Reduce latency for global users / cache static content" → <b>CloudFront</b>.</li>
+      <li><b>Origin</b> = source; <b>edge location</b> = cache; <b>distribution</b> = the config.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is CloudFront?<span class="hint">tap</span></div><div class="a">AWS's content delivery network (CDN) that caches content at edge locations.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is an origin?<span class="hint">tap</span></div><div class="a">Where the real content lives (S3 bucket or HTTP server).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Cache hit vs miss?<span class="hint">tap</span></div><div class="a">Hit = served from edge cache; miss = fetched from origin.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Users worldwide complain a static site is slow from the single origin region. Best fix?</div>
+      <span class="opt">A) Bigger origin server</span><span class="opt">B) CloudFront CDN</span><span class="opt">C) More RDS replicas</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> CloudFront caches content at edge locations near users, cutting latency.</div></div>
+  </article>
+
+  <!-- ===== LESSON 2 ===== -->
+  <article class="card" id="l2">
+    <div class="lesson-head"><div class="num">2</div><div><h2>CloudFront Behaviours</h2><div class="sub">Per-path rules for how content is served.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Distribution settings</td><td>Apply to the whole distribution.</td><td>CNAMEs, cert, WAF, price class.</td></tr>
+      <tr><td>Behaviour</td><td>Rules for a path pattern (e.g. /images/*).</td><td>Origin, TTL, protocol.</td></tr>
+      <tr><td>Viewer protocol policy</td><td>HTTP/HTTPS handling.</td><td>Redirect to HTTPS.</td></tr>
+      <tr><td>Restrict viewer access</td><td>Make a path private (signed URLs).</td><td>Private content.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Path pattern</td><td>A URL match like <code>/api/*</code>.</td></tr>
+      <tr><td>Default behaviour</td><td>The catch-all rule (<code>*</code>).</td></tr>
+      <tr><td>Protocol policy</td><td>Whether viewers may use HTTP, HTTPS, or are redirected.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Distribution-level</b> settings apply to everything: alternate domain names (CNAMEs), SSL certificate, WAF, price class, default root object.</li>
+      <li><b>Behaviours</b> apply to a <b>path pattern</b> and set the <b>origin</b>, <b>viewer protocol policy</b> (e.g. redirect HTTP→HTTPS), allowed methods, <b>cache/TTL</b>, compression, and <b>restrict viewer access</b> (private).</li>
+      <li>The <b>default behaviour</b> (<code>*</code>) catches anything not matched by a more specific pattern.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Behaviours are settings configured on the distribution built in L6 (shown there).</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>TTL settings (L3), SSL (L5), private access (L8) live in behaviours.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Routing different paths to different origins.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"Force HTTPS" → set the behaviour's <b>viewer protocol policy</b> to <b>redirect-to-HTTPS</b>.</li>
+      <li>Different paths can use <b>different origins/TTLs</b> via separate behaviours.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does a behaviour control?<span class="hint">tap</span></div><div class="a">How a path pattern is served: origin, protocol, TTL, methods, privacy.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How do you force HTTPS?<span class="hint">tap</span></div><div class="a">Set viewer protocol policy to redirect-to-HTTPS.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must serve /static/* from S3 and /api/* from an ALB on one domain. Use?</div>
+      <span class="opt">A) Two distributions</span><span class="opt">B) Two behaviours with different origins</span><span class="opt">C) Two buckets</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Path-pattern behaviours route each path to a different origin.</div></div>
+  </article>
+
+  <!-- ===== LESSON 3 ===== -->
+  <article class="card" id="l3">
+    <div class="lesson-head"><div class="num">3</div><div><h2>TTL & Invalidations</h2><div class="sub">How long objects stay cached, and how to clear them.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>TTL</td><td>How long an object is cached at the edge.</td><td>Default 24h.</td></tr>
+      <tr><td>Min / Max TTL</td><td>Bounds on cache time.</td><td>Limit origin headers.</td></tr>
+      <tr><td>Cache-Control</td><td>Origin header setting cache time.</td><td>Per-object control.</td></tr>
+      <tr><td>Invalidation</td><td>Force-remove objects from cache.</td><td>Costs after free tier.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>TTL</td><td>Time To Live — how long a cached copy is valid.</td></tr>
+      <tr><td>Invalidation</td><td>Telling CloudFront to drop cached copies now.</td></tr>
+      <tr><td>Versioned filename</td><td>New file name per change (e.g. <code>logo.v2.png</code>).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>TTL</b> sets how long an object stays cached before the edge re-checks the origin. <b>Default TTL</b> is <b>24 hours</b>; <b>Min/Max TTL</b> bound what origin headers can set.</li>
+      <li>The origin can control caching with <b>Cache-Control: max-age</b> / <b>Expires</b> headers, kept within Min/Max TTL.</li>
+      <li><b>Invalidation</b> force-removes objects (e.g. <code>/*</code>) — useful but <b>costs money</b> after 1000 paths/month and takes time.</li>
+      <li><b>Better practice:</b> use <b>versioned filenames</b> so new content has a new URL — no waiting, no invalidation cost. <span class="pill">[added for exam]</span></li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Invalidation needs a live distribution (built in L6); the L6 demo shows the <code>create-invalidation</code> command. The exam tests the TTL hierarchy + versioning vs invalidation.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>TTL is set in behaviours (L2); used on the L6 distribution.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Cache strategy for any CDN-fronted app.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Default TTL = <b>24 hours</b>; origin <b>Cache-Control</b> is bounded by <b>Min/Max TTL</b>.</li>
+      <li>Update content fast + cheap → <b>versioned filenames</b>, not invalidations.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Default CloudFront TTL?<span class="hint">tap</span></div><div class="a">24 hours.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Cheaper alternative to invalidation?<span class="hint">tap</span></div><div class="a">Versioned filenames (new URL per change).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What header lets the origin set cache time?<span class="hint">tap</span></div><div class="a">Cache-Control (max-age) / Expires.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You deploy new CSS often and want instant updates with no invalidation cost. Best?</div>
+      <span class="opt">A) Invalidate /* each time</span><span class="opt">B) Versioned filenames</span><span class="opt">C) Disable caching</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A new filename is a new cache key — instant and free.</div></div>
+  </article>
+
+  <!-- ===== LESSON 4 ===== -->
+  <article class="card" id="l4">
+    <div class="lesson-head"><div class="num">4</div><div><h2>ACM (Certificate Manager)</h2><div class="sub">Free SSL/TLS certificates for AWS services.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Manages certs</td><td>Create, store, auto-renew SSL/TLS certs.</td><td>No manual renewal.</td></tr>
+      <tr><td>Public = free</td><td>Public certs cost nothing.</td><td>Private CA costs.</td></tr>
+      <tr><td>Integrations</td><td>Deploy to CloudFront, ALB, API Gateway.</td><td>Not EC2 directly.</td></tr>
+      <tr><td>Region rule</td><td>CloudFront needs the cert in us-east-1.</td><td>Classic trap.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Certificate</td><td>Proves a site's identity + enables HTTPS.</td></tr>
+      <tr><td>DNS validation</td><td>Prove you own the domain via a DNS record.</td></tr>
+      <tr><td>Auto-renewal</td><td>ACM renews its public certs automatically.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  ACM[ACM: request + auto-renew] --> CF[CloudFront - cert in us-east-1]
+  ACM --> ALB[ALB - cert in its region]
+  ACM --> API[API Gateway]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class ACM a;
+    </pre></div>
+    <ul class="clean">
+      <li>ACM creates, stores and <b>auto-renews</b> SSL/TLS certificates. <b>Public certs are free</b>; <b>private</b> certs (Private CA) cost money.</li>
+      <li>Deploy certs to <b>integrated services</b>: <b>CloudFront, ALB, API Gateway</b> — you <b>cannot</b> install an ACM cert directly on EC2.</li>
+      <li>ACM is <b>regional</b>: a cert must be in the resource's region. <b>CloudFront requires the cert in us-east-1</b> (N. Virginia).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (public certs are free)</span><b>Situation:</b> request a public cert for CloudFront. <b>Check first:</b> use a domain you own; create it in <b>us-east-1</b>.</div>
+      <div class="step"><div class="sh">Request a DNS-validated cert in us-east-1</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>CERT=$(aws acm request-certificate --domain-name www.example.com \
+  --validation-method DNS --region us-east-1 \
+  --query CertificateArn --output text)
+aws acm describe-certificate --certificate-arn $CERT --region us-east-1 \
+  --query "Certificate.Status"</code></pre></div>
+      <div class="expect"><b>Expect:</b> a cert ARN + status <code>PENDING_VALIDATION</code>. Add the shown CNAME to your DNS (Route 53) to validate; then it becomes <code>ISSUED</code>.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>For CloudFront the cert <b>must</b> be in <b>us-east-1</b>, no matter where your origin is. ACM auto-renews issued public certs.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws acm delete-certificate --certificate-arn $CERT --region us-east-1</code></pre></div>
+      <div class="expect"><b>Expect:</b> cert removed (detach from any service first).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Provides certs for CloudFront SSL (L5) + alternate CNAME (L6).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>HTTPS everywhere, ALB listeners, API custom domains.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>CloudFront cert MUST be in us-east-1</b> — very common trap.</li>
+      <li>ACM <b>public certs are free</b> + <b>auto-renew</b>; <b>can't</b> go directly on EC2.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which region for a CloudFront cert?<span class="hint">tap</span></div><div class="a">us-east-1 (N. Virginia).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Cost of ACM public certs?<span class="hint">tap</span></div><div class="a">Free (and auto-renewing).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can you put an ACM cert on EC2?<span class="hint">tap</span></div><div class="a">No — only integrated services (CloudFront, ALB, API Gateway).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Your CloudFront distribution won't accept an ACM cert created in eu-west-1. Why?</div>
+      <span class="opt">A) Cert must be in us-east-1</span><span class="opt">B) Wrong domain</span><span class="opt">C) Private cert</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> CloudFront only uses ACM certs from us-east-1.</div></div>
+  </article>
+
+  <!-- ===== LESSON 5 ===== -->
+  <article class="card" id="l5">
+    <div class="lesson-head"><div class="num">5</div><div><h2>CloudFront & SSL/TLS</h2><div class="sub">Viewer side, origin side, and SNI.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Viewer side</td><td>Viewer ↔ CloudFront encryption.</td><td>Cert in us-east-1.</td></tr>
+      <tr><td>Origin side</td><td>CloudFront ↔ origin encryption.</td><td>Origin needs valid cert.</td></tr>
+      <tr><td>SNI</td><td>Share one IP across many SSL sites.</td><td>Free, modern clients.</td></tr>
+      <tr><td>Dedicated IP SSL</td><td>For very old clients.</td><td>Legacy + expensive.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>SNI</td><td>Server Name Indication — says which site you want during the SSL handshake.</td></tr>
+      <tr><td>Viewer / origin protocol</td><td>How each side connects (HTTP/HTTPS).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  V[Viewer] -->|HTTPS - viewer cert in us-east-1| CF[CloudFront]
+  CF -->|HTTPS - origin needs valid cert| ORI[Origin]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class CF a;
+    </pre></div>
+    <ul class="clean">
+      <li>There are <b>two SSL connections</b>: <b>viewer side</b> (viewer ↔ CloudFront, cert from ACM in <b>us-east-1</b>) and <b>origin side</b> (CloudFront ↔ origin, the origin needs a <b>valid public cert</b>; S3 supports HTTPS).</li>
+      <li><b>SNI</b> lets many HTTPS sites <b>share one IP</b> by naming the site in the handshake — it's <b>free</b> and works on modern clients.</li>
+      <li><b>Dedicated IP SSL</b> is only for <b>very old clients</b> that don't support SNI — it's <b>expensive</b> (legacy).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>SSL config is applied on the distribution + ACM cert (L4/L6); the exam tests the viewer/origin split + SNI.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses ACM certs (L4); applied to the L6 distribution.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>End-to-end HTTPS designs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Two SSL hops: <b>viewer side</b> + <b>origin side</b>; viewer cert in <b>us-east-1</b>.</li>
+      <li><b>SNI</b> = free, modern; <b>dedicated IP</b> = legacy, costly.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Two SSL connections in CloudFront?<span class="hint">tap</span></div><div class="a">Viewer side (viewer↔CF) and origin side (CF↔origin).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does SNI do?<span class="hint">tap</span></div><div class="a">Lets many SSL sites share one IP by naming the site in the handshake.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">When is dedicated IP SSL needed?<span class="hint">tap</span></div><div class="a">Only for very old clients without SNI (expensive).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You want HTTPS for many domains on CloudFront without extra cost. Use?</div>
+      <span class="opt">A) SNI</span><span class="opt">B) Dedicated IP SSL</span><span class="opt">C) No SSL</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> SNI shares an IP across SSL sites for free on modern clients.</div></div>
+  </article>
+
+  <!-- ===== LESSON 6 ===== -->
+  <article class="card" id="l6">
+    <div class="lesson-head"><div class="num">6</div><div><h2>Origin Types & Architecture</h2><div class="sub">S3 origins vs custom origins (+ build a CDN).</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>S3 origin</td><td>A bucket; lock down with OAC/OAI.</td><td>Static content.</td></tr>
+      <tr><td>Custom origin</td><td>Any HTTP server (EC2/ALB/on-prem).</td><td>Dynamic content.</td></tr>
+      <tr><td>S3 website endpoint</td><td>Treated as a custom origin.</td><td>Enables redirects/index docs.</td></tr>
+      <tr><td>Origin settings</td><td>Protocol, path, custom headers.</td><td>Per origin.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>S3 origin (REST)</td><td>Bucket accessed via its S3 API endpoint.</td></tr>
+      <tr><td>Custom origin</td><td>Any web server CloudFront fetches from over HTTP(S).</td></tr>
+      <tr><td>Default root object</td><td>File served for "/" (e.g. index.html).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  CF[CloudFront distribution] --> S3[S3 origin - static, lock with OAC]
+  CF --> CUST[Custom origin - EC2/ALB/on-prem/S3 website]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class CF a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>S3 origin</b> (REST endpoint) is for static files — secure it so only CloudFront can read it (<b>OAC</b>, L8).</li>
+      <li><b>Custom origin</b> is any HTTP server (EC2, ALB, on-prem). The <b>S3 static website endpoint</b> counts as a custom origin (enables index docs + redirects).</li>
+      <li>Per-origin settings: <b>protocol</b>, <b>origin path</b>, <b>custom headers</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (CloudFront has a generous free tier)</span><b>Situation:</b> put a CloudFront CDN in front of an S3 bucket. <b>Check first:</b> CLI configured. (Distribution is free to create; you pay only on traffic.)</div>
+      <div class="step"><div class="sh">Create the bucket + upload a page</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>BUCKET=a4l-cf-$RANDOM
+aws s3 mb s3://$BUCKET
+echo '<h1>Hello from A4L via CloudFront</h1>' > index.html
+aws s3 cp index.html s3://$BUCKET/</code></pre></div>
+      <div class="expect"><b>Expect:</b> the bucket is made + the file uploads.</div>
+      <div class="step"><div class="sh">Create a distribution with the S3 origin</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>DIST=$(aws cloudfront create-distribution \
+  --origin-domain-name $BUCKET.s3.amazonaws.com \
+  --default-root-object index.html \
+  --query "Distribution.Id" --output text)
+aws cloudfront get-distribution --id $DIST \
+  --query "Distribution.DomainName" --output text</code></pre></div>
+      <div class="expect"><b>Expect:</b> a distribution ID + a <code>*.cloudfront.net</code> domain. It takes a few minutes to deploy. (It returns AccessDenied until you lock the bucket to CloudFront with OAC in L8.)</div>
+      <div class="step"><div class="sh">Invalidate the cache after a content change</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws cloudfront create-invalidation --distribution-id $DIST \
+  --paths "/*"</code></pre></div>
+      <div class="expect"><b>Expect:</b> an invalidation ID. First 1000 paths/month are free.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Adding an <b>alternate CNAME + HTTPS</b> needs a <b>registered Route 53 domain</b> + an <b>ACM cert in us-east-1</b> (L4). Keep the <code>$DIST</code> + <code>$BUCKET</code> for L8.</div>
+      <div class="box term"><span class="tag">Clean up (after L8)</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code># A distribution must be DISABLED then deleted (needs its ETag).
+# Easiest in the console: Disable → wait → Delete. Then:
+aws s3 rb s3://$BUCKET --force</code></pre></div>
+      <div class="expect"><b>Expect:</b> bucket emptied + removed; disable/delete the distribution to stop it.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>The distribution used by L3 (invalidation) + L8 (OAC).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Static site hosting, multi-origin apps.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>S3 REST origin</b> = static + lock with OAC; <b>S3 website endpoint</b> = custom origin (redirects/index docs).</li>
+      <li><b>Custom origin</b> = EC2/ALB/on-prem HTTP servers.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Two main origin types?<span class="hint">tap</span></div><div class="a">S3 origin and custom (HTTP) origin.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Is an S3 static website endpoint an S3 or custom origin?<span class="hint">tap</span></div><div class="a">Custom origin (enables redirects/index docs).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Free invalidation paths per month?<span class="hint">tap</span></div><div class="a">1000.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You need CloudFront in front of an ALB serving a dynamic app. Origin type?</div>
+      <span class="opt">A) S3 REST origin</span><span class="opt">B) Custom origin</span><span class="opt">C) Neither</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> An ALB is an HTTP server → custom origin.</div></div>
+  </article>
+
+  <!-- ===== LESSON 7 ===== -->
+  <article class="card" id="l7">
+    <div class="lesson-head"><div class="num">7</div><div><h2>Securing CF & S3 using OAI</h2><div class="sub">Stop people bypassing CloudFront.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Method</th><th>For</th><th>How it works</th></tr>
+      <tr><td>OAI</td><td>S3 origins</td><td>Virtual identity; bucket allows OAI only.</td></tr>
+      <tr><td>Custom headers</td><td>Custom origins</td><td>CloudFront adds a secret header; origin checks it.</td></tr>
+      <tr><td>IP firewall</td><td>Custom origins</td><td>Allow only CloudFront's IP ranges.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>OAI</td><td>Origin Access Identity — a CloudFront identity S3 can trust (legacy).</td></tr>
+      <tr><td>Implicit deny</td><td>If not allowed, it's denied by default.</td></tr>
+      <tr><td>Managed prefix list</td><td>AWS-maintained list of CloudFront IP ranges.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  V[Viewer] --> CF[CloudFront + OAI]
+  CF -->|allowed| S3[S3 bucket: allow OAI, deny others]
+  DIRECT[Direct request to S3] -->|blocked| S3
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class CF a;
+    </pre></div>
+    <ul class="clean">
+      <li>Goal: make sure people <b>can't bypass CloudFront</b> and hit the origin directly.</li>
+      <li><b>S3 origins</b>: use an <b>OAI</b> (legacy) — the bucket policy <b>allows the OAI</b> and <b>denies everyone else</b> (implicit deny).</li>
+      <li><b>Custom origins</b>: add a secret <b>custom header</b> (origin rejects requests without it) and/or an <b>IP firewall</b> allowing only CloudFront's IP ranges.</li>
+      <li><b>OAC</b> (L8) is the modern replacement for OAI.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only (use OAC)</span>OAI is legacy; the recommended hands-on is <b>OAC</b> in L8 (same goal, modern method).</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Secures the L6 origin; OAC in L8 is the modern version.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Private content delivery, secure origins.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Lock an <b>S3 origin</b> to CloudFront → <b>OAI</b> (old) / <b>OAC</b> (new).</li>
+      <li>Lock a <b>custom origin</b> → <b>secret custom header</b> + <b>IP allow-list</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does OAI secure?<span class="hint">tap</span></div><div class="a">An S3 origin — only CloudFront (the OAI) can read the bucket.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How do you lock a custom origin?<span class="hint">tap</span></div><div class="a">Secret custom header + IP firewall (CloudFront ranges).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Users can download files directly from the S3 bucket, skipping CloudFront. Fix?</div>
+      <span class="opt">A) OAC/OAI + bucket policy allowing only CloudFront</span><span class="opt">B) Bigger bucket</span><span class="opt">C) Public bucket</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Lock the bucket so only the CloudFront identity (OAC/OAI) can read it.</div></div>
+  </article>
+
+  <!-- ===== LESSON 8 ===== -->
+  <article class="card" id="l8">
+    <div class="lesson-head"><div class="num">8</div><div><h2>Private Distributions & OAC</h2><div class="sub">Signed access + the modern origin lock.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Signed URL</td><td>Time-limited link to one file.</td><td>Private single object.</td></tr>
+      <tr><td>Signed cookie</td><td>Access to many files.</td><td>Whole area private.</td></tr>
+      <tr><td>Trusted key groups</td><td>Modern signers (vs old trusted signers).</td><td>No root keys.</td></tr>
+      <tr><td>OAC</td><td>New OAI replacement; locks S3 to CloudFront.</td><td>Recommended.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Signed URL / cookie</td><td>A signed token granting temporary access.</td></tr>
+      <tr><td>Trusted key group</td><td>The public keys CloudFront trusts to verify signatures.</td></tr>
+      <tr><td>OAC</td><td>Origin Access Control — newer, supports SSE-KMS + all regions.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  APP[App signs with private key] --> URL[Signed URL / cookie]
+  URL --> CF[CloudFront verifies via Trusted Key Group]
+  CF -->|valid| OBJ[Private object]
+  CF -->|via OAC| S3[S3 locked to this distribution]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class CF a;
+    </pre></div>
+    <ul class="clean">
+      <li>Make content <b>private</b> with <b>signed URLs</b> (one file) or <b>signed cookies</b> (many files); your app signs them with a <b>private key</b> and CloudFront verifies via a <b>trusted key group</b>.</li>
+      <li><b>Trusted key groups</b> (new) replace <b>trusted signers</b> (old, needed account-level CloudFront keys + root).</li>
+      <li><b>OAC</b> is the modern <b>OAI replacement</b> to lock an <b>S3 origin</b> to one distribution; it supports <b>SSE-KMS</b> and <b>all regions</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (lock the L6 bucket with OAC)</span><b>Situation:</b> allow <b>only</b> your CloudFront distribution to read the S3 bucket. <b>Check first:</b> the <code>$DIST</code> + <code>$BUCKET</code> from L6. (Console is the easiest path; here are the key pieces.)</div>
+      <div class="step"><div class="sh">Create an Origin Access Control</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>OAC=$(aws cloudfront create-origin-access-control \
+  --origin-access-control-config \
+  'Name=a4l-oac,SigningProtocol=sigv4,SigningBehavior=always,OriginAccessControlOriginType=s3' \
+  --query "OriginAccessControl.Id" --output text)
+echo $OAC</code></pre></div>
+      <div class="expect"><b>Expect:</b> an OAC ID. Attach it to the distribution's S3 origin (update the distribution config — easiest in the console).</div>
+      <div class="step"><div class="sh">Bucket policy: allow only this distribution</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>ACCT=$(aws sts get-caller-identity --query Account --output text)
+cat > pol.json << EOF
+{"Version":"2012-10-17","Statement":[{
+ "Sid":"AllowCloudFrontOAC","Effect":"Allow",
+ "Principal":{"Service":"cloudfront.amazonaws.com"},
+ "Action":"s3:GetObject","Resource":"arn:aws:s3:::$BUCKET/*",
+ "Condition":{"StringEquals":{"AWS:SourceArn":"arn:aws:cloudfront::$ACCT:distribution/$DIST"}}
+}]}
+EOF
+aws s3api put-bucket-policy --bucket $BUCKET --policy file://pol.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> the bucket now serves <b>only</b> via that distribution; direct S3 access is denied.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Prefer <b>OAC over OAI</b> (OAC supports SSE-KMS + all regions). The <b>SourceArn</b> condition ties the bucket to one distribution.</div>
+      <div class="box term"><span class="tag">Clean up</span>Remove the bucket policy + OAC, then disable/delete the distribution (see L6 cleanup).</div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws s3api delete-bucket-policy --bucket $BUCKET
+aws cloudfront delete-origin-access-control --id $OAC --if-match \
+  $(aws cloudfront get-origin-access-control --id $OAC --query ETag --output text)
+rm -f pol.json index.html</code></pre></div>
+      <div class="expect"><b>Expect:</b> policy + OAC removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Modern version of OAI (L7); secures the L6 origin.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Private media, paid downloads, secure delivery.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Signed URL</b> = one file; <b>signed cookie</b> = many files.</li>
+      <li><b>Trusted key groups</b> (new) over <b>trusted signers</b> (old/root).</li>
+      <li>Lock S3 to CloudFront → <b>OAC</b> (supports SSE-KMS + all regions); OAI is legacy.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Signed URL vs signed cookie?<span class="hint">tap</span></div><div class="a">URL = one file; cookie = many files.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Modern signer mechanism?<span class="hint">tap</span></div><div class="a">Trusted key groups (not old trusted signers).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">OAC advantages over OAI?<span class="hint">tap</span></div><div class="a">Supports SSE-KMS and all regions; recommended replacement.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Give a user temporary access to ONE private video file via CloudFront. Use?</div>
+      <span class="opt">A) Signed URL</span><span class="opt">B) Signed cookie</span><span class="opt">C) Public object</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> A signed URL grants time-limited access to a single object.</div></div>
+    <div class="quiz"><div class="qq">An S3 bucket behind CloudFront is encrypted with SSE-KMS and must be locked to the distribution. Use?</div>
+      <span class="opt">A) OAI</span><span class="opt">B) OAC</span><span class="opt">C) Public bucket</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> OAC supports SSE-KMS (OAI doesn't) and is the modern method.</div></div>
+  </article>
+
+  <!-- ===== LESSON 9 ===== -->
+  <article class="card" id="l9">
+    <div class="lesson-head"><div class="num">9</div><div><h2>Lambda@Edge</h2><div class="sub">Run code at edge locations.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Edge compute</td><td>Lambda runs at CloudFront edges.</td><td>Modify traffic near users.</td></tr>
+      <tr><td>4 trigger points</td><td>Viewer/origin request + response.</td><td>Where it runs.</td></tr>
+      <tr><td>Use cases</td><td>Headers, redirects, A/B, auth.</td><td>Light customization.</td></tr>
+      <tr><td>vs CF Functions</td><td>Functions = lighter JS, viewer only.</td><td>Pick by complexity.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Viewer request/response</td><td>Between the user and CloudFront.</td></tr>
+      <tr><td>Origin request/response</td><td>Between CloudFront and the origin.</td></tr>
+      <tr><td>CloudFront Functions</td><td>Tiny JS functions for simple viewer changes.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  V[Viewer] -->|viewer request| CF[CloudFront edge]
+  CF -->|origin request| O[Origin]
+  O -->|origin response| CF
+  CF -->|viewer response| V
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class CF a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Lambda@Edge</b> runs Lambda functions at <b>edge locations</b> to modify traffic at <b>4 points</b>: viewer request, origin request, origin response, viewer response.</li>
+      <li>Uses: header changes, <b>redirects</b>, A/B testing, <b>auth at the edge</b>, content customization.</li>
+      <li><b>CloudFront Functions</b> are lighter (JS only, viewer request/response, sub-ms, cheaper) for simple URL/header tweaks; use <b>Lambda@Edge</b> for heavier logic or network access. <span class="pill">[added for exam]</span></li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Lambda@Edge functions are authored in us-east-1 + attached to a distribution + replicated to edges; the exam tests the 4 triggers + when to use it vs CloudFront Functions.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Extends CloudFront (L1); Lambda from the serverless section.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Edge auth, personalization, security headers.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"Modify requests/responses <b>at the edge</b>" → <b>Lambda@Edge</b> (4 triggers).</li>
+      <li>Simple, ultra-cheap viewer-side tweaks → <b>CloudFront Functions</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How many Lambda@Edge trigger points?<span class="hint">tap</span></div><div class="a">Four: viewer request/response + origin request/response.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Lambda@Edge vs CloudFront Functions?<span class="hint">tap</span></div><div class="a">Functions = light JS, viewer only; Lambda@Edge = heavier, all 4 triggers.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must run auth logic and rewrite requests before they reach the origin. Use?</div>
+      <span class="opt">A) Lambda@Edge (origin request)</span><span class="opt">B) RDS</span><span class="opt">C) SQS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Lambda@Edge runs at the edge and can modify the origin request.</div></div>
+  </article>
+
+  <!-- ===== LESSON 10 ===== -->
+  <article class="card" id="l10">
+    <div class="lesson-head"><div class="num">10</div><div><h2>Global Accelerator</h2><div class="sub">Speed up any TCP/UDP app over the AWS network.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Anycast IPs</td><td>2 static IPs at the edge.</td><td>IPs never change.</td></tr>
+      <tr><td>AWS backbone</td><td>Traffic enters edge → AWS network to app.</td><td>Lower latency.</td></tr>
+      <tr><td>Any TCP/UDP</td><td>Not just HTTP; no caching.</td><td>Gaming, VoIP, IoT.</td></tr>
+      <tr><td>Fast failover</td><td>Health checks + instant reroute.</td><td>Resilience.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Anycast IP</td><td>One IP announced from many edge sites; users hit the nearest.</td></tr>
+      <tr><td>AWS backbone</td><td>AWS's fast private global network.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  U[User] --> EDGE[Nearest edge - 2 static anycast IPs]
+  EDGE -->|AWS private backbone| APP[App in a region: ALB/NLB/EC2/EIP]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class EDGE a;
+    </pre></div>
+    <ul class="clean">
+      <li>Global Accelerator gives <b>2 static anycast IPs</b> at the edge; users hit the <b>nearest edge</b>, then traffic travels the <b>AWS private backbone</b> to your app — lower latency + <b>fast failover</b>.</li>
+      <li>It works for <b>any TCP/UDP</b> traffic (not just HTTP) and <b>does not cache</b>.</li>
+      <li><b>CloudFront vs Global Accelerator:</b> CloudFront is a <b>CDN that caches HTTP</b> at the edge; Global Accelerator <b>optimises the path</b> for <b>any protocol</b> with <b>static IPs</b> (no caching).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — cost</span>An accelerator bills hourly + needs a backend; the exam tests the CloudFront-vs-Global-Accelerator decision, which we cover here.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Edge optimisation like CloudFront (L1) but for any protocol.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Low-latency global apps, multi-region failover.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Static IPs</b>, <b>non-HTTP</b> (TCP/UDP), <b>fast failover</b>, no caching" → <b>Global Accelerator</b>.</li>
+      <li>"<b>Cache HTTP content</b> near users" → <b>CloudFront</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How many static IPs does Global Accelerator give?<span class="hint">tap</span></div><div class="a">Two anycast IPs.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Does Global Accelerator cache?<span class="hint">tap</span></div><div class="a">No — it optimises the path; CloudFront caches.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">CloudFront vs Global Accelerator protocol?<span class="hint">tap</span></div><div class="a">CloudFront = HTTP/CDN; Global Accelerator = any TCP/UDP.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A UDP game needs static entry IPs and the fastest global path with quick failover. Use?</div>
+      <span class="opt">A) CloudFront</span><span class="opt">B) Global Accelerator</span><span class="opt">C) Route 53 only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Global Accelerator gives static IPs + optimised TCP/UDP paths with fast failover.</div></div>
+    <div class="quiz"><div class="qq">A news site wants images/CSS cached close to readers worldwide. Use?</div>
+      <span class="opt">A) CloudFront</span><span class="opt">B) Global Accelerator</span><span class="opt">C) NLB</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> CloudFront caches HTTP content at the edge.</div></div>
+  </article>
+
+  <!-- ===== MOCK EXAM ===== -->
+  <article class="card examcard" id="mock">
+    <div class="lesson-head"><div class="num">★</div><div><h2>Mock Exam</h2><div class="sub">CDN + IAM/Orgs + S3 + VPC + EC2 + Containers + Advanced EC2 + Network Storage + Route 53 + RDS + HA/Scaling + Serverless.</div></div></div>
+    <div class="box exam"><span class="tag">How to use</span>Decide first, then tap <b>Show answer</b>. Pick the <b>best</b> option. 18 questions.</div>
+
+    <div class="quiz"><div class="qq">1. Global users find a static site slow from one region. Best fix?</div>
+      <span class="opt">A) Bigger server</span><span class="opt">B) CloudFront</span><span class="opt">C) More RDS replicas</span><span class="opt">D) NLB</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> CloudFront caches content near users to cut latency.</div></div>
+
+    <div class="quiz"><div class="qq">2. Your CloudFront cert (created in eu-west-1) is rejected. Why?</div>
+      <span class="opt">A) Must be in us-east-1</span><span class="opt">B) Private cert</span><span class="opt">C) Wrong bucket</span><span class="opt">D) Expired</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> CloudFront only uses ACM certs from us-east-1.</div></div>
+
+    <div class="quiz"><div class="qq">3. Update CSS often, want instant + free cache refresh. Best?</div>
+      <span class="opt">A) Invalidate /* each time</span><span class="opt">B) Versioned filenames</span><span class="opt">C) Disable cache</span><span class="opt">D) Lower TTL to 0</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A new filename is a new cache key — instant, no invalidation cost.</div></div>
+
+    <div class="quiz"><div class="qq">4. Lock an S3 origin (SSE-KMS) so only one distribution can read it. Use?</div>
+      <span class="opt">A) OAI</span><span class="opt">B) OAC</span><span class="opt">C) Public bucket</span><span class="opt">D) Signed cookie</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> OAC supports SSE-KMS and is the modern OAI replacement.</div></div>
+
+    <div class="quiz"><div class="qq">5. Give temporary access to ONE private file via CloudFront. Use?</div>
+      <span class="opt">A) Signed URL</span><span class="opt">B) Signed cookie</span><span class="opt">C) OAC</span><span class="opt">D) Public</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Signed URL = one file; signed cookie = many files.</div></div>
+
+    <div class="quiz"><div class="qq">6. A UDP game needs static IPs + fastest global path + fast failover. Use?</div>
+      <span class="opt">A) CloudFront</span><span class="opt">B) Global Accelerator</span><span class="opt">C) Route 53</span><span class="opt">D) ALB</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Global Accelerator gives static anycast IPs + optimised TCP/UDP paths.</div></div>
+
+    <div class="quiz"><div class="qq">7. Run auth + rewrite requests at the edge before the origin. Use?</div>
+      <span class="opt">A) Lambda@Edge</span><span class="opt">B) Step Functions</span><span class="opt">C) SQS</span><span class="opt">D) Glue</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Lambda@Edge can modify the origin request at edge locations.</div></div>
+
+    <div class="quiz"><div class="qq">8. Force all CloudFront viewers onto HTTPS. Setting?</div>
+      <span class="opt">A) Behaviour viewer protocol policy = redirect-to-HTTPS</span><span class="opt">B) New distribution</span><span class="opt">C) OAC</span><span class="opt">D) Lower TTL</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Set the behaviour to redirect HTTP to HTTPS.</div></div>
+
+    <div class="quiz"><div class="qq">9. (S3) Cheapest origin for a static website fronted by CloudFront?</div>
+      <span class="opt">A) EC2</span><span class="opt">B) S3 bucket</span><span class="opt">C) EFS</span><span class="opt">D) RDS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> S3 is the cheap, scalable static origin.</div></div>
+
+    <div class="quiz"><div class="qq">10. (Route 53) Point apex shop.a4l.com at a CloudFront distribution. Record?</div>
+      <span class="opt">A) CNAME at apex</span><span class="opt">B) Alias A record</span><span class="opt">C) MX</span><span class="opt">D) TXT</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Alias works at the apex and points to AWS resources (free for CF targets).</div></div>
+
+    <div class="quiz"><div class="qq">11. (HA) CloudFront fronts an ALB + ASG web tier. Origin type for the ALB?</div>
+      <span class="opt">A) S3 REST origin</span><span class="opt">B) Custom origin</span><span class="opt">C) OAI</span><span class="opt">D) Gateway LB</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> An ALB is an HTTP server → custom origin.</div></div>
+
+    <div class="quiz"><div class="qq">12. (Serverless) CloudFront fronts an S3 SPA + API Gateway. How to split paths?</div>
+      <span class="opt">A) Two behaviours (S3 + API GW origins)</span><span class="opt">B) Two distributions</span><span class="opt">C) Two buckets</span><span class="opt">D) Two certs</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Path-pattern behaviours route /api/* to API GW and /* to S3.</div></div>
+
+    <div class="quiz"><div class="qq">13. (VPC) Stop users hitting a custom EC2 origin directly, bypassing CloudFront. Use?</div>
+      <span class="opt">A) Secret custom header + IP allow-list</span><span class="opt">B) OAI</span><span class="opt">C) Public SG</span><span class="opt">D) Bigger instance</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Custom origins are locked with a secret header + CloudFront IP allow-list (OAI is S3-only).</div></div>
+
+    <div class="quiz"><div class="qq">14. (IAM) ACM public certificate cost + renewal?</div>
+      <span class="opt">A) Free + auto-renew</span><span class="opt">B) Paid + manual</span><span class="opt">C) Free + manual</span><span class="opt">D) Paid + auto</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> ACM public certs are free and auto-renewing.</div></div>
+
+    <div class="quiz"><div class="qq">15. (RDS) Can you install an ACM cert directly on an EC2 web server?</div>
+      <span class="opt">A) Yes</span><span class="opt">B) No — only CloudFront/ALB/API GW</span><span class="opt">C) Only in us-east-1</span><span class="opt">D) Only private certs</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> ACM certs deploy only to integrated services, not directly to EC2.</div></div>
+
+    <div class="quiz"><div class="qq">16. Many HTTPS domains on CloudFront with no extra cost. Use?</div>
+      <span class="opt">A) SNI</span><span class="opt">B) Dedicated IP SSL</span><span class="opt">C) No SSL</span><span class="opt">D) Self-signed</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> SNI shares an IP across SSL sites for free on modern clients.</div></div>
+
+    <div class="quiz"><div class="qq">17. Default CloudFront TTL when the origin sends no cache headers?</div>
+      <span class="opt">A) 1 hour</span><span class="opt">B) 24 hours</span><span class="opt">C) 0</span><span class="opt">D) 7 days</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Default TTL is 24 hours.</div></div>
+
+    <div class="quiz"><div class="qq">18. Simple, ultra-cheap viewer-side URL rewrite at the edge. Best?</div>
+      <span class="opt">A) CloudFront Functions</span><span class="opt">B) Lambda@Edge origin response</span><span class="opt">C) Step Functions</span><span class="opt">D) Glue</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> CloudFront Functions handle lightweight viewer-side changes very cheaply.</div></div>
+  </article>
+
+  <div class="foot">
+    <div>
+      <span class="pill">CloudFront = CDN (HTTP)</span><span class="pill">Global Accelerator = any TCP/UDP</span>
+      <span class="pill">CF cert in us-east-1</span><span class="pill">ACM public = free + auto-renew</span>
+      <span class="pill">OAC over OAI</span><span class="pill">Signed URL = 1 file</span>
+      <span class="pill">Versioned files over invalidation</span><span class="pill">Default TTL 24h</span>
+      <span class="pill">SNI free / dedicated IP costly</span><span class="pill">Lambda@Edge = 4 triggers</span>
+    </div>
+    <p>Section 014 · Global Content Delivery &amp; Optimization + Mock Exam · built for SAA-C03 self-study.<br>
+    Tap a flashcard or "Show answer" to reveal. Use ☰ Lessons to jump around.</p>
+  </div>
+</main>
+
+<button class="toTop" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawerBg').classList.add('open');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerBg').classList.remove('open');}
+function cp(btn){
+  const code=btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard?.writeText(code).then(()=>{const t=btn.innerText;btn.innerText='copied!';setTimeout(()=>btn.innerText=t,1200);})
+  .catch(()=>{btn.innerText='select & copy';});
+}
+const tt=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{tt.classList.toggle('show',window.scrollY>500);});
+window.addEventListener('load',()=>{
+  try{
+    mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{
+      fontFamily:'Manrope, sans-serif',primaryColor:'#1b2128',primaryTextColor:'#e7edf3',
+      primaryBorderColor:'#2dd4bf',lineColor:'#60a5fa',secondaryColor:'#212934',tertiaryColor:'#161b21'}});
+  }catch(e){console.warn('mermaid init',e);}
+});
+</script>
+</body>
+</html>

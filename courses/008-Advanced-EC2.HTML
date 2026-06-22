@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03 · 008 · Advanced EC2</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+:root{
+  --bg:#101418;--bg2:#161b21;--surface:#1b2128;--surface2:#212934;
+  --line:#2c3540;--line2:#3a4654;--text:#e7edf3;--muted:#9fb0c0;
+  --primary:#2dd4bf;--primary-d:#0f3b39;--exam:#fbbf24;--exam-d:#3a2f0c;
+  --demo:#60a5fa;--demo-d:#0e2647;--term:#c084fc;--term-d:#2a1640;
+  --warn:#fb7185;--warn-d:#3a151c;--ok:#34d399;
+  --radius:16px;--shadow:0 6px 22px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.25;margin:0}
+a{color:var(--primary);text-decoration:none}
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(16,20,24,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .badge{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--bg);background:var(--primary);padding:4px 9px;border-radius:8px}
+.topbar .ttl{font-family:'Sora';font-weight:600;font-size:15px}
+.topbar .ttl small{display:block;color:var(--muted);font-weight:500;font-size:11.5px;font-family:'Manrope'}
+.menu-btn{margin-left:auto;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+.menu-btn:active{transform:scale(.97)}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
+.drawer-bg.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(86vw,340px);background:var(--bg2);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .28s ease;z-index:80;overflow-y:auto;padding:18px 16px 40px}
+.drawer.open{transform:translateX(0)}
+.drawer h3{font-size:11.5px;color:var(--muted);margin:14px 4px 8px;text-transform:uppercase;letter-spacing:1px}
+.drawer a{display:block;color:var(--text);padding:10px 12px;border-radius:10px;font-weight:500;font-size:14px;border:1px solid transparent}
+.drawer a:active{background:var(--surface)}
+.drawer a .n{color:var(--primary);font-family:'Sora';font-weight:700;margin-right:8px}
+.drawer .close{width:100%;margin-top:18px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 90px}
+.hero{background:radial-gradient(120% 90% at 100% 0%, rgba(45,212,191,.16), transparent 55%),radial-gradient(120% 90% at 0% 100%, rgba(96,165,250,.12), transparent 55%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+.hero .eyebrow{color:var(--primary);font-weight:700;font-size:12.5px;letter-spacing:1.5px;font-family:'Sora'}
+.hero h1{font-size:25px;margin:6px 0 8px}
+.hero p{color:var(--muted);margin:0;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;margin-top:18px;box-shadow:var(--shadow)}
+.lesson-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.lesson-head .num{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:'Sora';font-weight:700;background:var(--primary);color:var(--bg);font-size:15px}
+.lesson-head h2{font-size:19px}
+.lesson-head .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+h3.block{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+h3.block::before{content:"";width:14px;height:3px;border-radius:3px;background:var(--primary)}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:360px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface2);color:var(--text);font-family:'Sora';font-weight:600;font-size:12.5px;letter-spacing:.3px}
+tr:last-child td{border-bottom:none}
+td b{color:var(--primary)}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{position:relative;padding:6px 0 6px 22px;font-size:15px;border-bottom:1px dashed var(--line)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"▸";position:absolute;left:2px;top:6px;color:var(--primary)}
+.two-col{display:grid;gap:12px}
+@media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+.box{border-radius:12px;padding:13px 14px;margin:12px 0;border:1px solid;font-size:14.5px}
+.box .tag{font-family:'Sora';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
+.box.exam{background:var(--exam-d);border-color:#6b551a}.box.exam .tag{color:var(--exam)}
+.box.term{background:var(--term-d);border-color:#4a2d6b}.box.term .tag{color:var(--term)}
+.box.warn{background:var(--warn-d);border-color:#6b2630}.box.warn .tag{color:var(--warn)}
+.box.demo{background:var(--demo-d);border-color:#1d4a82}.box.demo .tag{color:var(--demo)}
+.box ul{margin:4px 0 0;padding-left:18px}.box li{margin:3px 0}
+.mer{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;overflow-x:auto}
+.mermaid{display:flex;justify-content:center;min-width:fit-content}
+.code{position:relative;background:#0c1117;border:1px solid var(--line2);border-radius:10px;margin:10px 0}
+.code pre{margin:0;padding:13px 14px;overflow-x:auto;font-size:13px;line-height:1.55}
+.code code{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;color:#cfe9e6;white-space:pre}
+.code .cp{position:absolute;top:7px;right:7px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:7px;font-size:11px;padding:4px 9px;cursor:pointer;font-weight:600}
+.code .cp:active{color:var(--primary)}
+.expect{font-size:13px;color:var(--ok);background:rgba(52,211,153,.08);border-left:3px solid var(--ok);padding:7px 11px;margin:0 0 12px;border-radius:0 8px 8px 0}
+.expect b{color:var(--ok)}
+.step{counter-increment:st;margin:14px 0}
+.step .sh{display:flex;align-items:center;gap:9px;font-family:'Sora';font-weight:600;font-size:14.5px;margin-bottom:4px}
+.step .sh::before{content:counter(st);background:var(--demo);color:var(--bg);width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12.5px;flex:0 0 auto}
+.demo-wrap{counter-reset:st}
+.fc-grid{display:grid;gap:10px}
+.fc{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:13px 14px;cursor:pointer;transition:border-color .2s;user-select:none}
+.fc:active{border-color:var(--primary)}
+.fc .q{font-weight:600;font-size:14.5px;display:flex;gap:8px;align-items:flex-start}
+.fc .q::before{content:"Q";font-family:'Sora';color:var(--primary);font-weight:700;flex:0 0 auto}
+.fc .a{display:none;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);color:var(--muted);font-size:14px}
+.fc .a::before{content:"A ";color:var(--ok);font-weight:700;font-family:'Sora'}
+.fc.show .a{display:block}
+.fc .hint{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600}
+.quiz{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:14px;margin:10px 0}
+.quiz .qq{font-weight:600;font-size:15px;margin-bottom:8px}
+.quiz .opt{display:block;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin:6px 0;font-size:14px;cursor:pointer}
+.quiz .opt:active{border-color:var(--primary)}
+.quiz .reveal{margin-top:6px;background:var(--surface);color:var(--primary);border:1px solid var(--line2);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px;width:100%}
+.quiz .ans{display:none;margin-top:10px;border-left:3px solid var(--ok);background:rgba(52,211,153,.08);padding:9px 12px;border-radius:0 8px 8px 0;font-size:14px}
+.quiz .ans b{color:var(--ok)}
+.quiz.show .ans{display:block}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;line-height:1.7}
+.pill{display:inline-block;background:var(--surface2);border:1px solid var(--line2);color:var(--muted);font-size:11px;padding:2px 8px;border-radius:20px;margin:2px}
+.toTop{position:fixed;right:14px;bottom:16px;z-index:50;background:var(--primary);color:var(--bg);border:none;width:46px;height:46px;border-radius:50%;font-size:20px;box-shadow:var(--shadow);cursor:pointer;display:none}
+.toTop.show{display:block}
+kbd{background:var(--surface2);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-size:12px;font-family:monospace}
+.examcard{border-color:#6b551a;background:linear-gradient(180deg,var(--exam-d),var(--surface))}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="badge">SAA-C03</span>
+  <div class="ttl">Section 008<small>Advanced EC2</small></div>
+  <button class="menu-btn" onclick="openDrawer()">☰ Lessons</button>
+</header>
+
+<div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer">
+  <h3>Bootstrapping</h3>
+  <a href="#l1" onclick="closeDrawer()"><span class="n">1</span>User Data</a>
+  <a href="#l2" onclick="closeDrawer()"><span class="n">2</span>CFN-INIT & cfn-signal</a>
+  <h3>Permissions & config</h3>
+  <a href="#l3" onclick="closeDrawer()"><span class="n">3</span>Instance Roles & Profile</a>
+  <a href="#l4" onclick="closeDrawer()"><span class="n">4</span>SSM Parameter Store</a>
+  <a href="#l5" onclick="closeDrawer()"><span class="n">5</span>Logging (CloudWatch Agent)</a>
+  <h3>Placement & performance</h3>
+  <a href="#l6" onclick="closeDrawer()"><span class="n">6</span>Placement Groups</a>
+  <a href="#l7" onclick="closeDrawer()"><span class="n">7</span>Dedicated Hosts</a>
+  <a href="#l8" onclick="closeDrawer()"><span class="n">8</span>Enhanced Net & EBS Optimized</a>
+  <h3>Revision</h3>
+  <a href="#mock" onclick="closeDrawer()"><span class="n">★</span>Mock Exam</a>
+  <button class="close" onclick="closeDrawer()">Close</button>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">SECTION GOAL</div>
+    <h1>Automate, secure and tune EC2 — the pro-level details.</h1>
+    <p>Bootstrap instances, give them permissions safely, store config + secrets, ship logs, and control placement and network/storage performance. These details appear often in SAA-C03 scenarios.</p>
+  </section>
+
+  <div class="card">
+    <h3 class="block">Section Map · how the lessons connect</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  UD[1. User Data] --> CFN[2. CFN-INIT + signal]
+  ROLE[3. Instance Roles] --> PS[4. Parameter Store]
+  ROLE --> LOG[5. CloudWatch Agent logs]
+  PS --> LOG
+  PG[6. Placement Groups] --> DH[7. Dedicated Hosts]
+  NET[8. Enhanced Net + EBS Optimized]
+  UD --> ROLE
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class UD,CFN,ROLE,PS,LOG a;
+  class PG,DH,NET b;
+    </pre></div>
+  </div>
+
+  <div class="card">
+    <h3 class="block">Quick Understanding · whole section</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Lesson</th><th>What + why it matters for the exam</th></tr>
+      <tr><td>1 User Data</td><td>Run a script at launch to auto-configure; runs once, not secret.</td></tr>
+      <tr><td>2 CFN-INIT</td><td>Desired-state config + cfn-signal + CreationPolicy wait.</td></tr>
+      <tr><td>3 Instance Roles</td><td>Give apps AWS permissions via metadata (no stored keys).</td></tr>
+      <tr><td>4 Parameter Store</td><td>Store config/secrets; String/SecureString; KMS + IAM.</td></tr>
+      <tr><td>5 CloudWatch Agent</td><td>Collect in-OS metrics + logs (default CW can't).</td></tr>
+      <tr><td>6 Placement Groups</td><td>Cluster=perf, Spread=resilience, Partition=topology.</td></tr>
+      <tr><td>7 Dedicated Hosts</td><td>Whole physical host; socket/core BYOL licensing.</td></tr>
+      <tr><td>8 Enhanced Net</td><td>SR-IOV networking + EBS-optimized dedicated bandwidth.</td></tr>
+      <tr><td>★ Mock Exam</td><td>Advanced EC2 + IAM/Orgs + S3 + VPC + EC2 + Containers.</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ===== LESSON 1 ===== -->
+  <article class="card" id="l1">
+    <div class="lesson-head"><div class="num">1</div><div><h2>Bootstrapping with User Data</h2><div class="sub">Run a script automatically at first launch.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Bootstrapping</td><td>Auto-configure an instance right after launch.</td><td>Automation basics.</td></tr>
+      <tr><td>User data</td><td>A script passed via metadata, run by the OS at boot.</td><td>Runs once, as root.</td></tr>
+      <tr><td>Not secret</td><td>Readable from metadata — no passwords/keys.</td><td>Security trap.</td></tr>
+      <tr><td>No wait</td><td>Status checks pass before user-data finishes.</td><td>Why we need cfn-signal.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>User data</td><td>Text/script you attach to an instance; the OS runs it at boot.</td></tr>
+      <tr><td>cloud-init</td><td>The boot tool that runs user data on Linux.</td></tr>
+      <tr><td>Idempotent</td><td>Safe to run again with the same result (user data is NOT, by default).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  LAUNCH[Launch instance + user data] --> META[Stored in metadata /latest/user-data]
+  META --> CLOUDINIT[cloud-init runs the script as root]
+  CLOUDINIT --> APP[Install + configure app]
+  NOTE[Runs ONCE on first boot · max 16 KB · not encrypted]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class CLOUDINIT a;
+    </pre></div>
+    <ul class="clean">
+      <li>User data is run by <b>cloud-init</b> as <b>root</b>, <b>once</b> on first boot. AWS treats it as <b>opaque</b> (just runs it).</li>
+      <li>It's <b>not encrypted</b> and readable from metadata → <b>never put secrets in it</b>.</li>
+      <li>Limit <b>16 KB</b> (raw). For bigger setups, download a script or use config tools.</li>
+      <li>The instance reaches <b>running / status-OK before user data finishes</b> — so don't assume it's "ready". (L2 fixes this with cfn-signal.)</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> bootstrap an instance with user data, then diagnose it. <b>Check first:</b> CLI configured; a subnet (default VPC fine). <b>Note:</b> t3.micro free-tier — verify your region.</div>
+      <div class="step"><div class="sh">Launch with a user-data script</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>cat > ud.sh <<'EOF'
+#!/bin/bash
+dnf install -y httpd cowsay
+echo "$(cowsay Hello from Animals4life)" > /var/www/html/index.html
+systemctl enable --now httpd
+EOF
+AMI=$(aws ssm get-parameters \
+  --names /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64 \
+  --query "Parameters[0].Value" --output text)
+INST=$(aws ec2 run-instances --image-id $AMI --instance-type t3.micro \
+  --user-data file://ud.sh --query "Instances[0].InstanceId" --output text)
+echo $INST</code></pre></div>
+      <div class="expect"><b>Expect:</b> an instance ID; on boot it installs Apache + cowsay and serves a page.</div>
+      <div class="step"><div class="sh">Diagnose: read the user data back via metadata (run ON the instance)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" \
+  -H "X-aws-ec2-metadata-token-ttl-seconds: 300")
+curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/user-data</code></pre></div>
+      <div class="expect"><b>Expect:</b> your script text printed back — proof it was passed in (and that it's not secret).</div>
+      <div class="step"><div class="sh">Diagnose: check the boot log (run ON the instance)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>sudo cat /var/log/cloud-init-output.log | tail -n 30</code></pre></div>
+      <div class="expect"><b>Expect:</b> output from your install commands — this is where you debug failed bootstraps.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>A CloudFormation template passes the same script in its <code>UserData</code> property (base64). The big limit: the instance is "running" before the script finishes — see L2 for the proper wait/signal.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 terminate-instances --instance-ids $INST
+rm -f ud.sh</code></pre></div>
+      <div class="expect"><b>Expect:</b> instance terminating; root volume removed by default.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses metadata (EC2 section); L2 improves it; L3 lets it use a role.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Launch templates, Auto Scaling, golden AMIs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>User data runs <b>once, as root, at first boot</b>; <b>16 KB</b> limit; <b>not encrypted</b> (no secrets).</li>
+      <li>Instance shows <b>running before user data completes</b> → can't rely on it being "ready".</li>
+      <li>Debug at <code>/var/log/cloud-init-output.log</code>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How many times does user data run by default?<span class="hint">tap</span></div><div class="a">Once, on first boot.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Is user data secret?<span class="hint">tap</span></div><div class="a">No — it's readable from metadata; never store secrets.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">User data size limit?<span class="hint">tap</span></div><div class="a">16 KB (raw).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Where to debug bootstrap output?<span class="hint">tap</span></div><div class="a">/var/log/cloud-init-output.log.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A bootstrap script must store a DB password on the instance. Best place?</div>
+      <span class="opt">A) In user data</span><span class="opt">B) Fetch from Parameter Store/Secrets Manager at boot</span><span class="opt">C) Hard-code in the AMI</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> User data isn't secret; fetch secrets at boot using the instance role.</div></div>
+    <div class="quiz"><div class="qq">Why might an app fail if it assumes "instance running = ready"?</div>
+      <span class="opt">A) User data may still be running</span><span class="opt">B) The AZ changed</span><span class="opt">C) IPv6 only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Status checks pass before user data finishes; use cfn-signal to wait.</div></div>
+  </article>
+
+  <!-- ===== LESSON 2 ===== -->
+  <article class="card" id="l2">
+    <div class="lesson-head"><div class="num">2</div><div><h2>Enhanced Bootstrapping with CFN-INIT</h2><div class="sub">Desired-state config + wait for a success signal.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>cfn-init</td><td>Applies desired state (packages/files/services) from template metadata.</td><td>Vs procedural user data.</td></tr>
+      <tr><td>cfn-signal</td><td>Reports success/failure back to CloudFormation.</td><td>Confirms readiness.</td></tr>
+      <tr><td>CreationPolicy</td><td>Makes CFN wait for a signal before CREATE_COMPLETE.</td><td>The "wait state".</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Desired state</td><td>You declare the end result; the tool makes it happen.</td></tr>
+      <tr><td>CreationPolicy</td><td>A rule: "wait for N success signals or time out".</td></tr>
+      <tr><td>Metadata (Init)</td><td>The <code>AWS::CloudFormation::Init</code> block describing the config.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+sequenceDiagram
+  participant CFN as CloudFormation
+  participant EC2 as Instance
+  CFN->>EC2: Launch (user data calls cfn-init)
+  EC2->>EC2: cfn-init applies desired state
+  EC2->>CFN: cfn-signal (success/failure)
+  Note over CFN: CreationPolicy waits for signal
+  CFN->>CFN: Mark CREATE_COMPLETE only after success
+    </pre></div>
+    <ul class="clean">
+      <li><b>cfn-init</b> reads <code>AWS::CloudFormation::Init</code> and brings the instance to a <b>desired state</b> (packages, files, users, services) — more robust + re-runnable than a plain script.</li>
+      <li><b>cfn-signal</b> tells CloudFormation whether the setup <b>succeeded</b>.</li>
+      <li><b>CreationPolicy</b> holds the resource in a <b>wait state</b> until the signal arrives (or it times out) — so the stack only completes when the app is truly ready.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 + CloudFormation</span><b>Situation:</b> deploy a stack that uses cfn-init + cfn-signal + a CreationPolicy. <b>Check first:</b> CLI configured; default VPC.</div>
+      <div class="step"><div class="sh">Write a small template</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>cat > cfninit.yaml <<'EOF'
+Parameters:
+  LatestAmi:
+    Type: AWS::SSM::Parameter::Value&lt;AWS::EC2::Image::Id&gt;
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+Resources:
+  Web:
+    Type: AWS::EC2::Instance
+    CreationPolicy:
+      ResourceSignal:
+        Count: 1
+        Timeout: PT10M
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          packages:
+            yum: { httpd: [] }
+          files:
+            /var/www/html/index.html:
+              content: "Hello from cfn-init\n"
+          services:
+            sysvinit:
+              httpd: { enabled: true, ensureRunning: true }
+    Properties:
+      InstanceType: t3.micro
+      ImageId: !Ref LatestAmi
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          dnf install -y aws-cfn-bootstrap
+          /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource Web --region ${AWS::Region}
+          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource Web --region ${AWS::Region}
+EOF
+echo "template written"</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>template written</code>. (The <code>&lt; &gt;</code> become <code>&lt;</code> <code>&gt;</code> in your editor — they're the SSM parameter type.)</div>
+      <div class="step"><div class="sh">Deploy and watch it WAIT for the signal</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws cloudformation create-stack --stack-name a4l-cfninit \
+  --template-body file://cfninit.yaml
+aws cloudformation wait stack-create-complete --stack-name a4l-cfninit
+echo "stack complete (only after cfn-signal success)"</code></pre></div>
+      <div class="expect"><b>Expect:</b> the wait holds until cfn-signal reports success, then completes — not before the app is ready.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>If the instance fails to signal within the timeout, the stack <b>fails and rolls back</b> — exactly what you want for reliable bootstrapping.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws cloudformation delete-stack --stack-name a4l-cfninit
+aws cloudformation wait stack-delete-complete --stack-name a4l-cfninit
+rm -f cfninit.yaml</code></pre></div>
+      <div class="expect"><b>Expect:</b> stack + its instance deleted.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Upgrades the plain user data of L1.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Reliable Auto Scaling launches, infrastructure as code.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>cfn-init</b> = desired state; <b>cfn-signal</b> = report result; <b>CreationPolicy</b> = wait for the signal.</li>
+      <li>Use these when the stack must <b>not</b> complete until the app is truly ready.</li>
+      <li>cfn-init is <b>re-runnable</b>; plain user data is a one-shot script.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What makes CloudFormation wait for bootstrap?<span class="hint">tap</span></div><div class="a">A CreationPolicy waiting for a cfn-signal.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">cfn-init vs user data?<span class="hint">tap</span></div><div class="a">cfn-init applies desired state and is re-runnable; user data is a one-shot script.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does cfn-signal do?<span class="hint">tap</span></div><div class="a">Reports success/failure of the config back to CloudFormation.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A stack must only reach CREATE_COMPLETE after the app is configured and healthy. Use?</div>
+      <span class="opt">A) Plain user data only</span><span class="opt">B) cfn-init + cfn-signal + CreationPolicy</span><span class="opt">C) A bigger instance</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> The CreationPolicy waits for the cfn-signal that the bootstrap succeeded.</div></div>
+  </article>
+
+  <!-- ===== LESSON 3 ===== -->
+  <article class="card" id="l3">
+    <div class="lesson-head"><div class="num">3</div><div><h2>EC2 Instance Roles & Profile</h2><div class="sub">Give apps permissions without stored keys.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Instance role</td><td>An IAM role the instance assumes.</td><td>Best-practice creds.</td></tr>
+      <tr><td>Instance profile</td><td>Wrapper that attaches the role to the instance.</td><td>The actual link.</td></tr>
+      <tr><td>Temp credentials</td><td>Delivered + auto-rotated via metadata.</td><td>No keys to manage.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Instance profile</td><td>A container holding one role; it's what you attach to the instance.</td></tr>
+      <tr><td>STS</td><td>The service that issues temporary credentials.</td></tr>
+      <tr><td>Auto-rotate</td><td>EC2 + STS refresh the credentials before they expire.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  ROLE[IAM Role + policy] --> PROFILE[Instance Profile wraps the role]
+  PROFILE --> INST[Attached to instance]
+  INST --> META[Temp creds in metadata: iam/security-credentials/ROLE]
+  META --> SDK[CLI/SDK use them automatically + auto-rotate]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class PROFILE a;
+    </pre></div>
+    <ul class="clean">
+      <li>An <b>instance role</b> lets the app call AWS using <b>temporary credentials</b> — no access keys on disk.</li>
+      <li>The role is attached through an <b>instance profile</b> (the console makes it for you; with the CLI you create it).</li>
+      <li>Credentials appear in metadata at <code>iam/security-credentials/&lt;role&gt;</code> and are <b>auto-rotated</b> by EC2 + STS.</li>
+      <li>The CLI/SDK on the instance pick them up <b>automatically</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> create a role that allows S3 read, attach to an instance, read creds from metadata. <b>Check first:</b> a running instance ID in <code>$INST</code>.</div>
+      <div class="step"><div class="sh">Create the role with a trust policy for EC2</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>cat > trust.json <<'EOF'
+{ "Version":"2012-10-17","Statement":[{"Effect":"Allow",
+  "Principal":{"Service":"ec2.amazonaws.com"},"Action":"sts:AssumeRole"}]}
+EOF
+aws iam create-role --role-name a4l-ec2-s3ro \
+  --assume-role-policy-document file://trust.json
+aws iam attach-role-policy --role-name a4l-ec2-s3ro \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess</code></pre></div>
+      <div class="expect"><b>Expect:</b> role created; S3 read-only policy attached.</div>
+      <div class="step"><div class="sh">Create an instance profile + add the role + attach</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws iam create-instance-profile --instance-profile-name a4l-ec2-s3ro
+aws iam add-role-to-instance-profile \
+  --instance-profile-name a4l-ec2-s3ro --role-name a4l-ec2-s3ro
+sleep 10
+aws ec2 associate-iam-instance-profile --instance-id $INST \
+  --iam-instance-profile Name=a4l-ec2-s3ro</code></pre></div>
+      <div class="expect"><b>Expect:</b> an association ID — the instance now has the role.</div>
+      <div class="step"><div class="sh">On the instance: see the temporary credentials + test</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" \
+  -H "X-aws-ec2-metadata-token-ttl-seconds: 300")
+curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/iam/security-credentials/a4l-ec2-s3ro
+aws s3 ls   # works with no keys configured</code></pre></div>
+      <div class="expect"><b>Expect:</b> temporary AccessKeyId/SecretAccessKey/Token JSON, and <code>aws s3 ls</code> succeeds using them.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>The <b>role</b> holds the permissions; the <b>instance profile</b> is the link that puts the role on the instance. Never store long-term keys on an instance.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>ASSOC=$(aws ec2 describe-iam-instance-profile-associations \
+  --filters Name=instance-id,Values=$INST \
+  --query "IamInstanceProfileAssociations[0].AssociationId" --output text)
+aws ec2 disassociate-iam-instance-profile --association-id $ASSOC
+aws iam remove-role-from-instance-profile \
+  --instance-profile-name a4l-ec2-s3ro --role-name a4l-ec2-s3ro
+aws iam delete-instance-profile --instance-profile-name a4l-ec2-s3ro
+aws iam detach-role-policy --role-name a4l-ec2-s3ro \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+aws iam delete-role --role-name a4l-ec2-s3ro
+rm -f trust.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> all role/profile resources removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Used by Parameter Store (L4) and the CloudWatch agent (L5).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Any AWS access from EC2/ECS tasks/Lambda securely.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Role</b> = permissions; <b>instance profile</b> = the wrapper actually attached to the instance.</li>
+      <li>Credentials are <b>temporary + auto-rotated</b> via metadata — <b>never store access keys</b> on EC2.</li>
+      <li>"App on EC2 needs AWS access" → <b>instance role</b>, every time.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Difference: instance role vs instance profile?<span class="hint">tap</span></div><div class="a">Role holds permissions; profile is the wrapper attached to the instance.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Where do the credentials come from?<span class="hint">tap</span></div><div class="a">Instance metadata, auto-rotated by EC2 + STS.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Should you store access keys on an instance?<span class="hint">tap</span></div><div class="a">No — use an instance role.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An app on EC2 needs to read S3. Most secure way to grant it?</div>
+      <span class="opt">A) Put access keys in user data</span><span class="opt">B) Attach an instance role</span><span class="opt">C) Use the root user</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> An instance role gives temporary, rotating credentials via metadata.</div></div>
+  </article>
+
+  <!-- ===== LESSON 4 ===== -->
+  <article class="card" id="l4">
+    <div class="lesson-head"><div class="num">4</div><div><h2>SSM Parameter Store</h2><div class="sub">Store config and secrets, the AWS way.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Parameter Store</td><td>Stores config values + secrets in Systems Manager.</td><td>Config/secret store.</td></tr>
+      <tr><td>Types</td><td>String, StringList, SecureString (KMS-encrypted).</td><td>SecureString = secrets.</td></tr>
+      <tr><td>Paths</td><td>Hierarchical keys like /a4l/db/password.</td><td>Fetch by path.</td></tr>
+      <tr><td>IAM + KMS</td><td>Access via IAM; encrypt with KMS; versioned.</td><td>Secure by design.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>SecureString</td><td>An encrypted parameter (uses KMS).</td></tr>
+      <tr><td>Path</td><td>A folder-like name to group parameters.</td></tr>
+      <tr><td>Version</td><td>Each change keeps a numbered history.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  APP[App / instance role] -->|GetParameter| PS[(Parameter Store)]
+  PS --> STR[String / StringList]
+  PS --> SEC[SecureString - KMS encrypted]
+  PS --> PATH[Fetch many by /path]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class PS a;
+    </pre></div>
+    <ul class="clean">
+      <li>Stores <b>String</b>, <b>StringList</b>, and <b>SecureString</b> (encrypted with <b>KMS</b>) values.</li>
+      <li>Access is controlled by <b>IAM</b>; values are <b>versioned</b>; reachable from anywhere via the <b>public endpoint</b>.</li>
+      <li>Use <b>paths</b> (e.g. <code>/a4l/db/...</code>) to organise and fetch groups of parameters.</li>
+      <li>Integrates natively with many services (CloudFormation, Lambda, EC2, the CW agent in L5).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (standard params are free)</span><b>Situation:</b> store and read config + a secret. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Put a String and a SecureString</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ssm put-parameter --name /a4l/web/dbhost \
+  --value "db.internal.a4l" --type String
+aws ssm put-parameter --name /a4l/web/dbpassword \
+  --value "SuperSecret123" --type SecureString</code></pre></div>
+      <div class="expect"><b>Expect:</b> each returns <code>Version: 1</code>. SecureString is encrypted with the default KMS key.</div>
+      <div class="step"><div class="sh">Read them back (decrypt the secret)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ssm get-parameter --name /a4l/web/dbhost --query "Parameter.Value" --output text
+aws ssm get-parameter --name /a4l/web/dbpassword --with-decryption \
+  --query "Parameter.Value" --output text</code></pre></div>
+      <div class="expect"><b>Expect:</b> the host in plain text; the password only decrypts <b>with</b> <code>--with-decryption</code> (and KMS permission).</div>
+      <div class="step"><div class="sh">Fetch everything under a path</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ssm get-parameters-by-path --path /a4l/web --recursive --with-decryption \
+  --query "Parameters[].{Name:Name,Value:Value}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> both parameters listed — handy for an app to pull all its config at once.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>An EC2 app reads these using its <b>instance role</b> (L3); SecureString also needs <b>KMS decrypt</b> permission. For heavy secret rotation, <b>Secrets Manager</b> is the dedicated option. <span style="color:var(--muted)">[added for exam]</span></div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ssm delete-parameters --names /a4l/web/dbhost /a4l/web/dbpassword</code></pre></div>
+      <div class="expect"><b>Expect:</b> both names listed under <code>DeletedParameters</code>.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Read with the instance role (L3); stores the CW agent config (L5).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>App config, secrets, the al2023 AMI lookups you've used.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Types: <b>String, StringList, SecureString</b> (SecureString = KMS-encrypted secret).</li>
+      <li>Access by <b>IAM</b>; read secrets with <b>--with-decryption</b> (+ KMS permission).</li>
+      <li>Standard Parameter Store is <b>free</b>; for advanced secret rotation think <b>Secrets Manager</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which parameter type is encrypted?<span class="hint">tap</span></div><div class="a">SecureString (uses KMS).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How does an EC2 app authenticate to read parameters?<span class="hint">tap</span></div><div class="a">Through its instance role (IAM).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Fetch all parameters under /a4l/web?<span class="hint">tap</span></div><div class="a">get-parameters-by-path --path /a4l/web --recursive.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Store a database password so EC2 apps read it securely with IAM + encryption. Cheapest fit?</div>
+      <span class="opt">A) Plain text in S3</span><span class="opt">B) Parameter Store SecureString</span><span class="opt">C) In user data</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> SecureString gives KMS encryption + IAM control at no extra cost (standard tier).</div></div>
+  </article>
+
+  <!-- ===== LESSON 5 ===== -->
+  <article class="card" id="l5">
+    <div class="lesson-head"><div class="num">5</div><div><h2>System & Application Logging (CloudWatch Agent)</h2><div class="sub">Get in-OS metrics + logs into CloudWatch.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Default CW gap</td><td>Default metrics are host-level only — no memory/disk/logs.</td><td>Why the agent exists.</td></tr>
+      <tr><td>CloudWatch agent</td><td>Software on the instance that sends OS metrics + logs.</td><td>Logs → CW Logs.</td></tr>
+      <tr><td>Needs a role</td><td>Instance role grants put-metrics/logs + read config.</td><td>Ties to L3/L4.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>CloudWatch Logs</td><td>Where log files are stored + searched.</td></tr>
+      <tr><td>Agent config</td><td>A file saying which metrics/logs to collect (can live in Parameter Store).</td></tr>
+      <tr><td>Custom metric</td><td>A metric AWS can't see by default, e.g. memory used.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  INST[Instance + CloudWatch agent] -->|metrics| CW[CloudWatch Metrics]
+  INST -->|log files| CWL[CloudWatch Logs]
+  ROLE[Instance role: CloudWatchAgentServerPolicy] --> INST
+  PS[(Parameter Store: agent config)] --> INST
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class CW,CWL a;
+    </pre></div>
+    <ul class="clean">
+      <li>By default CloudWatch sees only <b>host-level</b> metrics (CPU, network). It <b>can't</b> see in-OS things like <b>memory, disk space, or log files</b>.</li>
+      <li>The <b>CloudWatch agent</b> fills that gap: it sends <b>OS metrics</b> and <b>log files</b> to CloudWatch + CloudWatch Logs.</li>
+      <li>It needs an <b>instance role</b> (e.g. <code>CloudWatchAgentServerPolicy</code>) to write metrics/logs and to read its config from <b>Parameter Store</b>.</li>
+      <li>Example logs to capture: <code>/var/log/secure</code>, <code>/var/log/httpd/access_log</code>, <code>/var/log/httpd/error_log</code>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · role (CLI) + agent (on instance)</span><b>Situation:</b> let an instance ship 3 log files to CloudWatch Logs. <b>Check first:</b> a running instance in <code>$INST</code>; CW Logs charges are tiny but real.</div>
+      <div class="step"><div class="sh">Give the instance the agent role (CLI)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>cat > trust.json <<'EOF'
+{ "Version":"2012-10-17","Statement":[{"Effect":"Allow",
+  "Principal":{"Service":"ec2.amazonaws.com"},"Action":"sts:AssumeRole"}]}
+EOF
+aws iam create-role --role-name a4l-cwagent --assume-role-policy-document file://trust.json
+aws iam attach-role-policy --role-name a4l-cwagent \
+  --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+aws iam attach-role-policy --role-name a4l-cwagent \
+  --policy-arn arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+aws iam create-instance-profile --instance-profile-name a4l-cwagent
+aws iam add-role-to-instance-profile --instance-profile-name a4l-cwagent --role-name a4l-cwagent
+sleep 10
+aws ec2 associate-iam-instance-profile --instance-id $INST \
+  --iam-instance-profile Name=a4l-cwagent</code></pre></div>
+      <div class="expect"><b>Expect:</b> role attached; the agent can now put logs/metrics + read its config.</div>
+      <div class="step"><div class="sh">On the instance: install + configure the agent</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>sudo dnf install -y amazon-cloudwatch-agent
+# run the wizard to pick the 3 log files, OR drop a config and start:
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+  -a fetch-config -m ec2 \
+  -c ssm:AmazonCloudWatch-a4l -s</code></pre></div>
+      <div class="expect"><b>Expect:</b> agent running; it reads the config named <code>AmazonCloudWatch-a4l</code> from Parameter Store and starts shipping logs.</div>
+      <div class="step"><div class="sh">Confirm log groups exist (CLI)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws logs describe-log-groups --query "logGroups[].logGroupName"</code></pre></div>
+      <div class="expect"><b>Expect:</b> log groups for the captured files appear after a minute.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>The agent config can be <b>stored in Parameter Store</b> so many instances share it. The role needs <b>both</b> put-logs/metrics and read-config permissions.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code># delete any created log groups (repeat per name), then remove the role
+aws logs delete-log-group --log-group-name /var/log/secure 2>/dev/null
+ASSOC=$(aws ec2 describe-iam-instance-profile-associations \
+  --filters Name=instance-id,Values=$INST \
+  --query "IamInstanceProfileAssociations[0].AssociationId" --output text)
+aws ec2 disassociate-iam-instance-profile --association-id $ASSOC
+aws iam remove-role-from-instance-profile --instance-profile-name a4l-cwagent --role-name a4l-cwagent
+aws iam delete-instance-profile --instance-profile-name a4l-cwagent
+aws iam detach-role-policy --role-name a4l-cwagent --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+aws iam detach-role-policy --role-name a4l-cwagent --policy-arn arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+aws iam delete-role --role-name a4l-cwagent ; rm -f trust.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> log groups + role removed (stops CW Logs storage charges).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses the instance role (L3) + Parameter Store (L4).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Monitoring, alarms, dashboards, observability.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Need <b>memory/disk/log</b> data in CloudWatch → install the <b>CloudWatch agent</b> (default metrics can't).</li>
+      <li>The agent needs an <b>instance role</b> with put-logs/metrics (+ read config from Parameter Store).</li>
+      <li>Log files go to <b>CloudWatch Logs</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can default CloudWatch see RAM usage?<span class="hint">tap</span></div><div class="a">No — you need the CloudWatch agent for in-OS metrics.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Where do EC2 log files go with the agent?<span class="hint">tap</span></div><div class="a">CloudWatch Logs.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What lets the agent send data?<span class="hint">tap</span></div><div class="a">An instance role (e.g. CloudWatchAgentServerPolicy).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must alarm on EC2 memory usage and collect Apache logs centrally. What's required?</div>
+      <span class="opt">A) Nothing — CloudWatch already has it</span><span class="opt">B) Install the CloudWatch agent with an instance role</span><span class="opt">C) Bigger instance</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Memory + logs are in-OS data the agent must collect; it needs a role.</div></div>
+  </article>
+
+  <!-- ===== LESSON 6 ===== -->
+  <article class="card" id="l6">
+    <div class="lesson-head"><div class="num">6</div><div><h2>EC2 Placement Groups</h2><div class="sub">Control where instances sit on hardware.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Type</th><th>Goal</th><th>Exam relevance</th></tr>
+      <tr><td>Cluster</td><td>Pack close together for top performance.</td><td>HPC, low latency.</td></tr>
+      <tr><td>Spread</td><td>Keep apart on distinct hardware.</td><td>Max resilience (max 7/AZ).</td></tr>
+      <tr><td>Partition</td><td>Groups on separate racks; topology aware.</td><td>Big distributed apps.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Placement group</td><td>A rule for how AWS places your instances on hardware.</td></tr>
+      <tr><td>Partition</td><td>A set of racks isolated from other partitions' racks.</td></tr>
+      <tr><td>Topology aware</td><td>The app knows which partition each node is in.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  CL[Cluster: same rack, 1 AZ - fastest network] --> CLR[Risk: rack failure hits all]
+  SP[Spread: distinct hardware - max 7 per AZ] --> SPR[Best for few critical instances]
+  PA[Partition: up to 7 partitions/AZ, many instances] --> PAR[HDFS, Cassandra, Kafka]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class CL a; class SP,PA b;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Cluster</b>: instances packed in <b>one AZ</b>, same rack → <b>highest network performance + lowest latency</b> (HPC). Downside: a rack failure can take them all.</li>
+      <li><b>Spread</b>: instances on <b>distinct hardware</b> → maximum resilience for a <b>small number</b> of critical instances (<b>max 7 per AZ</b>).</li>
+      <li><b>Partition</b>: up to <b>7 partitions per AZ</b>, each on separate racks, with <b>many</b> instances — for large <b>distributed/replicated</b> systems that are <b>topology aware</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (creating groups is free)</span><b>Situation:</b> create each placement-group type and inspect them. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Create the three types</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 create-placement-group --group-name a4l-cluster --strategy cluster
+aws ec2 create-placement-group --group-name a4l-spread --strategy spread
+aws ec2 create-placement-group --group-name a4l-part \
+  --strategy partition --partition-count 3</code></pre></div>
+      <div class="expect"><b>Expect:</b> no errors. Creating groups is free (you only pay for instances you launch into them).</div>
+      <div class="step"><div class="sh">List them</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 describe-placement-groups \
+  --query "PlacementGroups[].{Name:GroupName,Strategy:Strategy}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> the three groups with strategies cluster / spread / partition.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>You'd launch instances with <code>--placement GroupName=a4l-cluster</code>. Spread caps at <b>7 instances per AZ</b>; partition allows many but limits partitions.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 delete-placement-group --group-name a4l-cluster
+aws ec2 delete-placement-group --group-name a4l-spread
+aws ec2 delete-placement-group --group-name a4l-part</code></pre></div>
+      <div class="expect"><b>Expect:</b> all three removed (they were free anyway).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Builds on AZ/host ideas from the EC2 section.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>HPC clusters, big-data resilience design.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Cluster = performance</b> (1 AZ, same rack). <b>Spread = resilience</b> (max <b>7/AZ</b>). <b>Partition = large distributed + topology aware</b>.</li>
+      <li>"Lowest latency / HPC" → Cluster. "A few critical, never share hardware" → Spread. "HDFS/Cassandra/Kafka" → Partition.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Placement group for lowest latency / HPC?<span class="hint">tap</span></div><div class="a">Cluster.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Spread group instance limit?<span class="hint">tap</span></div><div class="a">7 per AZ.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Group for Cassandra/HDFS/Kafka?<span class="hint">tap</span></div><div class="a">Partition.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An HPC job needs the lowest possible network latency between nodes. Placement group?</div>
+      <span class="opt">A) Spread</span><span class="opt">B) Cluster</span><span class="opt">C) Partition</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Cluster packs instances together in one AZ for top network performance.</div></div>
+    <div class="quiz"><div class="qq">You need 6 critical instances that must never share underlying hardware. Group?</div>
+      <span class="opt">A) Cluster</span><span class="opt">B) Spread</span><span class="opt">C) Partition</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Spread places each on distinct hardware (max 7 per AZ).</div></div>
+  </article>
+
+  <!-- ===== LESSON 7 ===== -->
+  <article class="card" id="l7">
+    <div class="lesson-head"><div class="num">7</div><div><h2>Dedicated Hosts</h2><div class="sub">A whole physical EC2 host, just for you.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Dedicated Host</td><td>A physical server dedicated to your account.</td><td>You see sockets/cores.</td></tr>
+      <tr><td>Pay for the host</td><td>On-demand or reserved; no per-instance charge on it.</td><td>Pricing model.</td></tr>
+      <tr><td>BYOL licensing</td><td>For socket/core-based software licences.</td><td>The main reason.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>BYOL</td><td>Bring Your Own License (e.g. per physical socket/core).</td></tr>
+      <tr><td>Socket / core</td><td>The physical CPU units some licences are counted by.</td></tr>
+      <tr><td>Dedicated Instance</td><td>Isolated hardware but without host/socket visibility or control.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  HOST[Dedicated Host - physical server you control] --> SEE[You see sockets + cores + host ID]
+  HOST --> LIC[Run socket/core-licensed software - BYOL]
+  HOST --> PAY[Pay for the host, not per instance]
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class HOST b;
+    </pre></div>
+    <ul class="clean">
+      <li>A <b>Dedicated Host</b> is a <b>physical EC2 server</b> reserved for your account; you can see its <b>sockets, cores and host ID</b>.</li>
+      <li>You <b>pay for the host</b> (on-demand or reserved); instances on it have <b>no separate per-instance charge</b>.</li>
+      <li>Main use: software licensed <b>per socket/core</b> (BYOL) — e.g. some Windows/Oracle licences.</li>
+      <li>Different from a <b>Dedicated Instance</b>: that is isolated hardware but <b>without</b> host visibility/control.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Allocating a Dedicated Host bills a <b>large hourly fee immediately</b> (no free tier), so we won't allocate one. Know the BYOL use case and how it differs from a Dedicated Instance.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>The "dedicated" end of EC2 purchase options.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Licensing-heavy migrations, compliance placement.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Socket/core BYOL licensing</b> → <b>Dedicated Host</b> (you see + control the hardware).</li>
+      <li><b>Dedicated Host</b> (host visibility/control) vs <b>Dedicated Instance</b> (isolated, no host control).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Main reason to use a Dedicated Host?<span class="hint">tap</span></div><div class="a">Socket/core-based (BYOL) software licensing.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Dedicated Host vs Dedicated Instance?<span class="hint">tap</span></div><div class="a">Host gives socket/core visibility + control; Instance is just isolated hardware.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Software is licensed per physical CPU socket and you must prove the socket count. Best option?</div>
+      <span class="opt">A) Spot</span><span class="opt">B) Dedicated Host</span><span class="opt">C) Dedicated Instance</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Only a Dedicated Host exposes sockets/cores for BYOL licensing.</div></div>
+  </article>
+
+  <!-- ===== LESSON 8 ===== -->
+  <article class="card" id="l8">
+    <div class="lesson-head"><div class="num">8</div><div><h2>Enhanced Networking & EBS Optimized</h2><div class="sub">Faster network + dedicated storage bandwidth.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Enhanced networking</td><td>SR-IOV: card presents virtual NICs to the instance.</td><td>Higher net performance.</td></tr>
+      <tr><td>Benefits</td><td>Lower host CPU, higher throughput, low/consistent latency.</td><td>No extra cost.</td></tr>
+      <tr><td>EBS Optimized</td><td>Dedicated bandwidth for storage, separate from data.</td><td>Consistent EBS perf.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>SR-IOV</td><td>Hardware feature: one card acts as many virtual cards.</td></tr>
+      <tr><td>ENA</td><td>Elastic Network Adapter — the modern enhanced-networking driver.</td></tr>
+      <tr><td>EBS Optimized</td><td>A separate network lane just for EBS traffic.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  CARD[Physical NIC + SR-IOV] --> VNIC[Virtual NICs straight to instances]
+  VNIC --> PERF[Lower CPU, higher throughput, consistent latency]
+  EBSOPT[EBS Optimized: dedicated storage bandwidth] --> SEP[Storage traffic separate from data traffic]
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class VNIC,EBSOPT b;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Enhanced networking</b> is AWS's <b>SR-IOV</b>: the physical card gives instances <b>virtual NICs</b> directly → lower host CPU, higher throughput, lower + more consistent latency. <b>No extra charge</b>; on most modern types via <b>ENA</b>.</li>
+      <li><b>EBS Optimized</b> gives <b>dedicated bandwidth</b> for EBS storage traffic, separate from normal data networking → steadier EBS performance. Most modern instances are EBS-optimized <b>by default</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (read + toggle)</span><b>Situation:</b> check ENA + EBS-optimized state. <b>Check first:</b> an instance ID in <code>$INST</code>.</div>
+      <div class="step"><div class="sh">Check enhanced networking (ENA) + EBS-optimized</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 describe-instances --instance-ids $INST \
+  --query "Reservations[0].Instances[0].{ENA:EnaSupport,EbsOpt:EbsOptimized}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>ENA: true</code> on modern types; <code>EbsOpt</code> true/false depending on type.</div>
+      <div class="step"><div class="sh">(Optional) enable EBS optimization (instance must be stopped)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 stop-instances --instance-ids $INST
+aws ec2 wait instance-stopped --instance-ids $INST
+aws ec2 modify-instance-attribute --instance-id $INST --ebs-optimized
+aws ec2 start-instances --instance-ids $INST</code></pre></div>
+      <div class="expect"><b>Expect:</b> attribute set (if the type supports toggling; many are on by default and can't be turned off).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Both features are about <b>performance</b>, not security, and mostly come <b>on by default</b> on current instance types — you rarely configure them manually.</div>
+      <div class="box term"><span class="tag">Clean up</span>No billable resources created — just attribute checks.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Ties back to virtualization/SR-IOV (EC2 section) and EBS performance.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>HPC, high-throughput databases, network-heavy workloads.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Enhanced networking = SR-IOV</b> (ENA) → better network performance, <b>no extra cost</b>.</li>
+      <li><b>EBS Optimized</b> = <b>dedicated storage bandwidth</b>, separate from data traffic.</li>
+      <li>Both are <b>performance</b> features and usually <b>on by default</b> on modern types.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Enhanced networking is AWS's implementation of…?<span class="hint">tap</span></div><div class="a">SR-IOV (via the ENA adapter).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does EBS Optimized give?<span class="hint">tap</span></div><div class="a">Dedicated bandwidth for EBS storage traffic, separate from data networking.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Does enhanced networking cost extra?<span class="hint">tap</span></div><div class="a">No.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An app needs consistent, high EBS throughput unaffected by network traffic. Which feature?</div>
+      <span class="opt">A) Enhanced networking</span><span class="opt">B) EBS Optimized</span><span class="opt">C) Placement group</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> EBS Optimized gives dedicated storage bandwidth separate from data traffic.</div></div>
+  </article>
+
+  <!-- ===== MOCK EXAM ===== -->
+  <article class="card examcard" id="mock">
+    <div class="lesson-head"><div class="num">★</div><div><h2>Mock Exam</h2><div class="sub">Advanced EC2 + IAM/Orgs + S3 + VPC + EC2 + Containers.</div></div></div>
+    <div class="box exam"><span class="tag">How to use</span>Decide first, then tap <b>Show answer</b>. Pick the <b>best</b> option. 16 questions.</div>
+
+    <div class="quiz"><div class="qq">1. A bootstrap script needs a DB password. Where should it NOT go?</div>
+      <span class="opt">A) Parameter Store SecureString</span><span class="opt">B) User data</span><span class="opt">C) Secrets Manager</span><span class="opt">D) Fetched at boot via role</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> User data is readable from metadata — never store secrets there.</div></div>
+
+    <div class="quiz"><div class="qq">2. A CloudFormation stack must wait until the app is configured + healthy. Use?</div>
+      <span class="opt">A) Plain user data</span><span class="opt">B) cfn-init + cfn-signal + CreationPolicy</span><span class="opt">C) Bigger instance</span><span class="opt">D) Spot</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> The CreationPolicy waits for the cfn-signal of success.</div></div>
+
+    <div class="quiz"><div class="qq">3. App on EC2 must read S3. Best practice?</div>
+      <span class="opt">A) Access keys in user data</span><span class="opt">B) Instance role</span><span class="opt">C) Root keys</span><span class="opt">D) Public bucket</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Instance roles give temporary, auto-rotated credentials via metadata.</div></div>
+
+    <div class="quiz"><div class="qq">4. Difference between an instance role and an instance profile?</div>
+      <span class="opt">A) Same thing</span><span class="opt">B) Role = permissions; profile = wrapper attached to the instance</span><span class="opt">C) Profile = permissions</span><span class="opt">D) Role attaches directly</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> The profile is the container that links the role to the instance.</div></div>
+
+    <div class="quiz"><div class="qq">5. Store an encrypted secret cheaply with IAM control + versioning. Use?</div>
+      <span class="opt">A) S3 plain</span><span class="opt">B) Parameter Store SecureString</span><span class="opt">C) User data</span><span class="opt">D) Instance store</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> SecureString uses KMS + IAM and the standard tier is free.</div></div>
+
+    <div class="quiz"><div class="qq">6. You must alarm on EC2 memory + collect Apache logs centrally. Required?</div>
+      <span class="opt">A) Default CloudWatch only</span><span class="opt">B) CloudWatch agent + instance role</span><span class="opt">C) Bigger volume</span><span class="opt">D) Spread group</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Memory + logs are in-OS data; the agent collects them and needs a role.</div></div>
+
+    <div class="quiz"><div class="qq">7. HPC nodes need the lowest network latency between them. Placement group?</div>
+      <span class="opt">A) Spread</span><span class="opt">B) Partition</span><span class="opt">C) Cluster</span><span class="opt">D) None</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> Cluster packs instances together in one AZ for top performance.</div></div>
+
+    <div class="quiz"><div class="qq">8. Six critical instances must never share hardware. Placement group?</div>
+      <span class="opt">A) Cluster</span><span class="opt">B) Spread</span><span class="opt">C) Partition</span><span class="opt">D) Dedicated Host</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Spread isolates each on distinct hardware (max 7 per AZ).</div></div>
+
+    <div class="quiz"><div class="qq">9. Cassandra cluster with many nodes needing rack awareness. Placement group?</div>
+      <span class="opt">A) Cluster</span><span class="opt">B) Spread</span><span class="opt">C) Partition</span><span class="opt">D) None</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> Partition supports many nodes across isolated racks, topology-aware.</div></div>
+
+    <div class="quiz"><div class="qq">10. Software licensed per physical socket, must prove socket count. Use?</div>
+      <span class="opt">A) Dedicated Instance</span><span class="opt">B) Dedicated Host</span><span class="opt">C) Spot</span><span class="opt">D) Cluster group</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A Dedicated Host exposes sockets/cores for BYOL licensing.</div></div>
+
+    <div class="quiz"><div class="qq">11. (IAM) Explicit Deny vs an Allow elsewhere. Result?</div>
+      <span class="opt">A) Allowed</span><span class="opt">B) Denied — explicit deny wins</span><span class="opt">C) Region-dependent</span><span class="opt">D) Read-only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Explicit Deny always overrides Allow.</div></div>
+
+    <div class="quiz"><div class="qq">12. (S3) Public-read bucket policy but objects deny. First check?</div>
+      <span class="opt">A) Storage class</span><span class="opt">B) Block Public Access</span><span class="opt">C) Versioning</span><span class="opt">D) Region</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Block Public Access overrides policies that grant public access.</div></div>
+
+    <div class="quiz"><div class="qq">13. (VPC) Make a subnet public. Requirements?</div>
+      <span class="opt">A) NAT Gateway</span><span class="opt">B) Auto-assign public IP + 0.0.0.0/0 → IGW</span><span class="opt">C) A NACL</span><span class="opt">D) IPv6</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Both a public IP and an internet-gateway route are needed.</div></div>
+
+    <div class="quiz"><div class="qq">14. (EC2) Instance store data after a stop/start?</div>
+      <span class="opt">A) Kept</span><span class="opt">B) Lost</span><span class="opt">C) Moved to S3</span><span class="opt">D) Encrypted</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Instance store survives reboot but is lost on stop/start or terminate.</div></div>
+
+    <div class="quiz"><div class="qq">15. (Containers) Give an ECS task AWS permissions. Use?</div>
+      <span class="opt">A) Keys in the image</span><span class="opt">B) Task role</span><span class="opt">C) Public bucket</span><span class="opt">D) Root keys</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> The ECS task role provides temporary least-privilege credentials.</div></div>
+
+    <div class="quiz"><div class="qq">16. Enhanced networking provides what — and at what cost?</div>
+      <span class="opt">A) More storage, extra cost</span><span class="opt">B) Better network performance (SR-IOV), no extra cost</span><span class="opt">C) Encryption, extra cost</span><span class="opt">D) Backups, free</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> SR-IOV-based enhanced networking improves performance at no extra charge.</div></div>
+  </article>
+
+  <div class="foot">
+    <div>
+      <span class="pill">User data = once, not secret</span><span class="pill">cfn-signal + CreationPolicy</span>
+      <span class="pill">Role = perms · Profile = link</span><span class="pill">SecureString = KMS</span>
+      <span class="pill">CW agent for RAM/logs</span><span class="pill">Cluster/Spread/Partition</span>
+      <span class="pill">Dedicated Host = BYOL</span><span class="pill">Enhanced net = SR-IOV</span>
+    </div>
+    <p>Section 008 · Advanced EC2 + Mock Exam · built for SAA-C03 self-study.<br>
+    Tap a flashcard or "Show answer" to reveal. Use ☰ Lessons to jump around.</p>
+  </div>
+</main>
+
+<button class="toTop" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawerBg').classList.add('open');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerBg').classList.remove('open');}
+function cp(btn){
+  const code=btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard?.writeText(code).then(()=>{const t=btn.innerText;btn.innerText='copied!';setTimeout(()=>btn.innerText=t,1200);})
+  .catch(()=>{btn.innerText='select & copy';});
+}
+const tt=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{tt.classList.toggle('show',window.scrollY>500);});
+window.addEventListener('load',()=>{
+  try{
+    mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{
+      fontFamily:'Manrope, sans-serif',primaryColor:'#1b2128',primaryTextColor:'#e7edf3',
+      primaryBorderColor:'#2dd4bf',lineColor:'#60a5fa',secondaryColor:'#212934',tertiaryColor:'#161b21'}});
+  }catch(e){console.warn('mermaid init',e);}
+});
+</script>
+</body>
+</html>

@@ -1,17 +1,23 @@
 {
   "exam_id": "cantrill-saa-c03-daily",
   "day": 3,
-  "date": "2026-06-01",
+  "date": "2026-06-23",
   "title": "SAA-C03 Daily Mock",
-  "subtitle": "Day 3 — S3, CloudFormation, CloudWatch, Shared Responsibility, HA/FT/DR, Route 53 & DNS",
+  "subtitle": "Day 3 — IAM Policies, Users/ARNs, Groups, Roles, Organizations, SCPs, CloudWatch Logs, CloudTrail, Control Tower + Day 2 Review",
   "topics_covered": [
-    "S3 Basics",
-    "CloudFormation Basics",
-    "CloudWatch Basics",
-    "Shared Responsibility Model",
-    "HA vs Fault Tolerance vs Disaster Recovery",
-    "Route 53 Fundamentals & DNS Record Types",
-    "Review: AWS Default VPC"
+    "IAM Identity Policies",
+    "IAM Users and ARNs",
+    "IAM Groups",
+    "IAM Roles — Tech & When to Use",
+    "Service-linked Roles & PassRole",
+    "AWS Organizations",
+    "Service Control Policies (SCPs)",
+    "CloudWatch Logs",
+    "CloudTrail",
+    "AWS Control Tower",
+    "REVIEW: CloudFormation Basics — drift behaviour",
+    "REVIEW: IAM Policy Types — Permissions Boundary",
+    "REVIEW: Route53 — Alias vs CNAME"
   ],
   "config": {
     "seconds_per_question": 120,
@@ -21,390 +27,358 @@
   },
   "questions": [
     {
-      "topic": "S3 Basics",
-      "domain": "Resilient",
-      "stem": "A team needs to store large numbers of files such as images, logs, and backups using a service built specifically for that purpose. Which description matches Amazon S3?",
-      "options": [
-        {
-          "text": "Object storage that keeps objects in buckets, where each object has a key and its data, scoped to a Region.",
-          "correct": true,
-          "why": "Correct — S3 is Region-based object storage; objects (a key plus data) live inside buckets."
-        },
-        {
-          "text": "Block storage that presents raw, unformatted volumes which you attach to a single server and then format and manage yourself.",
-          "correct": false,
-          "why": "Wrong — that describes block storage, not S3's object model."
-        },
-        {
-          "text": "A shared file system you mount over the network so many servers can use it at once.",
-          "correct": false,
-          "why": "Wrong — that describes network file storage, not S3."
-        },
-        {
-          "text": "A relational database service that stores structured tables you query with SQL.",
-          "correct": false,
-          "why": "Wrong — that describes a database service, not object storage."
-        }
-      ]
-    },
-    {
-      "topic": "S3 Basics",
-      "domain": "High-Performing",
-      "stem": "An architect is checking whether S3 fits a requirement. For which of the following is S3 the LEAST suitable choice?",
-      "options": [
-        {
-          "text": "Acting as the boot disk that an instance's operating system runs from.",
-          "correct": true,
-          "why": "Correct — S3 is object storage, not block storage, so it cannot serve as an instance's running OS boot volume."
-        },
-        {
-          "text": "Holding a large library of media files that users download over the web.",
-          "correct": false,
-          "why": "Wrong — this is a classic, well-suited use of S3."
-        },
-        {
-          "text": "Keeping nightly database backup files for durable long-term retention.",
-          "correct": false,
-          "why": "Wrong — storing backup objects durably is a good fit for S3."
-        },
-        {
-          "text": "Storing user-uploaded documents for an application to retrieve later.",
-          "correct": false,
-          "why": "Wrong — storing and retrieving uploaded objects is exactly what S3 is for."
-        }
-      ]
-    },
-    {
-      "topic": "S3 Basics",
-      "domain": "Operations/IaC",
-      "stem": "A developer is creating an S3 bucket. Which statement about S3 buckets is correct?",
-      "options": [
-        {
-          "text": "The bucket name must be globally unique across all AWS accounts, and the bucket resides in one Region.",
-          "correct": true,
-          "why": "Correct — bucket names share a single global namespace, while the bucket itself is created in a specific Region."
-        },
-        {
-          "text": "The bucket name only has to be unique within your own account, and the bucket spans every Region.",
-          "correct": false,
-          "why": "Wrong — names are globally unique, and a bucket lives in one Region, not all of them."
-        },
-        {
-          "text": "Buckets are created separately within each Availability Zone, and the chosen name only needs to be unique inside that particular zone.",
-          "correct": false,
-          "why": "Wrong — buckets are Region-scoped, not per-AZ, and naming is global."
-        },
-        {
-          "text": "Bucket names are generated automatically by AWS and cannot be chosen by the user.",
-          "correct": false,
-          "why": "Wrong — you choose the bucket name (subject to the global-uniqueness and DNS rules)."
-        }
-      ]
-    },
-    {
-      "topic": "CloudFormation Basics",
-      "domain": "Operations/IaC",
-      "stem": "A team wants to define their AWS infrastructure in a text file and have AWS create and manage those resources from it. Which service is designed for this?",
-      "options": [
-        {
-          "text": "CloudFormation, which reads a template and provisions the described resources as a stack.",
-          "correct": true,
-          "why": "Correct — CloudFormation turns a template into a managed stack of real resources."
-        },
-        {
-          "text": "CloudWatch, which continuously gathers operational metrics and log data and can raise alarms whenever they cross a threshold.",
-          "correct": false,
-          "why": "Wrong — that is a true description of CloudWatch, but it does not provision infrastructure."
-        },
-        {
-          "text": "S3, which can store the template file durably as an object inside a bucket.",
-          "correct": false,
-          "why": "Wrong — S3 can hold the file, but it does not create the resources the template describes."
-        },
-        {
-          "text": "IAM, which controls which identities are permitted to create the resources.",
-          "correct": false,
-          "why": "Wrong — IAM governs permissions, not the provisioning of the infrastructure itself."
-        }
-      ]
-    },
-    {
-      "topic": "CloudFormation Basics",
-      "domain": "Operations/IaC",
-      "stem": "In CloudFormation, what is the relationship between a template and a stack?",
-      "options": [
-        {
-          "text": "A template describes the resources, and a stack is the set of resources created and managed from that template.",
-          "correct": true,
-          "why": "Correct — the template is the definition; the stack is the live set of resources built from it."
-        },
-        {
-          "text": "A stack describes the resources, and a template is the running infrastructure created from the stack.",
-          "correct": false,
-          "why": "Wrong — this reverses the two terms."
-        },
-        {
-          "text": "A template and a stack are simply two names for the same single object.",
-          "correct": false,
-          "why": "Wrong — they are distinct: one is the definition, the other is the deployed result."
-        },
-        {
-          "text": "A template stores the monitoring data for resources, while a stack keeps the billing and cost records that AWS generates for them over time.",
-          "correct": false,
-          "why": "Wrong — neither stores monitoring or billing data; that is unrelated to CloudFormation's role."
-        }
-      ]
-    },
-    {
-      "topic": "CloudWatch Basics",
-      "domain": "Operations/IaC",
-      "stem": "An EC2 instance sends CPU utilization to CloudWatch automatically, but the team also needs memory usage and free disk space from inside the instance. How are those values collected?",
-      "options": [
-        {
-          "text": "Install the CloudWatch agent on the instance to publish the in-OS metrics.",
-          "correct": true,
-          "why": "Correct — memory and disk are inside the guest OS, so the CloudWatch agent is needed to publish them."
-        },
-        {
-          "text": "They are already included automatically in the default set of EC2 metrics.",
-          "correct": false,
-          "why": "Wrong — default EC2 metrics do not include in-OS values like memory or disk usage."
-        },
-        {
-          "text": "Turn on detailed monitoring, which adds memory and disk usage at one-minute granularity.",
-          "correct": false,
-          "why": "Wrong — detailed monitoring only increases metric frequency; it does not add in-OS metrics."
-        },
-        {
-          "text": "Create a CloudWatch alarm on the instance and the metrics will then appear.",
-          "correct": false,
-          "why": "Wrong — alarms only watch metrics that already exist; they do not generate new ones."
-        }
-      ]
-    },
-    {
-      "topic": "CloudWatch Basics",
-      "domain": "Operations/IaC",
-      "stem": "Which TWO of the following are core capabilities of CloudWatch? (Select TWO.)",
-      "options": [
-        {
-          "text": "Collecting and storing metrics, such as resource utilization measured over time.",
-          "correct": true,
-          "why": "Correct — gathering and retaining metrics is a primary CloudWatch function."
-        },
-        {
-          "text": "Ingesting and storing log data from AWS services and from applications.",
-          "correct": true,
-          "why": "Correct — CloudWatch Logs ingests and stores log data, another core capability."
-        },
-        {
-          "text": "Provisioning entire sets of infrastructure from a declarative template and then managing them together as a single stack.",
-          "correct": false,
-          "why": "Wrong — that is CloudFormation's job, not CloudWatch's."
-        },
-        {
-          "text": "Registering domain names and hosting the DNS records for them.",
-          "correct": false,
-          "why": "Wrong — that is Route 53, not CloudWatch."
-        },
-        {
-          "text": "Storing objects durably inside Region-scoped buckets.",
-          "correct": false,
-          "why": "Wrong — that is S3, not CloudWatch."
-        }
-      ]
-    },
-    {
-      "topic": "Shared Responsibility Model",
+      "topic": "IAM Identity Policies",
       "domain": "Secure",
-      "stem": "Under the AWS shared responsibility model, which task is the CUSTOMER's responsibility rather than AWS's?",
+      "stem": "An IAM user has two managed policies attached: Policy A explicitly allows s3:DeleteObject on arn:aws:s3:::company-data/*, and Policy B explicitly denies s3:DeleteObject on arn:aws:s3:::company-data/critical/*. The user attempts to delete an object at company-data/critical/report.csv. What is the outcome, and why?",
       "options": [
         {
-          "text": "Patching the guest operating system and the applications on an EC2 instance.",
+          "text": "The delete succeeds because Policy A's explicit allow covers the full company-data prefix, and the deny in Policy B only applies when no allow is present.",
+          "correct": false,
+          "why": "Wrong — An explicit Deny in any attached policy always overrides an explicit Allow regardless of which policy it originates from; the Deny in Policy B wins unconditionally."
+        },
+        {
+          "text": "The delete is denied because the explicit Deny in Policy B overrides the explicit Allow in Policy A, and explicit denies always take precedence.",
           "correct": true,
-          "why": "Correct — for EC2 the customer manages the guest OS and applications, including patching."
+          "why": "Correct — IAM evaluation logic: start with an implicit deny, evaluate all policies, and an explicit Deny beats any explicit Allow. Policy B's deny on the critical/* path blocks the action."
         },
         {
-          "text": "Maintaining the physical security and environmental controls of the AWS data center facilities.",
+          "text": "The delete succeeds because managed policies are evaluated independently, and the most recently attached policy with an allow takes precedence.",
           "correct": false,
-          "why": "Wrong — physical security of facilities is AWS's responsibility (security 'of' the cloud)."
+          "why": "Wrong — IAM does not evaluate policies in attachment order or give precedence to the most recently attached; all applicable policies are evaluated together, and a deny in any one of them is final."
         },
         {
-          "text": "Replacing failed physical disks within the underlying hardware.",
+          "text": "The delete is denied because Policy B is a newer policy and AWS treats the most recently created policy as authoritative when two policies conflict.",
           "correct": false,
-          "why": "Wrong — the physical hardware is managed entirely by AWS."
-        },
-        {
-          "text": "Securing the hypervisor that keeps customer instances isolated.",
-          "correct": false,
-          "why": "Wrong — the virtualization layer is AWS's responsibility, not the customer's."
+          "why": "Wrong — Policy creation or attachment timestamps have no bearing on IAM evaluation; the outcome here is correct but for the wrong reason, which would fail you on a real exam question that tests the actual rule."
         }
       ]
     },
     {
-      "topic": "HA vs Fault Tolerance vs Disaster Recovery",
-      "domain": "Resilient",
-      "stem": "A payment system must keep operating without any interruption even if an individual component fails in the middle of a transaction. Which design goal does this BEST describe?",
+      "topic": "IAM Users and ARNs",
+      "domain": "Secure",
+      "stem": "A developer is writing a resource-based policy for an S3 bucket and needs to grant access to a specific IAM user. The user's name is 'deploy-agent' and the account ID is 123456789012. Which ARN correctly identifies this IAM user as a principal?",
       "options": [
         {
-          "text": "Fault tolerance — the system keeps operating through component failures.",
+          "text": "arn:aws:iam::123456789012:user/deploy-agent",
           "correct": true,
-          "why": "Correct — fault tolerance means continuing to operate with no interruption despite failures."
+          "why": "Correct — IAM user ARNs follow the pattern arn:aws:iam::<account-id>:user/<username>; IAM is a global service so the region field is always empty."
         },
         {
-          "text": "High availability — downtime is kept small and recovery happens quickly after a failure.",
+          "text": "arn:aws:iam:us-east-1:123456789012:user/deploy-agent",
           "correct": false,
-          "why": "Wrong — high availability accepts brief downtime, whereas this requirement allows none."
+          "why": "Wrong — IAM is a global service and does not include a region component in its ARNs; inserting a region identifier like us-east-1 produces an invalid ARN that will not match any principal."
         },
         {
-          "text": "Disaster recovery — procedures exist to restore the service after a major event.",
+          "text": "arn:aws:sts::123456789012:assumed-role/deploy-agent/session",
           "correct": false,
-          "why": "Wrong — disaster recovery is about recovering after an event, not running through one uninterrupted."
+          "why": "Wrong — This is the ARN format for an assumed-role session via STS, not for a permanent IAM user; using it in a principal block would only match temporary role credentials, not the IAM user."
         },
         {
-          "text": "Elasticity — capacity scales automatically up and down with changing demand.",
+          "text": "arn:aws:iam::123456789012:root/deploy-agent",
           "correct": false,
-          "why": "Wrong — elasticity is a true concept but addresses scaling, not uninterrupted operation."
+          "why": "Wrong — The 'root' path element in an ARN refers to the account root user, not a named IAM user; the correct path element for IAM users is 'user'."
         }
       ]
     },
     {
-      "topic": "HA vs Fault Tolerance vs Disaster Recovery",
-      "domain": "Resilient",
-      "stem": "An internal tool may be briefly unavailable during a failure as long as it returns quickly and outages are rare. Which design goal fits this requirement BEST?",
+      "topic": "IAM Groups",
+      "domain": "Secure",
+      "stem": "A company uses IAM groups to manage permissions. A security engineer points out that a user belongs to two groups: 'Developers' (which allows EC2 actions) and 'Auditors' (which denies EC2 termination). The user also has a directly attached policy that allows ec2:TerminateInstances. Can the user terminate an EC2 instance?",
       "options": [
         {
-          "text": "High availability — maximize uptime and recover fast, tolerating short outages.",
+          "text": "Yes — directly attached user policies take precedence over group-level deny policies, so the explicit allow on the user wins.",
+          "correct": false,
+          "why": "Wrong — IAM does not rank policies by where they are attached; an explicit Deny in any policy — whether from a group or directly on the user — overrides any Allow from any other source."
+        },
+        {
+          "text": "No — the explicit Deny in the Auditors group policy overrides the explicit Allow in both the Developers group and the directly attached user policy.",
           "correct": true,
-          "why": "Correct — high availability targets minimal downtime while accepting occasional brief outages, matching the requirement."
+          "why": "Correct — All policies attached to an identity (via groups or directly) are merged and evaluated together; one explicit Deny is sufficient to block the action regardless of how many allows exist elsewhere."
         },
         {
-          "text": "Fault tolerance — keep running through failures with no interruption whatsoever.",
+          "text": "Yes — because the user is also in the Developers group, the EC2 allow from that group combined with the direct user policy creates a majority-allow that overrides the single deny.",
           "correct": false,
-          "why": "Wrong — this is stronger and costlier than needed; the requirement permits short outages, so it is not the best fit."
+          "why": "Wrong — IAM has no majority-rules or vote-counting mechanism; a single explicit Deny from any attached policy blocks the action, regardless of the number of allows."
         },
         {
-          "text": "Disaster recovery — bring the service back after a significant disaster event.",
+          "text": "No — the user policy is ignored when group policies conflict, so only the Developers allow and Auditors deny are evaluated, and the deny wins.",
           "correct": false,
-          "why": "Wrong — disaster recovery addresses major events, not routine quick recovery from small failures."
-        },
-        {
-          "text": "Durability — guarantee that stored data is not lost over the long term.",
-          "correct": false,
-          "why": "Wrong — durability is a true concept but concerns data loss, not service uptime."
+          "why": "Wrong — The outcome is correct but the reasoning is wrong; directly attached user policies are evaluated alongside group policies, not ignored. The deny wins because of the explicit-deny rule, not because user policies are discarded."
         }
       ]
     },
     {
-      "topic": "Route 53 Fundamentals",
-      "domain": "Resilient",
-      "stem": "Which statement BEST describes Amazon Route 53?",
+      "topic": "IAM Roles — Tech & When to Use",
+      "domain": "Secure",
+      "stem": "A mobile application needs to let users upload photos directly to S3 without routing files through an application server. Each user is authenticated via an external identity provider. Which IAM mechanism should the architect use to give authenticated users temporary AWS credentials scoped to their own S3 prefix?",
       "options": [
         {
-          "text": "A globally resilient service that can register domains and host their DNS records.",
+          "text": "Create one IAM user per mobile user and distribute long-term access keys to each device through the app at install time.",
+          "correct": false,
+          "why": "Wrong — Distributing long-term access keys to mobile devices is a critical security risk; keys embedded in apps can be extracted, and managing one IAM user per user does not scale to large user bases."
+        },
+        {
+          "text": "Create an IAM role that the external identity provider can assume via federation, granting temporary credentials that the app uses to access S3 directly.",
           "correct": true,
-          "why": "Correct — Route 53 is a global DNS service offering domain registration and hosted zones."
+          "why": "Correct — IAM roles with web identity federation (via Cognito or directly via OIDC) let externally authenticated users assume a role and receive short-lived STS credentials scoped to the required S3 prefix — no long-term keys on the device."
         },
         {
-          "text": "A Region-scoped service that stores DNS records only within a single Region.",
+          "text": "Attach a resource-based policy to the S3 bucket granting public write access, then rely on the app to enforce per-user prefix restrictions in code.",
           "correct": false,
-          "why": "Wrong — Route 53 is global and globally resilient, not confined to one Region."
+          "why": "Wrong — Granting public write access to an S3 bucket and enforcing restrictions only in application code means anyone who discovers the bucket endpoint can write objects without authentication."
         },
         {
-          "text": "A service that gathers performance metrics and triggers alarms whenever configured thresholds are crossed over time.",
+          "text": "Create a single shared IAM user with S3 access and embed its access key in the application, relying on HTTPS to prevent credential interception.",
           "correct": false,
-          "why": "Wrong — that describes CloudWatch, not Route 53."
-        },
-        {
-          "text": "A service that stores objects in buckets and serves them out over HTTP.",
-          "correct": false,
-          "why": "Wrong — that describes S3, not a DNS service."
+          "why": "Wrong — A single shared credential gives all users identical access with no per-user scoping, and keys bundled in app binaries can be extracted via reverse engineering regardless of transport encryption."
         }
       ]
     },
     {
-      "topic": "DNS Record Types",
+      "topic": "Service-linked Roles & PassRole",
+      "domain": "Secure",
+      "stem": "A junior developer is trying to create an Auto Scaling group and configure it to launch EC2 instances using a specific IAM role. The operation fails with an 'AccessDenied' error despite the developer having EC2 and Auto Scaling permissions. What is the MOST likely cause?",
+      "options": [
+        {
+          "text": "The developer's IAM policy is missing the iam:PassRole permission for the role being assigned to the launch configuration.",
+          "correct": true,
+          "why": "Correct — When a user configures a service to use an IAM role, they must have iam:PassRole on that specific role ARN; this prevents users from escalating privileges by passing a role with more permissions than they themselves have."
+        },
+        {
+          "text": "The IAM role being passed to the Auto Scaling group does not have a trust policy that allows Auto Scaling to assume it.",
+          "correct": false,
+          "why": "Wrong — A missing trust policy would cause Auto Scaling to fail when it tries to assume the role at launch time, not cause an AccessDenied error for the developer during the group creation API call."
+        },
+        {
+          "text": "Auto Scaling requires a service-linked role named AWSServiceRoleForAutoScaling, and the developer must create it manually before configuring the group.",
+          "correct": false,
+          "why": "Wrong — The Auto Scaling service-linked role is created automatically by AWS when Auto Scaling is first used in an account; it does not need to be manually created and is separate from iam:PassRole."
+        },
+        {
+          "text": "The developer needs the iam:CreateRole permission to attach an IAM role to an Auto Scaling launch configuration.",
+          "correct": false,
+          "why": "Wrong — iam:CreateRole is needed to create new IAM roles, not to reference an existing one in a launch configuration; the relevant permission for passing an existing role to a service is iam:PassRole."
+        }
+      ]
+    },
+    {
+      "topic": "AWS Organizations",
+      "domain": "Secure",
+      "stem": "A company has a management account and four member accounts in an AWS Organization. The finance team wants all AWS bills consolidated into a single monthly invoice while still being able to see per-account cost breakdowns. Which feature of AWS Organizations provides this?",
+      "options": [
+        {
+          "text": "Consolidated Billing, which rolls all member account charges into the management account's invoice and provides usage reports broken down by linked account.",
+          "correct": true,
+          "why": "Correct — Consolidated Billing is a core feature of AWS Organizations; it produces a single invoice for the entire organization while preserving per-account cost visibility and enabling volume discount pooling."
+        },
+        {
+          "text": "Service Control Policies applied to the root OU, which restrict which services member accounts can use and thereby cap the maximum spend per account.",
+          "correct": false,
+          "why": "Wrong — SCPs control permissions, not billing; they can restrict service usage but do not consolidate invoices or provide cross-account cost reporting."
+        },
+        {
+          "text": "AWS Cost Explorer configured in each member account, which can export spending data to the management account's S3 bucket for aggregation.",
+          "correct": false,
+          "why": "Wrong — Cost Explorer is a visualisation and analysis tool, not a billing consolidation feature; this approach also requires custom aggregation work rather than being a built-in Organizations capability."
+        },
+        {
+          "text": "Delegated Administrator, which designates one member account to receive and pay invoices on behalf of all other accounts in the organization.",
+          "correct": false,
+          "why": "Wrong — Delegated Administrator allows a member account to manage specific AWS services on behalf of the organization, but billing consolidation always flows through the management account, not a delegated administrator."
+        }
+      ]
+    },
+    {
+      "topic": "Service Control Policies (SCPs)",
+      "domain": "Secure",
+      "stem": "An AWS Organization has an SCP attached to the 'Production' OU that denies ec2:TerminateInstances. A member account in that OU has an IAM administrator user with the AdministratorAccess managed policy attached. The admin attempts to terminate an EC2 instance in the account. What happens?",
+      "options": [
+        {
+          "text": "The termination succeeds because AdministratorAccess grants full AWS permissions and cannot be restricted by organisation-level policies.",
+          "correct": false,
+          "why": "Wrong — SCPs set the maximum permission boundary for all identities in an account, including those with AdministratorAccess; AdministratorAccess cannot grant permissions that the SCP has explicitly denied."
+        },
+        {
+          "text": "The termination is denied because SCPs are evaluated before IAM policies and a Deny in an SCP takes precedence over any identity policy, including AdministratorAccess.",
+          "correct": true,
+          "why": "Correct — SCPs act as a guardrail on what can be permitted within an account; even an IAM administrator cannot perform an action that the SCP explicitly denies, regardless of what their identity policy allows."
+        },
+        {
+          "text": "The termination succeeds because SCPs apply to the account root user only, not to IAM users or roles within the account.",
+          "correct": false,
+          "why": "Wrong — SCPs apply to all principals in the member account except the management account's root user; they restrict IAM users, IAM roles, and the member account's own root user."
+        },
+        {
+          "text": "The termination is denied, but only until the admin detaches the SCP from the Production OU using their AdministratorAccess permissions.",
+          "correct": false,
+          "why": "Wrong — Member account administrators cannot modify SCPs; only principals in the management account (or a delegated Organizations administrator) can create, attach, or detach SCPs."
+        }
+      ]
+    },
+    {
+      "topic": "Service Control Policies (SCPs) — Multi-answer",
+      "domain": "Secure",
+      "stem": "A security architect is designing an SCP strategy for a new AWS Organization. They want to ensure member accounts cannot disable CloudTrail and cannot create resources outside of us-east-1 and eu-west-1. Which TWO statements about implementing this with SCPs are correct? (Select TWO.)",
+      "options": [
+        {
+          "text": "An SCP that denies cloudtrail:DeleteTrail and cloudtrail:StopLogging can prevent member accounts from disabling CloudTrail, even for account administrators.",
+          "correct": true,
+          "why": "Correct — SCPs with explicit Deny on CloudTrail management actions enforce the restriction on all principals in the member account, including those with AdministratorAccess, because SCPs cap the maximum effective permissions."
+        },
+        {
+          "text": "A Deny SCP with a condition key of aws:RequestedRegion not matching the two approved regions will block resource creation in any other region across all member accounts.",
+          "correct": true,
+          "why": "Correct — The aws:RequestedRegion global condition key combined with a Deny and a StringNotEquals condition is the standard SCP pattern for restricting which regions member accounts can use."
+        },
+        {
+          "text": "SCPs must be attached to individual member accounts rather than to OUs, because attaching to an OU only affects the OU itself and not the accounts nested inside it.",
+          "correct": false,
+          "why": "Wrong — SCPs attached to an OU apply to all accounts directly or transitively nested within that OU; attaching at the OU level is the recommended approach for applying consistent controls across multiple accounts."
+        },
+        {
+          "text": "The management account is subject to SCPs attached to the root, so the same SCP will automatically restrict the management account's administrators as well.",
+          "correct": false,
+          "why": "Wrong — SCPs do not apply to the management account; the management account is exempt from SCP restrictions, which is one reason AWS recommends keeping it free of workloads."
+        },
+        {
+          "text": "An allow-list SCP that permits only cloudtrail:CreateTrail achieves the same CloudTrail protection because unlisted CloudTrail actions will be implicitly denied.",
+          "correct": false,
+          "why": "Wrong — An allow-list SCP that only permits CreateTrail would block all other AWS actions for accounts in that OU, not just CloudTrail management; a targeted deny-list approach is the correct pattern here."
+        }
+      ]
+    },
+    {
+      "topic": "CloudTrail",
       "domain": "Operations/IaC",
-      "stem": "You need a DNS record that points the name 'shop.example.com' to another DNS name, 'web.provider.net', instead of to an IP address. Which record type fits?",
+      "stem": "A company discovers that an EC2 instance was terminated unexpectedly. The security team wants to find out which IAM principal issued the TerminateInstances API call and from which IP address. Which AWS service and feature provides this information, and where is it stored by default?",
       "options": [
         {
-          "text": "CNAME, which maps a name to another name.",
+          "text": "CloudWatch Metrics — the EC2 service publishes termination events as custom metrics, which can be queried with the principal and source IP as dimensions.",
+          "correct": false,
+          "why": "Wrong — CloudWatch Metrics capture performance data such as CPU and network throughput; API call details including the caller identity and source IP are not published as CloudWatch metrics."
+        },
+        {
+          "text": "CloudTrail — it records all management API calls including the caller identity, source IP, and timestamp, with events stored in an S3 bucket and queryable via the Event History console.",
           "correct": true,
-          "why": "Correct — a CNAME points one name at another name, which is exactly what is required here."
+          "why": "Correct — CloudTrail captures management events such as TerminateInstances and logs the userIdentity (who), sourceIPAddress, eventTime, and request parameters; these are stored in S3 and visible in Event History for the past 90 days."
         },
         {
-          "text": "A, which maps a name directly to an IPv4 address.",
+          "text": "CloudWatch Logs — the EC2 service streams all instance lifecycle events to a default log group, including the API caller and source address for each event.",
           "correct": false,
-          "why": "Wrong — an A record resolves to an IPv4 address, not to another name."
+          "why": "Wrong — CloudWatch Logs captures application and OS-level logs from within instances or services; EC2 lifecycle API calls are not automatically streamed to CloudWatch Logs."
         },
         {
-          "text": "AAAA, which maps a name directly to an IPv6 address.",
+          "text": "VPC Flow Logs — they record all inbound and outbound network traffic for the instance, from which the source IP of the termination request can be derived.",
           "correct": false,
-          "why": "Wrong — an AAAA record resolves to an IPv6 address, not to another name."
-        },
-        {
-          "text": "MX, which directs email for a domain toward its mail servers.",
-          "correct": false,
-          "why": "Wrong — MX records route mail and are unrelated to pointing one name at another."
+          "why": "Wrong — VPC Flow Logs capture network-level traffic metadata (IP, port, protocol, byte counts); they do not record AWS API calls, caller identity, or which AWS action was invoked."
         }
       ]
     },
     {
-      "topic": "AWS Default VPC",
+      "topic": "CloudWatch Logs",
       "domain": "Operations/IaC",
-      "stem": "A cloud engineer reviews the default VPC in one Region. Which TWO statements about the default VPC are correct? (Select TWO.)",
+      "stem": "A team wants to centralise application logs from EC2 instances across three accounts into a single location for analysis. They plan to use CloudWatch Logs. Which approach BEST achieves cross-account log centralisation with the least custom code?",
       "options": [
         {
-          "text": "Each Region has at most one default VPC, and it can be removed and regenerated later.",
+          "text": "Install the CloudWatch agent on each instance and push logs to a Log Group in each account, then write a Lambda function to periodically copy log events to the central account.",
+          "correct": false,
+          "why": "Wrong — This works technically but requires maintaining custom Lambda code for log copying; it is more operationally complex than using the built-in cross-account log destinations that CloudWatch Logs supports."
+        },
+        {
+          "text": "Configure a CloudWatch Logs subscription filter in each source account with a cross-account destination pointing to a Kinesis stream or CloudWatch Logs in the central account.",
           "correct": true,
-          "why": "Correct — there is a single default VPC per Region, and it can be deleted and recreated from the console."
+          "why": "Correct — CloudWatch Logs supports cross-account destinations via subscription filters; this is a managed, near-real-time mechanism that requires no custom code and is the recommended pattern for multi-account log centralisation."
         },
         {
-          "text": "It is ready for connectivity, with an internet gateway and a default subnet in each Availability Zone.",
-          "correct": true,
-          "why": "Correct — the default VPC comes preconfigured with an IGW and a default subnet per AZ."
-        },
-        {
-          "text": "A single default VPC is shared across every Region in the account at once.",
+          "text": "Enable CloudTrail with an organisation trail so that all account activity is captured centrally, which also consolidates CloudWatch log streams.",
           "correct": false,
-          "why": "Wrong — VPCs are Region-scoped, so a default VPC exists within one Region only."
+          "why": "Wrong — An organisation trail centralises CloudTrail API call events, not application-level CloudWatch log streams from EC2 instances; these are separate log sources with different collection mechanisms."
         },
         {
-          "text": "Reaching the internet from any of its subnets first requires you to manually create and then attach an internet gateway.",
+          "text": "Grant all three source accounts write access to a shared CloudWatch Log Group in the central account using a resource-based policy on the log group.",
           "correct": false,
-          "why": "Wrong — the default VPC already has its internet gateway attached."
-        },
-        {
-          "text": "It is the setup AWS recommends for hosting production workloads.",
-          "correct": false,
-          "why": "Wrong — custom VPCs are preferred for production; the default VPC is mainly a convenience."
+          "why": "Wrong — CloudWatch Log Groups do not support resource-based policies that allow cross-account writes in the same way S3 buckets do; cross-account log delivery requires subscription filters and destination resources such as Kinesis."
         }
       ]
     },
     {
-      "topic": "AWS Default VPC",
+      "topic": "AWS Control Tower",
       "domain": "Operations/IaC",
-      "stem": "Which statement about the default VPC's IP addressing is correct?",
+      "stem": "A large enterprise is setting up a new multi-account AWS environment. They want guardrails enforced automatically on every new account, a pre-built account vending machine for self-service provisioning, and centralised audit logging from day one. Which AWS service is designed to deliver all three of these out of the box?",
       "options": [
         {
-          "text": "It uses a predefined IPv4 CIDR block of 172.31.0.0/16.",
+          "text": "AWS Organizations with custom SCPs and a Lambda-based account creation workflow built by the internal platform team.",
+          "correct": false,
+          "why": "Wrong — Organizations provides the SCP mechanism but does not include a built-in account vending machine or centralised audit logging; achieving all three requires significant custom development."
+        },
+        {
+          "text": "AWS Config with conformance packs deployed across all accounts via a CloudFormation StackSet.",
+          "correct": false,
+          "why": "Wrong — AWS Config conformance packs can enforce configuration rules, but Config alone does not provide account vending, pre-built guardrails as a managed service, or the integrated landing zone that Control Tower offers."
+        },
+        {
+          "text": "AWS Control Tower, which provides a managed landing zone with pre-built preventive and detective guardrails, an Account Factory for self-service provisioning, and an integrated audit log account.",
           "correct": true,
-          "why": "Correct — every default VPC is created with the fixed 172.31.0.0/16 CIDR range."
+          "why": "Correct — Control Tower is AWS's managed service for setting up and governing a multi-account environment; it includes Account Factory, mandatory and optional guardrails (implemented via SCPs and Config rules), and a dedicated Log Archive account from day one."
         },
         {
-          "text": "It uses a 10.0.0.0/16 block that the account owner selects at creation time.",
+          "text": "AWS Service Catalog with a portfolio of approved CloudFormation products, allowing teams to self-provision accounts using pre-approved templates.",
           "correct": false,
-          "why": "Wrong — the default VPC's range is fixed and is not chosen by the user."
+          "why": "Wrong — Service Catalog manages approved infrastructure products within an account but does not natively provision new AWS accounts or enforce organisation-wide guardrails; it can complement Control Tower but is not a substitute."
+        }
+      ]
+    },
+    {
+      "topic": "REVIEW: CloudFormation Basics — drift",
+      "domain": "Operations/IaC",
+      "stem": "A CloudFormation stack manages an EC2 security group. A network engineer manually adds an inbound rule to the security group through the console without updating the template. The team later runs 'aws cloudformation update-stack' with the original unchanged template. What happens to the manually added rule?",
+      "options": [
+        {
+          "text": "The manually added rule is preserved because CloudFormation performs additive-only updates and does not remove resources or rules it did not create.",
+          "correct": false,
+          "why": "Wrong — CloudFormation reconciles the live resource to match the template definition during an update; for security groups, it will overwrite the configuration to match the template, removing the manually added rule."
         },
         {
-          "text": "It is created with no CIDR block until one is assigned afterwards.",
+          "text": "The update fails with a DriftDetected error, and the stack requires manual remediation before CloudFormation will accept further updates.",
           "correct": false,
-          "why": "Wrong — the default VPC always has its predefined CIDR from the start."
+          "why": "Wrong — CloudFormation drift detection is a separate, explicitly triggered operation; a stack update does not automatically detect or block on drift. The update proceeds based on the stored logical resource state."
         },
         {
-          "text": "Its CIDR block shifts automatically to avoid overlapping with other VPCs.",
+          "text": "The manually added rule is removed because CloudFormation reconciles the security group to match the template during the update, overwriting the manual change.",
+          "correct": true,
+          "why": "Correct — When CloudFormation updates a resource, it drives it toward the state described in the template; manual additions that are not in the template are treated as extraneous and removed."
+        },
+        {
+          "text": "The stack update skips the security group resource because no changes were made to its template definition, leaving the manual rule intact.",
           "correct": false,
-          "why": "Wrong — the CIDR is static; AWS does not change it to prevent overlaps."
+          "why": "Wrong — CloudFormation may still evaluate and re-apply unchanged resources during an update depending on dependencies and update type; manual drift means the live resource no longer matches the template, and an update can trigger reconciliation."
+        }
+      ]
+    },
+    {
+      "topic": "REVIEW: IAM Policy Types — Permissions Boundary",
+      "domain": "Secure",
+      "stem": "An IAM user has an identity policy that allows s3:*, ec2:DescribeInstances, and iam:CreateUser. A permissions boundary is attached that permits only s3:GetObject and s3:PutObject. Which actions can the user successfully perform?",
+      "options": [
+        {
+          "text": "The user can perform all s3:* actions because the identity policy grants them and permissions boundaries only restrict IAM and STS actions.",
+          "correct": false,
+          "why": "Wrong — Permissions boundaries restrict all services, not just IAM and STS; the effective permissions are the intersection of the identity policy and the permissions boundary, so only actions allowed in both are permitted."
+        },
+        {
+          "text": "The user can perform s3:GetObject and s3:PutObject only, because effective permissions are limited to actions that appear in both the identity policy and the permissions boundary.",
+          "correct": true,
+          "why": "Correct — Effective permissions equal the intersection of the identity policy and the permissions boundary; s3:GetObject and s3:PutObject appear in both, while all other s3 actions, ec2:DescribeInstances, and iam:CreateUser are outside the boundary."
+        },
+        {
+          "text": "The user can perform s3:*, ec2:DescribeInstances, and iam:CreateUser because the identity policy takes precedence, and the permissions boundary acts as an advisory control only.",
+          "correct": false,
+          "why": "Wrong — Permissions boundaries are not advisory; they are enforced by AWS during policy evaluation and hard-limit which actions the identity can perform, regardless of what the identity policy allows."
+        },
+        {
+          "text": "The user cannot perform any action because having a permissions boundary attached always requires a matching Allow in both the boundary and an attached managed policy before any access is granted.",
+          "correct": false,
+          "why": "Wrong — The logic is close but the conclusion is wrong; s3:GetObject and s3:PutObject do appear in both the identity policy (via s3:*) and the boundary, so those two actions are permitted."
         }
       ]
     }

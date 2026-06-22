@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03 · 013 · Serverless & Application Services</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+:root{
+  --bg:#101418;--bg2:#161b21;--surface:#1b2128;--surface2:#212934;
+  --line:#2c3540;--line2:#3a4654;--text:#e7edf3;--muted:#9fb0c0;
+  --primary:#2dd4bf;--primary-d:#0f3b39;--exam:#fbbf24;--exam-d:#3a2f0c;
+  --demo:#60a5fa;--demo-d:#0e2647;--term:#c084fc;--term-d:#2a1640;
+  --warn:#fb7185;--warn-d:#3a151c;--ok:#34d399;
+  --radius:16px;--shadow:0 6px 22px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.25;margin:0}
+a{color:var(--primary);text-decoration:none}
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(16,20,24,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .badge{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--bg);background:var(--primary);padding:4px 9px;border-radius:8px}
+.topbar .ttl{font-family:'Sora';font-weight:600;font-size:15px}
+.topbar .ttl small{display:block;color:var(--muted);font-weight:500;font-size:11.5px;font-family:'Manrope'}
+.menu-btn{margin-left:auto;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+.menu-btn:active{transform:scale(.97)}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
+.drawer-bg.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(86vw,340px);background:var(--bg2);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .28s ease;z-index:80;overflow-y:auto;padding:18px 16px 40px}
+.drawer.open{transform:translateX(0)}
+.drawer h3{font-size:11.5px;color:var(--muted);margin:14px 4px 8px;text-transform:uppercase;letter-spacing:1px}
+.drawer a{display:block;color:var(--text);padding:8px 12px;border-radius:10px;font-weight:500;font-size:13px;border:1px solid transparent}
+.drawer a:active{background:var(--surface)}
+.drawer a .n{color:var(--primary);font-family:'Sora';font-weight:700;margin-right:8px}
+.drawer .close{width:100%;margin-top:18px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 90px}
+.hero{background:radial-gradient(120% 90% at 100% 0%, rgba(45,212,191,.16), transparent 55%),radial-gradient(120% 90% at 0% 100%, rgba(96,165,250,.12), transparent 55%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+.hero .eyebrow{color:var(--primary);font-weight:700;font-size:12.5px;letter-spacing:1.5px;font-family:'Sora'}
+.hero h1{font-size:25px;margin:6px 0 8px}
+.hero p{color:var(--muted);margin:0;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;margin-top:18px;box-shadow:var(--shadow)}
+.lesson-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.lesson-head .num{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:'Sora';font-weight:700;background:var(--primary);color:var(--bg);font-size:15px}
+.lesson-head h2{font-size:19px}
+.lesson-head .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+h3.block{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+h3.block::before{content:"";width:14px;height:3px;border-radius:3px;background:var(--primary)}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:360px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface2);color:var(--text);font-family:'Sora';font-weight:600;font-size:12.5px;letter-spacing:.3px}
+tr:last-child td{border-bottom:none}
+td b{color:var(--primary)}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{position:relative;padding:6px 0 6px 22px;font-size:15px;border-bottom:1px dashed var(--line)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"▸";position:absolute;left:2px;top:6px;color:var(--primary)}
+.two-col{display:grid;gap:12px}
+@media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+.box{border-radius:12px;padding:13px 14px;margin:12px 0;border:1px solid;font-size:14.5px}
+.box .tag{font-family:'Sora';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
+.box.exam{background:var(--exam-d);border-color:#6b551a}.box.exam .tag{color:var(--exam)}
+.box.term{background:var(--term-d);border-color:#4a2d6b}.box.term .tag{color:var(--term)}
+.box.warn{background:var(--warn-d);border-color:#6b2630}.box.warn .tag{color:var(--warn)}
+.box.demo{background:var(--demo-d);border-color:#1d4a82}.box.demo .tag{color:var(--demo)}
+.box ul{margin:4px 0 0;padding-left:18px}.box li{margin:3px 0}
+.mer{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;overflow-x:auto}
+.mermaid{display:flex;justify-content:center;min-width:fit-content}
+.code{position:relative;background:#0c1117;border:1px solid var(--line2);border-radius:10px;margin:10px 0}
+.code pre{margin:0;padding:13px 14px;overflow-x:auto;font-size:13px;line-height:1.55}
+.code code{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;color:#cfe9e6;white-space:pre}
+.code .cp{position:absolute;top:7px;right:7px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:7px;font-size:11px;padding:4px 9px;cursor:pointer;font-weight:600}
+.code .cp:active{color:var(--primary)}
+.expect{font-size:13px;color:var(--ok);background:rgba(52,211,153,.08);border-left:3px solid var(--ok);padding:7px 11px;margin:0 0 12px;border-radius:0 8px 8px 0}
+.expect b{color:var(--ok)}
+.step{counter-increment:st;margin:14px 0}
+.step .sh{display:flex;align-items:center;gap:9px;font-family:'Sora';font-weight:600;font-size:14.5px;margin-bottom:4px}
+.step .sh::before{content:counter(st);background:var(--demo);color:var(--bg);width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12.5px;flex:0 0 auto}
+.demo-wrap{counter-reset:st}
+.fc-grid{display:grid;gap:10px}
+.fc{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:13px 14px;cursor:pointer;transition:border-color .2s;user-select:none}
+.fc:active{border-color:var(--primary)}
+.fc .q{font-weight:600;font-size:14.5px;display:flex;gap:8px;align-items:flex-start}
+.fc .q::before{content:"Q";font-family:'Sora';color:var(--primary);font-weight:700;flex:0 0 auto}
+.fc .a{display:none;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);color:var(--muted);font-size:14px}
+.fc .a::before{content:"A ";color:var(--ok);font-weight:700;font-family:'Sora'}
+.fc.show .a{display:block}
+.fc .hint{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600}
+.quiz{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:14px;margin:10px 0}
+.quiz .qq{font-weight:600;font-size:15px;margin-bottom:8px}
+.quiz .opt{display:block;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin:6px 0;font-size:14px;cursor:pointer}
+.quiz .opt:active{border-color:var(--primary)}
+.quiz .reveal{margin-top:6px;background:var(--surface);color:var(--primary);border:1px solid var(--line2);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px;width:100%}
+.quiz .ans{display:none;margin-top:10px;border-left:3px solid var(--ok);background:rgba(52,211,153,.08);padding:9px 12px;border-radius:0 8px 8px 0;font-size:14px}
+.quiz .ans b{color:var(--ok)}
+.quiz.show .ans{display:block}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;line-height:1.7}
+.pill{display:inline-block;background:var(--surface2);border:1px solid var(--line2);color:var(--muted);font-size:11px;padding:2px 8px;border-radius:20px;margin:2px}
+.toTop{position:fixed;right:14px;bottom:16px;z-index:50;background:var(--primary);color:var(--bg);border:none;width:46px;height:46px;border-radius:50%;font-size:20px;box-shadow:var(--shadow);cursor:pointer;display:none}
+.toTop.show{display:block}
+kbd{background:var(--surface2);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-size:12px;font-family:monospace}
+.examcard{border-color:#6b551a;background:linear-gradient(180deg,var(--exam-d),var(--surface))}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="badge">SAA-C03</span>
+  <div class="ttl">Section 013<small>Serverless &amp; Application Services</small></div>
+  <button class="menu-btn" onclick="openDrawer()">☰ Lessons</button>
+</header>
+
+<div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer">
+  <h3>Foundations</h3>
+  <a href="#l1" onclick="closeDrawer()"><span class="n">1</span>Architecture Deep Dive</a>
+  <a href="#l2" onclick="closeDrawer()"><span class="n">2</span>AWS Lambda</a>
+  <a href="#l3" onclick="closeDrawer()"><span class="n">3</span>EventBridge / CW Events</a>
+  <a href="#l4" onclick="closeDrawer()"><span class="n">4</span>Serverless Architecture</a>
+  <h3>Messaging & workflow</h3>
+  <a href="#l5" onclick="closeDrawer()"><span class="n">5</span>SNS</a>
+  <a href="#l6" onclick="closeDrawer()"><span class="n">6</span>Step Functions</a>
+  <a href="#l7" onclick="closeDrawer()"><span class="n">7</span>API Gateway 101</a>
+  <a href="#l8" onclick="closeDrawer()"><span class="n">8</span>Pet-Cuddle-o-Tron (build)</a>
+  <h3>Queues</h3>
+  <a href="#l9" onclick="closeDrawer()"><span class="n">9</span>SQS</a>
+  <a href="#l10" onclick="closeDrawer()"><span class="n">10</span>SQS Standard vs FIFO</a>
+  <a href="#l11" onclick="closeDrawer()"><span class="n">11</span>SQS Delay Queues</a>
+  <a href="#l12" onclick="closeDrawer()"><span class="n">12</span>SQS Dead-Letter Queues</a>
+  <h3>Streaming</h3>
+  <a href="#l13" onclick="closeDrawer()"><span class="n">13</span>Kinesis Data Streams</a>
+  <a href="#l14" onclick="closeDrawer()"><span class="n">14</span>Kinesis Data Firehose</a>
+  <a href="#l15" onclick="closeDrawer()"><span class="n">15</span>Kinesis Data Analytics</a>
+  <a href="#l16" onclick="closeDrawer()"><span class="n">16</span>Kinesis Video Streams</a>
+  <h3>Identity & integration</h3>
+  <a href="#l17" onclick="closeDrawer()"><span class="n">17</span>Cognito</a>
+  <a href="#l18" onclick="closeDrawer()"><span class="n">18</span>AWS Glue 101</a>
+  <a href="#l19" onclick="closeDrawer()"><span class="n">19</span>Amazon MQ 101</a>
+  <a href="#l20" onclick="closeDrawer()"><span class="n">20</span>Amazon AppFlow</a>
+  <h3>Revision</h3>
+  <a href="#mock" onclick="closeDrawer()"><span class="n">★</span>Mock Exam</a>
+  <button class="close" onclick="closeDrawer()">Close</button>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">SECTION GOAL</div>
+    <h1>Build event-driven, serverless systems with the AWS application services.</h1>
+    <p>Serverless is heavily tested. Learn Lambda, EventBridge, SNS/SQS, Step Functions, API Gateway, the Kinesis family, Cognito, Glue, Amazon MQ and AppFlow — and when to pick each.</p>
+  </section>
+
+  <div class="card">
+    <h3 class="block">Section Map · how the lessons connect</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  ARCH[1,4. Architectures] --> LAMBDA[2. Lambda - FaaS]
+  LAMBDA --> EVT[3. EventBridge]
+  LAMBDA --> SNS[5. SNS pub/sub]
+  LAMBDA --> SF[6. Step Functions]
+  LAMBDA --> API[7. API Gateway]
+  API --> APP[8. Pet-Cuddle-o-Tron]
+  SNS --> SQS[9-12. SQS queues]
+  SQS --> KIN[13-16. Kinesis streaming]
+  API --> COG[17. Cognito]
+  KIN --> GLUE[18. Glue ETL]
+  SQS --> MQ[19. Amazon MQ]
+  APP --> FLOW[20. AppFlow]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class ARCH,LAMBDA,EVT,SNS,SF,API a;
+  class SQS,KIN,COG,GLUE,MQ,FLOW,APP b;
+    </pre></div>
+  </div>
+
+  <div class="card">
+    <h3 class="block">Quick Understanding · whole section</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Lesson</th><th>What + why it matters for the exam</th></tr>
+      <tr><td>1 Architectures</td><td>Monolith → tiered → queue → microservices → event-driven.</td></tr>
+      <tr><td>2 Lambda</td><td>FaaS; 15-min max; sync/async/poll; versions & aliases.</td></tr>
+      <tr><td>3 EventBridge</td><td>Event bus + rules + targets; cron schedules.</td></tr>
+      <tr><td>4 Serverless</td><td>FaaS + managed services; scale to zero base cost.</td></tr>
+      <tr><td>5 SNS</td><td>Pub/sub topics; fan-out to many subscribers.</td></tr>
+      <tr><td>6 Step Functions</td><td>Serverless workflows; Standard vs Express.</td></tr>
+      <tr><td>7 API Gateway</td><td>Managed API front door; Lambda backend; auth.</td></tr>
+      <tr><td>8 Pet-Cuddle-o-Tron</td><td>Build: SES+SNS+Step Functions+API GW+S3.</td></tr>
+      <tr><td>9 SQS</td><td>Decoupling queue; visibility timeout; polling.</td></tr>
+      <tr><td>10 Standard vs FIFO</td><td>At-least-once vs exactly-once + ordered.</td></tr>
+      <tr><td>11 Delay Queues</td><td>Initial invisibility for new messages.</td></tr>
+      <tr><td>12 DLQ</td><td>Park poison messages after N failures.</td></tr>
+      <tr><td>13 Kinesis Streams</td><td>Real-time ingest; shards; replay; vs SQS.</td></tr>
+      <tr><td>14 Firehose</td><td>Near-real-time delivery to S3/Redshift/etc.</td></tr>
+      <tr><td>15 Data Analytics</td><td>Real-time SQL/Flink on streams.</td></tr>
+      <tr><td>16 Video Streams</td><td>Ingest device video for ML/playback.</td></tr>
+      <tr><td>17 Cognito</td><td>User Pools (sign-in) vs Identity Pools (AWS creds).</td></tr>
+      <tr><td>18 Glue</td><td>Serverless ETL + Data Catalog.</td></tr>
+      <tr><td>19 Amazon MQ</td><td>Managed ActiveMQ/RabbitMQ; open standards.</td></tr>
+      <tr><td>20 AppFlow</td><td>SaaS ↔ AWS data integration.</td></tr>
+      <tr><td>★ Mock Exam</td><td>Serverless + all prior sections.</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ===== LESSON 1 ===== -->
+  <article class="card" id="l1">
+    <div class="lesson-head"><div class="num">1</div><div><h2>Architecture Deep Dive</h2><div class="sub">From monolith to event-driven.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Style</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Monolith</td><td>Everything in one unit.</td><td>Scales all-or-nothing; single failure point.</td></tr>
+      <tr><td>Tiered</td><td>Split web / app / data.</td><td>Each tier scales separately.</td></tr>
+      <tr><td>Queue-based</td><td>Decouple tiers with a queue.</td><td>Async + worker pools.</td></tr>
+      <tr><td>Microservices</td><td>Many small services.</td><td>Independent deploy/scale.</td></tr>
+      <tr><td>Event-driven</td><td>React to events; no idle wait.</td><td>Serverless-friendly.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Decouple</td><td>Let parts work without depending directly on each other.</td></tr>
+      <tr><td>Asynchronous</td><td>Send work and move on; reply comes later.</td></tr>
+      <tr><td>Worker pool</td><td>A set of workers pulling tasks from a queue.</td></tr>
+      <tr><td>Event</td><td>A signal that something happened.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  M[Monolith] --> T[Tiered]
+  T --> Q[Queue-based decoupled]
+  Q --> MS[Microservices]
+  MS --> ED[Event-driven]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class ED a;
+    </pre></div>
+    <ul class="clean">
+      <li>A <b>monolith</b> puts everything together — simple but it scales and fails as one block.</li>
+      <li><b>Tiered</b> splits web/app/data so each can scale; a <b>queue</b> between tiers adds <b>async</b> decoupling + worker pools.</li>
+      <li><b>Microservices</b> are many small independent services; <b>event-driven</b> designs have services <b>react to events</b> with no idle waiting — ideal for serverless.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Architecture concepts; hands-on starts with Lambda (L2).</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Queues = SQS (L9); events = EventBridge/SNS; FaaS = Lambda.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Choosing decoupling + serverless patterns in designs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Decouple</b> components / handle spikes async" → a <b>queue</b> (SQS).</li>
+      <li><b>Event-driven + serverless</b> = no idle cost, scales with load.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Main weakness of a monolith?<span class="hint">tap</span></div><div class="a">It scales and fails as one block (no independent scaling).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does a queue add between tiers?<span class="hint">tap</span></div><div class="a">Asynchronous decoupling + worker pools.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which style suits serverless best?<span class="hint">tap</span></div><div class="a">Event-driven.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Uploads spike unpredictably and overwhelm the processing tier. Best change?</div>
+      <span class="opt">A) Bigger monolith</span><span class="opt">B) Put a queue between upload and processing</span><span class="opt">C) Remove the app tier</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A queue decouples the tiers and absorbs spikes (async + worker pool).</div></div>
+  </article>
+
+  <!-- ===== LESSON 2 ===== -->
+  <article class="card" id="l2">
+    <div class="lesson-head"><div class="num">2</div><div><h2>AWS Lambda</h2><div class="sub">Run code without servers (FaaS).</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>FaaS</td><td>You upload a function; AWS runs it on demand.</td><td>Pay per request + duration.</td></tr>
+      <tr><td>Limits</td><td>Max 15-min timeout; memory 128MB–10GB.</td><td>Long jobs → Step Functions.</td></tr>
+      <tr><td>Invocation</td><td>Sync, async, or poll (event source mapping).</td><td>Behaviour differs.</td></tr>
+      <tr><td>Versions/aliases</td><td>Immutable versions + movable aliases.</td><td>Safe deploys.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Runtime</td><td>The language environment (e.g. Python 3.9).</td></tr>
+      <tr><td>Execution role</td><td>The IAM role giving the function AWS permissions.</td></tr>
+      <tr><td>Cold start</td><td>Extra delay when a new environment spins up.</td></tr>
+      <tr><td>Event source mapping</td><td>Lambda polls a source (SQS/Kinesis/DynamoDB streams).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  TRIG[Trigger: API GW / S3 / SQS / schedule] --> FN[Lambda function + execution role]
+  FN --> LOG[CloudWatch Logs]
+  FN --> SYNC[Sync: caller waits]
+  FN --> ASYNC[Async: retries 2x → DLQ/destinations]
+  FN --> POLL[Poll: SQS/Kinesis/DynamoDB streams]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class FN a;
+    </pre></div>
+    <ul class="clean">
+      <li>Lambda runs a <b>function</b> in a <b>runtime</b> (e.g. Python 3.9) using an <b>execution role</b>; you pay per <b>request + duration</b> (GB-seconds).</li>
+      <li>Limits: <b>15-minute max</b> timeout, memory <b>128MB–10GB</b> (CPU scales with memory), <code>/tmp</code> ephemeral storage. Long workflows → <b>Step Functions</b> (L6).</li>
+      <li>Networking: by default Lambda has <b>internet access</b>; attach it to <b>your VPC</b> to reach private resources (then it needs a <b>NAT</b> for internet).</li>
+      <li>Invocation: <b>synchronous</b> (caller waits, e.g. API GW), <b>asynchronous</b> (events, retries twice → DLQ/destinations), <b>event source mapping</b> (polls SQS/Kinesis/DynamoDB streams).</li>
+      <li><b>Versions</b> are immutable; <b>aliases</b> point to a version for safe rollouts.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (free tier is generous)</span><b>Situation:</b> create + invoke a Python Lambda. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Make the function + an execution role</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>echo 'def handler(event, context):
+    return {"message": "hello from lambda"}' > fn.py
+zip fn.zip fn.py
+ROLE=$(aws iam create-role --role-name a4l-lambda-role \
+  --assume-role-policy-document '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Action":"sts:AssumeRole"}]}' \
+  --query Role.Arn --output text)
+aws iam attach-role-policy --role-name a4l-lambda-role \
+  --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+sleep 10</code></pre></div>
+      <div class="expect"><b>Expect:</b> a role ARN; wait ~10s so IAM propagates.</div>
+      <div class="step"><div class="sh">Create the function</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws lambda create-function --function-name a4l-hello \
+  --runtime python3.9 --handler fn.handler \
+  --zip-file fileb://fn.zip --role $ROLE</code></pre></div>
+      <div class="expect"><b>Expect:</b> function details with <code>State: Active</code>.</div>
+      <div class="step"><div class="sh">Invoke it</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws lambda invoke --function-name a4l-hello out.json
+cat out.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>{"message": "hello from lambda"}</code>.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>The course uses <b>Python 3.9</b>; newer runtimes exist (verify what's current). Logs go to <b>CloudWatch Logs</b> via the basic execution role.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws lambda delete-function --function-name a4l-hello
+aws iam detach-role-policy --role-name a4l-lambda-role \
+  --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+aws iam delete-role --role-name a4l-lambda-role
+rm -f fn.py fn.zip out.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> function + role removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Backend for API GW (L7), targets for SNS/EventBridge, tasks in Step Functions.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Almost every serverless pattern.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Lambda max run = <b>15 minutes</b>; longer/orchestrated work → <b>Step Functions</b>.</li>
+      <li>Give permissions via the <b>execution role</b>, not keys.</li>
+      <li>Put Lambda <b>in a VPC</b> to reach private resources (needs NAT for internet).</li>
+      <li><b>Async</b> invokes retry twice and can send failures to <b>DLQ/destinations</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Lambda maximum timeout?<span class="hint">tap</span></div><div class="a">15 minutes.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How does Lambda get AWS permissions?<span class="hint">tap</span></div><div class="a">Its execution (IAM) role.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Versions vs aliases?<span class="hint">tap</span></div><div class="a">Versions are immutable; aliases are movable pointers to a version.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A job needs to run for 40 minutes with several steps. Best service?</div>
+      <span class="opt">A) A single Lambda</span><span class="opt">B) Step Functions orchestrating Lambdas</span><span class="opt">C) SNS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Lambda caps at 15 min; Step Functions handles long, multi-step workflows.</div></div>
+    <div class="quiz"><div class="qq">A Lambda must read a private RDS database. What's required?</div>
+      <span class="opt">A) Put the Lambda in the VPC</span><span class="opt">B) A public bucket</span><span class="opt">C) Root keys</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Attach the function to the VPC to reach private resources.</div></div>
+  </article>
+
+  <!-- ===== LESSON 3 ===== -->
+  <article class="card" id="l3">
+    <div class="lesson-head"><div class="num">3</div><div><h2>CloudWatch Events & EventBridge</h2><div class="sub">React to events and run schedules.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Event bus</td><td>A stream of events from AWS services.</td><td>Default + custom buses.</td></tr>
+      <tr><td>Rule</td><td>Pattern-match events → send to targets.</td><td>Routing logic.</td></tr>
+      <tr><td>Scheduled</td><td>Run targets on a cron/rate schedule.</td><td>Cron jobs.</td></tr>
+      <tr><td>EventBridge</td><td>The newer version of CloudWatch Events.</td><td>Same engine, more features.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Event pattern</td><td>A filter describing which events to match.</td></tr>
+      <tr><td>Target</td><td>Where matched events go (Lambda, SQS, SNS, Step Functions…).</td></tr>
+      <tr><td>cron / rate</td><td>Time expressions for schedules.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  SRC[AWS service events] --> BUS[Event bus]
+  SCHED[Schedule cron/rate] --> RULE[Rule]
+  BUS --> RULE
+  RULE --> T1[Target: Lambda]
+  RULE --> T2[Target: SQS / SNS / Step Functions]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class RULE a;
+    </pre></div>
+    <ul class="clean">
+      <li>An <b>event bus</b> carries events from AWS services; <b>rules</b> <b>pattern-match</b> them and send to one or more <b>targets</b> (Lambda, SQS, SNS, Step Functions…).</li>
+      <li>Rules can also be <b>scheduled</b> with <b>cron/rate</b> expressions to run things on a timetable.</li>
+      <li><b>EventBridge</b> is the evolution of <b>CloudWatch Events</b> (same core), adding custom + partner buses and a schema registry.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (rules are free)</span><b>Situation:</b> create a scheduled rule. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Create a rule that fires every 5 minutes</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws events put-rule --name a4l-schedule \
+  --schedule-expression "rate(5 minutes)"
+aws events describe-rule --name a4l-schedule \
+  --query "{Name:Name,Sched:ScheduleExpression,State:State}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> the rule with state <code>ENABLED</code>. In real use you'd add a Lambda/SQS <b>target</b> (e.g. to stop EC2 nightly).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>The course demo uses Lambda + EventBridge to <b>auto-stop/start EC2</b>. Add targets with <code>put-targets</code> (the target's resource policy must allow EventBridge).</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws events delete-rule --name a4l-schedule</code></pre></div>
+      <div class="expect"><b>Expect:</b> rule removed (remove targets first if you added any).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Triggers Lambda (L2); glue for event-driven designs (L1/L4).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Automation, scheduled tasks, cross-service events.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Run something on a schedule</b> (cron)" or "<b>react to an AWS event</b>" → <b>EventBridge</b>.</li>
+      <li>EventBridge = the modern <b>CloudWatch Events</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What replaced CloudWatch Events?<span class="hint">tap</span></div><div class="a">EventBridge (same engine, more features).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Two ways a rule fires?<span class="hint">tap</span></div><div class="a">Event pattern match, or a schedule (cron/rate).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Name two rule targets.<span class="hint">tap</span></div><div class="a">Lambda, SQS (also SNS, Step Functions…).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must stop dev EC2 instances every night at 8pm automatically. Use?</div>
+      <span class="opt">A) EventBridge scheduled rule → Lambda</span><span class="opt">B) SQS</span><span class="opt">C) Manual</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> A scheduled EventBridge rule triggers a Lambda to stop the instances.</div></div>
+  </article>
+
+  <!-- ===== LESSON 4 ===== -->
+  <article class="card" id="l4">
+    <div class="lesson-head"><div class="num">4</div><div><h2>Serverless Architecture</h2><div class="sub">FaaS + managed services, scale with load.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>No servers</td><td>AWS manages the compute.</td><td>Less ops.</td></tr>
+      <tr><td>FaaS + managed</td><td>Lambda + S3/DynamoDB/API GW/Cognito/SNS/SQS.</td><td>Building blocks.</td></tr>
+      <tr><td>Scale to zero</td><td>Little/no base cost; cost follows load.</td><td>Cost model.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Serverless</td><td>No servers for you to manage or pay for when idle.</td></tr>
+      <tr><td>Managed service</td><td>AWS runs it; you just use it.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  USER[User] --> S3[S3 static site]
+  USER --> API[API Gateway]
+  API --> L[Lambda]
+  L --> DDB[DynamoDB]
+  L --> SNS[SNS/SQS]
+  COG[Cognito] --> API
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class L a;
+    </pre></div>
+    <ul class="clean">
+      <li>Serverless combines <b>FaaS</b> (Lambda) with <b>managed services</b> (S3, DynamoDB, API Gateway, Cognito, SNS, SQS, Step Functions).</li>
+      <li>It uses <b>event-driven</b> + <b>microservices</b> ideas and prefers <b>3rd-party/managed</b> services over running your own.</li>
+      <li>Cost <b>scales with load</b> with little/no idle base cost.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Pattern overview; the hands-on build is Pet-Cuddle-o-Tron (L8).</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses every service in this section together.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Cost-optimised, low-ops designs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>No servers to manage</b>, pay only when used, scale automatically" → <b>serverless</b>.</li>
+      <li>Typical stack: <b>S3 + API Gateway + Lambda + DynamoDB + Cognito</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Core compute of serverless on AWS?<span class="hint">tap</span></div><div class="a">Lambda (FaaS).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Serverless cost when idle?<span class="hint">tap</span></div><div class="a">Little to none — cost follows load.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A startup wants minimal ops and to pay only for actual usage. Architecture?</div>
+      <span class="opt">A) Serverless (Lambda + managed services)</span><span class="opt">B) One big EC2</span><span class="opt">C) On-prem</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Serverless removes server management and scales cost with load.</div></div>
+  </article>
+
+  <!-- ===== LESSON 5 ===== -->
+  <article class="card" id="l5">
+    <div class="lesson-head"><div class="num">5</div><div><h2>Simple Notification Service (SNS)</h2><div class="sub">Pub/sub topics with fan-out.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Pub/sub</td><td>Publishers send to a topic; subscribers receive.</td><td>Push messaging.</td></tr>
+      <tr><td>Subscribers</td><td>Lambda, SQS, HTTP/S, email, SMS, mobile push.</td><td>Many target types.</td></tr>
+      <tr><td>Fan-out</td><td>One message → many SQS queues.</td><td>Classic pattern.</td></tr>
+      <tr><td>Filter policy</td><td>Subscribers get only matching messages.</td><td>Selective delivery.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Topic</td><td>A named channel messages are sent to.</td></tr>
+      <tr><td>Publisher / Subscriber</td><td>Sender / receiver of topic messages.</td></tr>
+      <tr><td>Fan-out</td><td>Deliver one message to many endpoints at once.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  PUB[Publisher] --> TOPIC[SNS Topic]
+  TOPIC --> S1[Lambda]
+  TOPIC --> S2[SQS queue]
+  TOPIC --> S3[Email / SMS / HTTP]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class TOPIC a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Publishers</b> send messages to a <b>topic</b>; all <b>subscribers</b> of that topic receive them (push).</li>
+      <li>Subscriber types include <b>Lambda, SQS, HTTP/S, email, SMS, mobile push</b>.</li>
+      <li><b>Fan-out</b>: publish once, deliver to <b>many SQS queues</b>. <b>Filter policies</b> send only matching messages. <b>FIFO topics</b> add ordering (to FIFO SQS).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (free-ish)</span><b>Situation:</b> create a topic, subscribe email, publish. <b>Check first:</b> CLI configured + an email you can confirm.</div>
+      <div class="step"><div class="sh">Create the topic + subscribe your email</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>TOPIC=$(aws sns create-topic --name a4l-topic --query TopicArn --output text)
+aws sns subscribe --topic-arn $TOPIC --protocol email \
+  --notification-endpoint you@example.com</code></pre></div>
+      <div class="expect"><b>Expect:</b> a topic ARN + a confirmation email — click the link to confirm the subscription.</div>
+      <div class="step"><div class="sh">Publish a message</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws sns publish --topic-arn $TOPIC --subject "A4L" --message "hello from SNS"</code></pre></div>
+      <div class="expect"><b>Expect:</b> a message ID; the email arrives (once confirmed).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Email subscriptions must be <b>confirmed</b> before delivery. For fan-out, subscribe several <b>SQS queues</b> to one topic.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws sns delete-topic --topic-arn $TOPIC</code></pre></div>
+      <div class="expect"><b>Expect:</b> topic + subscriptions removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Fan-out to SQS (L9); target of EventBridge; used in serverless apps (L8).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Notifications, decoupled events, alerting.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>SNS = <b>push pub/sub</b>; SQS = <b>pull queue</b>. <b>Fan-out</b> = SNS topic → many SQS queues.</li>
+      <li>Email subs need <b>confirmation</b>; use <b>filter policies</b> for selective delivery.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">SNS messaging model?<span class="hint">tap</span></div><div class="a">Publish/subscribe (push) to topics.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is fan-out?<span class="hint">tap</span></div><div class="a">One SNS message delivered to many SQS queues.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">SNS vs SQS in one line?<span class="hint">tap</span></div><div class="a">SNS pushes to subscribers; SQS holds messages to be pulled.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">One event must trigger three independent processing pipelines reliably. Best?</div>
+      <span class="opt">A) SNS fan-out to 3 SQS queues</span><span class="opt">B) One SQS queue</span><span class="opt">C) One Lambda</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Fan-out delivers the message to each queue so each pipeline processes independently.</div></div>
+  </article>
+
+  <!-- ===== LESSON 6 ===== -->
+  <article class="card" id="l6">
+    <div class="lesson-head"><div class="num">6</div><div><h2>Step Functions</h2><div class="sub">Serverless workflows (state machines).</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>State machine</td><td>A workflow defined in JSON (ASL).</td><td>Orchestration.</td></tr>
+      <tr><td>States</td><td>Task, Choice, Parallel, Map, Wait…</td><td>Building blocks.</td></tr>
+      <tr><td>Standard vs Express</td><td>Long/exactly-once vs high-volume/short.</td><td>Pick by workload.</td></tr>
+      <tr><td>Beats long Lambda</td><td>Handles &gt;15-min, multi-step flows.</td><td>Lambda limit fix.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>ASL</td><td>Amazon States Language — the JSON workflow format.</td></tr>
+      <tr><td>Task state</td><td>Does work (e.g. calls a Lambda).</td></tr>
+      <tr><td>Choice state</td><td>Branches based on a condition.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  START[Start] --> T1[Task: Lambda]
+  T1 --> C{Choice}
+  C -->|yes| T2[Task]
+  C -->|no| W[Wait]
+  T2 --> END[End]
+  W --> END
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class C a;
+    </pre></div>
+    <ul class="clean">
+      <li>Step Functions runs a <b>state machine</b> (workflow) written in <b>ASL JSON</b>, with states like <b>Task, Choice, Parallel, Map, Wait</b>.</li>
+      <li><b>Standard</b> workflows run up to <b>1 year</b> (exactly-once, default); <b>Express</b> are for <b>high-volume, short</b> (&lt;5 min) runs.</li>
+      <li>It orchestrates long, multi-step processes that exceed Lambda's <b>15-minute</b> limit.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (a Pass-only machine runs nearly free)</span><b>Situation:</b> create a tiny state machine. <b>Check first:</b> an IAM role for Step Functions (<code>$SFROLE</code> ARN).</div>
+      <div class="step"><div class="sh">Define + create the state machine</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>echo '{"Comment":"demo","StartAt":"Hello",
+"States":{"Hello":{"Type":"Pass","Result":"Hello A4L","End":true}}}' > sm.json
+aws stepfunctions create-state-machine --name a4l-sm \
+  --definition file://sm.json --role-arn $SFROLE \
+  --query stateMachineArn --output text</code></pre></div>
+      <div class="expect"><b>Expect:</b> a state-machine ARN. Start an execution with <code>start-execution</code> and it finishes instantly (Pass state).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Real workflows use <b>Task</b> states calling Lambda. The role must allow Step Functions to invoke those services.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>SM=$(aws stepfunctions list-state-machines \
+  --query "stateMachines[?name=='a4l-sm'].stateMachineArn" --output text)
+aws stepfunctions delete-state-machine --state-machine-arn $SM
+rm -f sm.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> state machine removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Orchestrates Lambda (L2); core of Pet-Cuddle-o-Tron (L8).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Long-running, reliable, multi-step automation.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Coordinate multiple steps / wait / branch / run &gt;15 min</b>" → <b>Step Functions</b>.</li>
+      <li><b>Standard</b> (long, exactly-once) vs <b>Express</b> (high-volume, short).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Language used to define workflows?<span class="hint">tap</span></div><div class="a">ASL (Amazon States Language), JSON.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Standard vs Express?<span class="hint">tap</span></div><div class="a">Standard = long/exactly-once; Express = high-volume/short.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Why use it over chained Lambdas?<span class="hint">tap</span></div><div class="a">Handles long, multi-step, branching flows beyond Lambda's 15-min limit.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An order process has several steps, waits, and branches over an hour. Best?</div>
+      <span class="opt">A) One Lambda</span><span class="opt">B) Step Functions Standard</span><span class="opt">C) SNS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Step Functions orchestrates long, branching, multi-step workflows.</div></div>
+  </article>
+
+  <!-- ===== LESSON 7 ===== -->
+  <article class="card" id="l7">
+    <div class="lesson-head"><div class="num">7</div><div><h2>API Gateway 101</h2><div class="sub">A managed front door for APIs.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Managed API</td><td>Endpoints, resources, methods.</td><td>No servers.</td></tr>
+      <tr><td>Integrations</td><td>Lambda, HTTP, AWS service, MOCK.</td><td>Backend types.</td></tr>
+      <tr><td>Features</td><td>Auth, throttling, caching, stages.</td><td>Production controls.</td></tr>
+      <tr><td>Migration aid</td><td>Stable endpoint over a changing backend.</td><td>Monolith → microservices.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Resource / Method</td><td>A URL path + an HTTP verb (GET/POST…).</td></tr>
+      <tr><td>Stage</td><td>A deployed version of the API (e.g. prod).</td></tr>
+      <tr><td>Authorizer</td><td>Checks who can call (IAM, Cognito, Lambda).</td></tr>
+      <tr><td>Throttling</td><td>Rate limits to protect the backend.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  CLIENT[Client] --> APIGW[API Gateway: resource + method + stage]
+  APIGW --> AUTH[Auth: IAM / Cognito / Lambda authorizer]
+  APIGW --> INTEG[Integration]
+  INTEG --> L[Lambda]
+  INTEG --> HTTP[HTTP backend / AWS service]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class APIGW a;
+    </pre></div>
+    <ul class="clean">
+      <li>API Gateway exposes <b>resources</b> (paths) + <b>methods</b> (verbs), deployed to <b>stages</b>, and routes to an <b>integration</b> (Lambda, HTTP, AWS service, or MOCK).</li>
+      <li>Features: <b>authorizers</b> (IAM, Cognito, Lambda), <b>throttling</b>, <b>caching</b>, request/response transform, API keys + usage plans, CORS.</li>
+      <li>It gives a <b>stable endpoint</b> while a backend evolves from <b>monolith → microservices → serverless</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (free tier covers light use)</span><b>Situation:</b> create a tiny REST API with a MOCK response. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Create the API + a GET method on the root</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>API=$(aws apigateway create-rest-api --name a4l-api --query id --output text)
+ROOT=$(aws apigateway get-resources --rest-api-id $API \
+  --query "items[0].id" --output text)
+aws apigateway put-method --rest-api-id $API --resource-id $ROOT \
+  --http-method GET --authorization-type NONE</code></pre></div>
+      <div class="expect"><b>Expect:</b> an API id + a GET method with no auth (demo only).</div>
+      <div class="step"><div class="sh">Add a MOCK integration + deploy</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws apigateway put-integration --rest-api-id $API --resource-id $ROOT \
+  --http-method GET --type MOCK \
+  --request-templates '{"application/json":"{\"statusCode\":200}"}'
+aws apigateway put-method-response --rest-api-id $API --resource-id $ROOT \
+  --http-method GET --status-code 200
+aws apigateway put-integration-response --rest-api-id $API --resource-id $ROOT \
+  --http-method GET --status-code 200 \
+  --response-templates '{"application/json":"{\"msg\":\"hello A4L\"}"}'
+aws apigateway create-deployment --rest-api-id $API --stage-name prod</code></pre></div>
+      <div class="expect"><b>Expect:</b> a deployment. Test: <code>https://$API.execute-api.&lt;region&gt;.amazonaws.com/prod</code> returns the JSON.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>In real apps the integration is a <b>Lambda</b> (or HTTP backend). Add a <b>Cognito/Lambda authorizer</b> for auth and a <b>usage plan</b> for rate limits.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws apigateway delete-rest-api --rest-api-id $API</code></pre></div>
+      <div class="expect"><b>Expect:</b> API removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Front-ends Lambda (L2); auth via Cognito (L17); used in L8.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Serverless APIs, microservice ingress, throttling.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Managed HTTP API in front of Lambda</b>, with auth + throttling" → <b>API Gateway</b>.</li>
+      <li>Authorizers: <b>IAM, Cognito, Lambda</b>; protect with <b>throttling + usage plans</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Common API Gateway backend?<span class="hint">tap</span></div><div class="a">Lambda (also HTTP, AWS service, MOCK).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Three authorizer options?<span class="hint">tap</span></div><div class="a">IAM, Cognito, Lambda authorizer.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is a stage?<span class="hint">tap</span></div><div class="a">A deployed version of the API (e.g. dev/prod).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A serverless app needs a managed HTTPS API calling Lambda, with rate limiting. Use?</div>
+      <span class="opt">A) API Gateway</span><span class="opt">B) NLB</span><span class="opt">C) SQS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> API Gateway provides managed endpoints, Lambda integration, auth and throttling.</div></div>
+  </article>
+
+  <!-- ===== LESSON 8 ===== -->
+  <article class="card" id="l8">
+    <div class="lesson-head"><div class="num">8</div><div><h2>Build: Pet-Cuddle-o-Tron</h2><div class="sub">A full serverless reminder app.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Piece</th><th>Role</th><th>Why it matters</th></tr>
+      <tr><td>S3 frontend</td><td>Static site in the browser.</td><td>No web server.</td></tr>
+      <tr><td>API Gateway</td><td>Endpoint the page calls.</td><td>Front door.</td></tr>
+      <tr><td>Step Functions</td><td>The reminder workflow (wait + send).</td><td>Core logic.</td></tr>
+      <tr><td>Lambda + SES/SNS</td><td>Send email/SMS.</td><td>Delivery.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>SES</td><td>Simple Email Service — sends emails.</td></tr>
+      <tr><td>State machine</td><td>The Step Functions workflow that waits then notifies.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  S3[S3 static site] --> API[API Gateway]
+  API --> L1[Lambda: start workflow]
+  L1 --> SF[Step Functions: wait then notify]
+  SF --> L2[Lambda: send via SES/SNS]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class SF a;
+    </pre></div>
+    <ul class="clean">
+      <li>A browser app from <b>S3</b> calls an <b>API Gateway</b> endpoint, which triggers a <b>Step Functions</b> workflow that <b>waits</b> then sends a reminder via <b>Lambda + SES/SNS</b>.</li>
+      <li>It shows the whole serverless stack working together — no servers anywhere.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo overview · 6 stages (advanced)</span><b>Situation:</b> build the reminder app. Follow Adrian's updated lab instructions + 1-click deploys; clean up at Stage 6. (SES/Step Functions/API GW are low-cost but real.)</div>
+      <div class="step"><div class="sh">Stage 1 — Configure SES + SNS</div></div>
+      <div class="expect">Verify an email in <b>SES</b> and set up <b>SNS</b> so the app can send messages.</div>
+      <div class="step"><div class="sh">Stage 2 — Email Lambda (uses SES)</div></div>
+      <div class="expect">A Lambda that sends emails through SES.</div>
+      <div class="step"><div class="sh">Stage 3 — Step Functions state machine</div></div>
+      <div class="expect">The core workflow: <b>wait</b> for the chosen delay, then call the email Lambda.</div>
+      <div class="step"><div class="sh">Stage 4 — API Gateway + supporting Lambda</div></div>
+      <div class="expect">An API endpoint + Lambda that <b>starts</b> the state machine when the page submits.</div>
+      <div class="step"><div class="sh">Stage 5 — Static S3 frontend</div></div>
+      <div class="expect">Host the page in S3; it calls the API. Configure reminders and test email/SMS.</div>
+      <div class="step"><div class="sh">Stage 6 — Clean up</div></div>
+      <div class="expect"><b>Expect:</b> remove S3 site, API, Lambdas, state machine, SES/SNS config — leave nothing billable.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>This ties together L5–L7. The <b>wait</b> is why Step Functions is used, not a single Lambda (which caps at 15 min and can't cheaply "wait").</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Combines S3 + API GW (L7) + Step Functions (L6) + Lambda (L2) + SNS (L5).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Reference pattern for serverless apps.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Serverless web app pattern: <b>S3 (frontend) → API Gateway → Lambda → Step Functions → SES/SNS</b>.</li>
+      <li>Use <b>Step Functions</b> when the flow must <b>wait</b> or has multiple steps.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What hosts the frontend?<span class="hint">tap</span></div><div class="a">An S3 static website (runs in the browser).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Why Step Functions here?<span class="hint">tap</span></div><div class="a">It can wait and orchestrate steps beyond a single Lambda.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A browser app must trigger a backend that waits, then emails the user. Stack?</div>
+      <span class="opt">A) S3 + API GW + Step Functions + Lambda + SES</span><span class="opt">B) One EC2</span><span class="opt">C) RDS only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> That is the serverless reminder pattern (Pet-Cuddle-o-Tron).</div></div>
+  </article>
+
+  <!-- ===== LESSON 9 ===== -->
+  <article class="card" id="l9">
+    <div class="lesson-head"><div class="num">9</div><div><h2>Simple Queue Service (SQS)</h2><div class="sub">Decouple components with a queue.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Managed queue</td><td>Store messages between components.</td><td>Decoupling.</td></tr>
+      <tr><td>Pull-based</td><td>Workers poll for messages.</td><td>Worker pools.</td></tr>
+      <tr><td>Visibility timeout</td><td>Message hidden after receive until deleted.</td><td>Default 30s.</td></tr>
+      <tr><td>Scale on length</td><td>ASG can scale on queue depth.</td><td>Elastic workers.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Visibility timeout</td><td>Time a received message stays hidden from others.</td></tr>
+      <tr><td>Polling</td><td>Asking the queue for messages (short or long).</td></tr>
+      <tr><td>Retention</td><td>How long unread messages are kept (max 14 days).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  PROD[Producer] --> Q[SQS queue]
+  Q --> W1[Worker 1 polls]
+  Q --> W2[Worker 2 polls]
+  W1 --> DEL[Process then DELETE message]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class Q a;
+    </pre></div>
+    <ul class="clean">
+      <li>SQS stores messages so producers and workers are <b>decoupled</b> and work <b>asynchronously</b>; workers <b>poll</b> the queue.</li>
+      <li><b>Visibility timeout</b> (default <b>30s</b>, max 12h) hides a received message until it's <b>deleted</b> or the timeout passes (then it reappears for retry).</li>
+      <li><b>Long polling</b> (WaitTimeSeconds up to 20s) reduces empty replies. Retention is up to <b>14 days</b>; messages up to <b>256KB</b>.</li>
+      <li>An <b>ASG</b> can scale on queue length (ApproximateNumberOfMessages).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (free tier)</span><b>Situation:</b> create a queue, send + receive. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Create the queue + send a message</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>Q=$(aws sqs create-queue --queue-name a4l-queue --query QueueUrl --output text)
+aws sqs send-message --queue-url $Q --message-body "process me"</code></pre></div>
+      <div class="expect"><b>Expect:</b> a queue URL + a message ID.</div>
+      <div class="step"><div class="sh">Receive the message</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws sqs receive-message --queue-url $Q \
+  --query "Messages[0].Body"</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>"process me"</code>. After receive it's hidden (visibility timeout) until you delete it.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Always <b>delete</b> a message after processing (using its receipt handle), or it reappears when the visibility timeout ends.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws sqs delete-queue --queue-url $Q</code></pre></div>
+      <div class="expect"><b>Expect:</b> queue deleted.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Target of SNS fan-out (L5); scaled by ASG (HA section); FIFO/delay/DLQ in L10–L12.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Decoupled, resilient processing pipelines.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>SQS = <b>decouple + async</b>, <b>pull-based</b>; messages must be <b>deleted</b> after processing.</li>
+      <li><b>Visibility timeout</b> hides a message during processing; if not deleted it returns.</li>
+      <li>Scale workers with an <b>ASG on queue length</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Default visibility timeout?<span class="hint">tap</span></div><div class="a">30 seconds.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What happens if you don't delete a message?<span class="hint">tap</span></div><div class="a">It reappears after the visibility timeout for another worker.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Max message retention?<span class="hint">tap</span></div><div class="a">14 days.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Workers process the same message twice. Likely cause?</div>
+      <span class="opt">A) Not deleting it before the visibility timeout ends</span><span class="opt">B) Wrong region</span><span class="opt">C) Queue too small</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> If a message isn't deleted in time it becomes visible again and is reprocessed.</div></div>
+  </article>
+
+  <!-- ===== LESSON 10 ===== -->
+  <article class="card" id="l10">
+    <div class="lesson-head"><div class="num">10</div><div><h2>SQS Standard vs FIFO</h2><div class="sub">Throughput vs strict order + no duplicates.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Type</th><th>Standard</th><th>FIFO</th></tr>
+      <tr><td>Order</td><td>Best-effort</td><td>Strict (in order)</td></tr>
+      <tr><td>Delivery</td><td>At-least-once (may duplicate)</td><td>Exactly-once</td></tr>
+      <tr><td>Throughput</td><td>Nearly unlimited</td><td>300/s (3000 batched)</td></tr>
+      <tr><td>Name</td><td>any</td><td>must end <code>.fifo</code></td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Message group ID</td><td>Orders messages within a group (FIFO).</td></tr>
+      <tr><td>Deduplication ID</td><td>Stops the same message being added twice (FIFO).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Standard</b>: <b>at-least-once</b> delivery (occasional duplicates), <b>best-effort ordering</b>, <b>very high throughput</b>.</li>
+      <li><b>FIFO</b>: <b>exactly-once</b> processing, <b>strict order</b>, name ends <b>.fifo</b>, ~<b>300 msg/s</b> (3000 with batching). Uses <b>message group ID</b> (ordering) + <b>dedup ID</b>.</li>
+      <li>Pick <b>FIFO</b> when order/no-duplicates matter (e.g. financial steps); otherwise <b>Standard</b> for scale.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (free tier)</span><b>Situation:</b> create a FIFO queue. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Create a FIFO queue + send with a group ID</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>QF=$(aws sqs create-queue --queue-name a4l-queue.fifo \
+  --attributes FifoQueue=true,ContentBasedDeduplication=true \
+  --query QueueUrl --output text)
+aws sqs send-message --queue-url $QF --message-body "step1" \
+  --message-group-id orders</code></pre></div>
+      <div class="expect"><b>Expect:</b> a <code>.fifo</code> queue URL + a message ID. Messages in the same group stay in order.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>FIFO names <b>must</b> end <code>.fifo</code>. Ordering is <b>within a message group</b>; throughput is lower than Standard.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws sqs delete-queue --queue-url $QF</code></pre></div>
+      <div class="expect"><b>Expect:</b> queue deleted.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Variant of SQS (L9); FIFO topics (SNS) deliver to FIFO queues.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Ordered processing, idempotent pipelines.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Order matters / no duplicates</b> → <b>FIFO</b> (name ends <code>.fifo</code>, lower throughput).</li>
+      <li><b>Max scale, order not critical</b> → <b>Standard</b> (at-least-once).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Standard delivery guarantee?<span class="hint">tap</span></div><div class="a">At-least-once (may duplicate), best-effort order.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">FIFO guarantees?<span class="hint">tap</span></div><div class="a">Exactly-once + strict ordering.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">FIFO queue name rule?<span class="hint">tap</span></div><div class="a">It must end with .fifo.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Payment steps must be processed in order with no duplicates. Queue type?</div>
+      <span class="opt">A) Standard</span><span class="opt">B) FIFO</span><span class="opt">C) Either</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> FIFO guarantees order and exactly-once processing.</div></div>
+  </article>
+
+  <!-- ===== LESSON 11 ===== -->
+  <article class="card" id="l11">
+    <div class="lesson-head"><div class="num">11</div><div><h2>SQS Delay Queues</h2><div class="sub">Hide new messages for an initial period.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Delay queue</td><td>New messages invisible for an initial delay.</td><td>0–15 minutes.</td></tr>
+      <tr><td>Message timer</td><td>Per-message delay (overrides queue).</td><td>Fine control.</td></tr>
+      <tr><td>vs visibility timeout</td><td>Delay = before first receive; visibility = after.</td><td>Common confusion.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>DelaySeconds</td><td>How long new messages stay hidden at first.</td></tr>
+      <tr><td>Message timer</td><td>A delay set on a single message.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li>A <b>delay queue</b> makes <b>new messages</b> invisible for an <b>initial delay</b> (<b>DelaySeconds</b>, 0–15 min) before any worker can receive them.</li>
+      <li>A <b>message timer</b> sets the delay on a <b>single message</b>, overriding the queue default.</li>
+      <li>This is <b>not</b> the <b>visibility timeout</b>: delay happens <b>before the first receive</b>; visibility timeout happens <b>after</b> a receive.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>It's a single queue attribute (DelaySeconds); the key exam point is the difference from visibility timeout, not a build.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>An SQS option (L9); pairs with retries/DLQ (L12).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Scheduling/throttling work, backoff patterns.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Delay</b> = hide a message <b>before</b> its first receive (0–15 min).</li>
+      <li>Don't confuse with <b>visibility timeout</b> (hides <b>after</b> receive).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Max delay for a delay queue?<span class="hint">tap</span></div><div class="a">15 minutes.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Delay vs visibility timeout?<span class="hint">tap</span></div><div class="a">Delay = before first receive; visibility = after a receive.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You want new messages to be unavailable for 60 seconds after being sent. Use?</div>
+      <span class="opt">A) Visibility timeout</span><span class="opt">B) Delay queue (DelaySeconds)</span><span class="opt">C) DLQ</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A delay queue hides new messages for an initial period before first receive.</div></div>
+  </article>
+
+  <!-- ===== LESSON 12 ===== -->
+  <article class="card" id="l12">
+    <div class="lesson-head"><div class="num">12</div><div><h2>SQS Dead-Letter Queues</h2><div class="sub">Park messages that keep failing.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>DLQ</td><td>A queue for repeatedly-failing messages.</td><td>Isolate poison messages.</td></tr>
+      <tr><td>maxReceiveCount</td><td>Failures allowed before moving to DLQ.</td><td>Redrive policy.</td></tr>
+      <tr><td>Diagnose</td><td>Inspect/log failures separately.</td><td>Don't block the queue.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Poison message</td><td>A message that always fails processing.</td></tr>
+      <tr><td>Redrive policy</td><td>The rule sending failed messages to the DLQ.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  Q[Source queue] -->|received but fails| RETRY[retry...]
+  RETRY -->|after maxReceiveCount| DLQ[Dead-letter queue]
+  DLQ --> INSPECT[Inspect / log / fix separately]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class DLQ a;
+    </pre></div>
+    <ul class="clean">
+      <li>A <b>dead-letter queue</b> receives messages that fail processing too many times (after <b>maxReceiveCount</b> via a <b>redrive policy</b>).</li>
+      <li>This stops a <b>poison message</b> from blocking the queue and lets you <b>diagnose/log</b> it separately.</li>
+      <li>A DLQ is just another <b>SQS queue</b> (match Standard/FIFO type).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>A DLQ is configured by attaching a redrive policy to a queue; the exam tests the concept (maxReceiveCount → DLQ), not the build.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Adds resilience to SQS (L9); Lambda async also uses DLQs/destinations.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Reliable processing + error handling.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"Messages keep failing and <b>block the queue</b>" → use a <b>DLQ</b> (set <b>maxReceiveCount</b>).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is a DLQ for?<span class="hint">tap</span></div><div class="a">Holding messages that repeatedly fail, for separate handling.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What controls when a message moves to the DLQ?<span class="hint">tap</span></div><div class="a">maxReceiveCount in the redrive policy.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A bad message is retried forever and stalls processing. Fix?</div>
+      <span class="opt">A) Dead-letter queue with maxReceiveCount</span><span class="opt">B) Bigger queue</span><span class="opt">C) FIFO</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> After N failures the message moves to the DLQ, unblocking the queue.</div></div>
+  </article>
+
+  <!-- ===== LESSON 13 ===== -->
+  <article class="card" id="l13">
+    <div class="lesson-head"><div class="num">13</div><div><h2>Kinesis Data Streams</h2><div class="sub">Real-time streaming ingest at scale.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Streaming</td><td>Ingest huge real-time data.</td><td>Dashboards/analytics.</td></tr>
+      <tr><td>Shards</td><td>Capacity units of a stream.</td><td>Scale + cost.</td></tr>
+      <tr><td>Retention + replay</td><td>Data kept 24h–365d; re-read it.</td><td>Many consumers.</td></tr>
+      <tr><td>vs SQS</td><td>Streaming/replay vs decoupling.</td><td>Key exam choice.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Shard</td><td>A lane of the stream (throughput unit).</td></tr>
+      <tr><td>Producer / Consumer</td><td>Writes data in / reads data out.</td></tr>
+      <tr><td>Replay</td><td>Re-read data within the retention window.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  PROD[Producers: devices/apps] --> STREAM[Kinesis Data Stream - shards]
+  STREAM --> C1[Consumer: analytics]
+  STREAM --> C2[Consumer: dashboard]
+  STREAM --> FH[Firehose → S3]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class STREAM a;
+    </pre></div>
+    <ul class="clean">
+      <li>Kinesis Data Streams <b>ingests large real-time data</b> via <b>shards</b>; many <b>consumers</b> can read the <b>same</b> data, and data is <b>retained</b> (24h–365d) so it can be <b>replayed</b>.</li>
+      <li>Great for <b>dashboards</b> and <b>real-time analytics</b>.</li>
+      <li><b>SQS vs Kinesis</b>: SQS <b>decouples</b> (one consumer group, message deleted after processing, no replay); Kinesis is for <b>streaming, multiple consumers, replay, ordered per shard, analytics</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — cost</span>Kinesis <b>shards bill hourly even when idle</b>, so we cover it conceptually. Remember the SQS-vs-Kinesis decision instead.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Feeds Firehose (L14) + Analytics (L15); contrasts with SQS (L9).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Real-time data platforms, IoT, analytics.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Real-time, many consumers, replay, analytics, huge ingest</b>" → <b>Kinesis</b>.</li>
+      <li>"<b>Decouple, worker pool, one consumer, delete after processing</b>" → <b>SQS</b>.</li>
+      <li>Capacity = <b>shards</b> (they cost money even when idle).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is a shard?<span class="hint">tap</span></div><div class="a">A throughput lane of a Kinesis stream.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can multiple consumers read the same Kinesis data?<span class="hint">tap</span></div><div class="a">Yes, and they can replay within the retention window.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">SQS vs Kinesis in one line?<span class="hint">tap</span></div><div class="a">SQS = decouple (consume once); Kinesis = stream + replay to many.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Many analytics consumers must read the same real-time clickstream and replay it. Use?</div>
+      <span class="opt">A) SQS</span><span class="opt">B) Kinesis Data Streams</span><span class="opt">C) SNS only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Kinesis supports multiple consumers + replay; SQS deletes after one consume.</div></div>
+  </article>
+
+  <!-- ===== LESSON 14 ===== -->
+  <article class="card" id="l14">
+    <div class="lesson-head"><div class="num">14</div><div><h2>Kinesis Data Firehose</h2><div class="sub">Near-real-time delivery to storage.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Delivery service</td><td>Sends streaming data to destinations.</td><td>S3, Redshift, OpenSearch, Splunk.</td></tr>
+      <tr><td>Near-real-time</td><td>Buffers by size/time (~60s+).</td><td>Not instant.</td></tr>
+      <tr><td>No shards</td><td>Fully managed, auto-scales.</td><td>Less to run.</td></tr>
+      <tr><td>Transform</td><td>Optional Lambda transform/convert.</td><td>Prep data.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Buffer</td><td>Collect data until size/time, then deliver.</td></tr>
+      <tr><td>Destination</td><td>Where data lands (e.g. S3).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  SRC[Stream / producers] --> FH[Firehose - buffer + optional Lambda transform]
+  FH --> S3[S3]
+  FH --> RS[Redshift / OpenSearch / Splunk]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class FH a;
+    </pre></div>
+    <ul class="clean">
+      <li>Firehose <b>delivers</b> streaming data to <b>S3, Redshift, OpenSearch, Splunk</b> and HTTP endpoints, in <b>near-real-time</b> (it <b>buffers</b> by size/time).</li>
+      <li>It's <b>fully managed</b> (no shards), auto-scales, and can <b>transform/convert</b> data with Lambda.</li>
+      <li>Use it for <b>persisting</b> stream data; it's <b>not</b> truly real-time (buffered).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Firehose needs a source + destination (and often a stream); the exam tests "near-real-time delivery to S3/Redshift", which we cover here.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Persists Kinesis stream data (L13) into S3 for analytics.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Data lakes, log delivery, analytics pipelines.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Deliver streaming data to S3/Redshift near-real-time, no management</b>" → <b>Firehose</b>.</li>
+      <li>Firehose is <b>buffered (not instant)</b>; for true real-time use <b>Data Streams</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Firehose destinations?<span class="hint">tap</span></div><div class="a">S3, Redshift, OpenSearch, Splunk, HTTP.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Real-time or near-real-time?<span class="hint">tap</span></div><div class="a">Near-real-time (it buffers by size/time).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must land streaming logs in S3 automatically with no servers/shards to manage. Use?</div>
+      <span class="opt">A) Kinesis Data Streams</span><span class="opt">B) Kinesis Data Firehose</span><span class="opt">C) SQS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Firehose is the managed delivery service to S3/Redshift/etc.</div></div>
+  </article>
+
+  <!-- ===== LESSON 15 ===== -->
+  <article class="card" id="l15">
+    <div class="lesson-head"><div class="num">15</div><div><h2>Kinesis Data Analytics</h2><div class="sub">Real-time SQL/Flink on streams.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Real-time analytics</td><td>Process streaming data as it arrives.</td><td>Live insights.</td></tr>
+      <tr><td>Input/Output</td><td>From Streams/Firehose → to Firehose/Streams/Lambda.</td><td>Pipeline middle.</td></tr>
+      <tr><td>SQL / Flink</td><td>Query streams with SQL or Apache Flink.</td><td>How you process.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Streaming analytics</td><td>Computing on data in motion, not at rest.</td></tr>
+      <tr><td>Flink</td><td>A stream-processing engine Kinesis can run.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  IN[Kinesis Stream / Firehose] --> KDA[Data Analytics - real-time SQL/Flink]
+  KDA --> OUT[Firehose / Stream / Lambda]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class KDA a;
+    </pre></div>
+    <ul class="clean">
+      <li>Kinesis Data Analytics runs <b>real-time SQL or Apache Flink</b> on streaming data to produce live insights.</li>
+      <li>Input from <b>Streams/Firehose</b>; output to <b>Firehose/Streams/Lambda</b>.</li>
+      <li>Use when you need to <b>compute on data in motion</b> (windows, aggregations) in real time.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — cost/theory</span>It needs running streams + an app; the exam only needs "real-time analytics on streaming data", which we cover here.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Sits between Streams (L13) and Firehose (L14).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Live dashboards, anomaly detection.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Run SQL/analytics on a stream in real time</b>" → <b>Kinesis Data Analytics</b>.</li>
+      <li>For just <b>storing</b> stream data → Firehose; for <b>analysing</b> in motion → Data Analytics.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Data Analytics process?<span class="hint">tap</span></div><div class="a">Streaming data in real time (SQL/Flink).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Typical inputs?<span class="hint">tap</span></div><div class="a">Kinesis Data Streams or Firehose.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You need rolling 1-minute averages computed live on a clickstream. Use?</div>
+      <span class="opt">A) Firehose</span><span class="opt">B) Kinesis Data Analytics</span><span class="opt">C) Glue</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Data Analytics computes on streaming data in real time.</div></div>
+  </article>
+
+  <!-- ===== LESSON 16 ===== -->
+  <article class="card" id="l16">
+    <div class="lesson-head"><div class="num">16</div><div><h2>Kinesis Video Streams</h2><div class="sub">Ingest video from devices.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Video ingest</td><td>Stream video from many devices to AWS.</td><td>For ML/playback.</td></tr>
+      <tr><td>Managed scale</td><td>Auto-provisions for millions of devices.</td><td>No infra.</td></tr>
+      <tr><td>Use case</td><td>Cameras, IoT, ML video analysis.</td><td>"Video" keyword.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Connected device</td><td>A camera/sensor sending video.</td></tr>
+      <tr><td>Playback</td><td>Watching the stored/streamed video.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li>Kinesis <b>Video Streams</b> securely ingests <b>video</b> from connected devices for <b>analytics, ML, and playback</b>.</li>
+      <li>It auto-scales to <b>millions of devices</b> — you don't manage the infrastructure.</li>
+      <li>Exam cue: if the data is <b>video</b> from devices/cameras → Video Streams (not Data Streams).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Needs real video producers; the exam only needs the "video from devices" association.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>The video member of the Kinesis family (L13–L15).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>IoT/ML video pipelines.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Video from devices/cameras</b> → <b>Kinesis Video Streams</b> (not Data Streams).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Video Streams ingest?<span class="hint">tap</span></div><div class="a">Video from connected devices, for ML/playback.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Video vs normal data in Kinesis?<span class="hint">tap</span></div><div class="a">Video → Video Streams; records/data → Data Streams.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Thousands of security cameras must stream video to AWS for ML analysis. Use?</div>
+      <span class="opt">A) Kinesis Data Streams</span><span class="opt">B) Kinesis Video Streams</span><span class="opt">C) SQS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Video Streams is purpose-built for device video ingest.</div></div>
+  </article>
+
+  <!-- ===== LESSON 17 ===== -->
+  <article class="card" id="l17">
+    <div class="lesson-head"><div class="num">17</div><div><h2>Amazon Cognito</h2><div class="sub">User Pools vs Identity Pools.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Type</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>User Pool</td><td>User directory + sign-in; returns tokens.</td><td>Authentication.</td></tr>
+      <tr><td>Identity Pool</td><td>Gives temporary AWS credentials.</td><td>Access AWS services.</td></tr>
+      <tr><td>Federation</td><td>Sign in via Google/Facebook/SAML.</td><td>Social/enterprise login.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>JWT token</td><td>A signed token proving a user signed in.</td></tr>
+      <tr><td>Federated identity</td><td>Using an outside provider to log in.</td></tr>
+      <tr><td>Temporary credentials</td><td>Short-lived AWS keys (via STS).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  USER[User] --> UP[User Pool: sign-in → JWT tokens]
+  UP --> IP[Identity Pool]
+  IP --> CREDS[Temporary AWS credentials via STS]
+  CREDS --> AWS[Access AWS services e.g. S3/DynamoDB]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class UP a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>User Pools</b> are a <b>user directory</b> for sign-up/sign-in (incl. social/SAML federation) and return <b>JWT tokens</b> — this is <b>authentication</b>.</li>
+      <li><b>Identity Pools</b> exchange an identity for <b>temporary AWS credentials</b> (via STS) to <b>access AWS services</b> — this is <b>authorization to AWS</b>.</li>
+      <li>Common combo: a <b>User Pool authenticates</b>, then an <b>Identity Pool</b> grants AWS access.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Cognito setup is multi-step (pools, app clients, providers); the exam tests the User-Pool-vs-Identity-Pool distinction, which we cover here.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Authorizer for API Gateway (L7); uses STS/IAM.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Mobile/web auth, federated access.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>User Pool</b> = sign-in + <b>tokens</b> (authentication). <b>Identity Pool</b> = <b>temporary AWS credentials</b> (access AWS).</li>
+      <li>"Let users access an S3 bucket after social login" → User Pool (login) + <b>Identity Pool</b> (AWS creds).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does a User Pool return?<span class="hint">tap</span></div><div class="a">JWT tokens after sign-in (authentication).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does an Identity Pool give?<span class="hint">tap</span></div><div class="a">Temporary AWS credentials (via STS) to use AWS services.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which handles social/SAML login?<span class="hint">tap</span></div><div class="a">User Pools (federation).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">After logging in with Google, users must upload directly to S3 with temporary AWS keys. Which Cognito part gives the keys?</div>
+      <span class="opt">A) User Pool</span><span class="opt">B) Identity Pool</span><span class="opt">C) Neither</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Identity Pools provide temporary AWS credentials via STS.</div></div>
+  </article>
+
+  <!-- ===== LESSON 18 ===== -->
+  <article class="card" id="l18">
+    <div class="lesson-head"><div class="num">18</div><div><h2>AWS Glue 101</h2><div class="sub">Serverless ETL + Data Catalog.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>ETL</td><td>Extract, transform, load data.</td><td>Prepare for analytics.</td></tr>
+      <tr><td>Serverless</td><td>No clusters to run (vs EMR).</td><td>Less management.</td></tr>
+      <tr><td>Data Catalog</td><td>Central metadata (tables/schema).</td><td>Used by Athena/Redshift.</td></tr>
+      <tr><td>Crawler</td><td>Discovers schema automatically.</td><td>Builds the catalog.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>ETL</td><td>Move + reshape data into a usable form.</td></tr>
+      <tr><td>Data Catalog</td><td>A metadata store describing your data.</td></tr>
+      <tr><td>Crawler</td><td>A job that scans data and infers its schema.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  DATA[Data in S3 etc] --> CRAWL[Crawler discovers schema]
+  CRAWL --> CAT[Glue Data Catalog]
+  CAT --> ETL[Glue ETL job - serverless]
+  CAT --> ATHENA[Athena / Redshift Spectrum query]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class CAT a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Glue</b> is a <b>serverless ETL</b> service: point it at your data, it <b>discovers</b> the schema (crawlers) and stores metadata in the <b>Data Catalog</b>.</li>
+      <li>The catalog makes data <b>searchable/queryable</b> by <b>Athena, Redshift Spectrum, EMR</b>.</li>
+      <li>vs <b>EMR</b>: Glue is <b>serverless</b> (no cluster); EMR runs a managed Hadoop/Spark <b>cluster</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Glue jobs/crawlers incur cost + setup; the exam tests "serverless ETL + Data Catalog", which we cover here.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Processes data landed by Firehose (L14) in S3.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Analytics, Athena, data lakes.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Serverless ETL</b> + a <b>data catalog</b>" → <b>Glue</b>.</li>
+      <li>Glue = no cluster; <b>EMR</b> = managed cluster (Hadoop/Spark).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Glue vs EMR?<span class="hint">tap</span></div><div class="a">Glue is serverless ETL; EMR is a managed cluster.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does a crawler do?<span class="hint">tap</span></div><div class="a">Discovers schema and populates the Data Catalog.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You need serverless ETL and a metadata catalog so Athena can query S3 data. Use?</div>
+      <span class="opt">A) EMR</span><span class="opt">B) AWS Glue</span><span class="opt">C) Kinesis</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Glue provides serverless ETL + the Data Catalog used by Athena.</div></div>
+  </article>
+
+  <!-- ===== LESSON 19 ===== -->
+  <article class="card" id="l19">
+    <div class="lesson-head"><div class="num">19</div><div><h2>Amazon MQ 101</h2><div class="sub">Managed ActiveMQ / RabbitMQ.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Managed broker</td><td>AWS-run ActiveMQ/RabbitMQ.</td><td>Not serverless.</td></tr>
+      <tr><td>Open standards</td><td>JMS, AMQP, MQTT, STOMP, OpenWire.</td><td>Migration fit.</td></tr>
+      <tr><td>Queues + topics</td><td>Both messaging models.</td><td>Like SQS + SNS.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Broker</td><td>The server that runs the message system.</td></tr>
+      <tr><td>JMS / AMQP / MQTT</td><td>Standard messaging protocols.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Amazon MQ</b> is a managed <b>Apache ActiveMQ / RabbitMQ</b> broker supporting <b>open standards</b> (JMS, AMQP, MQTT, STOMP, OpenWire) with both <b>queues and topics</b>.</li>
+      <li>Choose it when you must keep using these <b>standard protocols</b> — e.g. <b>migrating an existing app</b> that already uses them.</li>
+      <li>Unlike SNS/SQS (AWS-specific APIs), Amazon MQ runs on <b>brokers in a VPC</b> (not serverless).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — cost</span>A broker runs on instances (hourly cost); the exam tests "need JMS/AMQP/MQTT → Amazon MQ", which we cover here.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Alternative to SNS/SQS when open protocols are required.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Lift-and-shift of legacy messaging apps.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"Existing app uses <b>JMS/AMQP/MQTT/STOMP</b>" or "migrate ActiveMQ" → <b>Amazon MQ</b>.</li>
+      <li>New AWS-native messaging → <b>SNS/SQS</b> (serverless).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">When choose Amazon MQ over SNS/SQS?<span class="hint">tap</span></div><div class="a">When you need open standards (JMS/AMQP/MQTT/STOMP) — e.g. migration.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Is Amazon MQ serverless?<span class="hint">tap</span></div><div class="a">No — it runs on managed brokers in a VPC.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You're migrating an app that relies on JMS and AMQP queues/topics. Best AWS service?</div>
+      <span class="opt">A) SNS + SQS</span><span class="opt">B) Amazon MQ</span><span class="opt">C) Kinesis</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Amazon MQ supports those open protocols, easing migration.</div></div>
+  </article>
+
+  <!-- ===== LESSON 20 ===== -->
+  <article class="card" id="l20">
+    <div class="lesson-head"><div class="num">20</div><div><h2>Amazon AppFlow</h2><div class="sub">Move data between SaaS and AWS.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Integration service</td><td>Transfer data SaaS ↔ AWS.</td><td>No custom code.</td></tr>
+      <tr><td>Connectors</td><td>Salesforce, Slack, Zendesk, SAP, etc.</td><td>SaaS sources.</td></tr>
+      <tr><td>Flows</td><td>Schedule / event / on-demand transfers.</td><td>Flexible timing.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>SaaS</td><td>Software-as-a-Service (e.g. Salesforce).</td></tr>
+      <tr><td>Flow</td><td>A configured data transfer + transform.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  SAAS[SaaS: Salesforce/Slack/SAP] --> FLOW[AppFlow flow + transform/filter]
+  FLOW --> AWS[S3 / Redshift]
+  AWS --> FLOW
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class FLOW a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>AppFlow</b> securely transfers data between <b>SaaS apps</b> (Salesforce, Slack, Zendesk, SAP…) and <b>AWS</b> (S3, Redshift) with <b>no custom integration code</b>.</li>
+      <li>Run flows on a <b>schedule, on an event, or on demand</b>; transform/filter data in the flow. Can use <b>PrivateLink</b> to avoid the public internet.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — needs a SaaS account</span>AppFlow requires a connected SaaS app; the exam tests "SaaS ↔ AWS data transfer", which we cover here.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Lands SaaS data in S3/Redshift for analytics (Glue/Kinesis).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>SaaS data integration projects.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Move data between Salesforce/Slack/SAP and S3/Redshift</b> without code" → <b>AppFlow</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does AppFlow connect?<span class="hint">tap</span></div><div class="a">SaaS apps and AWS services (S3/Redshift).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">When do flows run?<span class="hint">tap</span></div><div class="a">On a schedule, on an event, or on demand.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must sync Salesforce records into S3 daily with no custom code. Use?</div>
+      <span class="opt">A) AppFlow</span><span class="opt">B) Glue</span><span class="opt">C) DMS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> AppFlow is the managed SaaS ↔ AWS data-transfer service.</div></div>
+  </article>
+
+  <!-- ===== MOCK EXAM ===== -->
+  <article class="card examcard" id="mock">
+    <div class="lesson-head"><div class="num">★</div><div><h2>Mock Exam</h2><div class="sub">Serverless + IAM/Orgs + S3 + VPC + EC2 + Containers + Advanced EC2 + Network Storage + Route 53 + RDS + HA/Scaling.</div></div></div>
+    <div class="box exam"><span class="tag">How to use</span>Decide first, then tap <b>Show answer</b>. Pick the <b>best</b> option. 20 questions.</div>
+
+    <div class="quiz"><div class="qq">1. A job runs 40 minutes with several branching steps. Best service?</div>
+      <span class="opt">A) One Lambda</span><span class="opt">B) Step Functions</span><span class="opt">C) SNS</span><span class="opt">D) SQS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Lambda caps at 15 min; Step Functions orchestrates long, multi-step flows.</div></div>
+
+    <div class="quiz"><div class="qq">2. Decouple a spiky upload tier from processing. Use?</div>
+      <span class="opt">A) SQS</span><span class="opt">B) Bigger EC2</span><span class="opt">C) Route 53</span><span class="opt">D) Glue</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> An SQS queue decouples and absorbs spikes (async + worker pool).</div></div>
+
+    <div class="quiz"><div class="qq">3. One event must trigger 3 independent pipelines. Best?</div>
+      <span class="opt">A) One SQS queue</span><span class="opt">B) SNS fan-out to 3 SQS queues</span><span class="opt">C) Kinesis</span><span class="opt">D) Step Functions</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> SNS fan-out delivers the message to each queue independently.</div></div>
+
+    <div class="quiz"><div class="qq">4. Many consumers must read the same real-time stream and replay it. Use?</div>
+      <span class="opt">A) SQS</span><span class="opt">B) Kinesis Data Streams</span><span class="opt">C) SNS</span><span class="opt">D) Amazon MQ</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Kinesis supports multiple consumers + replay; SQS deletes after one consume.</div></div>
+
+    <div class="quiz"><div class="qq">5. Land streaming logs in S3 automatically, no shards to manage. Use?</div>
+      <span class="opt">A) Kinesis Data Streams</span><span class="opt">B) Firehose</span><span class="opt">C) SQS</span><span class="opt">D) Glue</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Firehose is the managed near-real-time delivery service.</div></div>
+
+    <div class="quiz"><div class="qq">6. Payment steps must be ordered with no duplicates. Queue type?</div>
+      <span class="opt">A) Standard</span><span class="opt">B) FIFO</span><span class="opt">C) Delay</span><span class="opt">D) DLQ</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> FIFO gives strict order + exactly-once.</div></div>
+
+    <div class="quiz"><div class="qq">7. A poison message keeps failing and blocks the queue. Fix?</div>
+      <span class="opt">A) Dead-letter queue</span><span class="opt">B) Bigger queue</span><span class="opt">C) FIFO</span><span class="opt">D) Delay</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> A DLQ (maxReceiveCount) parks repeatedly-failing messages.</div></div>
+
+    <div class="quiz"><div class="qq">8. Run a Lambda to stop dev EC2 nightly. Trigger?</div>
+      <span class="opt">A) EventBridge scheduled rule</span><span class="opt">B) SQS</span><span class="opt">C) SNS</span><span class="opt">D) Manual</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> A scheduled EventBridge rule triggers the Lambda.</div></div>
+
+    <div class="quiz"><div class="qq">9. After social login, users need temporary AWS creds for S3. Which Cognito part?</div>
+      <span class="opt">A) User Pool</span><span class="opt">B) Identity Pool</span><span class="opt">C) IAM user</span><span class="opt">D) STS only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Identity Pools issue temporary AWS credentials via STS.</div></div>
+
+    <div class="quiz"><div class="qq">10. Migrate an app using JMS/AMQP queues + topics. Best service?</div>
+      <span class="opt">A) SNS + SQS</span><span class="opt">B) Amazon MQ</span><span class="opt">C) Kinesis</span><span class="opt">D) EventBridge</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Amazon MQ supports open standards for easy migration.</div></div>
+
+    <div class="quiz"><div class="qq">11. Serverless ETL + a catalog for Athena to query S3. Use?</div>
+      <span class="opt">A) EMR</span><span class="opt">B) Glue</span><span class="opt">C) Kinesis</span><span class="opt">D) AppFlow</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Glue is serverless ETL + the Data Catalog.</div></div>
+
+    <div class="quiz"><div class="qq">12. Sync Salesforce records into S3 daily, no code. Use?</div>
+      <span class="opt">A) AppFlow</span><span class="opt">B) DMS</span><span class="opt">C) Glue</span><span class="opt">D) Firehose</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> AppFlow is the managed SaaS ↔ AWS transfer service.</div></div>
+
+    <div class="quiz"><div class="qq">13. Managed HTTPS API in front of Lambda with auth + throttling. Use?</div>
+      <span class="opt">A) API Gateway</span><span class="opt">B) NLB</span><span class="opt">C) SQS</span><span class="opt">D) CloudFront</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> API Gateway provides endpoints, Lambda integration, auth and throttling.</div></div>
+
+    <div class="quiz"><div class="qq">14. (Lambda) A Lambda must reach a private RDS DB. Required?</div>
+      <span class="opt">A) Put the Lambda in the VPC</span><span class="opt">B) Public bucket</span><span class="opt">C) Root keys</span><span class="opt">D) NAT only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Attach the function to the VPC to reach private resources.</div></div>
+
+    <div class="quiz"><div class="qq">15. (RDS) Read traffic overwhelms the DB behind a serverless app. Fix?</div>
+      <span class="opt">A) Read replica</span><span class="opt">B) Multi-AZ standby</span><span class="opt">C) DLQ</span><span class="opt">D) Bigger Lambda</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Read replicas offload reads (and RDS Proxy helps with connections).</div></div>
+
+    <div class="quiz"><div class="qq">16. (HA) Thousands of Lambda connections exhaust the database. Fix?</div>
+      <span class="opt">A) RDS Proxy</span><span class="opt">B) Bigger DB</span><span class="opt">C) Read replica</span><span class="opt">D) SQS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> RDS Proxy pools and reuses connections — ideal for Lambda.</div></div>
+
+    <div class="quiz"><div class="qq">17. (S3) Cheapest host for a serverless app's static frontend?</div>
+      <span class="opt">A) EC2</span><span class="opt">B) S3 static website</span><span class="opt">C) EFS</span><span class="opt">D) EBS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> S3 static hosting serves the browser app with no servers.</div></div>
+
+    <div class="quiz"><div class="qq">18. (Route 53) Point apex api.a4l.com at an API Gateway/CloudFront. Record?</div>
+      <span class="opt">A) CNAME at apex</span><span class="opt">B) Alias A record</span><span class="opt">C) MX</span><span class="opt">D) TXT</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Alias works at the apex and points to AWS resources.</div></div>
+
+    <div class="quiz"><div class="qq">19. (IAM) How should a Lambda get AWS permissions?</div>
+      <span class="opt">A) Keys in code</span><span class="opt">B) Execution role</span><span class="opt">C) Root keys</span><span class="opt">D) Public policy</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> The Lambda execution role grants temporary, scoped permissions.</div></div>
+
+    <div class="quiz"><div class="qq">20. SQS workers keep processing the same message twice. Likely cause?</div>
+      <span class="opt">A) Not deleting before visibility timeout ends</span><span class="opt">B) Wrong region</span><span class="opt">C) FIFO off</span><span class="opt">D) No DLQ</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Undeleted messages reappear after the visibility timeout and are reprocessed.</div></div>
+  </article>
+
+  <div class="foot">
+    <div>
+      <span class="pill">Lambda = 15-min max</span><span class="pill">Step Functions = long workflows</span>
+      <span class="pill">SNS push / SQS pull</span><span class="pill">Fan-out = SNS→SQS</span>
+      <span class="pill">FIFO = order + once</span><span class="pill">DLQ = poison messages</span>
+      <span class="pill">Kinesis = stream+replay</span><span class="pill">Firehose = deliver to S3</span>
+      <span class="pill">User Pool vs Identity Pool</span><span class="pill">Glue = serverless ETL</span>
+      <span class="pill">Amazon MQ = open standards</span>
+    </div>
+    <p>Section 013 · Serverless &amp; Application Services + Mock Exam · built for SAA-C03 self-study.<br>
+    Tap a flashcard or "Show answer" to reveal. Use ☰ Lessons to jump around.</p>
+  </div>
+</main>
+
+<button class="toTop" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawerBg').classList.add('open');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerBg').classList.remove('open');}
+function cp(btn){
+  const code=btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard?.writeText(code).then(()=>{const t=btn.innerText;btn.innerText='copied!';setTimeout(()=>btn.innerText=t,1200);})
+  .catch(()=>{btn.innerText='select & copy';});
+}
+const tt=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{tt.classList.toggle('show',window.scrollY>500);});
+window.addEventListener('load',()=>{
+  try{
+    mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{
+      fontFamily:'Manrope, sans-serif',primaryColor:'#1b2128',primaryTextColor:'#e7edf3',
+      primaryBorderColor:'#2dd4bf',lineColor:'#60a5fa',secondaryColor:'#212934',tertiaryColor:'#161b21'}});
+  }catch(e){console.warn('mermaid init',e);}
+});
+</script>
+</body>
+</html>

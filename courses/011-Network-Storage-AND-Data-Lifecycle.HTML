@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03 · 011 · Network Storage & Data Lifecycle</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+:root{
+  --bg:#101418;--bg2:#161b21;--surface:#1b2128;--surface2:#212934;
+  --line:#2c3540;--line2:#3a4654;--text:#e7edf3;--muted:#9fb0c0;
+  --primary:#2dd4bf;--primary-d:#0f3b39;--exam:#fbbf24;--exam-d:#3a2f0c;
+  --demo:#60a5fa;--demo-d:#0e2647;--term:#c084fc;--term-d:#2a1640;
+  --warn:#fb7185;--warn-d:#3a151c;--ok:#34d399;
+  --radius:16px;--shadow:0 6px 22px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.25;margin:0}
+a{color:var(--primary);text-decoration:none}
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(16,20,24,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .badge{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--bg);background:var(--primary);padding:4px 9px;border-radius:8px}
+.topbar .ttl{font-family:'Sora';font-weight:600;font-size:15px}
+.topbar .ttl small{display:block;color:var(--muted);font-weight:500;font-size:11.5px;font-family:'Manrope'}
+.menu-btn{margin-left:auto;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+.menu-btn:active{transform:scale(.97)}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
+.drawer-bg.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(86vw,340px);background:var(--bg2);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .28s ease;z-index:80;overflow-y:auto;padding:18px 16px 40px}
+.drawer.open{transform:translateX(0)}
+.drawer h3{font-size:11.5px;color:var(--muted);margin:14px 4px 8px;text-transform:uppercase;letter-spacing:1px}
+.drawer a{display:block;color:var(--text);padding:10px 12px;border-radius:10px;font-weight:500;font-size:14px;border:1px solid transparent}
+.drawer a:active{background:var(--surface)}
+.drawer a .n{color:var(--primary);font-family:'Sora';font-weight:700;margin-right:8px}
+.drawer .close{width:100%;margin-top:18px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 90px}
+.hero{background:radial-gradient(120% 90% at 100% 0%, rgba(45,212,191,.16), transparent 55%),radial-gradient(120% 90% at 0% 100%, rgba(96,165,250,.12), transparent 55%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+.hero .eyebrow{color:var(--primary);font-weight:700;font-size:12.5px;letter-spacing:1.5px;font-family:'Sora'}
+.hero h1{font-size:25px;margin:6px 0 8px}
+.hero p{color:var(--muted);margin:0;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;margin-top:18px;box-shadow:var(--shadow)}
+.lesson-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.lesson-head .num{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:'Sora';font-weight:700;background:var(--primary);color:var(--bg);font-size:15px}
+.lesson-head h2{font-size:19px}
+.lesson-head .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+h3.block{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+h3.block::before{content:"";width:14px;height:3px;border-radius:3px;background:var(--primary)}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:360px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface2);color:var(--text);font-family:'Sora';font-weight:600;font-size:12.5px;letter-spacing:.3px}
+tr:last-child td{border-bottom:none}
+td b{color:var(--primary)}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{position:relative;padding:6px 0 6px 22px;font-size:15px;border-bottom:1px dashed var(--line)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"▸";position:absolute;left:2px;top:6px;color:var(--primary)}
+.two-col{display:grid;gap:12px}
+@media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+.box{border-radius:12px;padding:13px 14px;margin:12px 0;border:1px solid;font-size:14.5px}
+.box .tag{font-family:'Sora';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
+.box.exam{background:var(--exam-d);border-color:#6b551a}.box.exam .tag{color:var(--exam)}
+.box.term{background:var(--term-d);border-color:#4a2d6b}.box.term .tag{color:var(--term)}
+.box.warn{background:var(--warn-d);border-color:#6b2630}.box.warn .tag{color:var(--warn)}
+.box.demo{background:var(--demo-d);border-color:#1d4a82}.box.demo .tag{color:var(--demo)}
+.box ul{margin:4px 0 0;padding-left:18px}.box li{margin:3px 0}
+.mer{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;overflow-x:auto}
+.mermaid{display:flex;justify-content:center;min-width:fit-content}
+.code{position:relative;background:#0c1117;border:1px solid var(--line2);border-radius:10px;margin:10px 0}
+.code pre{margin:0;padding:13px 14px;overflow-x:auto;font-size:13px;line-height:1.55}
+.code code{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;color:#cfe9e6;white-space:pre}
+.code .cp{position:absolute;top:7px;right:7px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:7px;font-size:11px;padding:4px 9px;cursor:pointer;font-weight:600}
+.code .cp:active{color:var(--primary)}
+.expect{font-size:13px;color:var(--ok);background:rgba(52,211,153,.08);border-left:3px solid var(--ok);padding:7px 11px;margin:0 0 12px;border-radius:0 8px 8px 0}
+.expect b{color:var(--ok)}
+.step{counter-increment:st;margin:14px 0}
+.step .sh{display:flex;align-items:center;gap:9px;font-family:'Sora';font-weight:600;font-size:14.5px;margin-bottom:4px}
+.step .sh::before{content:counter(st);background:var(--demo);color:var(--bg);width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12.5px;flex:0 0 auto}
+.demo-wrap{counter-reset:st}
+.fc-grid{display:grid;gap:10px}
+.fc{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:13px 14px;cursor:pointer;transition:border-color .2s;user-select:none}
+.fc:active{border-color:var(--primary)}
+.fc .q{font-weight:600;font-size:14.5px;display:flex;gap:8px;align-items:flex-start}
+.fc .q::before{content:"Q";font-family:'Sora';color:var(--primary);font-weight:700;flex:0 0 auto}
+.fc .a{display:none;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);color:var(--muted);font-size:14px}
+.fc .a::before{content:"A ";color:var(--ok);font-weight:700;font-family:'Sora'}
+.fc.show .a{display:block}
+.fc .hint{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600}
+.quiz{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:14px;margin:10px 0}
+.quiz .qq{font-weight:600;font-size:15px;margin-bottom:8px}
+.quiz .opt{display:block;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin:6px 0;font-size:14px;cursor:pointer}
+.quiz .opt:active{border-color:var(--primary)}
+.quiz .reveal{margin-top:6px;background:var(--surface);color:var(--primary);border:1px solid var(--line2);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px;width:100%}
+.quiz .ans{display:none;margin-top:10px;border-left:3px solid var(--ok);background:rgba(52,211,153,.08);padding:9px 12px;border-radius:0 8px 8px 0;font-size:14px}
+.quiz .ans b{color:var(--ok)}
+.quiz.show .ans{display:block}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;line-height:1.7}
+.pill{display:inline-block;background:var(--surface2);border:1px solid var(--line2);color:var(--muted);font-size:11px;padding:2px 8px;border-radius:20px;margin:2px}
+.toTop{position:fixed;right:14px;bottom:16px;z-index:50;background:var(--primary);color:var(--bg);border:none;width:46px;height:46px;border-radius:50%;font-size:20px;box-shadow:var(--shadow);cursor:pointer;display:none}
+.toTop.show{display:block}
+kbd{background:var(--surface2);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-size:12px;font-family:monospace}
+.examcard{border-color:#6b551a;background:linear-gradient(180deg,var(--exam-d),var(--surface))}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="badge">SAA-C03</span>
+  <div class="ttl">Section 011<small>Network Storage &amp; Data Lifecycle</small></div>
+  <button class="menu-btn" onclick="openDrawer()">☰ Lessons</button>
+</header>
+
+<div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer">
+  <h3>Lessons</h3>
+  <a href="#l1" onclick="closeDrawer()"><span class="n">1</span>EFS Architecture</a>
+  <a href="#l2" onclick="closeDrawer()"><span class="n">2</span>AWS Backup</a>
+  <h3>Revision</h3>
+  <a href="#mock" onclick="closeDrawer()"><span class="n">★</span>Mock Exam</a>
+  <button class="close" onclick="closeDrawer()">Close</button>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">SECTION GOAL</div>
+    <h1>Shared network file storage (EFS) and centralized backups (AWS Backup).</h1>
+    <p>EFS gives many EC2 instances one shared file system, enabling horizontal scaling. AWS Backup centralizes data protection across services and accounts.</p>
+  </section>
+
+  <div class="card">
+    <h3 class="block">Section Map · how the lessons connect</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  EFS[1. EFS - shared NFS file system] --> SCALE[Multiple EC2 share files → horizontal scaling]
+  BACKUP[2. AWS Backup - central, policy-based protection] --> COVER[Covers EBS, RDS, EFS, DynamoDB, S3...]
+  EFS -.protected by.-> BACKUP
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class EFS,SCALE a;
+  class BACKUP,COVER b;
+    </pre></div>
+  </div>
+
+  <div class="card">
+    <h3 class="block">Quick Understanding · whole section</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Lesson</th><th>What + why it matters for the exam</th></tr>
+      <tr><td>1 EFS</td><td>Managed NFS shared by many Linux EC2; mount targets per AZ; enables scaling.</td></tr>
+      <tr><td>2 AWS Backup</td><td>Central, policy-based backups across services + accounts; Vault Lock for compliance.</td></tr>
+      <tr><td>★ Mock Exam</td><td>EFS/Backup + all prior sections.</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ===== LESSON 1 ===== -->
+  <article class="card" id="l1">
+    <div class="lesson-head"><div class="num">1</div><div><h2>EFS Architecture</h2><div class="sub">One file system, many EC2 instances.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>EFS = managed NFS</td><td>Shared Linux file system for many EC2 at once.</td><td>File storage, not block/object.</td></tr>
+      <tr><td>Mount targets</td><td>An ENI per AZ that instances mount through.</td><td>VPC + per-AZ access.</td></tr>
+      <tr><td>Enables scaling</td><td>Many instances share the same files.</td><td>Horizontal scaling.</td></tr>
+      <tr><td>Storage classes</td><td>Standard / One Zone (+ IA), lifecycle to IA.</td><td>Cost control.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>NFS</td><td>Network File System — a way to share files over a network (Linux).</td></tr>
+      <tr><td>Mount target</td><td>A network entry point (ENI + IP) for EFS in an AZ's subnet.</td></tr>
+      <tr><td>POSIX</td><td>The Linux file permission model EFS uses.</td></tr>
+      <tr><td>IA</td><td>Infrequent Access — cheaper storage for rarely-used files.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  EFS[EFS file system] --> MTA[Mount target AZ-a]
+  EFS --> MTB[Mount target AZ-b]
+  MTA --> E1[EC2 in AZ-a]
+  MTB --> E2[EC2 in AZ-b]
+  SG[Security group on mount targets allows NFS 2049] --> MTA
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class EFS a;
+    </pre></div>
+    <ul class="clean">
+      <li>EFS is a <b>managed NFS</b> file system for <b>Linux</b> EC2 (POSIX permissions). Many instances mount it <b>at the same time</b> — unlike EBS, which is usually one instance.</li>
+      <li>It lives in a <b>VPC</b>; instances connect through <b>mount targets</b> (an ENI + IP in each AZ). A <b>security group</b> on the mount targets must allow <b>NFS (port 2049)</b>.</li>
+      <li><b>Standard</b> is multi-AZ resilient; <b>One Zone</b> is cheaper but single-AZ. <b>Lifecycle</b> moves unused files to <b>IA</b> to save cost.</li>
+      <li>Performance: <b>General Purpose</b> (default, low latency) vs <b>Max I/O</b> (higher throughput, more latency). Throughput: <b>Bursting / Elastic / Provisioned</b>. <span style="color:var(--muted)">[added for exam]</span></li>
+      <li>Classic use: shared content like WordPress <b>wp-content</b>, so multiple WordPress instances can run together.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box warn"><span class="tag">Small cost</span>EFS bills per GB stored (tiny for a few test files) + any provisioned throughput. Delete the file system after.</div>
+      <div class="box demo"><span class="tag">Demo · CLI v2 + on instances</span><b>Situation:</b> create EFS, add mount targets, mount on two instances, then move WordPress wp-content onto it. <b>Check first:</b> a VPC with subnets in 2 AZs and two running instances.</div>
+      <div class="step"><div class="sh">Create the file system</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>EFS=$(aws efs create-file-system --performance-mode generalPurpose \
+  --throughput-mode elastic --encrypted \
+  --tags Key=Name,Value=a4l-efs --query "FileSystemId" --output text)
+aws efs describe-file-systems --file-system-id $EFS \
+  --query "FileSystems[0].LifeCycleState"</code></pre></div>
+      <div class="expect"><b>Expect:</b> a file-system ID like <code>fs-0abc...</code>, state becoming <code>available</code>.</div>
+      <div class="step"><div class="sh">Security group allowing NFS (2049)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>VPC=$(aws ec2 describe-vpcs --filters Name=isDefault,Values=true \
+  --query "Vpcs[0].VpcId" --output text)
+SG=$(aws ec2 create-security-group --group-name a4l-efs-sg \
+  --description "efs nfs" --vpc-id $VPC --query GroupId --output text)
+aws ec2 authorize-security-group-ingress --group-id $SG \
+  --protocol tcp --port 2049 --cidr 0.0.0.0/0   # demo only - tighten to instance SG</code></pre></div>
+      <div class="expect"><b>Expect:</b> an SG ID with port 2049 open (in real life allow only the instances' SG).</div>
+      <div class="step"><div class="sh">Create a mount target in each AZ subnet</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>for SUBNET in $(aws ec2 describe-subnets --filters Name=vpc-id,Values=$VPC \
+  --query "Subnets[].SubnetId" --output text); do
+  aws efs create-mount-target --file-system-id $EFS \
+    --subnet-id $SUBNET --security-groups $SG 2>/dev/null
+done
+aws efs describe-mount-targets --file-system-id $EFS \
+  --query "MountTargets[].{AZ:AvailabilityZoneName,State:LifeCycleState}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> a mount target per AZ, each becoming <code>available</code>.</div>
+      <div class="step"><div class="sh">On each EC2 instance: install + mount</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>sudo dnf install -y amazon-efs-utils
+sudo mkdir -p /efs
+sudo mount -t efs -o tls FS_ID:/ /efs     # replace FS_ID with your $EFS
+df -h | grep efs</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>/efs</code> mounted (encrypted in transit via TLS). A file written on one instance appears on the other.</div>
+      <div class="step"><div class="sh">Move WordPress wp-content onto EFS</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>sudo mv /var/www/html/wp-content/* /efs/ 2>/dev/null
+sudo umount /efs && sudo mount -t efs -o tls FS_ID:/ /var/www/html/wp-content</code></pre></div>
+      <div class="expect"><b>Expect:</b> wp-content now lives on shared EFS, so several WordPress instances can serve the same media → horizontal scaling.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>EFS is <b>Linux/NFS only</b>. For Windows file shares use <b>FSx for Windows</b>; for block storage use EBS; for objects use S3.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code># on instances: sudo umount /efs /var/www/html/wp-content
+for MT in $(aws efs describe-mount-targets --file-system-id $EFS \
+  --query "MountTargets[].MountTargetId" --output text); do
+  aws efs delete-mount-target --mount-target-id $MT; done
+sleep 30
+aws efs delete-file-system --file-system-id $EFS
+aws ec2 delete-security-group --group-id $SG</code></pre></div>
+      <div class="expect"><b>Expect:</b> mount targets, file system and SG removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses VPC/subnets/SGs; the file storage type from the EC2 storage refresher; protected by AWS Backup (L2).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Auto Scaling stateless web tiers, shared app data, container storage.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>EFS = <b>managed NFS</b>, <b>Linux only</b>, <b>shared by many EC2</b> at once (file storage).</li>
+      <li>Accessed via <b>mount targets</b> (per AZ) over <b>NFS port 2049</b>; SG controls access.</li>
+      <li><b>Windows shares → FSx for Windows</b>, not EFS.</li>
+      <li>Use EFS to let <b>multiple instances share files</b> (e.g. WordPress wp-content) for scaling.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What protocol/OS does EFS use?<span class="hint">tap</span></div><div class="a">NFS, for Linux instances (POSIX).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can many EC2 mount one EFS at once?<span class="hint">tap</span></div><div class="a">Yes — that's the point (unlike a typical EBS volume).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which port must the SG allow?<span class="hint">tap</span></div><div class="a">NFS, TCP 2049.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Windows file share equivalent?<span class="hint">tap</span></div><div class="a">FSx for Windows File Server.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Multiple Linux web servers must share the same uploaded media files. Best storage?</div>
+      <span class="opt">A) EBS volume</span><span class="opt">B) EFS</span><span class="opt">C) Instance store</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> EFS is shared NFS that many instances mount at once; EBS is typically single-instance.</div></div>
+    <div class="quiz"><div class="qq">A Windows app needs a shared SMB file share. Which service?</div>
+      <span class="opt">A) EFS</span><span class="opt">B) FSx for Windows</span><span class="opt">C) S3</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> EFS is Linux/NFS; Windows SMB shares use FSx for Windows.</div></div>
+  </article>
+
+  <!-- ===== LESSON 2 ===== -->
+  <article class="card" id="l2">
+    <div class="lesson-head"><div class="num">2</div><div><h2>AWS Backup</h2><div class="sub">Central, policy-based data protection.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Central backup</td><td>One place to back up many services.</td><td>EBS, RDS, EFS, DynamoDB, S3...</td></tr>
+      <tr><td>Backup plan</td><td>Rules: frequency, window, lifecycle, retention.</td><td>Policy-based.</td></tr>
+      <tr><td>Backup vault</td><td>Stores recovery points; can be KMS-encrypted.</td><td>Vault Lock = WORM.</td></tr>
+      <tr><td>Org-wide</td><td>Deploy policies across accounts via Organizations.</td><td>Governance.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Recovery point</td><td>One backup you can restore from.</td></tr>
+      <tr><td>Backup plan</td><td>The schedule + rules for taking backups.</td></tr>
+      <tr><td>Vault Lock</td><td>Makes backups immutable (can't delete) for compliance.</td></tr>
+      <tr><td>Resource assignment</td><td>Which resources a plan backs up (by tag/ID).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  PLAN[Backup plan: schedule + lifecycle + retention] --> ASSIGN[Assign resources by tag/ID]
+  ASSIGN --> JOB[Backup jobs run]
+  JOB --> VAULT[Backup vault stores recovery points]
+  VAULT --> LOCK[Vault Lock = immutable WORM]
+  ORG[AWS Organizations] --> PLAN
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class VAULT b;
+    </pre></div>
+    <ul class="clean">
+      <li><b>AWS Backup</b> centralizes protection across many services (<b>EBS, EC2, RDS, EFS, DynamoDB, S3, Storage Gateway</b> and more) and hybrid workloads.</li>
+      <li><b>Backup plans</b> set schedules, backup window, <b>lifecycle</b> (move to cold storage) and <b>retention</b>; you <b>assign resources</b> by tag or ID.</li>
+      <li>Backups land in a <b>backup vault</b> (KMS-encrypted); <b>Vault Lock</b> makes them <b>immutable (WORM)</b> for compliance.</li>
+      <li>Supports <b>cross-region + cross-account</b> copies and, with <b>Organizations</b>, central backup policies.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> create a vault + a daily backup plan. <b>Check first:</b> CLI configured. (Running jobs need the AWS Backup service role.)</div>
+      <div class="step"><div class="sh">Create a backup vault</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws backup create-backup-vault --backup-vault-name a4l-vault \
+  --query "BackupVaultName"</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>a4l-vault</code> created (encrypted with the default KMS key).</div>
+      <div class="step"><div class="sh">Create a daily backup plan</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>cat > plan.json <<'EOF'
+{ "BackupPlanName":"a4l-daily",
+  "Rules":[{ "RuleName":"daily-35d",
+    "TargetBackupVaultName":"a4l-vault",
+    "ScheduleExpression":"cron(0 5 * * ? *)",
+    "Lifecycle":{"DeleteAfterDays":35} }] }
+EOF
+aws backup create-backup-plan --backup-plan file://plan.json \
+  --query "BackupPlanId"</code></pre></div>
+      <div class="expect"><b>Expect:</b> a backup-plan ID. The rule backs up daily at 05:00 UTC and keeps recovery points 35 days.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>To actually run backups you <b>assign resources</b> (by tag/ID) to the plan, and AWS Backup uses its <b>service role</b>. For compliance you'd add <b>Vault Lock</b> to make recovery points immutable.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>PLANID=$(aws backup list-backup-plans \
+  --query "BackupPlansList[?BackupPlanName=='a4l-daily'].BackupPlanId" --output text)
+aws backup delete-backup-plan --backup-plan-id $PLANID
+aws backup delete-backup-vault --backup-vault-name a4l-vault
+rm -f plan.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> plan + empty vault deleted. (A vault with recovery points can't be deleted until they're removed.)</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Protects EFS (L1), plus EBS/RDS/DynamoDB/S3 from earlier sections; uses Organizations + KMS.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>DR strategy, compliance/governance, centralized operations.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Centralize/automate backups across many services + accounts</b>" → <b>AWS Backup</b>.</li>
+      <li><b>Vault Lock</b> = immutable (WORM) backups for compliance.</li>
+      <li>Supports <b>cross-region + cross-account</b> copies; integrates with <b>Organizations</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does AWS Backup centralize?<span class="hint">tap</span></div><div class="a">Policy-based backups across many services and accounts.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What makes backups immutable?<span class="hint">tap</span></div><div class="a">Vault Lock (WORM) on a backup vault.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How do you scope what a plan backs up?<span class="hint">tap</span></div><div class="a">Resource assignment by tag or resource ID.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A company must centrally manage and audit backups for EBS, RDS and DynamoDB across many accounts. Use?</div>
+      <span class="opt">A) Manual snapshots per service</span><span class="opt">B) AWS Backup with Organizations</span><span class="opt">C) S3 lifecycle</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> AWS Backup gives central, policy-based protection across services + accounts.</div></div>
+    <div class="quiz"><div class="qq">Compliance requires backups that cannot be deleted or changed for a retention period. Feature?</div>
+      <span class="opt">A) Vault Lock</span><span class="opt">B) Versioning</span><span class="opt">C) Multi-AZ</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Vault Lock makes recovery points immutable (WORM).</div></div>
+  </article>
+
+  <!-- ===== MOCK EXAM ===== -->
+  <article class="card examcard" id="mock">
+    <div class="lesson-head"><div class="num">★</div><div><h2>Mock Exam</h2><div class="sub">EFS/Backup + IAM/Orgs + S3 + VPC + EC2 + Containers + Advanced EC2 + Route 53 + RDS.</div></div></div>
+    <div class="box exam"><span class="tag">How to use</span>Decide first, then tap <b>Show answer</b>. Pick the <b>best</b> option. 18 questions.</div>
+
+    <div class="quiz"><div class="qq">1. Several Linux web servers must share the same media files. Best storage?</div>
+      <span class="opt">A) EBS per instance</span><span class="opt">B) EFS</span><span class="opt">C) Instance store</span><span class="opt">D) S3 Glacier</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> EFS is shared NFS many instances mount at once.</div></div>
+
+    <div class="quiz"><div class="qq">2. A Windows app needs a shared SMB file share. Service?</div>
+      <span class="opt">A) EFS</span><span class="opt">B) FSx for Windows</span><span class="opt">C) S3</span><span class="opt">D) EBS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> EFS is Linux/NFS; Windows SMB shares use FSx for Windows.</div></div>
+
+    <div class="quiz"><div class="qq">3. An EFS mount fails to connect. Which port must the security group allow?</div>
+      <span class="opt">A) 22</span><span class="opt">B) 80</span><span class="opt">C) 2049 (NFS)</span><span class="opt">D) 443</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> EFS uses NFS on TCP 2049 via the mount targets.</div></div>
+
+    <div class="quiz"><div class="qq">4. Centralize + automate backups across EBS, RDS, DynamoDB in many accounts. Use?</div>
+      <span class="opt">A) Manual snapshots</span><span class="opt">B) AWS Backup + Organizations</span><span class="opt">C) S3 lifecycle</span><span class="opt">D) Read replicas</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> AWS Backup centralizes policy-based protection across services + accounts.</div></div>
+
+    <div class="quiz"><div class="qq">5. Compliance: backups must be immutable for a retention period. Feature?</div>
+      <span class="opt">A) Versioning</span><span class="opt">B) Vault Lock</span><span class="opt">C) Multi-AZ</span><span class="opt">D) Lifecycle</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Backup Vault Lock makes recovery points WORM (immutable).</div></div>
+
+    <div class="quiz"><div class="qq">6. (RDS) Reporting reads overload the primary DB. Best fix?</div>
+      <span class="opt">A) Multi-AZ Instance</span><span class="opt">B) Read replica</span><span class="opt">C) Bigger backups</span><span class="opt">D) EFS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Read replicas offload reads; a Multi-AZ standby can't serve reads.</div></div>
+
+    <div class="quiz"><div class="qq">7. (RDS) Unpredictable spiky DB load, no capacity management wanted. Best?</div>
+      <span class="opt">A) Provisioned Aurora</span><span class="opt">B) Aurora Serverless</span><span class="opt">C) DB on EC2</span><span class="opt">D) EFS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Aurora Serverless auto-scales capacity and bills by use.</div></div>
+
+    <div class="quiz"><div class="qq">8. (Route 53) Show a static maintenance page when the app is down. Routing?</div>
+      <span class="opt">A) Weighted</span><span class="opt">B) Failover to S3</span><span class="opt">C) Latency</span><span class="opt">D) Simple</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Failover routing sends users to the S3 secondary when the primary is unhealthy.</div></div>
+
+    <div class="quiz"><div class="qq">9. (Route 53) Point apex a4l.com at a load balancer. Record?</div>
+      <span class="opt">A) CNAME at apex</span><span class="opt">B) Alias A record</span><span class="opt">C) MX</span><span class="opt">D) TXT</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> CNAME can't be at the apex; an Alias points to AWS resources.</div></div>
+
+    <div class="quiz"><div class="qq">10. (Containers) Team wants containers with no servers to manage. ECS mode?</div>
+      <span class="opt">A) EC2 mode</span><span class="opt">B) Fargate</span><span class="opt">C) Self-managed K8s</span><span class="opt">D) Dedicated Host</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Fargate is serverless; pay only for running tasks.</div></div>
+
+    <div class="quiz"><div class="qq">11. (Adv EC2) HPC nodes need lowest network latency between them. Placement group?</div>
+      <span class="opt">A) Spread</span><span class="opt">B) Cluster</span><span class="opt">C) Partition</span><span class="opt">D) None</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Cluster packs instances together in one AZ for top performance.</div></div>
+
+    <div class="quiz"><div class="qq">12. (Adv EC2) App on EC2 needs AWS permissions. Best practice?</div>
+      <span class="opt">A) Keys in user data</span><span class="opt">B) Instance role</span><span class="opt">C) Root keys</span><span class="opt">D) Public bucket</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Instance roles give temporary, rotating credentials via metadata.</div></div>
+
+    <div class="quiz"><div class="qq">13. (EC2) Instance store data after a stop/start?</div>
+      <span class="opt">A) Kept</span><span class="opt">B) Lost</span><span class="opt">C) Moved to EFS</span><span class="opt">D) Encrypted</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Instance store survives reboot but is lost on stop/start or terminate.</div></div>
+
+    <div class="quiz"><div class="qq">14. (S3) Cheapest store for rarely-read archives, 12-hour restore OK. Class?</div>
+      <span class="opt">A) S3 Standard</span><span class="opt">B) Glacier Deep Archive</span><span class="opt">C) One Zone-IA</span><span class="opt">D) Standard-IA</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Deep Archive is cheapest for rarely-read, slow-restore data.</div></div>
+
+    <div class="quiz"><div class="qq">15. (VPC) Make a subnet public. Requirements?</div>
+      <span class="opt">A) NAT Gateway</span><span class="opt">B) Auto-assign public IP + 0.0.0.0/0 → IGW</span><span class="opt">C) NACL</span><span class="opt">D) IPv6</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A public IP plus an internet-gateway route are both needed.</div></div>
+
+    <div class="quiz"><div class="qq">16. (IAM) Explicit Deny vs Allow elsewhere. Result?</div>
+      <span class="opt">A) Allowed</span><span class="opt">B) Denied — explicit deny wins</span><span class="opt">C) Region-dependent</span><span class="opt">D) Read-only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Explicit Deny always overrides Allow.</div></div>
+
+    <div class="quiz"><div class="qq">17. WordPress runs on one instance; you must scale to several instances sharing media. Storage change?</div>
+      <span class="opt">A) Keep media on local EBS</span><span class="opt">B) Move wp-content to EFS</span><span class="opt">C) Use instance store</span><span class="opt">D) Bigger instance</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> EFS lets multiple instances share wp-content, enabling horizontal scaling.</div></div>
+
+    <div class="quiz"><div class="qq">18. You need cheaper EFS for files not accessed for 30 days, automatically. Feature?</div>
+      <span class="opt">A) Provisioned throughput</span><span class="opt">B) EFS lifecycle to IA</span><span class="opt">C) Max I/O mode</span><span class="opt">D) Vault Lock</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> EFS lifecycle management moves unused files to Infrequent Access to save cost.</div></div>
+  </article>
+
+  <div class="foot">
+    <div>
+      <span class="pill">EFS = shared NFS (Linux)</span><span class="pill">Mount targets per AZ</span>
+      <span class="pill">NFS port 2049</span><span class="pill">Windows → FSx</span>
+      <span class="pill">EFS lifecycle → IA</span><span class="pill">AWS Backup = central</span>
+      <span class="pill">Vault Lock = WORM</span>
+    </div>
+    <p>Section 011 · Network Storage &amp; Data Lifecycle + Mock Exam · built for SAA-C03 self-study.<br>
+    Tap a flashcard or "Show answer" to reveal. Use ☰ Lessons to jump around.</p>
+  </div>
+</main>
+
+<button class="toTop" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawerBg').classList.add('open');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerBg').classList.remove('open');}
+function cp(btn){
+  const code=btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard?.writeText(code).then(()=>{const t=btn.innerText;btn.innerText='copied!';setTimeout(()=>btn.innerText=t,1200);})
+  .catch(()=>{btn.innerText='select & copy';});
+}
+const tt=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{tt.classList.toggle('show',window.scrollY>500);});
+window.addEventListener('load',()=>{
+  try{
+    mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{
+      fontFamily:'Manrope, sans-serif',primaryColor:'#1b2128',primaryTextColor:'#e7edf3',
+      primaryBorderColor:'#2dd4bf',lineColor:'#60a5fa',secondaryColor:'#212934',tertiaryColor:'#161b21'}});
+  }catch(e){console.warn('mermaid init',e);}
+});
+</script>
+</body>
+</html>

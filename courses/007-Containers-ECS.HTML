@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03 · 007 · Containers & ECS</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+:root{
+  --bg:#101418;--bg2:#161b21;--surface:#1b2128;--surface2:#212934;
+  --line:#2c3540;--line2:#3a4654;--text:#e7edf3;--muted:#9fb0c0;
+  --primary:#2dd4bf;--primary-d:#0f3b39;--exam:#fbbf24;--exam-d:#3a2f0c;
+  --demo:#60a5fa;--demo-d:#0e2647;--term:#c084fc;--term-d:#2a1640;
+  --warn:#fb7185;--warn-d:#3a151c;--ok:#34d399;
+  --radius:16px;--shadow:0 6px 22px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.25;margin:0}
+a{color:var(--primary);text-decoration:none}
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(16,20,24,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .badge{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--bg);background:var(--primary);padding:4px 9px;border-radius:8px}
+.topbar .ttl{font-family:'Sora';font-weight:600;font-size:15px}
+.topbar .ttl small{display:block;color:var(--muted);font-weight:500;font-size:11.5px;font-family:'Manrope'}
+.menu-btn{margin-left:auto;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+.menu-btn:active{transform:scale(.97)}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
+.drawer-bg.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(86vw,340px);background:var(--bg2);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .28s ease;z-index:80;overflow-y:auto;padding:18px 16px 40px}
+.drawer.open{transform:translateX(0)}
+.drawer h3{font-size:11.5px;color:var(--muted);margin:14px 4px 8px;text-transform:uppercase;letter-spacing:1px}
+.drawer a{display:block;color:var(--text);padding:10px 12px;border-radius:10px;font-weight:500;font-size:14px;border:1px solid transparent}
+.drawer a:active{background:var(--surface)}
+.drawer a .n{color:var(--primary);font-family:'Sora';font-weight:700;margin-right:8px}
+.drawer .close{width:100%;margin-top:18px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 90px}
+.hero{background:radial-gradient(120% 90% at 100% 0%, rgba(45,212,191,.16), transparent 55%),radial-gradient(120% 90% at 0% 100%, rgba(96,165,250,.12), transparent 55%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+.hero .eyebrow{color:var(--primary);font-weight:700;font-size:12.5px;letter-spacing:1.5px;font-family:'Sora'}
+.hero h1{font-size:25px;margin:6px 0 8px}
+.hero p{color:var(--muted);margin:0;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;margin-top:18px;box-shadow:var(--shadow)}
+.lesson-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.lesson-head .num{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:'Sora';font-weight:700;background:var(--primary);color:var(--bg);font-size:15px}
+.lesson-head h2{font-size:19px}
+.lesson-head .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+h3.block{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+h3.block::before{content:"";width:14px;height:3px;border-radius:3px;background:var(--primary)}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:360px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface2);color:var(--text);font-family:'Sora';font-weight:600;font-size:12.5px;letter-spacing:.3px}
+tr:last-child td{border-bottom:none}
+td b{color:var(--primary)}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{position:relative;padding:6px 0 6px 22px;font-size:15px;border-bottom:1px dashed var(--line)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"▸";position:absolute;left:2px;top:6px;color:var(--primary)}
+.two-col{display:grid;gap:12px}
+@media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+.box{border-radius:12px;padding:13px 14px;margin:12px 0;border:1px solid;font-size:14.5px}
+.box .tag{font-family:'Sora';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
+.box.exam{background:var(--exam-d);border-color:#6b551a}.box.exam .tag{color:var(--exam)}
+.box.term{background:var(--term-d);border-color:#4a2d6b}.box.term .tag{color:var(--term)}
+.box.warn{background:var(--warn-d);border-color:#6b2630}.box.warn .tag{color:var(--warn)}
+.box.demo{background:var(--demo-d);border-color:#1d4a82}.box.demo .tag{color:var(--demo)}
+.box ul{margin:4px 0 0;padding-left:18px}.box li{margin:3px 0}
+.mer{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;overflow-x:auto}
+.mermaid{display:flex;justify-content:center;min-width:fit-content}
+.code{position:relative;background:#0c1117;border:1px solid var(--line2);border-radius:10px;margin:10px 0}
+.code pre{margin:0;padding:13px 14px;overflow-x:auto;font-size:13px;line-height:1.55}
+.code code{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;color:#cfe9e6;white-space:pre}
+.code .cp{position:absolute;top:7px;right:7px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:7px;font-size:11px;padding:4px 9px;cursor:pointer;font-weight:600}
+.code .cp:active{color:var(--primary)}
+.expect{font-size:13px;color:var(--ok);background:rgba(52,211,153,.08);border-left:3px solid var(--ok);padding:7px 11px;margin:0 0 12px;border-radius:0 8px 8px 0}
+.expect b{color:var(--ok)}
+.step{counter-increment:st;margin:14px 0}
+.step .sh{display:flex;align-items:center;gap:9px;font-family:'Sora';font-weight:600;font-size:14.5px;margin-bottom:4px}
+.step .sh::before{content:counter(st);background:var(--demo);color:var(--bg);width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12.5px;flex:0 0 auto}
+.demo-wrap{counter-reset:st}
+.fc-grid{display:grid;gap:10px}
+.fc{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:13px 14px;cursor:pointer;transition:border-color .2s;user-select:none}
+.fc:active{border-color:var(--primary)}
+.fc .q{font-weight:600;font-size:14.5px;display:flex;gap:8px;align-items:flex-start}
+.fc .q::before{content:"Q";font-family:'Sora';color:var(--primary);font-weight:700;flex:0 0 auto}
+.fc .a{display:none;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);color:var(--muted);font-size:14px}
+.fc .a::before{content:"A ";color:var(--ok);font-weight:700;font-family:'Sora'}
+.fc.show .a{display:block}
+.fc .hint{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600}
+.quiz{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:14px;margin:10px 0}
+.quiz .qq{font-weight:600;font-size:15px;margin-bottom:8px}
+.quiz .opt{display:block;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin:6px 0;font-size:14px;cursor:pointer}
+.quiz .opt:active{border-color:var(--primary)}
+.quiz .reveal{margin-top:6px;background:var(--surface);color:var(--primary);border:1px solid var(--line2);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px;width:100%}
+.quiz .ans{display:none;margin-top:10px;border-left:3px solid var(--ok);background:rgba(52,211,153,.08);padding:9px 12px;border-radius:0 8px 8px 0;font-size:14px}
+.quiz .ans b{color:var(--ok)}
+.quiz.show .ans{display:block}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;line-height:1.7}
+.pill{display:inline-block;background:var(--surface2);border:1px solid var(--line2);color:var(--muted);font-size:11px;padding:2px 8px;border-radius:20px;margin:2px}
+.toTop{position:fixed;right:14px;bottom:16px;z-index:50;background:var(--primary);color:var(--bg);border:none;width:46px;height:46px;border-radius:50%;font-size:20px;box-shadow:var(--shadow);cursor:pointer;display:none}
+.toTop.show{display:block}
+kbd{background:var(--surface2);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-size:12px;font-family:monospace}
+.examcard{border-color:#6b551a;background:linear-gradient(180deg,var(--exam-d),var(--surface))}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="badge">SAA-C03</span>
+  <div class="ttl">Section 007<small>Containers &amp; ECS</small></div>
+  <button class="menu-btn" onclick="openDrawer()">☰ Lessons</button>
+</header>
+
+<div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer">
+  <h3>Containers</h3>
+  <a href="#l1" onclick="closeDrawer()"><span class="n">1</span>Intro to Containers</a>
+  <h3>Amazon ECS</h3>
+  <a href="#l2" onclick="closeDrawer()"><span class="n">2</span>ECS Concepts</a>
+  <a href="#l3" onclick="closeDrawer()"><span class="n">3</span>ECS Cluster Mode</a>
+  <a href="#l4" onclick="closeDrawer()"><span class="n">4</span>ECR</a>
+  <h3>Kubernetes</h3>
+  <a href="#l5" onclick="closeDrawer()"><span class="n">5</span>Kubernetes 101</a>
+  <a href="#l6" onclick="closeDrawer()"><span class="n">6</span>EKS 101</a>
+  <h3>Revision</h3>
+  <a href="#mock" onclick="closeDrawer()"><span class="n">★</span>Mock Exam</a>
+  <button class="close" onclick="closeDrawer()">Close</button>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">SECTION GOAL</div>
+    <h1>Run containers on AWS: ECS, Fargate, ECR and a Kubernetes overview.</h1>
+    <p>Containers are a major modern compute option. Learn how ECS describes and runs containers, when to pick EC2 vs Fargate, where images live (ECR), and how EKS gives you managed Kubernetes.</p>
+  </section>
+
+  <div class="card">
+    <h3 class="block">Section Map · how the lessons connect</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  C[1. Containers] --> ECS[2. ECS Concepts]
+  ECS --> MODE[3. Cluster Mode: EC2 vs Fargate]
+  C --> ECR[4. ECR - image registry]
+  ECR --> ECS
+  C --> K8S[5. Kubernetes 101]
+  K8S --> EKS[6. EKS - managed K8s]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class C,ECS,MODE a;
+  class ECR,K8S,EKS b;
+    </pre></div>
+  </div>
+
+  <div class="card">
+    <h3 class="block">Quick Understanding · whole section</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Lesson</th><th>What + why it matters for the exam</th></tr>
+      <tr><td>1 Containers</td><td>Lightweight, share host kernel; images = layers; registry stores images.</td></tr>
+      <tr><td>2 ECS Concepts</td><td>Cluster, container def, task def, service def — the building blocks.</td></tr>
+      <tr><td>3 Cluster Mode</td><td>EC2 mode (you manage instances) vs Fargate (serverless, pay-per-use).</td></tr>
+      <tr><td>4 ECR</td><td>AWS managed image registry; private/public; IAM-controlled.</td></tr>
+      <tr><td>5 Kubernetes</td><td>Open-source orchestration; portable; control plane + nodes + pods.</td></tr>
+      <tr><td>6 EKS</td><td>AWS managed Kubernetes; runs on EC2 or Fargate; control plane cost.</td></tr>
+      <tr><td>★ Mock Exam</td><td>Containers + IAM/Orgs + S3 + VPC + EC2 questions.</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ===== LESSON 1 ===== -->
+  <article class="card" id="l1">
+    <div class="lesson-head"><div class="num">1</div><div><h2>Introduction to Containers</h2><div class="sub">The parts that matter for AWS + the exam.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Container vs VM</td><td>Container shares the host OS kernel; VM virtualizes full hardware + OS.</td><td>Lighter, denser, faster.</td></tr>
+      <tr><td>Image = layers</td><td>Read-only template built from stacked filesystem layers.</td><td>Shared/cached → efficient.</td></tr>
+      <tr><td>Registry</td><td>Stores and shares images (Docker Hub, ECR).</td><td>ECR is the AWS one.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Image</td><td>A read-only template that a container runs from.</td></tr>
+      <tr><td>Layer</td><td>One step of the image's filesystem; layers stack and are reused.</td></tr>
+      <tr><td>Container</td><td>A running instance of an image (adds a writable layer).</td></tr>
+      <tr><td>Registry</td><td>A store for images you push/pull.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  HOST[Host OS + container engine] --> C1[Container A]
+  HOST --> C2[Container B]
+  IMG[Image = read-only layers] -->|run| C1
+  IMG -->|run| C2
+  REG[(Registry: Docker Hub / ECR)] -->|pull| IMG
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class IMG a;
+    </pre></div>
+    <div class="box term"><span class="tag">You know Docker — the AWS-relevant points</span><ul>
+      <li>Containers <b>share the host kernel</b> → far lighter than VMs, so you fit <b>more per host</b> and start in seconds.</li>
+      <li>Images are <b>immutable, layered</b>; shared base layers save space and speed pulls. Keep images <b>small</b>.</li>
+      <li>A container should run <b>one main process</b>, expose <b>ports</b>, and store state <b>outside</b> the container (volumes, S3, RDS).</li>
+      <li>For ECS you'll wrap the image in a <b>task definition</b> (next lesson); the image lives in a <b>registry</b> (ECR, L4).</li>
+    </ul></div>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — you already know Docker</span>This lesson is the container concepts you need before ECS; nothing new to build. Hands-on starts with ECS in Lessons 2–4.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Images get described by ECS task definitions (L2) and stored in ECR (L4).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>ECS, EKS, App Runner, Lambda container images.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Container = <b>shares host kernel</b> (lightweight); VM = <b>full OS per machine</b> (heavier).</li>
+      <li>Images are <b>layered + immutable</b>; the <b>registry</b> stores them (AWS = ECR).</li>
+      <li>"Run many small services densely + start fast" → <b>containers</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Container vs VM in one line?<span class="hint">tap</span></div><div class="a">Containers share the host kernel (light); VMs virtualize full hardware + OS (heavy).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is a container image made of?<span class="hint">tap</span></div><div class="a">Stacked read-only filesystem layers.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">AWS image registry name?<span class="hint">tap</span></div><div class="a">ECR (Elastic Container Registry).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Why can a host run more containers than VMs of the same size?</div>
+      <span class="opt">A) Containers share the host OS kernel</span><span class="opt">B) Containers use no CPU</span><span class="opt">C) VMs are illegal</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> No full guest OS per container means less overhead and higher density.</div></div>
+  </article>
+
+  <!-- ===== LESSON 2 ===== -->
+  <article class="card" id="l2">
+    <div class="lesson-head"><div class="num">2</div><div><h2>ECS — Concepts</h2><div class="sub">Cluster, container def, task def, service def.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Container definition</td><td>Which image + which ports.</td><td>Smallest piece.</td></tr>
+      <tr><td>Task definition</td><td>Blueprint: containers + CPU/memory + roles + network.</td><td>Includes task role.</td></tr>
+      <tr><td>Task</td><td>A running copy of a task definition.</td><td>Not HA alone.</td></tr>
+      <tr><td>Service</td><td>Keeps N tasks running, scales, links a load balancer.</td><td>Gives HA + scaling.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Cluster</td><td>Where ECS runs your tasks/services.</td></tr>
+      <tr><td>Task role</td><td>IAM role the container app uses to call AWS.</td></tr>
+      <tr><td>Execution role</td><td>IAM role ECS uses to pull images + send logs.</td></tr>
+      <tr><td>Desired count</td><td>How many tasks a service should keep running.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  CD[Container definition: image + ports] --> TD[Task definition: containers + CPU/mem + task role]
+  TD --> TASK[Task = running copy]
+  TD --> SVC[Service: keeps N tasks, scales, + load balancer]
+  SVC --> CLUSTER[Cluster runs it all]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class TD a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Container definition</b> = the image + ports for one container.</li>
+      <li><b>Task definition</b> = the full blueprint: one or more containers, <b>CPU/memory</b>, <b>task role</b> (app permissions), network mode.</li>
+      <li><b>Task</b> = a running copy of the task definition. On its own it is <b>not</b> scalable or highly available.</li>
+      <li><b>Service</b> = keeps a <b>desired count</b> of tasks running, <b>scales</b> them, and connects a <b>load balancer</b> → this gives HA + scaling.</li>
+      <li><b>Task role</b> (app permissions) is different from <b>execution role</b> (ECS pulling images / writing logs). <span style="color:var(--muted)">[added for exam]</span></li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (free — just metadata)</span><b>Situation:</b> register a task definition, list it, then remove it. <b>Check first:</b> CLI configured. No containers run here (that's L3).</div>
+      <div class="step"><div class="sh">Write + register a simple task definition</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>cat > td.json <<'EOF'
+{
+  "family": "a4l-demo",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "containerDefinitions": [
+    { "name": "web", "image": "httpd:latest",
+      "portMappings": [{ "containerPort": 80, "protocol": "tcp" }],
+      "essential": true }
+  ]
+}
+EOF
+aws ecs register-task-definition --cli-input-json file://td.json \
+  --query "taskDefinition.{Family:family,Rev:revision}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> family <code>a4l-demo</code> and revision <code>1</code> — a versioned blueprint now exists.</div>
+      <div class="step"><div class="sh">List task definitions</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ecs list-task-definitions --family-prefix a4l-demo</code></pre></div>
+      <div class="expect"><b>Expect:</b> the ARN of <code>a4l-demo:1</code>.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Task definitions are <b>versioned</b> (revisions). Editing creates a new revision; old ones stay until deregistered. Registering is free — you only pay when tasks run.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ecs deregister-task-definition --task-definition a4l-demo:1
+rm -f td.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> status becomes <code>INACTIVE</code>. (Fully running this app is the L3 demo.)</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Cluster mode (L3) runs these tasks; images come from ECR (L4).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Load balancers, Auto Scaling for services, microservices design.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Task</b> = one running copy (not HA). <b>Service</b> = keeps N tasks + scaling + load balancer (HA).</li>
+      <li><b>Task role</b> = app's AWS permissions (best practice, not stored keys).</li>
+      <li>Task definitions are <b>versioned</b> (revisions).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What gives ECS high availability + scaling?<span class="hint">tap</span></div><div class="a">An ECS Service (keeps desired count, scales, adds a load balancer).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does a task definition include?<span class="hint">tap</span></div><div class="a">Containers, CPU/memory, task role, network mode.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How should a container get AWS permissions?<span class="hint">tap</span></div><div class="a">Via the task role (IAM), not stored keys.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You need 3 copies of a container always running behind a load balancer. Which ECS object?</div>
+      <span class="opt">A) A single Task</span><span class="opt">B) A Service</span><span class="opt">C) A container definition</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A Service maintains the desired count and integrates a load balancer.</div></div>
+    <div class="quiz"><div class="qq">A container app must read an S3 bucket. Best way to grant access?</div>
+      <span class="opt">A) Hard-code keys in the image</span><span class="opt">B) Assign a task role</span><span class="opt">C) Make the bucket public</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A task role gives temporary, least-privilege credentials to the container.</div></div>
+  </article>
+
+  <!-- ===== LESSON 3 ===== -->
+  <article class="card" id="l3">
+    <div class="lesson-head"><div class="num">3</div><div><h2>ECS — Cluster Mode</h2><div class="sub">EC2 mode vs Fargate mode.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>EC2 mode</td><td>ECS puts EC2 instances in your account; you manage them.</td><td>Pay for EC2 always.</td></tr>
+      <tr><td>Fargate mode</td><td>Serverless; shared infra; ENIs in your VPC.</td><td>Pay per running task.</td></tr>
+      <tr><td>Choosing</td><td>Control/existing EC2 vs no admin/pay-per-use.</td><td>Common scenario.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Fargate</td><td>Serverless containers — no servers for you to manage.</td></tr>
+      <tr><td>Launch type</td><td>EC2 or FARGATE — where the task runs.</td></tr>
+      <tr><td>ENI injection</td><td>Fargate puts a network card for the task into your VPC.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  TD[Task definition] --> Q{Launch type?}
+  Q -->|EC2| EC2[You run + pay for EC2 instances<br/>more control, patch + scale them]
+  Q -->|Fargate| FAR[Serverless: AWS runs it<br/>pay per vCPU+memory while running]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class EC2 a; class FAR b;
+    </pre></div>
+    <ul class="clean">
+      <li><b>EC2 mode</b>: ECS uses EC2 instances <b>in your account</b>. You manage/patch/scale them and <b>pay for them even when idle</b>. Good if you want control or already run lots of (reserved) EC2.</li>
+      <li><b>Fargate mode</b>: <b>serverless</b> — no instances to manage. AWS runs tasks on shared infra and injects an <b>ENI into your VPC</b>. You <b>pay only for the vCPU + memory while tasks run</b>. Good for bursty, batch, or low-ops workloads.</li>
+      <li>Both use the <b>same task/service definitions</b>; only the launch type differs.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box warn"><span class="tag">Cost warning</span>A running Fargate task bills per second (vCPU+memory) — only cents for a few minutes, but <b>stop the task and delete the cluster</b> right after.</div>
+      <div class="box demo"><span class="tag">Demo · CLI v2 — "container of cats" on Fargate</span><b>Situation:</b> deploy a public web container on Fargate and open it. <b>Check first:</b> a default VPC with a public subnet (or your VPC). Uses <code>httpd</code> as a safe stand-in — swap in the container-of-cats image if you have it.</div>
+      <div class="step"><div class="sh">Create a cluster</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ecs create-cluster --cluster-name a4l-cats \
+  --query "cluster.clusterName"</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>a4l-cats</code>.</div>
+      <div class="step"><div class="sh">Register a Fargate task definition</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>cat > cats.json <<'EOF'
+{
+  "family": "a4l-cats",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "containerDefinitions": [
+    { "name": "cats", "image": "httpd:latest",
+      "portMappings": [{ "containerPort": 80, "protocol": "tcp" }],
+      "essential": true }
+  ]
+}
+EOF
+aws ecs register-task-definition --cli-input-json file://cats.json \
+  --query "taskDefinition.taskDefinitionArn" --output text</code></pre></div>
+      <div class="expect"><b>Expect:</b> a task-definition ARN ending <code>a4l-cats:1</code>.</div>
+      <div class="step"><div class="sh">Grab a public subnet + make a security group (port 80)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>VPC=$(aws ec2 describe-vpcs --filters Name=isDefault,Values=true \
+  --query "Vpcs[0].VpcId" --output text)
+SUBNET=$(aws ec2 describe-subnets --filters Name=vpc-id,Values=$VPC \
+  --query "Subnets[0].SubnetId" --output text)
+SG=$(aws ec2 create-security-group --group-name a4l-cats-sg \
+  --description "cats 80" --vpc-id $VPC --query GroupId --output text)
+aws ec2 authorize-security-group-ingress --group-id $SG \
+  --protocol tcp --port 80 --cidr 0.0.0.0/0
+echo "subnet=$SUBNET sg=$SG"</code></pre></div>
+      <div class="expect"><b>Expect:</b> a subnet ID + SG ID, with port 80 open.</div>
+      <div class="step"><div class="sh">Run the task on Fargate with a public IP</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>TASK=$(aws ecs run-task --cluster a4l-cats --launch-type FARGATE \
+  --task-definition a4l-cats \
+  --network-configuration "awsvpcConfiguration={subnets=[$SUBNET],securityGroups=[$SG],assignPublicIp=ENABLED}" \
+  --query "tasks[0].taskArn" --output text)
+aws ecs wait tasks-running --cluster a4l-cats --tasks $TASK
+echo $TASK</code></pre></div>
+      <div class="expect"><b>Expect:</b> a task ARN; the wait finishes when it's RUNNING (a Docker Hub public image needs the public IP to pull).</div>
+      <div class="step"><div class="sh">Find the task's public IP, then open it</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>ENI=$(aws ecs describe-tasks --cluster a4l-cats --tasks $TASK \
+  --query "tasks[0].attachments[0].details[?name=='networkInterfaceId'].value" --output text)
+aws ec2 describe-network-interfaces --network-interface-ids $ENI \
+  --query "NetworkInterfaces[0].Association.PublicIp" --output text</code></pre></div>
+      <div class="expect"><b>Expect:</b> a public IP; open <code>http://THAT_IP</code> → the web page loads (the cats app, or Apache's default page with the stand-in image).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>For a <b>private ECR image</b> or <b>CloudWatch logs</b> you'd also attach an <b>execution role</b> (<code>ecsTaskExecutionRole</code>). A public image with a public IP needs neither.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ecs stop-task --cluster a4l-cats --task $TASK
+aws ecs deregister-task-definition --task-definition a4l-cats:1
+aws ecs delete-cluster --cluster a4l-cats
+aws ec2 delete-security-group --group-id $SG
+rm -f cats.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> task stopped (billing stops), cluster + SG removed. No EC2 to delete — that's the Fargate benefit.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Runs the task def from L2; private images would live in ECR (L4).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>ECS + ALB, service auto scaling, serverless architectures.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"No infrastructure to manage / pay only when running" → <b>Fargate</b>.</li>
+      <li>"Need control / use existing or reserved EC2 / special instance needs" → <b>EC2 mode</b>.</li>
+      <li>EC2 mode bills for instances <b>even when idle</b>; Fargate bills <b>per running task</b>.</li>
+      <li>Fargate puts an <b>ENI in your VPC</b> per task.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Serverless ECS mode?<span class="hint">tap</span></div><div class="a">Fargate.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which mode pays for EC2 even when idle?<span class="hint">tap</span></div><div class="a">EC2 mode.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Fargate inject into your VPC?<span class="hint">tap</span></div><div class="a">An ENI (network interface) per task.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A team wants containers with zero server management and per-use billing. Which mode?</div>
+      <span class="opt">A) EC2 mode</span><span class="opt">B) Fargate</span><span class="opt">C) Neither</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Fargate is serverless and bills only for running task resources.</div></div>
+    <div class="quiz"><div class="qq">A company has many unused Reserved EC2 instances and wants to run containers cheaply on them. Mode?</div>
+      <span class="opt">A) EC2 mode</span><span class="opt">B) Fargate</span><span class="opt">C) Lambda</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> EC2 mode reuses their existing/reserved instances for ECS tasks.</div></div>
+  </article>
+
+  <!-- ===== LESSON 4 ===== -->
+  <article class="card" id="l4">
+    <div class="lesson-head"><div class="num">4</div><div><h2>Elastic Container Registry (ECR)</h2><div class="sub">Where your container images live on AWS.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>ECR</td><td>AWS managed Docker image registry.</td><td>The AWS image store.</td></tr>
+      <tr><td>Private vs public</td><td>Private (IAM-controlled) or public gallery.</td><td>Access control.</td></tr>
+      <tr><td>Extras</td><td>Image scanning, lifecycle policies, replication.</td><td>Security + cost.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Repository</td><td>A named place that holds versions (tags) of one image.</td></tr>
+      <tr><td>Scanning</td><td>Checking images for known security problems.</td></tr>
+      <tr><td>Lifecycle policy</td><td>Rules to auto-delete old images (save cost).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  DEV[Build image] -->|push| ECR[(ECR private repo)]
+  ECR -->|IAM controls access| PULL[ECS / EKS pull image]
+  ECR --> SCAN[Scan for vulnerabilities]
+  ECR --> LIFE[Lifecycle policy deletes old images]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class ECR a;
+    </pre></div>
+    <ul class="clean">
+      <li>ECR is a <b>managed registry</b>: <b>private</b> repos use <b>IAM</b> for permissions; there's also a <b>public</b> gallery.</li>
+      <li>It's <b>per-region</b>, stores images durably, and integrates with <b>ECS/EKS</b> (and the task <b>execution role</b> to pull private images).</li>
+      <li>Extras: <b>image scanning</b> (security), <b>lifecycle policies</b> (auto-clean old tags), and <b>replication</b> across regions/accounts.</li>
+      <li>You pay for <b>storage + data transfer</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> create a private ECR repo and see the push commands. <b>Check first:</b> CLI configured (Docker only needed if you actually push).</div>
+      <div class="step"><div class="sh">Create a private repository</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ecr create-repository --repository-name a4l-app \
+  --image-scanning-configuration scanOnPush=true \
+  --query "repository.repositoryUri" --output text</code></pre></div>
+      <div class="expect"><b>Expect:</b> a URI like <code>&lt;acct&gt;.dkr.ecr.&lt;region&gt;.amazonaws.com/a4l-app</code>; scan-on-push is on.</div>
+      <div class="step"><div class="sh">(Optional) the push flow — needs Docker</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>ACCT=$(aws sts get-caller-identity --query Account --output text)
+REGION=us-east-1
+aws ecr get-login-password --region $REGION | \
+  docker login --username AWS --password-stdin $ACCT.dkr.ecr.$REGION.amazonaws.com
+# docker tag myimage:latest $ACCT.dkr.ecr.$REGION.amazonaws.com/a4l-app:latest
+# docker push $ACCT.dkr.ecr.$REGION.amazonaws.com/a4l-app:latest</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>Login Succeeded</code>. The tag/push lines (commented) upload an image if you have one built.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>ECS/EKS pull private ECR images using the <b>task execution role</b> — no passwords stored in the task. Access is all <b>IAM</b>.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ecr delete-repository --repository-name a4l-app --force</code></pre></div>
+      <div class="expect"><b>Expect:</b> repo (and any images in it) deleted.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Stores images that ECS (L2/L3) and EKS (L6) run.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>CI/CD pipelines, image scanning, cross-region replication.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>ECR = AWS <b>managed registry</b>; private repos are <b>IAM-controlled</b>.</li>
+      <li>Pulling a private image uses the <b>task execution role</b>.</li>
+      <li>Use <b>image scanning</b> for security and <b>lifecycle policies</b> to cut storage cost.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What controls access to a private ECR repo?<span class="hint">tap</span></div><div class="a">IAM.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How does ECS pull a private image?<span class="hint">tap</span></div><div class="a">Using the task execution role.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Feature to auto-delete old images?<span class="hint">tap</span></div><div class="a">Lifecycle policies.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You want a private, IAM-controlled place to store container images on AWS, with vulnerability scanning. Use?</div>
+      <span class="opt">A) S3</span><span class="opt">B) ECR</span><span class="opt">C) Docker Hub</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> ECR is the managed, IAM-controlled registry with image scanning.</div></div>
+  </article>
+
+  <!-- ===== LESSON 5 ===== -->
+  <article class="card" id="l5">
+    <div class="lesson-head"><div class="num">5</div><div><h2>Kubernetes 101</h2><div class="sub">Open-source container orchestration (brief).</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Kubernetes (K8s)</td><td>Open-source system to deploy/scale/manage containers.</td><td>Cloud-agnostic.</td></tr>
+      <tr><td>Cluster</td><td>Control plane (brain) + worker nodes (run containers).</td><td>Core structure.</td></tr>
+      <tr><td>Pod</td><td>Smallest unit; one or more containers together.</td><td>K8s vocab.</td></tr>
+      <tr><td>Portable</td><td>Runs on-prem, in any cloud, or AWS (EKS).</td><td>Avoids lock-in.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Control plane</td><td>The "brain" that schedules and manages everything.</td></tr>
+      <tr><td>Node</td><td>A worker machine that runs the containers.</td></tr>
+      <tr><td>Pod</td><td>The smallest deployable unit (one+ containers sharing network).</td></tr>
+      <tr><td>kubectl</td><td>The command-line tool to talk to a cluster.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  CP[Control plane - schedules + manages] --> N1[Node 1]
+  CP --> N2[Node 2]
+  N1 --> P1[Pod = 1+ containers]
+  N2 --> P2[Pod = 1+ containers]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class CP a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Kubernetes</b> is an <b>open-source</b> orchestrator: it deploys, scales and heals containers — similar job to ECS, but <b>portable</b> across clouds and on-prem.</li>
+      <li>A <b>cluster</b> = a <b>control plane</b> (the brain) + <b>worker nodes</b> that run <b>pods</b>.</li>
+      <li>A <b>pod</b> is the smallest unit — one or more containers that share network/storage.</li>
+      <li>The AWS managed version is <b>EKS</b> (next lesson).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Pure concept (you know Docker, not K8s). Standing up a real cluster costs money and time; the exam only needs the vocabulary + where EKS fits.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>EKS (L6) is managed Kubernetes; ECS (L2) is the AWS-native alternative.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>EKS architecture, hybrid/multi-cloud designs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Kubernetes = <b>open-source + portable</b> (avoids cloud lock-in).</li>
+      <li>Cluster = <b>control plane + nodes</b>; smallest unit = <b>pod</b>.</li>
+      <li>"Want Kubernetes specifically / multi-cloud portability" → <b>EKS</b>; "simple AWS-native" → <b>ECS</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is the smallest unit in Kubernetes?<span class="hint">tap</span></div><div class="a">A pod (one or more containers).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Two parts of a K8s cluster?<span class="hint">tap</span></div><div class="a">Control plane (brain) + worker nodes.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Why pick Kubernetes over ECS?<span class="hint">tap</span></div><div class="a">Portability — it runs anywhere (on-prem/any cloud), avoiding lock-in.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A company wants container orchestration that also runs the same way on-prem and in other clouds. Best fit?</div>
+      <span class="opt">A) ECS</span><span class="opt">B) Kubernetes (EKS on AWS)</span><span class="opt">C) Lambda</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Kubernetes is portable across environments; on AWS that's EKS.</div></div>
+  </article>
+
+  <!-- ===== LESSON 6 ===== -->
+  <article class="card" id="l6">
+    <div class="lesson-head"><div class="num">6</div><div><h2>Elastic Kubernetes Service (EKS) 101</h2><div class="sub">AWS-managed Kubernetes.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>EKS</td><td>Managed Kubernetes; AWS runs the control plane.</td><td>K8s without the admin.</td></tr>
+      <tr><td>Compute options</td><td>Worker nodes on EC2 (self/managed) or Fargate.</td><td>Like ECS choices.</td></tr>
+      <tr><td>Control plane cost</td><td>You pay an hourly fee for the control plane.</td><td>Cost trap.</td></tr>
+      <tr><td>Use when…</td><td>You specifically want Kubernetes / portability.</td><td>ECS vs EKS choice.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Managed control plane</td><td>AWS runs + scales the K8s brain across AZs.</td></tr>
+      <tr><td>Managed node group</td><td>EC2 worker nodes AWS helps you manage.</td></tr>
+      <tr><td>EKS on Fargate</td><td>Run pods serverless, no nodes to manage.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  EKS[EKS managed control plane - HA across AZs] --> COMP{Worker compute?}
+  COMP -->|EC2| NG[Self-managed or managed node groups]
+  COMP -->|Fargate| FG[Serverless pods]
+  EKS --> VPC[Runs inside your VPC + IAM]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class EKS a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>EKS</b> = managed Kubernetes: AWS runs the <b>control plane</b> (HA across AZs); you run workloads.</li>
+      <li>Worker compute can be <b>EC2</b> (self-managed or managed node groups) or <b>Fargate</b> (serverless pods).</li>
+      <li>It runs inside <b>your VPC</b> and integrates with <b>IAM</b>.</li>
+      <li>You pay an <b>hourly control-plane fee</b> <i>plus</i> the EC2/Fargate compute. Pick EKS when you specifically need <b>Kubernetes</b> or <b>portability</b>; otherwise ECS is simpler. <span style="color:var(--muted)">[added for exam]</span></li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>An EKS cluster has an <b>hourly control-plane cost</b> and takes ~10+ minutes to build, so we won't create one. Know the architecture and the ECS-vs-EKS decision for the exam.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Managed version of Kubernetes (L5); shares the EC2/Fargate idea from L3.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Hybrid/multi-cloud, advanced container platforms.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>EKS = <b>managed Kubernetes</b>; AWS runs the <b>control plane</b> (with an hourly fee).</li>
+      <li>Workers on <b>EC2</b> or <b>Fargate</b>, inside <b>your VPC</b>.</li>
+      <li>Choose <b>EKS</b> for Kubernetes/portability; <b>ECS</b> for simpler AWS-native.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does AWS manage in EKS?<span class="hint">tap</span></div><div class="a">The Kubernetes control plane (HA across AZs).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">EKS worker compute options?<span class="hint">tap</span></div><div class="a">EC2 (self/managed node groups) or Fargate.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">A cost note for EKS?<span class="hint">tap</span></div><div class="a">There's an hourly control-plane fee on top of compute.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A team already uses Kubernetes on-prem and wants the same on AWS with minimal control-plane admin. Service?</div>
+      <span class="opt">A) ECS on Fargate</span><span class="opt">B) EKS</span><span class="opt">C) EC2 only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> EKS gives managed Kubernetes, matching their existing K8s tooling.</div></div>
+    <div class="quiz"><div class="qq">Which is true about EKS billing?</div>
+      <span class="opt">A) Free control plane</span><span class="opt">B) Hourly control-plane fee plus compute</span><span class="opt">C) Pay only for storage</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> You pay an hourly fee for the managed control plane plus EC2/Fargate compute.</div></div>
+  </article>
+
+  <!-- ===== MOCK EXAM ===== -->
+  <article class="card examcard" id="mock">
+    <div class="lesson-head"><div class="num">★</div><div><h2>Mock Exam</h2><div class="sub">Containers/ECS + IAM/Orgs + S3 + VPC + EC2.</div></div></div>
+    <div class="box exam"><span class="tag">How to use</span>Decide first, then tap <b>Show answer</b>. Pick the <b>best</b> option. 15 questions.</div>
+
+    <div class="quiz"><div class="qq">1. Team wants containers with no servers to manage and per-second billing. Choose?</div>
+      <span class="opt">A) ECS on EC2</span><span class="opt">B) ECS on Fargate</span><span class="opt">C) Self-managed K8s on EC2</span><span class="opt">D) Dedicated Host</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Fargate is serverless and bills per running task.</div></div>
+
+    <div class="quiz"><div class="qq">2. Which ECS object keeps a desired number of tasks running behind a load balancer?</div>
+      <span class="opt">A) Task definition</span><span class="opt">B) Task</span><span class="opt">C) Service</span><span class="opt">D) Cluster</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> A Service maintains the desired count, scales, and integrates a load balancer.</div></div>
+
+    <div class="quiz"><div class="qq">3. A container app needs to read an S3 bucket securely. Best approach?</div>
+      <span class="opt">A) Embed access keys in the image</span><span class="opt">B) Assign an ECS task role</span><span class="opt">C) Make the bucket public</span><span class="opt">D) Use root credentials</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> The task role gives temporary least-privilege credentials — no stored keys.</div></div>
+
+    <div class="quiz"><div class="qq">4. Company wants a private, IAM-controlled image registry with vulnerability scanning. Use?</div>
+      <span class="opt">A) S3</span><span class="opt">B) ECR</span><span class="opt">C) Docker Hub public</span><span class="opt">D) EFS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> ECR is the managed registry with IAM control and image scanning.</div></div>
+
+    <div class="quiz"><div class="qq">5. They specifically want Kubernetes that matches their on-prem clusters. Service?</div>
+      <span class="opt">A) ECS</span><span class="opt">B) EKS</span><span class="opt">C) Lambda</span><span class="opt">D) Beanstalk</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> EKS is managed Kubernetes, portable with their existing K8s tooling.</div></div>
+
+    <div class="quiz"><div class="qq">6. Why does a host fit more containers than full VMs?</div>
+      <span class="opt">A) Containers share the host kernel</span><span class="opt">B) Containers use no RAM</span><span class="opt">C) VMs can't run web apps</span><span class="opt">D) Containers are bigger</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> No full guest OS per container → much less overhead.</div></div>
+
+    <div class="quiz"><div class="qq">7. A company runs many idle Reserved EC2 instances and wants containers on them. ECS mode?</div>
+      <span class="opt">A) Fargate</span><span class="opt">B) EC2 mode</span><span class="opt">C) Lambda</span><span class="opt">D) EKS Fargate</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> EC2 mode reuses their existing/reserved instances.</div></div>
+
+    <div class="quiz"><div class="qq">8. (VPC) Fargate tasks get network connectivity in your VPC via…?</div>
+      <span class="opt">A) A NAT instance</span><span class="opt">B) An injected ENI</span><span class="opt">C) A bastion</span><span class="opt">D) An S3 endpoint</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Fargate injects an ENI per task into your VPC.</div></div>
+
+    <div class="quiz"><div class="qq">9. (VPC) A Fargate task in a private subnet must pull a public Docker Hub image. What enables outbound internet?</div>
+      <span class="opt">A) Internet gateway route directly</span><span class="opt">B) NAT Gateway (or a public subnet + public IP)</span><span class="opt">C) A bastion</span><span class="opt">D) Object Lock</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Private subnets need a NAT Gateway for outbound pulls (or run in a public subnet with a public IP / use a VPC endpoint to ECR).</div></div>
+
+    <div class="quiz"><div class="qq">10. (IAM) Explicit Deny on a bucket vs an Allow elsewhere. Result?</div>
+      <span class="opt">A) Allowed</span><span class="opt">B) Denied — explicit deny wins</span><span class="opt">C) Depends on region</span><span class="opt">D) Read-only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Explicit Deny always overrides Allow.</div></div>
+
+    <div class="quiz"><div class="qq">11. (Orgs) Apply a guardrail blocking a region across all member accounts. Use?</div>
+      <span class="opt">A) IAM group</span><span class="opt">B) SCP</span><span class="opt">C) Security Group</span><span class="opt">D) NACL</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> SCPs set org-wide permission boundaries (management account excepted).</div></div>
+
+    <div class="quiz"><div class="qq">12. (S3) Pull container artifacts cheaply for rarely-accessed images, 12h restore OK. Storage class?</div>
+      <span class="opt">A) S3 Standard</span><span class="opt">B) Glacier Deep Archive</span><span class="opt">C) One Zone-IA</span><span class="opt">D) Standard-IA</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Deep Archive is cheapest for rarely-read, slow-restore data.</div></div>
+
+    <div class="quiz"><div class="qq">13. (EC2) A container host must survive an AZ failure. Best practice?</div>
+      <span class="opt">A) One big instance</span><span class="opt">B) Spread tasks/nodes across multiple AZs</span><span class="opt">C) Instance store only</span><span class="opt">D) Dedicated Host</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Multi-AZ spread keeps the service up if one AZ fails.</div></div>
+
+    <div class="quiz"><div class="qq">14. Editing a task definition does what?</div>
+      <span class="opt">A) Overwrites in place</span><span class="opt">B) Creates a new revision</span><span class="opt">C) Deletes the cluster</span><span class="opt">D) Nothing</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Task definitions are versioned — edits create a new revision.</div></div>
+
+    <div class="quiz"><div class="qq">15. Cost difference: ECS EC2 mode vs Fargate for a workload that runs only 2 hours/day?</div>
+      <span class="opt">A) EC2 mode is cheaper</span><span class="opt">B) Fargate likely cheaper (pay only while running)</span><span class="opt">C) Identical</span><span class="opt">D) Fargate bills when idle</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> EC2 mode bills instances even when idle; Fargate bills only running tasks.</div></div>
+  </article>
+
+  <div class="foot">
+    <div>
+      <span class="pill">Containers share host kernel</span><span class="pill">Task def = blueprint</span>
+      <span class="pill">Service = HA + scaling</span><span class="pill">Fargate = serverless</span>
+      <span class="pill">EC2 mode pays when idle</span><span class="pill">ECR = IAM-controlled</span>
+      <span class="pill">EKS = managed K8s</span>
+    </div>
+    <p>Section 007 · Containers &amp; ECS + Mock Exam · built for SAA-C03 self-study.<br>
+    Tap a flashcard or "Show answer" to reveal. Use ☰ Lessons to jump around.</p>
+  </div>
+</main>
+
+<button class="toTop" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawerBg').classList.add('open');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerBg').classList.remove('open');}
+function cp(btn){
+  const code=btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard?.writeText(code).then(()=>{const t=btn.innerText;btn.innerText='copied!';setTimeout(()=>btn.innerText=t,1200);})
+  .catch(()=>{btn.innerText='select & copy';});
+}
+const tt=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{tt.classList.toggle('show',window.scrollY>500);});
+window.addEventListener('load',()=>{
+  try{
+    mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{
+      fontFamily:'Manrope, sans-serif',primaryColor:'#1b2128',primaryTextColor:'#e7edf3',
+      primaryBorderColor:'#2dd4bf',lineColor:'#60a5fa',secondaryColor:'#212934',tertiaryColor:'#161b21'}});
+  }catch(e){console.warn('mermaid init',e);}
+});
+</script>
+</body>
+</html>

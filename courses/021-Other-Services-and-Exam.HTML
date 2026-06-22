@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03 · 021 · Other Services & Exam Technique</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+:root{
+  --bg:#101418;--bg2:#161b21;--surface:#1b2128;--surface2:#212934;
+  --line:#2c3540;--line2:#3a4654;--text:#e7edf3;--muted:#9fb0c0;
+  --primary:#2dd4bf;--primary-d:#0f3b39;--exam:#fbbf24;--exam-d:#3a2f0c;
+  --demo:#60a5fa;--demo-d:#0e2647;--term:#c084fc;--term-d:#2a1640;
+  --warn:#fb7185;--warn-d:#3a151c;--ok:#34d399;
+  --radius:16px;--shadow:0 6px 22px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.25;margin:0}
+a{color:var(--primary);text-decoration:none}
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(16,20,24,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .badge{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--bg);background:var(--primary);padding:4px 9px;border-radius:8px}
+.topbar .ttl{font-family:'Sora';font-weight:600;font-size:15px}
+.topbar .ttl small{display:block;color:var(--muted);font-weight:500;font-size:11.5px;font-family:'Manrope'}
+.menu-btn{margin-left:auto;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+.menu-btn:active{transform:scale(.97)}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
+.drawer-bg.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(86vw,340px);background:var(--bg2);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .28s ease;z-index:80;overflow-y:auto;padding:18px 16px 40px}
+.drawer.open{transform:translateX(0)}
+.drawer h3{font-size:11.5px;color:var(--muted);margin:14px 4px 8px;text-transform:uppercase;letter-spacing:1px}
+.drawer a{display:block;color:var(--text);padding:9px 12px;border-radius:10px;font-weight:500;font-size:13.5px;border:1px solid transparent}
+.drawer a:active{background:var(--surface)}
+.drawer a .n{color:var(--primary);font-family:'Sora';font-weight:700;margin-right:8px}
+.drawer .close{width:100%;margin-top:18px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 90px}
+.hero{background:radial-gradient(120% 90% at 100% 0%, rgba(45,212,191,.16), transparent 55%),radial-gradient(120% 90% at 0% 100%, rgba(96,165,250,.12), transparent 55%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+.hero .eyebrow{color:var(--primary);font-weight:700;font-size:12.5px;letter-spacing:1.5px;font-family:'Sora'}
+.hero h1{font-size:25px;margin:6px 0 8px}
+.hero p{color:var(--muted);margin:0;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;margin-top:18px;box-shadow:var(--shadow)}
+.lesson-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.lesson-head .num{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:'Sora';font-weight:700;background:var(--primary);color:var(--bg);font-size:15px}
+.lesson-head h2{font-size:19px}
+.lesson-head .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+h3.block{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+h3.block::before{content:"";width:14px;height:3px;border-radius:3px;background:var(--primary)}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:360px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface2);color:var(--text);font-family:'Sora';font-weight:600;font-size:12.5px;letter-spacing:.3px}
+tr:last-child td{border-bottom:none}
+td b{color:var(--primary)}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{position:relative;padding:6px 0 6px 22px;font-size:15px;border-bottom:1px dashed var(--line)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"▸";position:absolute;left:2px;top:6px;color:var(--primary)}
+.two-col{display:grid;gap:12px}
+@media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+.box{border-radius:12px;padding:13px 14px;margin:12px 0;border:1px solid;font-size:14.5px}
+.box .tag{font-family:'Sora';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
+.box.exam{background:var(--exam-d);border-color:#6b551a}.box.exam .tag{color:var(--exam)}
+.box.term{background:var(--term-d);border-color:#4a2d6b}.box.term .tag{color:var(--term)}
+.box.warn{background:var(--warn-d);border-color:#6b2630}.box.warn .tag{color:var(--warn)}
+.box.demo{background:var(--demo-d);border-color:#1d4a82}.box.demo .tag{color:var(--demo)}
+.box ul{margin:4px 0 0;padding-left:18px}.box li{margin:3px 0}
+.mer{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;overflow-x:auto}
+.mermaid{display:flex;justify-content:center;min-width:fit-content}
+.code{position:relative;background:#0c1117;border:1px solid var(--line2);border-radius:10px;margin:10px 0}
+.code pre{margin:0;padding:13px 14px;overflow-x:auto;font-size:13px;line-height:1.55}
+.code code{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;color:#cfe9e6;white-space:pre}
+.code .cp{position:absolute;top:7px;right:7px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:7px;font-size:11px;padding:4px 9px;cursor:pointer;font-weight:600}
+.code .cp:active{color:var(--primary)}
+.expect{font-size:13px;color:var(--ok);background:rgba(52,211,153,.08);border-left:3px solid var(--ok);padding:7px 11px;margin:0 0 12px;border-radius:0 8px 8px 0}
+.expect b{color:var(--ok)}
+.step{counter-increment:st;margin:14px 0}
+.step .sh{display:flex;align-items:center;gap:9px;font-family:'Sora';font-weight:600;font-size:14.5px;margin-bottom:4px}
+.step .sh::before{content:counter(st);background:var(--demo);color:var(--bg);width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12.5px;flex:0 0 auto}
+.demo-wrap{counter-reset:st}
+.fc-grid{display:grid;gap:10px}
+.fc{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:13px 14px;cursor:pointer;transition:border-color .2s;user-select:none}
+.fc:active{border-color:var(--primary)}
+.fc .q{font-weight:600;font-size:14.5px;display:flex;gap:8px;align-items:flex-start}
+.fc .q::before{content:"Q";font-family:'Sora';color:var(--primary);font-weight:700;flex:0 0 auto}
+.fc .a{display:none;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);color:var(--muted);font-size:14px}
+.fc .a::before{content:"A ";color:var(--ok);font-weight:700;font-family:'Sora'}
+.fc.show .a{display:block}
+.fc .hint{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600}
+.quiz{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:14px;margin:10px 0}
+.quiz .qq{font-weight:600;font-size:15px;margin-bottom:8px}
+.quiz .opt{display:block;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin:6px 0;font-size:14px;cursor:pointer}
+.quiz .opt:active{border-color:var(--primary)}
+.quiz .reveal{margin-top:6px;background:var(--surface);color:var(--primary);border:1px solid var(--line2);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px;width:100%}
+.quiz .ans{display:none;margin-top:10px;border-left:3px solid var(--ok);background:rgba(52,211,153,.08);padding:9px 12px;border-radius:0 8px 8px 0;font-size:14px}
+.quiz .ans b{color:var(--ok)}
+.quiz.show .ans{display:block}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;line-height:1.7}
+.pill{display:inline-block;background:var(--surface2);border:1px solid var(--line2);color:var(--muted);font-size:11px;padding:2px 8px;border-radius:20px;margin:2px}
+.toTop{position:fixed;right:14px;bottom:16px;z-index:50;background:var(--primary);color:var(--bg);border:none;width:46px;height:46px;border-radius:50%;font-size:20px;box-shadow:var(--shadow);cursor:pointer;display:none}
+.toTop.show{display:block}
+kbd{background:var(--surface2);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-size:12px;font-family:monospace}
+.examcard{border-color:#6b551a;background:linear-gradient(180deg,var(--exam-d),var(--surface))}
+.bigmock{border-color:#0f5a52;background:linear-gradient(180deg,var(--primary-d),var(--surface))}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="badge">SAA-C03</span>
+  <div class="ttl">Section 021<small>Other Services &amp; Exam</small></div>
+  <button class="menu-btn" onclick="openDrawer()">☰ Lessons</button>
+</header>
+
+<div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer">
+  <h3>Service</h3>
+  <a href="#l1" onclick="closeDrawer()"><span class="n">1</span>AWS Local Zones</a>
+  <h3>Exam skills</h3>
+  <a href="#l2" onclick="closeDrawer()"><span class="n">2</span>Exam Technique — 3 Phases</a>
+  <a href="#l3" onclick="closeDrawer()"><span class="n">3</span>Question Technique</a>
+  <h3>Revision</h3>
+  <a href="#mock" onclick="closeDrawer()"><span class="n">★</span>Final Mock (capstone)</a>
+  <button class="close" onclick="closeDrawer()">Close</button>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">SECTION GOAL · COURSE FINALE</div>
+    <h1>Last service, then exam-day skills.</h1>
+    <p>Learn AWS Local Zones, then a structured way to take the exam (3-phase approach) and to break down each question. Finish with a capstone mock across the whole course.</p>
+  </section>
+
+  <div class="card">
+    <h3 class="block">Section Map · how it fits</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  LZ[1. Local Zones - low-latency metro] --> SVC[Last service]
+  PH[2. 3-phase exam approach] --> SKILL[Exam skills]
+  QT[3. Question technique] --> SKILL
+  SKILL --> MOCK[Capstone mock - all sections]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class LZ a;
+  class PH,QT b;
+    </pre></div>
+  </div>
+
+  <div class="card">
+    <h3 class="block">Quick Understanding · whole section</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Lesson</th><th>What + why it matters for the exam</th></tr>
+      <tr><td>1 Local Zones</td><td>Extend a Region into a metro for ultra-low latency.</td></tr>
+      <tr><td>2 Exam technique</td><td>3 passes: easy → medium → hard; manage time.</td></tr>
+      <tr><td>3 Question technique</td><td>Find the ask, cut fluff, eliminate, match qualifier.</td></tr>
+      <tr><td>★ Final Mock</td><td>Capstone questions across every section.</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ===== LESSON 1 ===== -->
+  <article class="card" id="l1">
+    <div class="lesson-head"><div class="num">1</div><div><h2>AWS Local Zones</h2><div class="sub">Put AWS close to a city for low latency.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Region extension</td><td>Compute/storage near a metro.</td><td>Ultra-low latency.</td></tr>
+      <tr><td>Opt-in</td><td>You enable the Local Zone.</td><td>Not on by default.</td></tr>
+      <tr><td>Tied to a parent Region</td><td>Managed from that Region.</td><td>Control plane.</td></tr>
+      <tr><td>One zone</td><td>Effectively single-AZ.</td><td>Lower resilience.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Local Zone</td><td>A small AWS location near a big city.</td></tr>
+      <tr><td>Parent Region</td><td>The Region the Local Zone connects to.</td></tr>
+      <tr><td>Latency</td><td>The delay between user and service.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  USER[Users in a city] -->|very low latency| LZ[Local Zone]
+  LZ -->|connected to| REGION[Parent Region]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class LZ a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Local Zones</b> place <b>compute, storage and select services</b> close to a <b>large city/industry center</b> — for <b>ultra-low latency</b> to users there.</li>
+      <li>Each Local Zone connects to a <b>parent Region</b>; you <b>opt-in</b> to enable it, then extend a VPC subnet into it.</li>
+      <li>A Local Zone is effectively <b>one zone</b> (less resilient than multi-AZ in a Region). <span class="pill">[added for exam]</span></li>
+      <li><b>Compare:</b> <b>Outposts</b> = AWS hardware in <b>your</b> data center; <b>Wavelength</b> = edge in <b>5G/telco</b> networks; <b>CloudFront edge</b> = caching only.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (read-only, free)</span><b>Situation:</b> list the Local Zones available for a Region. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">List Local Zones for us-east-1</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 describe-availability-zones --all-availability-zones \
+  --filters Name=zone-type,Values=local-zone \
+  --query "AvailabilityZones[].{Zone:ZoneName,Group:GroupName,OptIn:OptInStatus}" \
+  --region us-east-1 --output table</code></pre></div>
+      <div class="expect"><b>Expect:</b> a table of Local Zones (e.g. <code>us-east-1-bos-1</code> Boston) with <code>OptInStatus</code>. Listing is free.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>To use one you'd <b>opt-in the group</b> (<code>aws ec2 modify-availability-zone-group --group-name us-east-1-bos-1 --opt-in-status opted-in</code>) — opt-in is free, but <b>launching resources costs money</b>. Listing creates nothing to clean up.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Extends VPC (VPC section) + EC2 to a metro; relates to Outposts/Wavelength.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Low-latency edge architectures.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Ultra-low latency for users in one city</b>, but stay on AWS infra" → <b>Local Zones</b>.</li>
+      <li><b>Outposts</b> = AWS racks in your DC; <b>Wavelength</b> = 5G edge; <b>Local Zone</b> = metro extension of a Region.</li>
+      <li>A Local Zone is <b>single-zone</b> — for HA you still use the parent Region's AZs.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What problem do Local Zones solve?<span class="hint">tap</span></div><div class="a">Ultra-low latency to users in a specific metro area.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Local Zone vs Outposts?<span class="hint">tap</span></div><div class="a">Local Zone = AWS metro site you opt into; Outposts = AWS hardware in your own data center.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Are Local Zones highly available alone?<span class="hint">tap</span></div><div class="a">No — effectively single-zone; use the parent Region's AZs for HA.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A gaming firm needs single-digit-ms latency for players in one city, on AWS infra. Use?</div>
+      <span class="opt">A) Local Zones</span><span class="opt">B) Outposts</span><span class="opt">C) CloudFront only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Local Zones extend a Region into a metro for ultra-low latency.</div></div>
+    <div class="quiz"><div class="qq">A bank must run AWS services inside its own data center for data residency. Use?</div>
+      <span class="opt">A) Local Zones</span><span class="opt">B) Outposts</span><span class="opt">C) Wavelength</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Outposts puts AWS hardware in your own facility.</div></div>
+  </article>
+
+  <!-- ===== LESSON 2 ===== -->
+  <article class="card" id="l2">
+    <div class="lesson-head"><div class="num">2</div><div><h2>Exam Technique — 3-Phase Approach</h2><div class="sub">How to work through the whole exam.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Phase</th><th>What you do</th><th>Why</th></tr>
+      <tr><td>Phase 1</td><td>Answer easy ones; flag hard ones, skip.</td><td>Bank quick points.</td></tr>
+      <tr><td>Phase 2</td><td>Return to flagged/medium questions.</td><td>Use focused time.</td></tr>
+      <tr><td>Phase 3</td><td>Tackle the hardest; never leave blank.</td><td>No negative marking.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Flag/review</td><td>Mark a question to come back to.</td></tr>
+      <tr><td>Cognitive load</td><td>How much your brain is juggling.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  P1[Phase 1: easy now, flag hard] --> P2[Phase 2: do flagged/medium]
+  P2 --> P3[Phase 3: hardest + best guess]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class P1 a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Phase 1:</b> go through all questions; answer the <b>easy</b> ones immediately; <b>flag</b> harder ones and move on. Builds confidence + banks points.</li>
+      <li><b>Phase 2:</b> return to <b>flagged/medium</b> questions and give them more time.</li>
+      <li><b>Phase 3:</b> spend remaining time on the <b>hardest</b>; <b>eliminate</b> wrong options and make your <b>best guess</b> — never leave a blank.</li>
+      <li><b>Time:</b> ~65 questions in ~130 minutes ≈ <b>2 min each</b>. Don't get stuck on one. <span class="pill">[added for exam]</span></li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — exam strategy</span>This is exam-taking technique; there is nothing to build with the CLI.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Pairs with question technique (L3); apply on the final mock.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Exam day.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Don't get stuck.</b> Flag + skip; come back. Easy points first.</li>
+      <li><b>Answer every question</b> — there's no penalty for wrong answers.</li>
+      <li>Watch the clock: roughly <b>2 minutes</b> per question.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What do you do in Phase 1?<span class="hint">tap</span></div><div class="a">Answer easy questions; flag and skip hard ones.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Should you ever leave a blank?<span class="hint">tap</span></div><div class="a">No — there's no negative marking, always guess.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Rough time per question?<span class="hint">tap</span></div><div class="a">About 2 minutes (≈65 questions in ≈130 minutes).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You hit a hard question early. Best move?</div>
+      <span class="opt">A) Spend 10 minutes now</span><span class="opt">B) Flag it and move on, return later</span><span class="opt">C) Skip and never return</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Flag + skip protects time; bank easy points first, return in Phase 2/3.</div></div>
+  </article>
+
+  <!-- ===== LESSON 3 ===== -->
+  <article class="card" id="l3">
+    <div class="lesson-head"><div class="num">3</div><div><h2>Question Technique</h2><div class="sub">How to break down a single question.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Step</th><th>What you do</th><th>Why</th></tr>
+      <tr><td>Find the ask</td><td>What is actually being asked.</td><td>Often the last line.</td></tr>
+      <tr><td>Cut fluff</td><td>Remove irrelevant wording.</td><td>Less to juggle.</td></tr>
+      <tr><td>Spot the qualifier</td><td>"cheapest", "least ops", "fastest".</td><td>Picks between good answers.</td></tr>
+      <tr><td>Eliminate</td><td>Drop impossible answers.</td><td>Better odds.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Qualifier</td><td>The word that decides "best" (cost/effort/speed).</td></tr>
+      <tr><td>Self-eliminating</td><td>An answer that is clearly wrong.</td></tr>
+      <tr><td>Word fluff</td><td>Extra wording that doesn't change the answer.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  Q[Read question] --> ASK[Find the real ask]
+  ASK --> FLUFF[Remove word fluff]
+  FLUFF --> QUAL[Identify the qualifier]
+  QUAL --> ELIM[Eliminate impossible answers]
+  ELIM --> MATCH[Match remaining to the qualifier]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class QUAL a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Find the real ask</b> — usually the final sentence (what must the solution achieve?).</li>
+      <li><b>Cut word fluff</b> — long scenarios repeat irrelevant detail; ignore it.</li>
+      <li><b>Spot the qualifier</b> — "<b>most cost-effective</b>", "<b>least operational overhead</b>", "<b>highest performance</b>", "<b>most secure</b>", "<b>minimal changes</b>". This chooses between answers that are all technically possible.</li>
+      <li><b>Eliminate</b> self-eliminating (impossible/wrong) answers — often 2 drop away → then match the rest to the qualifier.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — exam strategy</span>This is question-reading technique; there is nothing to build with the CLI.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Used within the 3-phase approach (L2); apply on the mock.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Every exam question.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Two answers are often <b>technically correct</b> — the <b>qualifier</b> (cost/effort/speed/security) decides.</li>
+      <li>"<b>Least operational overhead</b>" usually favours <b>managed/serverless</b> options.</li>
+      <li>"<b>Most cost-effective</b>" favours <b>on-demand-avoiding</b>, right-sized, or serverless options.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Where is the real ask usually?<span class="hint">tap</span></div><div class="a">In the final sentence of the question.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What decides between two correct answers?<span class="hint">tap</span></div><div class="a">The qualifier (cost / operational overhead / performance / security).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">"Least operational overhead" hints at?<span class="hint">tap</span></div><div class="a">Managed / serverless solutions.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Two answers both work. The question says "least operational overhead". Pick?</div>
+      <span class="opt">A) The self-managed EC2 option</span><span class="opt">B) The managed/serverless option</span><span class="opt">C) The cheapest regardless</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> "Least operational overhead" points to managed/serverless services.</div></div>
+  </article>
+
+  <!-- ===== FINAL MOCK ===== -->
+  <article class="card bigmock" id="mock">
+    <div class="lesson-head"><div class="num">★</div><div><h2>Final Mock — Capstone</h2><div class="sub">25 questions across the whole course: IAM, S3, VPC, EC2, Containers, RDS, DynamoDB, HA/Scaling, Serverless, CDN, Adv VPC, Hybrid, Security, CloudFormation, ML, Local Zones.</div></div></div>
+    <div class="box exam"><span class="tag">How to use</span>Apply the technique: find the ask, spot the qualifier, eliminate, then tap <b>Show answer</b>.</div>
+
+    <div class="quiz"><div class="qq">1. (IAM) Give an EC2 app permission to read S3 with no stored keys. Use?</div>
+      <span class="opt">A) IAM role on the instance</span><span class="opt">B) Access keys in code</span><span class="opt">C) Root user</span><span class="opt">D) Bucket ACL</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> An instance role gives temporary credentials, no hardcoded keys.</div></div>
+
+    <div class="quiz"><div class="qq">2. (S3) Cheapest storage for rarely-accessed data needing 12h retrieval. Class?</div>
+      <span class="opt">A) S3 Standard</span><span class="opt">B) Glacier Deep Archive</span><span class="opt">C) S3 Standard-IA</span><span class="opt">D) One Zone-IA</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Deep Archive is cheapest for rare access with long retrieval times.</div></div>
+
+    <div class="quiz"><div class="qq">3. (VPC) Private subnet instances need outbound internet, no inbound. Use?</div>
+      <span class="opt">A) Internet Gateway</span><span class="opt">B) NAT Gateway</span><span class="opt">C) VPC peering</span><span class="opt">D) Egress-only IGW</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> NAT Gateway gives outbound-only IPv4 access.</div></div>
+
+    <div class="quiz"><div class="qq">4. (EC2) Lowest cost for a fault-tolerant batch job that can be interrupted. Use?</div>
+      <span class="opt">A) On-Demand</span><span class="opt">B) Spot Instances</span><span class="opt">C) Reserved</span><span class="opt">D) Dedicated Host</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Spot is cheapest for interruptible, fault-tolerant work.</div></div>
+
+    <div class="quiz"><div class="qq">5. (HA) Distribute HTTP traffic across instances in multiple AZs. Use?</div>
+      <span class="opt">A) ALB</span><span class="opt">B) NLB</span><span class="opt">C) Route 53 only</span><span class="opt">D) NAT</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> ALB is the Layer-7 load balancer for HTTP/HTTPS.</div></div>
+
+    <div class="quiz"><div class="qq">6. (Scaling) Keep average CPU at 50% automatically. Policy?</div>
+      <span class="opt">A) Target tracking</span><span class="opt">B) Manual</span><span class="opt">C) Scheduled only</span><span class="opt">D) Step on a custom metric</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Target tracking keeps a metric at a target value.</div></div>
+
+    <div class="quiz"><div class="qq">7. (RDS) Synchronous standby for automatic failover. Feature?</div>
+      <span class="opt">A) Read replica</span><span class="opt">B) Multi-AZ</span><span class="opt">C) Snapshot</span><span class="opt">D) Aurora Serverless</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Multi-AZ is a synchronous standby for HA failover (replicas scale reads).</div></div>
+
+    <div class="quiz"><div class="qq">8. (DynamoDB) Add a new query key to a live table. Use?</div>
+      <span class="opt">A) LSI</span><span class="opt">B) GSI</span><span class="opt">C) Recreate table</span><span class="opt">D) Scan</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A GSI can be added anytime; LSI only at table creation.</div></div>
+
+    <div class="quiz"><div class="qq">9. (Serverless) Run code on an S3 upload event, no servers. Use?</div>
+      <span class="opt">A) Lambda (S3 trigger)</span><span class="opt">B) EC2 cron</span><span class="opt">C) Batch</span><span class="opt">D) Step Functions only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> S3 events trigger Lambda for serverless processing.</div></div>
+
+    <div class="quiz"><div class="qq">10. (Serverless) Decouple a producer + consumer with a buffer. Use?</div>
+      <span class="opt">A) SQS</span><span class="opt">B) SNS only</span><span class="opt">C) Kinesis Firehose</span><span class="opt">D) EFS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> SQS is a pull-based queue that decouples + buffers.</div></div>
+
+    <div class="quiz"><div class="qq">11. (CDN) Lowest-latency global delivery of static + dynamic content + caching. Use?</div>
+      <span class="opt">A) CloudFront</span><span class="opt">B) Global Accelerator</span><span class="opt">C) S3 only</span><span class="opt">D) Local Zones</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> CloudFront caches at edge; Global Accelerator routes but doesn't cache.</div></div>
+
+    <div class="quiz"><div class="qq">12. (CDN) Lock an S3 origin so only CloudFront can read it. Use?</div>
+      <span class="opt">A) OAC + bucket policy</span><span class="opt">B) Public bucket</span><span class="opt">C) Presigned URL only</span><span class="opt">D) NACL</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Origin Access Control + a bucket policy restricts access to CloudFront.</div></div>
+
+    <div class="quiz"><div class="qq">13. (Adv VPC) Reach S3 from a private subnet free + private. Use?</div>
+      <span class="opt">A) Gateway endpoint</span><span class="opt">B) Interface endpoint</span><span class="opt">C) NAT</span><span class="opt">D) IGW</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> S3 (and DynamoDB) use a free gateway VPC endpoint.</div></div>
+
+    <div class="quiz"><div class="qq">14. (Adv VPC) Connect 30 VPCs + on-prem with transitive routing. Use?</div>
+      <span class="opt">A) Peering mesh</span><span class="opt">B) Transit Gateway</span><span class="opt">C) NAT</span><span class="opt">D) IGW</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Transit Gateway gives transitive routing and replaces a mesh.</div></div>
+
+    <div class="quiz"><div class="qq">15. (Hybrid) Encrypted on-prem↔AWS link working today. Use?</div>
+      <span class="opt">A) Direct Connect</span><span class="opt">B) Site-to-Site VPN</span><span class="opt">C) Peering</span><span class="opt">D) Snowball</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> VPN is quick + encrypted; DX takes weeks to provision.</div></div>
+
+    <div class="quiz"><div class="qq">16. (Hybrid) Move 80 TB from a slow-link site + run on-site compute. Use?</div>
+      <span class="opt">A) Snowcone</span><span class="opt">B) Snowball Edge</span><span class="opt">C) DataSync</span><span class="opt">D) Snowmobile</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Snowball Edge handles ~80 TB + edge compute.</div></div>
+
+    <div class="quiz"><div class="qq">17. (Security) Find sensitive PII inside S3 objects. Use?</div>
+      <span class="opt">A) Macie</span><span class="opt">B) Inspector</span><span class="opt">C) GuardDuty</span><span class="opt">D) Config</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Macie discovers PII in S3 (Inspector=vulns, GuardDuty=threats).</div></div>
+
+    <div class="quiz"><div class="qq">18. (Security) FIPS 140-2 L3 with keys AWS cannot access. Use?</div>
+      <span class="opt">A) KMS</span><span class="opt">B) CloudHSM</span><span class="opt">C) Secrets Manager</span><span class="opt">D) Config</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> CloudHSM is single-tenant, FIPS 140-2 L3, keys only you control.</div></div>
+
+    <div class="quiz"><div class="qq">19. (Security) Block SQL-injection in HTTPS to an ALB. Use?</div>
+      <span class="opt">A) WAF Web ACL</span><span class="opt">B) NACL</span><span class="opt">C) Security group</span><span class="opt">D) Shield Standard</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> WAF inspects L7 content; SG/NACL only see IP/port.</div></div>
+
+    <div class="quiz"><div class="qq">20. (CloudFormation) Preview how a stack change affects resources before applying. Use?</div>
+      <span class="opt">A) Change Sets</span><span class="opt">B) DependsOn</span><span class="opt">C) Drift only</span><span class="opt">D) Delete + recreate</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Change Sets preview proposed changes before execution.</div></div>
+
+    <div class="quiz"><div class="qq">21. (CloudFormation) Keep an S3 bucket when its stack is deleted. Use?</div>
+      <span class="opt">A) DeletionPolicy: Retain</span><span class="opt">B) DependsOn</span><span class="opt">C) Condition</span><span class="opt">D) Nested stack</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> DeletionPolicy: Retain preserves the resource on stack delete.</div></div>
+
+    <div class="quiz"><div class="qq">22. (ML) Convert recorded calls to text, then score sentiment. Combo?</div>
+      <span class="opt">A) Transcribe + Comprehend</span><span class="opt">B) Polly + Translate</span><span class="opt">C) Lex + Kendra</span><span class="opt">D) Rekognition + Textract</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Transcribe makes text; Comprehend scores sentiment.</div></div>
+
+    <div class="quiz"><div class="qq">23. (ML) Build + train + host a custom model. Use?</div>
+      <span class="opt">A) SageMaker</span><span class="opt">B) Comprehend</span><span class="opt">C) Rekognition</span><span class="opt">D) Forecast</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> SageMaker is for custom models; the rest are pre-built.</div></div>
+
+    <div class="quiz"><div class="qq">24. (Local Zones) Ultra-low latency for users in one city, on AWS infra. Use?</div>
+      <span class="opt">A) Local Zones</span><span class="opt">B) Outposts</span><span class="opt">C) CloudFront only</span><span class="opt">D) Region in another continent</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Local Zones extend a Region into a metro for low latency.</div></div>
+
+    <div class="quiz"><div class="qq">25. (Technique) Two answers both work; the ask says "least operational overhead". Pick?</div>
+      <span class="opt">A) Self-managed EC2</span><span class="opt">B) Managed/serverless option</span><span class="opt">C) Cheapest regardless</span><span class="opt">D) Most powerful</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> "Least operational overhead" points to managed/serverless services.</div></div>
+  </article>
+
+  <div class="foot">
+    <div>
+      <span class="pill">Local Zones = metro low latency</span><span class="pill">Outposts = your DC</span>
+      <span class="pill">Wavelength = 5G edge</span><span class="pill">3 phases: easy→medium→hard</span>
+      <span class="pill">Never leave a blank</span><span class="pill">~2 min/question</span>
+      <span class="pill">Find the ask + qualifier</span><span class="pill">Eliminate impossible answers</span>
+      <span class="pill">Least ops = managed/serverless</span>
+    </div>
+    <p>Section 021 · Other Services &amp; Exam Technique + Capstone Mock · built for SAA-C03 self-study.<br>
+    This is the final section of the course. Good luck on the exam — work through the mock applying the 3-phase + question technique.</p>
+  </div>
+</main>
+
+<button class="toTop" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawerBg').classList.add('open');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerBg').classList.remove('open');}
+function cp(btn){
+  const code=btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard?.writeText(code).then(()=>{const t=btn.innerText;btn.innerText='copied!';setTimeout(()=>btn.innerText=t,1200);})
+  .catch(()=>{btn.innerText='select & copy';});
+}
+const tt=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{tt.classList.toggle('show',window.scrollY>500);});
+window.addEventListener('load',()=>{
+  try{
+    mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{
+      fontFamily:'Manrope, sans-serif',primaryColor:'#1b2128',primaryTextColor:'#e7edf3',
+      primaryBorderColor:'#2dd4bf',lineColor:'#60a5fa',secondaryColor:'#212934',tertiaryColor:'#161b21'}});
+  }catch(e){console.warn('mermaid init',e);}
+});
+</script>
+</body>
+</html>

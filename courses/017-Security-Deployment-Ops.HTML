@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03 · 017 · Security, Deployment & Operations</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+:root{
+  --bg:#101418;--bg2:#161b21;--surface:#1b2128;--surface2:#212934;
+  --line:#2c3540;--line2:#3a4654;--text:#e7edf3;--muted:#9fb0c0;
+  --primary:#2dd4bf;--primary-d:#0f3b39;--exam:#fbbf24;--exam-d:#3a2f0c;
+  --demo:#60a5fa;--demo-d:#0e2647;--term:#c084fc;--term-d:#2a1640;
+  --warn:#fb7185;--warn-d:#3a151c;--ok:#34d399;
+  --radius:16px;--shadow:0 6px 22px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.25;margin:0}
+a{color:var(--primary);text-decoration:none}
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(16,20,24,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .badge{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--bg);background:var(--primary);padding:4px 9px;border-radius:8px}
+.topbar .ttl{font-family:'Sora';font-weight:600;font-size:15px}
+.topbar .ttl small{display:block;color:var(--muted);font-weight:500;font-size:11.5px;font-family:'Manrope'}
+.menu-btn{margin-left:auto;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+.menu-btn:active{transform:scale(.97)}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
+.drawer-bg.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(86vw,340px);background:var(--bg2);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .28s ease;z-index:80;overflow-y:auto;padding:18px 16px 40px}
+.drawer.open{transform:translateX(0)}
+.drawer h3{font-size:11.5px;color:var(--muted);margin:14px 4px 8px;text-transform:uppercase;letter-spacing:1px}
+.drawer a{display:block;color:var(--text);padding:9px 12px;border-radius:10px;font-weight:500;font-size:13.5px;border:1px solid transparent}
+.drawer a:active{background:var(--surface)}
+.drawer a .n{color:var(--primary);font-family:'Sora';font-weight:700;margin-right:8px}
+.drawer .close{width:100%;margin-top:18px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 90px}
+.hero{background:radial-gradient(120% 90% at 100% 0%, rgba(45,212,191,.16), transparent 55%),radial-gradient(120% 90% at 0% 100%, rgba(96,165,250,.12), transparent 55%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+.hero .eyebrow{color:var(--primary);font-weight:700;font-size:12.5px;letter-spacing:1.5px;font-family:'Sora'}
+.hero h1{font-size:25px;margin:6px 0 8px}
+.hero p{color:var(--muted);margin:0;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;margin-top:18px;box-shadow:var(--shadow)}
+.lesson-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.lesson-head .num{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:'Sora';font-weight:700;background:var(--primary);color:var(--bg);font-size:15px}
+.lesson-head h2{font-size:19px}
+.lesson-head .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+h3.block{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+h3.block::before{content:"";width:14px;height:3px;border-radius:3px;background:var(--primary)}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:360px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface2);color:var(--text);font-family:'Sora';font-weight:600;font-size:12.5px;letter-spacing:.3px}
+tr:last-child td{border-bottom:none}
+td b{color:var(--primary)}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{position:relative;padding:6px 0 6px 22px;font-size:15px;border-bottom:1px dashed var(--line)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"▸";position:absolute;left:2px;top:6px;color:var(--primary)}
+.two-col{display:grid;gap:12px}
+@media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+.box{border-radius:12px;padding:13px 14px;margin:12px 0;border:1px solid;font-size:14.5px}
+.box .tag{font-family:'Sora';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
+.box.exam{background:var(--exam-d);border-color:#6b551a}.box.exam .tag{color:var(--exam)}
+.box.term{background:var(--term-d);border-color:#4a2d6b}.box.term .tag{color:var(--term)}
+.box.warn{background:var(--warn-d);border-color:#6b2630}.box.warn .tag{color:var(--warn)}
+.box.demo{background:var(--demo-d);border-color:#1d4a82}.box.demo .tag{color:var(--demo)}
+.box ul{margin:4px 0 0;padding-left:18px}.box li{margin:3px 0}
+.mer{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;overflow-x:auto}
+.mermaid{display:flex;justify-content:center;min-width:fit-content}
+.code{position:relative;background:#0c1117;border:1px solid var(--line2);border-radius:10px;margin:10px 0}
+.code pre{margin:0;padding:13px 14px;overflow-x:auto;font-size:13px;line-height:1.55}
+.code code{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;color:#cfe9e6;white-space:pre}
+.code .cp{position:absolute;top:7px;right:7px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:7px;font-size:11px;padding:4px 9px;cursor:pointer;font-weight:600}
+.code .cp:active{color:var(--primary)}
+.expect{font-size:13px;color:var(--ok);background:rgba(52,211,153,.08);border-left:3px solid var(--ok);padding:7px 11px;margin:0 0 12px;border-radius:0 8px 8px 0}
+.expect b{color:var(--ok)}
+.step{counter-increment:st;margin:14px 0}
+.step .sh{display:flex;align-items:center;gap:9px;font-family:'Sora';font-weight:600;font-size:14.5px;margin-bottom:4px}
+.step .sh::before{content:counter(st);background:var(--demo);color:var(--bg);width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12.5px;flex:0 0 auto}
+.demo-wrap{counter-reset:st}
+.fc-grid{display:grid;gap:10px}
+.fc{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:13px 14px;cursor:pointer;transition:border-color .2s;user-select:none}
+.fc:active{border-color:var(--primary)}
+.fc .q{font-weight:600;font-size:14.5px;display:flex;gap:8px;align-items:flex-start}
+.fc .q::before{content:"Q";font-family:'Sora';color:var(--primary);font-weight:700;flex:0 0 auto}
+.fc .a{display:none;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);color:var(--muted);font-size:14px}
+.fc .a::before{content:"A ";color:var(--ok);font-weight:700;font-family:'Sora'}
+.fc.show .a{display:block}
+.fc .hint{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600}
+.quiz{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:14px;margin:10px 0}
+.quiz .qq{font-weight:600;font-size:15px;margin-bottom:8px}
+.quiz .opt{display:block;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin:6px 0;font-size:14px;cursor:pointer}
+.quiz .opt:active{border-color:var(--primary)}
+.quiz .reveal{margin-top:6px;background:var(--surface);color:var(--primary);border:1px solid var(--line2);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px;width:100%}
+.quiz .ans{display:none;margin-top:10px;border-left:3px solid var(--ok);background:rgba(52,211,153,.08);padding:9px 12px;border-radius:0 8px 8px 0;font-size:14px}
+.quiz .ans b{color:var(--ok)}
+.quiz.show .ans{display:block}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;line-height:1.7}
+.pill{display:inline-block;background:var(--surface2);border:1px solid var(--line2);color:var(--muted);font-size:11px;padding:2px 8px;border-radius:20px;margin:2px}
+.toTop{position:fixed;right:14px;bottom:16px;z-index:50;background:var(--primary);color:var(--bg);border:none;width:46px;height:46px;border-radius:50%;font-size:20px;box-shadow:var(--shadow);cursor:pointer;display:none}
+.toTop.show{display:block}
+kbd{background:var(--surface2);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-size:12px;font-family:monospace}
+.examcard{border-color:#6b551a;background:linear-gradient(180deg,var(--exam-d),var(--surface))}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="badge">SAA-C03</span>
+  <div class="ttl">Section 017<small>Security, Deployment &amp; Ops</small></div>
+  <button class="menu-btn" onclick="openDrawer()">☰ Lessons</button>
+</header>
+
+<div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer">
+  <h3>Secrets & firewalls</h3>
+  <a href="#l1" onclick="closeDrawer()"><span class="n">1</span>Secrets Manager</a>
+  <a href="#l2" onclick="closeDrawer()"><span class="n">2</span>Layer 7 (L7) Firewall</a>
+  <a href="#l3" onclick="closeDrawer()"><span class="n">3</span>WAF &amp; Web ACLs</a>
+  <a href="#l4" onclick="closeDrawer()"><span class="n">4</span>AWS Shield</a>
+  <h3>Keys & compliance</h3>
+  <a href="#l5" onclick="closeDrawer()"><span class="n">5</span>CloudHSM</a>
+  <a href="#l6" onclick="closeDrawer()"><span class="n">6</span>AWS Config</a>
+  <h3>Detection services</h3>
+  <a href="#l7" onclick="closeDrawer()"><span class="n">7</span>Amazon Macie</a>
+  <a href="#l8" onclick="closeDrawer()"><span class="n">8</span>Amazon Inspector</a>
+  <a href="#l9" onclick="closeDrawer()"><span class="n">9</span>Amazon GuardDuty</a>
+  <h3>Revision</h3>
+  <a href="#mock" onclick="closeDrawer()"><span class="n">★</span>Mock Exam</a>
+  <button class="close" onclick="closeDrawer()">Close</button>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">SECTION GOAL</div>
+    <h1>Protect, detect, and stay compliant on AWS.</h1>
+    <p>Learn how to store secrets, filter web traffic (WAF/Shield), control keys (CloudHSM), record config (Config), and tell apart the detection trio — Macie, Inspector and GuardDuty.</p>
+  </section>
+
+  <div class="card">
+    <h3 class="block">Section Map · how the lessons connect</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  SEC[1. Secrets Manager] --> PROT[Protection]
+  L7[2. L7 firewall] --> WAF[3. WAF]
+  WAF --> SH[4. Shield - DDoS]
+  HSM[5. CloudHSM - keys] --> COMP[Compliance]
+  CFG[6. Config - record] --> COMP
+  MAC[7. Macie - PII in S3] --> DET[Detection trio]
+  INS[8. Inspector - vulns] --> DET
+  GD[9. GuardDuty - threats] --> DET
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class SEC,L7,WAF,SH a;
+  class HSM,CFG,MAC,INS,GD b;
+    </pre></div>
+  </div>
+
+  <div class="card">
+    <h3 class="block">Quick Understanding · whole section</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Lesson</th><th>What + why it matters for the exam</th></tr>
+      <tr><td>1 Secrets Manager</td><td>Store secrets + auto-rotate DB creds via Lambda.</td></tr>
+      <tr><td>2 L7 Firewall</td><td>Sees inside HTTP (content/headers), unlike SG/NACL.</td></tr>
+      <tr><td>3 WAF</td><td>L7 web firewall; Web ACL on CloudFront/ALB/API GW.</td></tr>
+      <tr><td>4 Shield</td><td>DDoS protection: Standard (free) vs Advanced (paid).</td></tr>
+      <tr><td>5 CloudHSM</td><td>Single-tenant HSM; FIPS 140-2 L3; you own keys.</td></tr>
+      <tr><td>6 Config</td><td>Records config + checks compliance (doesn't block).</td></tr>
+      <tr><td>7 Macie</td><td>Finds sensitive data (PII) in S3.</td></tr>
+      <tr><td>8 Inspector</td><td>Scans EC2/ECR/Lambda for vulnerabilities.</td></tr>
+      <tr><td>9 GuardDuty</td><td>Detects threats from logs (Flow/DNS/CloudTrail).</td></tr>
+      <tr><td>★ Mock Exam</td><td>Security + all prior sections.</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ===== LESSON 1 ===== -->
+  <article class="card" id="l1">
+    <div class="lesson-head"><div class="num">1</div><div><h2>AWS Secrets Manager</h2><div class="sub">Store secrets and rotate them automatically.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Stores secrets</td><td>DB creds, API keys; encrypted with KMS.</td><td>Central + secure.</td></tr>
+      <tr><td>Auto-rotation</td><td>Lambda rotates creds on a schedule.</td><td>Key feature.</td></tr>
+      <tr><td>DB integration</td><td>Built-in for RDS/Aurora/Redshift/DocumentDB.</td><td>Changes the real cred.</td></tr>
+      <tr><td>vs Parameter Store</td><td>Parameter Store is free; SM adds rotation.</td><td>Cost trade-off.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Secret</td><td>Sensitive data like a password or key.</td></tr>
+      <tr><td>Rotation</td><td>Changing a credential regularly for safety.</td></tr>
+      <tr><td>SSM Parameter Store</td><td>A simpler store for config + secrets (free tier).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  APP[App] -->|get secret via API| SM[Secrets Manager - KMS encrypted]
+  SM -->|rotation| L[Lambda rotates the credential]
+  L --> DB[(RDS/Aurora/etc - cred updated)]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class SM a;
+    </pre></div>
+    <ul class="clean">
+      <li>Secrets Manager stores secrets (DB creds, API keys), <b>encrypted with KMS</b>, and apps fetch them via the <b>API/SDK</b> (with IAM control).</li>
+      <li>It can <b>automatically rotate</b> credentials using <b>Lambda</b>, and for <b>RDS/Aurora/Redshift/DocumentDB</b> it updates the <b>actual service credential</b>.</li>
+      <li><b>vs SSM Parameter Store:</b> Parameter Store is <b>free</b> (good for config + basic secrets, no built-in rotation); Secrets Manager <b>costs per secret</b> but adds <b>rotation</b> + native DB integration.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (small monthly cost per secret)</span><b>Situation:</b> store + retrieve a DB credential. <b>Check first:</b> CLI configured.</div>
+      <div class="box warn"><span class="tag">Cost note</span>Each stored secret costs ~$0.40/month + API calls. We force-delete it at the end (no recovery window).</div>
+      <div class="step"><div class="sh">Create a secret</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws secretsmanager create-secret --name a4l/demo \
+  --secret-string '{"username":"admin","password":"Sup3rS3cret!"}' \
+  --query ARN --output text</code></pre></div>
+      <div class="expect"><b>Expect:</b> a secret ARN. The value is stored encrypted (KMS).</div>
+      <div class="step"><div class="sh">Retrieve it (as an app would)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws secretsmanager get-secret-value --secret-id a4l/demo \
+  --query SecretString --output text</code></pre></div>
+      <div class="expect"><b>Expect:</b> the JSON with username + password.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>For <b>rotation</b>, attach a Lambda (built-in templates exist for RDS). Use <b>Parameter Store</b> if you don't need rotation + want it free.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws secretsmanager delete-secret --secret-id a4l/demo \
+  --force-delete-without-recovery</code></pre></div>
+      <div class="expect"><b>Expect:</b> secret deleted immediately (force skips the 7–30 day recovery window).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses KMS; rotates RDS creds (RDS section); apps via Lambda.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Secure app credential management.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Need <b>automatic credential rotation</b> (esp. RDS) → <b>Secrets Manager</b>.</li>
+      <li>Just storing config / simple secrets cheaply → <b>SSM Parameter Store</b>.</li>
+      <li>Secrets are <b>KMS-encrypted</b> and fetched via <b>IAM-controlled API</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Key feature over Parameter Store?<span class="hint">tap</span></div><div class="a">Built-in automatic credential rotation (via Lambda).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which databases get native rotation?<span class="hint">tap</span></div><div class="a">RDS, Aurora, Redshift, DocumentDB.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How are secrets encrypted?<span class="hint">tap</span></div><div class="a">With KMS.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You need RDS passwords rotated automatically every 30 days. Use?</div>
+      <span class="opt">A) Parameter Store</span><span class="opt">B) Secrets Manager</span><span class="opt">C) S3</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Secrets Manager has built-in rotation that updates the real RDS credential.</div></div>
+  </article>
+
+  <!-- ===== LESSON 2 ===== -->
+  <article class="card" id="l2">
+    <div class="lesson-head"><div class="num">2</div><div><h2>Layer 7 (L7) Firewall</h2><div class="sub">Seeing inside the application traffic.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>OSI layers</td><td>L3 = IP, L4 = port, L7 = application.</td><td>What each sees.</td></tr>
+      <tr><td>L3/4 firewall</td><td>SG/NACL: only IP + port.</td><td>Blind to content.</td></tr>
+      <tr><td>L7 firewall</td><td>Sees HTTP content, headers, hostnames.</td><td>Smart filtering.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>OSI model</td><td>A layered model of how networks work (L1–L7).</td></tr>
+      <tr><td>Layer 7</td><td>The application layer (e.g. HTTP).</td></tr>
+      <tr><td>Payload / content</td><td>The actual data inside a request.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  L34[L3/4 firewall - SG/NACL] --> SEE34[Sees only IP + port]
+  L7[L7 firewall - e.g. WAF] --> SEE7[Sees content, headers, hostnames]
+  SEE7 --> SMART[Block SQLi/bad bots, allow good traffic on same port]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class L7 a;
+    </pre></div>
+    <ul class="clean">
+      <li>A <b>L3/4</b> firewall (security group, NACL) sees only <b>IP + port</b> — it can't tell a good HTTPS request from an attack on the <b>same port (443)</b>.</li>
+      <li>A <b>L7</b> firewall sees <b>inside</b> the application data: HTTP <b>content, headers, hostnames</b> (for email, the metadata/contents).</li>
+      <li>This lets it <b>block bad requests</b> (SQL injection, bad bots) while <b>allowing</b> good traffic on the same port — the basis for <b>WAF</b> (L3).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>A concept about the OSI model; the hands-on L7 protection is WAF (L3).</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Explains why WAF (L3) is needed beyond SG/NACL.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Application protection design.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>SG/NACL</b> = L3/4 (IP/port only). To filter on <b>HTTP content</b> you need a <b>L7 firewall (WAF)</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What can a L3/4 firewall see?<span class="hint">tap</span></div><div class="a">Only IP addresses and ports.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What extra can a L7 firewall see?<span class="hint">tap</span></div><div class="a">Inside the application data: HTTP content, headers, hostnames.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must block SQL-injection strings inside HTTPS requests. Which firewall layer?</div>
+      <span class="opt">A) L3/4 (SG/NACL)</span><span class="opt">B) L7 (WAF)</span><span class="opt">C) Either</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Only a L7 firewall sees request content to detect SQLi.</div></div>
+  </article>
+
+  <!-- ===== LESSON 3 ===== -->
+  <article class="card" id="l3">
+    <div class="lesson-head"><div class="num">3</div><div><h2>WAF & Web ACLs</h2><div class="sub">AWS's Layer 7 web firewall.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Web ACL</td><td>The main container of rules; attach to a resource.</td><td>CloudFront/ALB/API GW.</td></tr>
+      <tr><td>Rule Group</td><td>Reusable set of rules (AWS-managed or custom).</td><td>Building block.</td></tr>
+      <tr><td>Rule</td><td>Condition + action.</td><td>SQLi, XSS, rate, geo, IP.</td></tr>
+      <tr><td>Actions</td><td>Allow / Block / Count / CAPTCHA.</td><td>What to do.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>WAF</td><td>Web Application Firewall (Layer 7).</td></tr>
+      <tr><td>Web ACL</td><td>The set of rules WAF applies to a resource.</td></tr>
+      <tr><td>Rate-based rule</td><td>Blocks an IP that sends too many requests.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  WEBACL[Web ACL] --> RG[Rule Groups - managed/custom]
+  RG --> RULE[Rules: SQLi / XSS / rate / geo / IP]
+  WEBACL --> ATTACH[Attach to CloudFront / ALB / API Gateway]
+  RULE --> ACT[Action: Allow / Block / Count / CAPTCHA]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class WEBACL a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>WAF</b> protects web apps/APIs from common exploits (SQLi, XSS) and bad bots at <b>Layer 7</b>.</li>
+      <li>A <b>Web ACL</b> is the container you <b>attach</b> to <b>CloudFront, ALB, API Gateway, AppSync</b>; it holds <b>Rule Groups</b> (AWS-managed or custom) made of <b>Rules</b>.</li>
+      <li>Rules can match <b>SQLi/XSS</b>, <b>rate limits</b>, <b>geo</b>, <b>IP sets</b>; actions are <b>Allow/Block/Count/CAPTCHA</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — cost</span>A Web ACL bills per ACL + per rule + per request; the exam tests "L7 web protection on CloudFront/ALB/API GW", covered here.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>The L7 firewall (L2); included with Shield Advanced (L4).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Protecting public web apps/APIs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"Block <b>SQLi/XSS/bad bots</b> or <b>rate-limit</b> a web app/API" → <b>WAF</b> (Web ACL).</li>
+      <li>Attach a Web ACL to <b>CloudFront / ALB / API Gateway</b> (not EC2 directly).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What do you attach to a resource?<span class="hint">tap</span></div><div class="a">A Web ACL.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Where can WAF be deployed?<span class="hint">tap</span></div><div class="a">CloudFront, ALB, API Gateway, AppSync.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Rule action that just logs without blocking?<span class="hint">tap</span></div><div class="a">Count.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An API behind API Gateway is hit by SQL-injection attempts. Best protection?</div>
+      <span class="opt">A) WAF Web ACL</span><span class="opt">B) NACL</span><span class="opt">C) Security group</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> WAF inspects L7 content and blocks SQLi; SG/NACL can't see content.</div></div>
+  </article>
+
+  <!-- ===== LESSON 4 ===== -->
+  <article class="card" id="l4">
+    <div class="lesson-head"><div class="num">4</div><div><h2>AWS Shield</h2><div class="sub">Protection from DDoS attacks.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Tier</th><th>What</th><th>Exam relevance</th></tr>
+      <tr><td>Shield Standard</td><td>Free, automatic, L3/4 DDoS.</td><td>On for everyone.</td></tr>
+      <tr><td>Shield Advanced</td><td>Paid; adds L7, WAF, DRT, cost protection.</td><td>~$3000/month.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>DDoS</td><td>Flooding a service with traffic to take it down.</td></tr>
+      <tr><td>DRT/SRT</td><td>AWS's DDoS Response Team (Advanced only).</td></tr>
+      <tr><td>Cost protection</td><td>Refund of scaling charges caused by an attack.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Shield Standard</b> is <b>free</b> and <b>automatic</b> for all AWS customers, protecting against common <b>network/transport (L3/4)</b> DDoS attacks (especially via CloudFront + Route 53).</li>
+      <li><b>Shield Advanced</b> (~<b>$3,000/month</b>, org-wide) adds <b>L7</b> protection, <b>WAF included</b> (fees waived), a 24/7 <b>DDoS Response Team</b>, <b>cost protection</b>, and advanced reporting.</li>
+      <li>Advanced protects <b>CloudFront, Route 53, ELB, Global Accelerator, Elastic IPs</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — cost/managed</span>Shield Standard is automatic (nothing to enable); Advanced is a paid subscription. The exam tests Standard vs Advanced, covered here.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Advanced bundles WAF (L3); protects edge services (CDN section).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Protecting high-value public apps.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Standard</b> = free, automatic, L3/4. <b>Advanced</b> = paid, adds <b>L7 + WAF + DRT + cost protection</b>.</li>
+      <li>Need <b>cost protection</b> + <b>L7 DDoS</b> + a response team → <b>Shield Advanced</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Is Shield Standard free?<span class="hint">tap</span></div><div class="a">Yes — automatic for all customers (L3/4).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Advanced add?<span class="hint">tap</span></div><div class="a">L7 protection, WAF, DDoS Response Team, cost protection.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which gives refund of attack scaling costs?<span class="hint">tap</span></div><div class="a">Shield Advanced (cost protection).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A bank wants L7 DDoS defense, a response team, and refunds for attack-driven scaling. Use?</div>
+      <span class="opt">A) Shield Standard</span><span class="opt">B) Shield Advanced</span><span class="opt">C) NACL</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Those are Shield Advanced features (Standard is free but L3/4 only).</div></div>
+  </article>
+
+  <!-- ===== LESSON 5 ===== -->
+  <article class="card" id="l5">
+    <div class="lesson-head"><div class="num">5</div><div><h2>CloudHSM</h2><div class="sub">Your own dedicated key hardware.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Single-tenant HSM</td><td>Dedicated hardware just for you.</td><td>Full control.</td></tr>
+      <tr><td>FIPS 140-2 Level 3</td><td>A strict security standard.</td><td>Compliance driver.</td></tr>
+      <tr><td>You own the keys</td><td>AWS can't access them.</td><td>vs KMS (shared).</td></tr>
+      <tr><td>Industry APIs</td><td>PKCS#11, JCE, CNG (not native AWS).</td><td>Access method.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>HSM</td><td>Hardware Security Module — a secure box for keys.</td></tr>
+      <tr><td>Single-tenant</td><td>Hardware used only by you (not shared).</td></tr>
+      <tr><td>FIPS 140-2 L3</td><td>A high-bar cryptographic security standard.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  KMS[KMS - shared, AWS-managed, native API] --> EASY[Easy, integrated]
+  HSM[CloudHSM - single-tenant, you own keys] --> COMP[FIPS 140-2 L3 + full control]
+  HSM --> IND[Access via PKCS#11 / JCE / CNG]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class HSM a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>CloudHSM</b> is a <b>dedicated, single-tenant</b> Hardware Security Module — <b>only you</b> have access; AWS manages the hardware but <b>can't access your keys</b>.</li>
+      <li>It meets <b>FIPS 140-2 Level 3</b> and is accessed via <b>industry-standard APIs</b> (PKCS#11, JCE, CNG), not native AWS APIs.</li>
+      <li><b>vs KMS:</b> KMS is <b>shared/AWS-managed</b> and easy/native; CloudHSM gives <b>full control</b> for strict compliance. KMS can use CloudHSM as a <b>custom key store</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — cost</span>A CloudHSM cluster bills per hour (expensive); the exam tests "FIPS 140-2 L3 / full key control → CloudHSM", covered here.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Alternative to KMS for keys; used by Secrets Manager indirectly.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Regulated industries, custom key stores.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>FIPS 140-2 Level 3</b>", "<b>AWS must not access keys</b>", "industry-standard crypto APIs" → <b>CloudHSM</b>.</li>
+      <li>Easy, integrated, AWS-managed keys → <b>KMS</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">CloudHSM vs KMS tenancy?<span class="hint">tap</span></div><div class="a">CloudHSM = single-tenant (yours only); KMS = shared/AWS-managed.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which standard does CloudHSM meet?<span class="hint">tap</span></div><div class="a">FIPS 140-2 Level 3.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can AWS access CloudHSM keys?<span class="hint">tap</span></div><div class="a">No — only you control them.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Regulations require FIPS 140-2 L3 and that AWS cannot access your keys. Use?</div>
+      <span class="opt">A) KMS</span><span class="opt">B) CloudHSM</span><span class="opt">C) Secrets Manager</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> CloudHSM is single-tenant, FIPS 140-2 L3, with keys only you control.</div></div>
+  </article>
+
+  <!-- ===== LESSON 6 ===== -->
+  <article class="card" id="l6">
+    <div class="lesson-head"><div class="num">6</div><div><h2>AWS Config</h2><div class="sub">Record configuration over time + check compliance.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Records config</td><td>Configuration items → history (in S3).</td><td>Audit trail.</td></tr>
+      <tr><td>Compliance rules</td><td>Flags non-compliant resources.</td><td>Managed/custom rules.</td></tr>
+      <tr><td>Does NOT block</td><td>Only records + evaluates.</td><td>Common trap.</td></tr>
+      <tr><td>Regional</td><td>Per-region (can aggregate).</td><td>Scope.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Configuration item</td><td>A snapshot of a resource's settings at a time.</td></tr>
+      <tr><td>Config rule</td><td>A check for whether a resource is compliant.</td></tr>
+      <tr><td>Conformance pack</td><td>A bundle of rules deployed together.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  RES[Resources] --> CFG[Config records configuration items]
+  CFG --> HIST[Config history in S3]
+  CFG --> RULE[Config rules check compliance]
+  RULE --> NOTIFY[EventBridge / SNS on non-compliance]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class CFG a;
+    </pre></div>
+    <ul class="clean">
+      <li>AWS Config <b>records the configuration</b> of resources over time as <b>configuration items</b>, kept as a <b>history in an S3 bucket</b> (regional).</li>
+      <li>It checks <b>compliance</b> with <b>rules</b> (AWS-managed or custom Lambda) and can send <b>notifications/events</b> (EventBridge/SNS).</li>
+      <li>Important: Config <b>does not prevent or block</b> changes — it only <b>records and flags</b>. <span class="pill">[added for exam]</span></li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — cost</span>Config bills per configuration item recorded + per rule evaluation and keeps running; the exam tests "records config + checks compliance (doesn't block)".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Stores in S3; events to EventBridge/SNS; complements GuardDuty (L9).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Governance, audit, drift detection.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Track configuration changes / audit / check compliance</b>" → <b>Config</b>.</li>
+      <li>Config <b>records + flags</b>, it does <b>not block</b> changes (use SCPs/IAM to prevent).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Config record?<span class="hint">tap</span></div><div class="a">Resource configuration over time (configuration items + history).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Does Config block changes?<span class="hint">tap</span></div><div class="a">No — it only records and checks compliance.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Where is config history stored?<span class="hint">tap</span></div><div class="a">In an S3 bucket (regional).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must prove which resources became non-compliant and when, over time. Use?</div>
+      <span class="opt">A) AWS Config</span><span class="opt">B) GuardDuty</span><span class="opt">C) Macie</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Config records configuration history + compliance over time.</div></div>
+  </article>
+
+  <!-- ===== LESSON 7 ===== -->
+  <article class="card" id="l7">
+    <div class="lesson-head"><div class="num">7</div><div><h2>Amazon Macie</h2><div class="sub">Find sensitive data (PII) in S3.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Data discovery</td><td>Finds sensitive data in S3.</td><td>PII/privacy.</td></tr>
+      <tr><td>ML + patterns</td><td>Managed + custom data identifiers.</td><td>How it detects.</td></tr>
+      <tr><td>Findings</td><td>Sensitive data + bucket risks.</td><td>Alerts.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>PII</td><td>Personal data (names, card numbers, etc.).</td></tr>
+      <tr><td>Managed data identifier</td><td>Built-in detector for common sensitive data.</td></tr>
+      <tr><td>Custom data identifier</td><td>Your own pattern (regex) to detect.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Macie</b> uses <b>ML + pattern matching</b> to <b>discover and protect sensitive data</b> (PII) in <b>S3</b>.</li>
+      <li>It uses <b>managed data identifiers</b> (built-in for common PII) and <b>custom data identifiers</b> (your regex), and produces <b>findings</b> (sensitive data found, or risky bucket settings).</li>
+      <li>Integrates with Security Hub/EventBridge for response.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — cost (lab available)</span>Macie scanning bills per GB; the course lab points it at an S3 bucket. The exam just needs "Macie = find PII in S3".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>One of the detection trio (Inspector L8, GuardDuty L9); scans S3.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Data privacy/compliance programs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Macie = find sensitive data (PII) in S3.</b> If the question is about <b>S3 + personal data</b>, it's Macie.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Macie find, and where?<span class="hint">tap</span></div><div class="a">Sensitive data (PII) in S3.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Two identifier types?<span class="hint">tap</span></div><div class="a">Managed (built-in) and custom (your regex).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must find credit-card numbers accidentally stored in S3 buckets. Use?</div>
+      <span class="opt">A) Macie</span><span class="opt">B) Inspector</span><span class="opt">C) GuardDuty</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Macie discovers sensitive data (PII) in S3.</div></div>
+  </article>
+
+  <!-- ===== LESSON 8 ===== -->
+  <article class="card" id="l8">
+    <div class="lesson-head"><div class="num">8</div><div><h2>Amazon Inspector</h2><div class="sub">Scan workloads for vulnerabilities.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Vulnerability scan</td><td>Finds CVEs + exposure.</td><td>Workload health.</td></tr>
+      <tr><td>Targets</td><td>EC2, ECR images, Lambda.</td><td>What it scans.</td></tr>
+      <tr><td>Continuous</td><td>Automatic, ongoing scanning.</td><td>Always on.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>CVE</td><td>A known software vulnerability ID.</td></tr>
+      <tr><td>Network exposure</td><td>Ports/paths reachable that shouldn't be.</td></tr>
+      <tr><td>ECR</td><td>Elastic Container Registry (container images).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Inspector</b> is an automated <b>security assessment</b> that scans <b>EC2, ECR container images, and Lambda</b> for <b>software vulnerabilities (CVEs)</b> and <b>unintended network exposure</b>.</li>
+      <li>It runs <b>continuously</b> and produces a <b>risk score</b> + findings.</li>
+      <li>Think: "is my <b>software/instance</b> vulnerable or over-exposed?"</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — cost</span>Inspector bills per scanned resource/image; the exam tests "Inspector = vulnerability + exposure scanning of EC2/ECR/Lambda".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Detection trio with Macie (L7) + GuardDuty (L9); scans EC2/containers.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Patch/vulnerability management.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Inspector = vulnerabilities (CVEs) + network exposure</b> on <b>EC2 / ECR / Lambda</b>.</li>
+      <li>Don't confuse with <b>Macie</b> (S3 PII) or <b>GuardDuty</b> (threat detection from logs).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Inspector look for?<span class="hint">tap</span></div><div class="a">Software vulnerabilities (CVEs) + unintended network exposure.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Inspector scan?<span class="hint">tap</span></div><div class="a">EC2 instances, ECR container images, Lambda functions.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must continuously check EC2 + container images for known CVEs. Use?</div>
+      <span class="opt">A) Macie</span><span class="opt">B) Inspector</span><span class="opt">C) Config</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Inspector scans EC2/ECR/Lambda for vulnerabilities.</div></div>
+  </article>
+
+  <!-- ===== LESSON 9 ===== -->
+  <article class="card" id="l9">
+    <div class="lesson-head"><div class="num">9</div><div><h2>Amazon GuardDuty</h2><div class="sub">Detect threats from your logs.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Threat detection</td><td>Spots unusual/malicious activity.</td><td>Security monitoring.</td></tr>
+      <tr><td>Log sources</td><td>VPC Flow, DNS, CloudTrail (+ more).</td><td>What it reads.</td></tr>
+      <tr><td>ML baseline</td><td>Learns "normal", flags anomalies.</td><td>How it works.</td></tr>
+      <tr><td>Auto-remediate</td><td>EventBridge → Lambda on findings.</td><td>Response.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Threat detection</td><td>Finding signs of an attack/compromise.</td></tr>
+      <tr><td>Finding</td><td>An alert about suspicious activity.</td></tr>
+      <tr><td>Baseline</td><td>The learned "normal" behaviour.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  SRC[VPC Flow Logs + DNS logs + CloudTrail] --> GD[GuardDuty - ML baseline]
+  GD --> FIND[Findings: crypto-mining, recon, odd API calls]
+  FIND --> EB[EventBridge → Lambda auto-remediation]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class GD a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>GuardDuty</b> continuously analyses <b>logs</b> (VPC Flow Logs, DNS logs, CloudTrail events; also S3/EKS) and uses <b>ML</b> to learn what's <b>normal</b>.</li>
+      <li>It flags <b>threats/anomalies</b> (crypto-mining, compromised instances, recon, unusual API calls) as <b>findings</b>.</li>
+      <li>Findings can trigger <b>EventBridge → Lambda</b> for <b>automatic remediation</b>; works across <b>multiple accounts</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — managed/cost</span>GuardDuty bills on analysed data volume; the exam tests "GuardDuty = threat detection from logs", covered here.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Detection trio with Macie (L7) + Inspector (L8); uses Flow Logs (Adv VPC).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Security operations, auto-response.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>GuardDuty = threat detection from logs</b> (Flow Logs, DNS, CloudTrail) with ML.</li>
+      <li>Detection trio: <b>Macie</b> = PII in S3; <b>Inspector</b> = vulnerabilities; <b>GuardDuty</b> = threats from logs.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does GuardDuty do?<span class="hint">tap</span></div><div class="a">Detects threats/anomalies by analysing logs with ML.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Three main log sources?<span class="hint">tap</span></div><div class="a">VPC Flow Logs, DNS logs, CloudTrail.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How can findings be auto-remediated?<span class="hint">tap</span></div><div class="a">EventBridge → Lambda.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An EC2 instance starts making unusual API calls + crypto-mining DNS lookups. Which service detects this?</div>
+      <span class="opt">A) Macie</span><span class="opt">B) Inspector</span><span class="opt">C) GuardDuty</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> GuardDuty detects threats/anomalies from logs (DNS, CloudTrail, Flow Logs).</div></div>
+    <div class="quiz"><div class="qq">Match: "PII in S3" / "CVEs on EC2" / "odd activity in logs".</div>
+      <span class="opt">A) Macie / Inspector / GuardDuty</span><span class="opt">B) Inspector / Macie / Config</span><span class="opt">C) GuardDuty / Macie / Inspector</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Macie = PII in S3; Inspector = CVEs/vulns; GuardDuty = threats from logs.</div></div>
+  </article>
+
+  <!-- ===== MOCK EXAM ===== -->
+  <article class="card examcard" id="mock">
+    <div class="lesson-head"><div class="num">★</div><div><h2>Mock Exam</h2><div class="sub">Security + IAM/Orgs + S3 + VPC + EC2 + Containers + Adv EC2 + Network Storage + Route 53 + RDS + HA/Scaling + Serverless + CDN + Adv VPC + Hybrid.</div></div></div>
+    <div class="box exam"><span class="tag">How to use</span>Decide first, then tap <b>Show answer</b>. Pick the <b>best</b> option. 20 questions.</div>
+
+    <div class="quiz"><div class="qq">1. Rotate RDS passwords automatically every 30 days. Use?</div>
+      <span class="opt">A) Parameter Store</span><span class="opt">B) Secrets Manager</span><span class="opt">C) KMS</span><span class="opt">D) S3</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Secrets Manager has built-in rotation for RDS.</div></div>
+
+    <div class="quiz"><div class="qq">2. Store config + simple secrets for free, no rotation needed. Use?</div>
+      <span class="opt">A) Secrets Manager</span><span class="opt">B) SSM Parameter Store</span><span class="opt">C) Macie</span><span class="opt">D) Config</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Parameter Store is free (SecureString) without rotation.</div></div>
+
+    <div class="quiz"><div class="qq">3. Block SQL-injection inside HTTPS to an ALB app. Use?</div>
+      <span class="opt">A) NACL</span><span class="opt">B) WAF Web ACL</span><span class="opt">C) Security group</span><span class="opt">D) Shield Standard</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> WAF inspects L7 content; SG/NACL only see IP/port.</div></div>
+
+    <div class="quiz"><div class="qq">4. A bank wants L7 DDoS defense, a response team, and cost protection. Use?</div>
+      <span class="opt">A) Shield Standard</span><span class="opt">B) Shield Advanced</span><span class="opt">C) WAF only</span><span class="opt">D) NACL</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Those are Shield Advanced features.</div></div>
+
+    <div class="quiz"><div class="qq">5. FIPS 140-2 L3 + AWS must not access your keys. Use?</div>
+      <span class="opt">A) KMS</span><span class="opt">B) CloudHSM</span><span class="opt">C) Secrets Manager</span><span class="opt">D) Config</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> CloudHSM is single-tenant, FIPS 140-2 L3, keys only you control.</div></div>
+
+    <div class="quiz"><div class="qq">6. Prove which resources became non-compliant and when. Use?</div>
+      <span class="opt">A) Config</span><span class="opt">B) GuardDuty</span><span class="opt">C) Macie</span><span class="opt">D) Inspector</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Config records configuration history + compliance over time.</div></div>
+
+    <div class="quiz"><div class="qq">7. Find credit-card numbers stored in S3. Use?</div>
+      <span class="opt">A) Macie</span><span class="opt">B) Inspector</span><span class="opt">C) GuardDuty</span><span class="opt">D) Config</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Macie finds sensitive data (PII) in S3.</div></div>
+
+    <div class="quiz"><div class="qq">8. Continuously scan EC2 + container images for CVEs. Use?</div>
+      <span class="opt">A) Macie</span><span class="opt">B) Inspector</span><span class="opt">C) GuardDuty</span><span class="opt">D) Shield</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Inspector scans EC2/ECR/Lambda for vulnerabilities.</div></div>
+
+    <div class="quiz"><div class="qq">9. Detect crypto-mining + unusual API calls from logs. Use?</div>
+      <span class="opt">A) Macie</span><span class="opt">B) Inspector</span><span class="opt">C) GuardDuty</span><span class="opt">D) Config</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> GuardDuty detects threats from logs (Flow/DNS/CloudTrail).</div></div>
+
+    <div class="quiz"><div class="qq">10. Match the detection trio to its job.</div>
+      <span class="opt">A) Macie=PII / Inspector=vulns / GuardDuty=threats</span><span class="opt">B) Macie=threats / Inspector=PII / GuardDuty=vulns</span><span class="opt">C) All the same</span><span class="opt">D) Inspector=PII / Macie=vulns</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Macie = PII in S3; Inspector = vulnerabilities; GuardDuty = threats from logs.</div></div>
+
+    <div class="quiz"><div class="qq">11. (CDN) Where can a WAF Web ACL attach? (best)</div>
+      <span class="opt">A) EC2 directly</span><span class="opt">B) CloudFront / ALB / API Gateway</span><span class="opt">C) S3 bucket</span><span class="opt">D) RDS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> WAF attaches to CloudFront, ALB, API Gateway (and AppSync).</div></div>
+
+    <div class="quiz"><div class="qq">12. (Adv VPC) GuardDuty reads which VPC data source for network threats?</div>
+      <span class="opt">A) VPC Flow Logs</span><span class="opt">B) Route tables</span><span class="opt">C) NACLs</span><span class="opt">D) Subnets</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> GuardDuty analyses VPC Flow Logs (plus DNS + CloudTrail).</div></div>
+
+    <div class="quiz"><div class="qq">13. (IAM) Best way to give a Lambda a DB secret without hardcoding it?</div>
+      <span class="opt">A) Secrets Manager + IAM role</span><span class="opt">B) Keys in code</span><span class="opt">C) Public S3</span><span class="opt">D) Root keys</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Fetch the secret from Secrets Manager via the function's IAM role.</div></div>
+
+    <div class="quiz"><div class="qq">14. (KMS) Easiest AWS-managed encryption keys, no special compliance. Use?</div>
+      <span class="opt">A) CloudHSM</span><span class="opt">B) KMS</span><span class="opt">C) Secrets Manager</span><span class="opt">D) Macie</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> KMS is the easy, integrated, AWS-managed key service.</div></div>
+
+    <div class="quiz"><div class="qq">15. (S3) A bucket is accidentally public + holds PII. Which finds the PII?</div>
+      <span class="opt">A) Macie</span><span class="opt">B) Inspector</span><span class="opt">C) Shield</span><span class="opt">D) WAF</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Macie scans S3 for sensitive data and risky bucket settings.</div></div>
+
+    <div class="quiz"><div class="qq">16. (HA) Refund scaling costs caused by a DDoS attack. Use?</div>
+      <span class="opt">A) Shield Advanced cost protection</span><span class="opt">B) Savings Plan</span><span class="opt">C) Spot</span><span class="opt">D) Config</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Shield Advanced provides DDoS cost protection.</div></div>
+
+    <div class="quiz"><div class="qq">17. (Serverless) Auto-remediate a GuardDuty finding. Pattern?</div>
+      <span class="opt">A) EventBridge → Lambda</span><span class="opt">B) SQS only</span><span class="opt">C) Manual</span><span class="opt">D) Config rule</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> GuardDuty findings can trigger EventBridge → Lambda.</div></div>
+
+    <div class="quiz"><div class="qq">18. Does AWS Config block non-compliant changes?</div>
+      <span class="opt">A) Yes</span><span class="opt">B) No — it records + flags only</span><span class="opt">C) Only in us-east-1</span><span class="opt">D) Only with WAF</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Config records and evaluates; use SCPs/IAM to prevent.</div></div>
+
+    <div class="quiz"><div class="qq">19. Filter on HTTP content — which firewall layer is required?</div>
+      <span class="opt">A) L3/4 (SG/NACL)</span><span class="opt">B) L7 (WAF)</span><span class="opt">C) Either</span><span class="opt">D) None</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Only a L7 firewall sees request content.</div></div>
+
+    <div class="quiz"><div class="qq">20. (Hybrid) Which service checks Lambda + ECR images for vulnerabilities?</div>
+      <span class="opt">A) Inspector</span><span class="opt">B) Macie</span><span class="opt">C) GuardDuty</span><span class="opt">D) Config</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Inspector scans EC2, ECR images and Lambda for CVEs/exposure.</div></div>
+  </article>
+
+  <div class="foot">
+    <div>
+      <span class="pill">Secrets Manager = rotation</span><span class="pill">Parameter Store = free config</span>
+      <span class="pill">WAF = L7 web firewall</span><span class="pill">Shield Std free / Adv paid</span>
+      <span class="pill">CloudHSM = FIPS 140-2 L3, your keys</span><span class="pill">Config = record + flag (no block)</span>
+      <span class="pill">Macie = PII in S3</span><span class="pill">Inspector = vulns (EC2/ECR/Lambda)</span>
+      <span class="pill">GuardDuty = threats from logs</span>
+    </div>
+    <p>Section 017 · Security, Deployment &amp; Operations + Mock Exam · built for SAA-C03 self-study.<br>
+    Tap a flashcard or "Show answer" to reveal. Use ☰ Lessons to jump around.</p>
+  </div>
+</main>
+
+<button class="toTop" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawerBg').classList.add('open');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerBg').classList.remove('open');}
+function cp(btn){
+  const code=btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard?.writeText(code).then(()=>{const t=btn.innerText;btn.innerText='copied!';setTimeout(()=>btn.innerText=t,1200);})
+  .catch(()=>{btn.innerText='select & copy';});
+}
+const tt=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{tt.classList.toggle('show',window.scrollY>500);});
+window.addEventListener('load',()=>{
+  try{
+    mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{
+      fontFamily:'Manrope, sans-serif',primaryColor:'#1b2128',primaryTextColor:'#e7edf3',
+      primaryBorderColor:'#2dd4bf',lineColor:'#60a5fa',secondaryColor:'#212934',tertiaryColor:'#161b21'}});
+  }catch(e){console.warn('mermaid init',e);}
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+# ROLE
+You are an expert AWS instructor building a single self-contained HTML study + revision 
+document for ONE section of Adrian Cantrill's AWS Solutions Architect Associate (SAA-C03) 
+course. The document must teach me from zero and also work as exam-revision later.
+
+# WHO I AM (design for this exactly)
+- 0 AWS knowledge, 0 work experience. Everything is new to me.
+- English level B1. Use simple, clear English. Short sentences.
+- I am preparing for the SAA-C03 exam, so depth = exam level (not deeper, not shallower).
+- I run demos myself on my laptop using AWS CLI v2 (already installed and configured).
+
+# INPUT
+I will paste one full course SECTION below. A section contains several lessons.
+Treat each lesson as one teaching unit. Build the document lesson by lesson, in order.
+
+# OUTPUT = ONE HTML FILE
+- ONE single HTML file for the WHOLE section, no matter how many lessons (even 20+). 
+  Do not split into parts.
+- Material UI look, DARK MODE, MOBILE-FIRST (single column, large tap targets, readable font).
+- Load Mermaid from CDN and render diagrams (graph/flowchart/sequence as fits the idea).
+- Self-contained: all CSS + JS inline, opens offline in a browser.
+- Sticky top bar + collapsible section menu so I can jump between lessons.
+- Clean spacing, cards for each lesson, color accents for "exam tip" / "demo" / "term" blocks.
+
+# FORMATTING PRINCIPLES (follow strictly, in priority order)
+1. Mermaid diagram  >  paragraph  (always try a diagram first for any flow/relationship)
+2. Outline / bullet list  >  paragraph
+3. Key–value table  >  paragraph
+4. Structured  >  unstructured
+Only use a paragraph when none of the above fit. Keep paragraphs to 2–3 short sentences.
+
+# LANGUAGE & TERMS
+- B1 English. When a technical word first appears, do ONE of:
+  (a) short explanation in parentheses right after it, OR
+  (b) add it to a "Key Terms" table at the TOP of the lesson (term | simple meaning).
+- Prefer the Key Terms table at the entry of each lesson for the main technical words.
+
+# DOCUMENT STRUCTURE
+## Top of document (once)
+- Section title + 1-line goal.
+- "Section Map": a Mermaid diagram showing how the lessons connect.
+- A "Quick Understanding" table for the WHOLE section (lesson | one-line what + why it matters for exam).
+
+## For EACH lesson (repeat this block)
+1. **Quick Understanding table** — fast TL;DR of the lesson (concept | meaning | exam relevance).
+2. **Key Terms table** — the technical words used, in B1 plain meaning.
+3. **Explanation** — diagram-led (Mermaid), then bullets/tables. Minimal prose.
+4. **Demo** (see DEMO SPEC) — directly after the explanation.
+   Demo EVERY lesson that can possibly be demoed with AWS CLI v2 / CloudFormation.
+   Only skip when the lesson is pure theory with nothing to build — then write 
+   "No demo — theory only" and say in 1 line why.
+5. **Build Knowledge** — 2 short lists:
+   - "Connects to NOW" (how this links to other lessons in this section)
+   - "Needed LATER" (which future course topics depend on this).
+6. **Exam Pointers** — bullets of common SAA-C03 traps, "remember this", and easy-confusions.
+7. **Flashcards** — 4–6 active-recall Q→A pairs (HTML click-to-flip or show/hide).
+8. **Mini Quiz** — 2–3 exam-style multiple-choice questions with the correct answer + 
+   1-line why (hidden until clicked).
+
+# DEMO SPEC (use AWS CLI v2; CloudFormation allowed for fast setup/cleanup)
+Each demo follows this exact order:
+1. **Situation** — the real scenario (tie it to Animals4life when natural) and the goal.
+2. **Check first** — prerequisites / what state I should be in before starting.
+3. **Steps** — numbered. For EVERY command:
+   - the exact AWS CLI v2 command (in a copyable code block),
+   - "What you expect" — what output/result I should see after running it.
+4. **Fix / Key info** — correct any course misunderstanding, note real-world gotchas.
+5. **Clean up** — exact commands to delete everything (use CloudFormation delete or CLI 
+   delete commands) so I leave NO running/billable resources.
+
+# QUALITY BAR
+- Accurate to current SAA-C03 scope. If something is exam-relevant but missing from the 
+  pasted text, add it briefly and mark it "[added for exam]".
+- No fluff. Everything must help me learn OR revise. Remove anything that doesn't.
+- The file must be ready to use as my single source for studying and revising this section.
+
+# SECTION TO BUILD
+GLOBAL CONTENT DELIVERY AND OPTIMIZATION
+1 - Cloudfront Architecture 
+
+CloudFront is a Content Delivery network (CDN) within AWS.
+
+This lesson steps through the basic architecture
+
+2 - CloudFront (CF) - Behaviours 
+
+CloudFront Behaviours control much of the TTL, protocol and privacy settings within CloudFront
+
+This lesson steps through settings configured at a distribution level and those settings which apply to a distribution.
+
+https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/secure-connections-supported-viewer-protocols-ciphers.html
+
+3 - CloudFront - TTL and Invalidations 
+
+This lesson steps through how CloudFront handles object expiry and invalidation
+
+Covering
+
+Default TTL, Minimum TTL, Maximum TTL
+
+And Cache Invalidation
+
+4 - ACM 
+
+The AWS certificate Manage is a service which allows the creation, management and renewal of certificates. It allows deployment of certificates onto supported AWS services such as CloudFront and ALB.
+
+5 - Cloudfront and SSL/TLS 
+
+Understanding CloudFront and SSL is essential for the exam
+
+This lesson steps through the certificate requirements for the viewer and origin side and steps through the reasons for SNI, and how it works.
+
+
+6 - CloudFront (CF) - Origin Types & Origin Architecture 
+
+CloudFront origins store content distributed via edge locations.
+
+The features available differ based on using S3 origins vs Custom origins
+
+Supported SSL/TLS protocols and ciphers for communication between viewers and CloudFront
+
+CloudFront (CF) - Adding a CDN to a static Website
+
+you will learn how to implement a CloudFront distribution using an S3 bucket as the origin.
+
+CloudFront (CF) - Adding an Alternate CNAME and SSL 
+
+you will gain experience of adding an Alternate domain name for a CloudFront Distribution and enabling HTTPS capability via a ACM generated certificate.
+
+To do this demo you will need a domain registered and hosted within R53
+
+This demo will use the infrastructure created in the previous demo lesson.
+
+
+7 - Securing CF and S3 using OAI 
+
+Origin Access Identities are a feature where virtual identities can be created, associated with a CloudFront Distribution and deployed to edge locations.
+
+Access to an s3 bucket can be controlled by using these OAI's - allowing access from an OAI, and using an implicit DENY for everything else.
+
+They are generally used to ensure no direct access to S3 objects is allowed when using private CF Distributions.
+
+This lesson covers the main ways to secure origins from direct access (bypassing CloudFront)
+
+    Origin Access identities (OAI) - for S3 Origins
+    Custom Headers - For Custom Origins
+    IP Based FW Blocks - For Custom Origins.
+
+
+8 - CloudFront - Private Distribution & Behaviours 
+
+In this lesson we step through the architecture of a private CloudFront distribution (or more specifically making 1 or more behaviors of a distribution private).
+
+You'll learn about CloudFront keys, TRUSTED SIGNERS (old), Trusted Key Groups (new) and how the flow of authorization and authentication work when using private access via CloudFront.
+
+CloudFront (CF) - Using Origin Access Control (OAC) (new version of OAI) 
+
+you will gain experience of securing an S3 origin by configuring origin access control (OAC) on a CloudFront distribution and then modifying the origin bucket policy to restrict access to only that distribution via OAC. OAC is a replacement for origin access identities (OAI) and is now the recommended method to achieve this functionality.
+
+This demo will use the infrastructure created in the first CloudFront DEMO of this section.
+
+9 - Lambda@Edge 
+
+Lambda@Edge allows cloudfront to run lambda function at CloudFront edge locations to modify traffic between the viewer and edge location and edge locations and origins.
+
+https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-examples.html#lambda-examples-redirecting-examples
+
+10 - Global Accelerator 
+
+11 - mock exam level for this section "GLOBAL CONTENT DELIVERY AND OPTIMIZATION " implement old courses ["IAM, ACCOUNTS AND AWS ORGANISATIONS", "SIMPLE STORAGE SERVICE   (S3) ", "VIRTUAL PRIVATE CLOUD (VPC) BASICS " , "ELASTIC COMPUTE CLOUD (EC2) BASICS ","CONTAINERS & ECS " , "ADVANCED EC2 " ,"NETWORK STORAGE & DATA LIFECYCLE ", "Route 53 - Global DNS", "Relational Database Service (RDS) ", "HA & SCALING" , "SERVERLESS AND APPLICATION SERVICES"]
+
+ 

@@ -1,0 +1,221 @@
+# ROLE
+You are an expert AWS instructor building a single self-contained HTML study + revision 
+document for ONE section of Adrian Cantrill's AWS Solutions Architect Associate (SAA-C03) 
+course. The document must teach me from zero and also work as exam-revision later.
+
+# WHO I AM (design for this exactly)
+- 0 AWS knowledge, 0 work experience. Everything is new to me.
+- English level B1. Use simple, clear English. Short sentences.
+- I am preparing for the SAA-C03 exam, so depth = exam level (not deeper, not shallower).
+- I run demos myself on my laptop using AWS CLI v2 (already installed and configured).
+
+# INPUT
+I will paste one full course SECTION below. A section contains several lessons.
+Treat each lesson as one teaching unit. Build the document lesson by lesson, in order.
+
+# OUTPUT = ONE HTML FILE
+- ONE single HTML file for the WHOLE section, no matter how many lessons (even 20+). 
+  Do not split into parts.
+- Material UI look, DARK MODE, MOBILE-FIRST (single column, large tap targets, readable font).
+- Load Mermaid from CDN and render diagrams (graph/flowchart/sequence as fits the idea).
+- Self-contained: all CSS + JS inline, opens offline in a browser.
+- Sticky top bar + collapsible section menu so I can jump between lessons.
+- Clean spacing, cards for each lesson, color accents for "exam tip" / "demo" / "term" blocks.
+
+# FORMATTING PRINCIPLES (follow strictly, in priority order)
+1. Mermaid diagram  >  paragraph  (always try a diagram first for any flow/relationship)
+2. Outline / bullet list  >  paragraph
+3. Key–value table  >  paragraph
+4. Structured  >  unstructured
+Only use a paragraph when none of the above fit. Keep paragraphs to 2–3 short sentences.
+
+# LANGUAGE & TERMS
+- B1 English. When a technical word first appears, do ONE of:
+  (a) short explanation in parentheses right after it, OR
+  (b) add it to a "Key Terms" table at the TOP of the lesson (term | simple meaning).
+- Prefer the Key Terms table at the entry of each lesson for the main technical words.
+
+# DOCUMENT STRUCTURE
+## Top of document (once)
+- Section title + 1-line goal.
+- "Section Map": a Mermaid diagram showing how the lessons connect.
+- A "Quick Understanding" table for the WHOLE section (lesson | one-line what + why it matters for exam).
+
+## For EACH lesson (repeat this block)
+1. **Quick Understanding table** — fast TL;DR of the lesson (concept | meaning | exam relevance).
+2. **Key Terms table** — the technical words used, in B1 plain meaning.
+3. **Explanation** — diagram-led (Mermaid), then bullets/tables. Minimal prose.
+4. **Demo** (see DEMO SPEC) — directly after the explanation.
+   Demo EVERY lesson that can possibly be demoed with AWS CLI v2 / CloudFormation.
+   Only skip when the lesson is pure theory with nothing to build — then write 
+   "No demo — theory only" and say in 1 line why.
+5. **Build Knowledge** — 2 short lists:
+   - "Connects to NOW" (how this links to other lessons in this section)
+   - "Needed LATER" (which future course topics depend on this).
+6. **Exam Pointers** — bullets of common SAA-C03 traps, "remember this", and easy-confusions.
+7. **Flashcards** — 4–6 active-recall Q→A pairs (HTML click-to-flip or show/hide).
+8. **Mini Quiz** — 2–3 exam-style multiple-choice questions with the correct answer + 
+   1-line why (hidden until clicked).
+
+# DEMO SPEC (use AWS CLI v2; CloudFormation allowed for fast setup/cleanup)
+Each demo follows this exact order:
+1. **Situation** — the real scenario (tie it to Animals4life when natural) and the goal.
+2. **Check first** — prerequisites / what state I should be in before starting.
+3. **Steps** — numbered. For EVERY command:
+   - the exact AWS CLI v2 command (in a copyable code block),
+   - "What you expect" — what output/result I should see after running it.
+4. **Fix / Key info** — correct any course misunderstanding, note real-world gotchas.
+5. **Clean up** — exact commands to delete everything (use CloudFormation delete or CLI 
+   delete commands) so I leave NO running/billable resources.
+
+# QUALITY BAR
+- Accurate to current SAA-C03 scope. If something is exam-relevant but missing from the 
+  pasted text, add it briefly and mark it "[added for exam]".
+- No fluff. Everything must help me learn OR revise. Remove anything that doesn't.
+- The file must be ready to use as my single source for studying and revising this section.
+
+# SECTION TO BUILD
+HYBRID ENVIRONMENTS AND MIGRATION
+1 - Border Gateway Protocol 101 
+
+This lesson provides a high level introduction to the Border Gateway Protocol (BGP) which is used by some AWS services such as Direct Connect and Dynamic Site to Site VPNs.
+
+N.B this lesson has been added as an OPTIONAL ADVANCED lesson for any students who want to understand what BGP is - its more toward the PROFESSIONAL level, so if you don't understand it fully ... thats ok 
+
+2 -  IPSec VPN Fundamentals 
+
+This lesson steps through the architecture of IPSEC VPNs.
+
+IPsec VPN negotiation occurs in two phases. In Phase 1, participants establish a secure channel in which to negotiate the IPsec security association (SA). In Phase 2, participants negotiate the IPsec SA for authenticating traffic that will flow through the tunnel.
+
+3 -  AWS Site-to-Site VPN
+
+AWS Site-to-Site VPN is a hardware VPN solution which creates a highly available IPSEC VPN between an AWS VPN and external network such as on-premises traditional networks. VPNs are quick to setup vs direct connect, don't offer the same high performance, but do encrypt data in transit. This lesson details the architecture and key concepts you need to be aware of for the exam.
+
+Simple Site2Site VPN - STAGE0 - SETUP 
+In this mini project you will implement a site to site VPN between AWS and a simulated on-premises business site running the pfSense router/NAT software.
+
+▶Project Repo https://github.com/acantril/learn-cantrill-io-labs/tree/master/aws-simple-site2site-vpn
+
+▶Make sure you are logged into AWS and in us-east-1
+
+▶You will need to approve this subscription it's a trial, so you won't be billed anything extra. https://aws.amazon.com/marketplace/pp?sku=cphb99lr7icr3n9x6kc3102s5
+
+▶You will need to have an SSH keypair created in us-east-1 and select this when using the 1-click deployment below
+
+▶Once approved, you can use the one click deployment below.
+
+▶1-Click Deployment
+
+https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?templateURL=https://learn-cantrill-labs.s3.amazonaws.com/aws-simple-site2site-vpn/infra.yaml&stackName=S2SVPN (be sure to select a keypair) 
+
+or you claude should made ready one for me using CLI
+
+In this mini project you will implement a site to site VPN between AWS and a simulated on-premises business site running the pfSense router/NAT software.
+
+▶ Project Repo https://github.com/acantril/learn-cantrill-io-labs/tree/master/aws-simple-site2site-vpn
+
+▶ Stage 1 Instructions https://github.com/acantril/learn-cantrill-io-labs/blob/master/aws-simple-site2site-vpn/02_LABINSTRUCTIONS/STAGE1.md
+
+In this mini project you will implement a site to site VPN between AWS and a simulated on-premises business site running the pfSense router/NAT software.
+
+▶ Project Repo https://github.com/acantril/learn-cantrill-io-labs/tree/master/aws-simple-site2site-vpn
+
+▶ Stage 5Instructions https://github.com/acantril/learn-cantrill-io-labs/blob/master/aws-simple-site2site-vpn/02_LABINSTRUCTIONS/STAGE5.md
+
+4 -  Direct Connect (DX) Concepts 
+
+AWS Direct Connect links your internal network to an AWS Direct Connect location over a standard Ethernet fiber-optic cable. One end of the cable is connected to your router, the other to an AWS Direct Connect router. With this connection, you can create virtual interfaces directly to public AWS services (for example, to Amazon S3) or to Amazon VPC, bypassing internet service providers in your network path. An AWS Direct Connect location provides access to AWS in the Region with which it is associated. You can use a single connection in a public Region or AWS GovCloud (US) to access public AWS services in all other public Regions.
+
+5 - Direct Connect (DX) Resilience 
+
+This lesson steps through the architecture of a few resilient implementations of direct connect, starting with an overview of why the default implementation architecture of direct connect provides no resiience.
+
+
+6 - Direct Connect (DX) - Public VIF + VPN (Encryption) 
+
+Neither public or private VIFS offer any form of encryption.
+
+Public VIFs+IPSec VPN is a way to provide access to private VPC resources, using an encrypted IPSEC tunnel for transit.
+
+This lesson steps through the architecture and features.
+
+7 - Transit Gateway 
+
+The AWS Transit gateway is a network gateway which can be used to significantly simplify networking between VPC's, VPN and Direct Connect.
+
+It can be used to peer VPCs in the same account, different account, same or different region and supports transitive routing between networks.
+
+In this lesson I step through the features which allow for a significant reduction in network complexity.
+
+8 - Storage Gateway - Volume 
+
+Storage gateway is a product which integrates local infrastructure and AWS storage such as S3, EBS Snapshots and Glacier.
+
+This lesson looks at Gateway Volume - Stored and Gateway Volume Caches
+
+It explores the features and architectures which each supports.
+
+9 -  Storage Gateway - Tape (VTL) 
+
+Storage gateway in VTL mode allows the product to replace a tape based backup solution with one which uses S3 and Glacier rather than physical tape media.
+
+10 -  Storage Gateway - File 
+
+File gateway bridges local file storage over NFS and SMB with S3 Storage
+
+It supports multi site, maintains storage structure, integrates with other AWS products and supports S3 object lifecycle Management
+
+Links Mentioned
+
+https://docs.aws.amazon.com/storagegateway/latest/APIReference/API_NotifyWhenUploaded.html
+
+https://techstudyslack.com
+
+11 - Snowball / Edge / Snowmobile
+
+(give me latest version if possible)
+
+Snowball, Snowball Edge and Snowmobile are three parts of the same product family designed to allow the physical transfer of data between business locations and AWS.
+
+Knowing which to pick and why is essential for the solutions architect exam .. in this lesson I step through all of the key product family features.
+
+12 - Directory Service 
+
+The Directory service is a product which provides managed directory service instances within AWS
+
+it functions in three modes
+
+    Simple AD - An implementation of Samba 4 (compatibility with basics AD functions)
+    AWS Managed Microsoft AD - An actual Microsoft AD DS Implementation
+    AD Connector which proxies requests back to an on-premises directory.
+
+This lesson steps through the architecture of the service and explains scenarios where each might be used.
+
+13 - DataSync 
+
+AWS DataSync is a product which can orchestrate the movement of large scale data (amounts or files) from on-premises NAS/SAN into AWS or vice-versa
+
+14 - FSx for Windows Servers 
+
+FSx for Windows Servers provides a native windows file system as a service which can be used within AWS, or from on-premises environments via VPN or Direct Connect
+
+FSx is an advanced shared file system accessible over SMB, and integrates with Active Directory (either managed, or self-hosted).
+
+It provides advanced features such as VSS, Data de-duplication, backups, encryption at rest and forced encryption in transit.
+
+15 - FSx For Lustre 
+
+FSx for Lustre is a managed file system which uses the FSx product designed for high performance computing
+
+It delivers extreme performance for scenarios such as Big Data, Machine Learning and Financial Modeling
+
+https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html#fsx-aggregate-perf
+
+
+https://aws.amazon.com/blogs/storage/persistent-storage-for-high-performance-workloads-using-amazon-fsx-for-lustre/
+
+16 - AWS Transfer Family 
+
+17 -  mock exam level for this section ""HYBRID ENVIRONMENTS AND MIGRATION  implement old courses ["IAM, ACCOUNTS AND AWS ORGANISATIONS", "SIMPLE STORAGE SERVICE   (S3) ", "VIRTUAL PRIVATE CLOUD (VPC) BASICS " , "ELASTIC COMPUTE CLOUD (EC2) BASICS ","CONTAINERS & ECS " , "ADVANCED EC2 " ,"NETWORK STORAGE & DATA LIFECYCLE ", "Route 53 - Global DNS", "Relational Database Service (RDS) ", "HA & SCALING" , "SERVERLESS AND APPLICATION SERVICES" , "GLOBAL CONTENT DELIVERY AND OPTIMIZATION" , "ADVANCED VPC Networking "]
+ 

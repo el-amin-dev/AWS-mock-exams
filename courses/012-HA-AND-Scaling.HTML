@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03 · 012 · HA & Scaling</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+:root{
+  --bg:#101418;--bg2:#161b21;--surface:#1b2128;--surface2:#212934;
+  --line:#2c3540;--line2:#3a4654;--text:#e7edf3;--muted:#9fb0c0;
+  --primary:#2dd4bf;--primary-d:#0f3b39;--exam:#fbbf24;--exam-d:#3a2f0c;
+  --demo:#60a5fa;--demo-d:#0e2647;--term:#c084fc;--term-d:#2a1640;
+  --warn:#fb7185;--warn-d:#3a151c;--ok:#34d399;
+  --radius:16px;--shadow:0 6px 22px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.25;margin:0}
+a{color:var(--primary);text-decoration:none}
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(16,20,24,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .badge{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--bg);background:var(--primary);padding:4px 9px;border-radius:8px}
+.topbar .ttl{font-family:'Sora';font-weight:600;font-size:15px}
+.topbar .ttl small{display:block;color:var(--muted);font-weight:500;font-size:11.5px;font-family:'Manrope'}
+.menu-btn{margin-left:auto;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+.menu-btn:active{transform:scale(.97)}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
+.drawer-bg.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(86vw,340px);background:var(--bg2);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .28s ease;z-index:80;overflow-y:auto;padding:18px 16px 40px}
+.drawer.open{transform:translateX(0)}
+.drawer h3{font-size:11.5px;color:var(--muted);margin:14px 4px 8px;text-transform:uppercase;letter-spacing:1px}
+.drawer a{display:block;color:var(--text);padding:9px 12px;border-radius:10px;font-weight:500;font-size:13.5px;border:1px solid transparent}
+.drawer a:active{background:var(--surface)}
+.drawer a .n{color:var(--primary);font-family:'Sora';font-weight:700;margin-right:8px}
+.drawer .close{width:100%;margin-top:18px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 90px}
+.hero{background:radial-gradient(120% 90% at 100% 0%, rgba(45,212,191,.16), transparent 55%),radial-gradient(120% 90% at 0% 100%, rgba(96,165,250,.12), transparent 55%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+.hero .eyebrow{color:var(--primary);font-weight:700;font-size:12.5px;letter-spacing:1.5px;font-family:'Sora'}
+.hero h1{font-size:25px;margin:6px 0 8px}
+.hero p{color:var(--muted);margin:0;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;margin-top:18px;box-shadow:var(--shadow)}
+.lesson-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.lesson-head .num{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:'Sora';font-weight:700;background:var(--primary);color:var(--bg);font-size:15px}
+.lesson-head h2{font-size:19px}
+.lesson-head .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+h3.block{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+h3.block::before{content:"";width:14px;height:3px;border-radius:3px;background:var(--primary)}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:360px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface2);color:var(--text);font-family:'Sora';font-weight:600;font-size:12.5px;letter-spacing:.3px}
+tr:last-child td{border-bottom:none}
+td b{color:var(--primary)}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{position:relative;padding:6px 0 6px 22px;font-size:15px;border-bottom:1px dashed var(--line)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"▸";position:absolute;left:2px;top:6px;color:var(--primary)}
+.two-col{display:grid;gap:12px}
+@media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+.box{border-radius:12px;padding:13px 14px;margin:12px 0;border:1px solid;font-size:14.5px}
+.box .tag{font-family:'Sora';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
+.box.exam{background:var(--exam-d);border-color:#6b551a}.box.exam .tag{color:var(--exam)}
+.box.term{background:var(--term-d);border-color:#4a2d6b}.box.term .tag{color:var(--term)}
+.box.warn{background:var(--warn-d);border-color:#6b2630}.box.warn .tag{color:var(--warn)}
+.box.demo{background:var(--demo-d);border-color:#1d4a82}.box.demo .tag{color:var(--demo)}
+.box ul{margin:4px 0 0;padding-left:18px}.box li{margin:3px 0}
+.mer{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;overflow-x:auto}
+.mermaid{display:flex;justify-content:center;min-width:fit-content}
+.code{position:relative;background:#0c1117;border:1px solid var(--line2);border-radius:10px;margin:10px 0}
+.code pre{margin:0;padding:13px 14px;overflow-x:auto;font-size:13px;line-height:1.55}
+.code code{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;color:#cfe9e6;white-space:pre}
+.code .cp{position:absolute;top:7px;right:7px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:7px;font-size:11px;padding:4px 9px;cursor:pointer;font-weight:600}
+.code .cp:active{color:var(--primary)}
+.expect{font-size:13px;color:var(--ok);background:rgba(52,211,153,.08);border-left:3px solid var(--ok);padding:7px 11px;margin:0 0 12px;border-radius:0 8px 8px 0}
+.expect b{color:var(--ok)}
+.step{counter-increment:st;margin:14px 0}
+.step .sh{display:flex;align-items:center;gap:9px;font-family:'Sora';font-weight:600;font-size:14.5px;margin-bottom:4px}
+.step .sh::before{content:counter(st);background:var(--demo);color:var(--bg);width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12.5px;flex:0 0 auto}
+.demo-wrap{counter-reset:st}
+.fc-grid{display:grid;gap:10px}
+.fc{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:13px 14px;cursor:pointer;transition:border-color .2s;user-select:none}
+.fc:active{border-color:var(--primary)}
+.fc .q{font-weight:600;font-size:14.5px;display:flex;gap:8px;align-items:flex-start}
+.fc .q::before{content:"Q";font-family:'Sora';color:var(--primary);font-weight:700;flex:0 0 auto}
+.fc .a{display:none;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);color:var(--muted);font-size:14px}
+.fc .a::before{content:"A ";color:var(--ok);font-weight:700;font-family:'Sora'}
+.fc.show .a{display:block}
+.fc .hint{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600}
+.quiz{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:14px;margin:10px 0}
+.quiz .qq{font-weight:600;font-size:15px;margin-bottom:8px}
+.quiz .opt{display:block;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin:6px 0;font-size:14px;cursor:pointer}
+.quiz .opt:active{border-color:var(--primary)}
+.quiz .reveal{margin-top:6px;background:var(--surface);color:var(--primary);border:1px solid var(--line2);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px;width:100%}
+.quiz .ans{display:none;margin-top:10px;border-left:3px solid var(--ok);background:rgba(52,211,153,.08);padding:9px 12px;border-radius:0 8px 8px 0;font-size:14px}
+.quiz .ans b{color:var(--ok)}
+.quiz.show .ans{display:block}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;line-height:1.7}
+.pill{display:inline-block;background:var(--surface2);border:1px solid var(--line2);color:var(--muted);font-size:11px;padding:2px 8px;border-radius:20px;margin:2px}
+.toTop{position:fixed;right:14px;bottom:16px;z-index:50;background:var(--primary);color:var(--bg);border:none;width:46px;height:46px;border-radius:50%;font-size:20px;box-shadow:var(--shadow);cursor:pointer;display:none}
+.toTop.show{display:block}
+kbd{background:var(--surface2);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-size:12px;font-family:monospace}
+.examcard{border-color:#6b551a;background:linear-gradient(180deg,var(--exam-d),var(--surface))}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="badge">SAA-C03</span>
+  <div class="ttl">Section 012<small>HA &amp; Scaling</small></div>
+  <button class="menu-btn" onclick="openDrawer()">☰ Lessons</button>
+</header>
+
+<div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer">
+  <h3>Architecture & ELB</h3>
+  <a href="#l1" onclick="closeDrawer()"><span class="n">1</span>Regional & Global Architecture</a>
+  <a href="#l2" onclick="closeDrawer()"><span class="n">2</span>Evolution of the ELB</a>
+  <a href="#l3" onclick="closeDrawer()"><span class="n">3</span>ELB Architecture</a>
+  <a href="#l4" onclick="closeDrawer()"><span class="n">4</span>ALB vs NLB</a>
+  <h3>Auto Scaling</h3>
+  <a href="#l5" onclick="closeDrawer()"><span class="n">5</span>Launch Config & Templates</a>
+  <a href="#l6" onclick="closeDrawer()"><span class="n">6</span>Auto Scaling Groups</a>
+  <a href="#l7" onclick="closeDrawer()"><span class="n">7</span>Scaling Policies</a>
+  <a href="#l8" onclick="closeDrawer()"><span class="n">8</span>Lifecycle Hooks</a>
+  <a href="#l9" onclick="closeDrawer()"><span class="n">9</span>Health Checks: EC2 vs ELB</a>
+  <h3>SSL & appliances</h3>
+  <a href="#l10" onclick="closeDrawer()"><span class="n">10</span>SSL Offload & Stickiness</a>
+  <a href="#l11" onclick="closeDrawer()"><span class="n">11</span>Gateway Load Balancer</a>
+  <h3>Revision</h3>
+  <a href="#mock" onclick="closeDrawer()"><span class="n">★</span>Mock Exam</a>
+  <button class="close" onclick="closeDrawer()">Close</button>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">SECTION GOAL</div>
+    <h1>Build resilient, elastic systems with load balancers and Auto Scaling.</h1>
+    <p>This is the heart of well-architected design. Learn ELB types, Launch Templates, Auto Scaling Groups, scaling policies, health checks, SSL handling and the Gateway Load Balancer.</p>
+  </section>
+
+  <div class="card">
+    <h3 class="block">Section Map · how the lessons connect</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  ARCH[1. Global/Regional] --> ELB[2-3. ELB evolution + architecture]
+  ELB --> TYPES[4. ALB vs NLB]
+  LT[5. Launch Templates] --> ASG[6. Auto Scaling Group]
+  ASG --> POL[7. Scaling policies]
+  ASG --> HOOK[8. Lifecycle hooks]
+  ASG --> HC[9. Health checks EC2 vs ELB]
+  TYPES --> ASG
+  ELB --> SSL[10. SSL + stickiness]
+  ELB --> GWLB[11. Gateway LB]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class ARCH,ELB,TYPES,LT,ASG a;
+  class POL,HOOK,HC,SSL,GWLB b;
+    </pre></div>
+  </div>
+
+  <div class="card">
+    <h3 class="block">Quick Understanding · whole section</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Lesson</th><th>What + why it matters for the exam</th></tr>
+      <tr><td>1 Architecture</td><td>Global vs regional services; app tiers; choosing a region.</td></tr>
+      <tr><td>2 ELB Evolution</td><td>CLB (legacy) vs v2 ALB + NLB; use v2.</td></tr>
+      <tr><td>3 ELB Architecture</td><td>Listeners, target groups, nodes per AZ, cross-zone.</td></tr>
+      <tr><td>4 ALB vs NLB</td><td>Layer 7 (HTTP, routing, WAF) vs Layer 4 (fast, static IP).</td></tr>
+      <tr><td>5 Launch Templates</td><td>Define WHAT to launch; LT (versioned) over LC.</td></tr>
+      <tr><td>6 ASG</td><td>min/desired/max; self-healing; integrates ELB.</td></tr>
+      <tr><td>7 Scaling Policies</td><td>Manual/scheduled/dynamic (target/step/simple).</td></tr>
+      <tr><td>8 Lifecycle Hooks</td><td>Pause on launch/terminate for custom actions.</td></tr>
+      <tr><td>9 Health Checks</td><td>EC2 (default) vs ELB (app-level) checks.</td></tr>
+      <tr><td>10 SSL & Stickiness</td><td>Bridging/pass-through/offload; sticky sessions.</td></tr>
+      <tr><td>11 Gateway LB</td><td>Scale firewalls/IDS appliances transparently.</td></tr>
+      <tr><td>★ Mock Exam</td><td>HA/Scaling + all prior sections.</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ===== LESSON 1 ===== -->
+  <article class="card" id="l1">
+    <div class="lesson-head"><div class="num">1</div><div><h2>Regional & Global AWS Architecture</h2><div class="sub">Where things run, and how apps are layered.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Global services</td><td>Route 53, CloudFront, edge network.</td><td>Span all regions.</td></tr>
+      <tr><td>Regional services</td><td>Most services; use AZs for resilience.</td><td>Pick a region.</td></tr>
+      <tr><td>App tiers</td><td>Web → app/logic → data layers.</td><td>Decouple tiers.</td></tr>
+      <tr><td>Region choice</td><td>Compliance, latency, services, price.</td><td>Design driver.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Tier</td><td>A layer of the app (web, application, database).</td></tr>
+      <tr><td>Edge location</td><td>A small global site close to users (CDN/DNS).</td></tr>
+      <tr><td>Data sovereignty</td><td>Laws about where data may be stored.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  USER[Users] --> GLOBAL[Global: Route 53 + CloudFront edge]
+  GLOBAL --> REGION[Region]
+  REGION --> WEB[Web tier]
+  WEB --> APP[App tier]
+  APP --> DATA[Data tier]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class GLOBAL a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Global</b> services (Route 53 DNS, CloudFront CDN) sit at the <b>edge</b>, close to users; most other services are <b>regional</b>.</li>
+      <li>Choose a region by <b>compliance/data sovereignty</b>, <b>latency to users</b>, <b>service availability</b>, and <b>price</b>.</li>
+      <li>Apps are layered into <b>tiers</b> (web → application → data). Keeping tiers <b>decoupled</b> lets each scale and fail independently.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>High-level architecture framing; the hands-on starts with Launch Templates + ASG (L5–L6).</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Tiers map to ELB (front) + ASG (compute) + RDS (data).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>CloudFront, Global Accelerator, multi-region designs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Route 53 + CloudFront</b> are <b>global</b>; most services are <b>regional</b>.</li>
+      <li>Region choice = <b>compliance, latency, service availability, price</b>.</li>
+      <li><b>Decoupled tiers</b> scale and fail independently.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Two global AWS services?<span class="hint">tap</span></div><div class="a">Route 53 and CloudFront.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Four reasons to pick a region?<span class="hint">tap</span></div><div class="a">Compliance, latency, service availability, price.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Three typical app tiers?<span class="hint">tap</span></div><div class="a">Web, application, data.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Data must legally stay in one country. Which factor decides the region?</div>
+      <span class="opt">A) Price</span><span class="opt">B) Compliance / data sovereignty</span><span class="opt">C) Instance type</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Legal residency requirements (data sovereignty) drive region choice.</div></div>
+  </article>
+
+  <!-- ===== LESSON 2 ===== -->
+  <article class="card" id="l2">
+    <div class="lesson-head"><div class="num">2</div><div><h2>Evolution of the Elastic Load Balancer</h2><div class="sub">From Classic to v2 (ALB + NLB).</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Type</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>CLB (Classic)</td><td>v1, 2009; basic; legacy.</td><td>Avoid for new builds.</td></tr>
+      <tr><td>ALB (v2)</td><td>Layer 7 HTTP/HTTPS; smart routing.</td><td>Recommended for web.</td></tr>
+      <tr><td>NLB (v2)</td><td>Layer 4 TCP/UDP; ultra-fast.</td><td>High performance.</td></tr>
+      <tr><td>GWLB</td><td>For network appliances.</td><td>Newest type.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Layer 7</td><td>Application layer — understands HTTP.</td></tr>
+      <tr><td>Layer 4</td><td>Transport layer — just TCP/UDP, very fast.</td></tr>
+      <tr><td>v2</td><td>The modern ELB generation (ALB/NLB).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>CLB</b> (Classic, 2009) is <b>legacy</b> — one certificate per balancer, no smart routing. Avoid for new systems.</li>
+      <li><b>ALB (v2)</b> works at <b>Layer 7</b> (HTTP/HTTPS) with content-based routing + WAF.</li>
+      <li><b>NLB (v2)</b> works at <b>Layer 4</b> (TCP/UDP/TLS) for very high performance + static IPs.</li>
+      <li><b>GWLB</b> is for running network <b>appliances</b> (L11). Use <b>v2</b> for everything new.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Background on ELB generations; the build work is the ASG demos (L5–L9).</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Sets up ELB architecture (L3) and ALB/NLB choice (L4).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Choosing the right LB in any scaling design.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Prefer <b>v2 (ALB/NLB)</b> over <b>CLB</b>.</li>
+      <li>ALB = <b>Layer 7</b>; NLB = <b>Layer 4</b>; GWLB = <b>appliances</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which ELB is legacy?<span class="hint">tap</span></div><div class="a">CLB (Classic Load Balancer).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">ALB layer vs NLB layer?<span class="hint">tap</span></div><div class="a">ALB = Layer 7; NLB = Layer 4.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A new web app needs path-based HTTP routing. Which ELB?</div>
+      <span class="opt">A) CLB</span><span class="opt">B) ALB</span><span class="opt">C) NLB</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> ALB is the Layer 7 balancer with content-based routing.</div></div>
+  </article>
+
+  <!-- ===== LESSON 3 ===== -->
+  <article class="card" id="l3">
+    <div class="lesson-head"><div class="num">3</div><div><h2>ELB Architecture</h2><div class="sub">Listeners, target groups and nodes.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Listener</td><td>Port/protocol the LB accepts (e.g. HTTPS 443).</td><td>Front door.</td></tr>
+      <tr><td>Target group</td><td>The backends (EC2/IP/Lambda) + health checks.</td><td>Where traffic goes.</td></tr>
+      <tr><td>Nodes per AZ</td><td>LB places a node in each enabled subnet.</td><td>Needs subnets.</td></tr>
+      <tr><td>Cross-zone</td><td>Spread across all targets in all AZs.</td><td>ALB on; NLB off by default.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Listener</td><td>A rule for what the LB listens on and how to route.</td></tr>
+      <tr><td>Target group</td><td>A named set of backends with health checks.</td></tr>
+      <tr><td>Internet-facing / internal</td><td>Public-facing vs private-only LB.</td></tr>
+      <tr><td>Cross-zone LB</td><td>Even spread of traffic across AZs.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  DNS[ELB DNS name - Alias] --> NODE[LB nodes - one per enabled AZ subnet]
+  NODE --> LISTEN[Listener: port + protocol]
+  LISTEN --> TG[Target group + health checks]
+  TG --> T1[Targets: EC2 / IP / Lambda]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class NODE a;
+    </pre></div>
+    <ul class="clean">
+      <li>An ELB has a <b>DNS name</b> (use the <b>Alias</b>, never an IP for ALB) and places a <b>node in each enabled AZ subnet</b> (needs spare IPs, ideally a /27+).</li>
+      <li>A <b>listener</b> defines the port/protocol; it sends traffic to a <b>target group</b> (backends + health checks).</li>
+      <li>Targets can be <b>EC2, IPs, or Lambda</b>; can be <b>internet-facing</b> or <b>internal</b>.</li>
+      <li><b>Cross-zone load balancing</b> spreads evenly across all AZs (ALB <b>on</b> by default; NLB <b>off</b> by default).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — cost</span>A running ALB/NLB bills hourly + per LCU. We cover architecture conceptually; the ASG demos (L5–L9) are the cheap hands-on, and L10 ties an ALB in via the WordPress evolution overview.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>ALB/NLB specifics in L4; used by ASG (L6) + health checks (L9).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Microservices routing, blue/green, container targets.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Connect to an ELB by its <b>DNS name / Alias</b>, not an IP (ALB IPs change).</li>
+      <li>ELB needs <b>subnets in each AZ</b> with free IPs (a /27 or larger).</li>
+      <li><b>Cross-zone</b>: ALB on by default, NLB off by default.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is a target group?<span class="hint">tap</span></div><div class="a">A set of backends (EC2/IP/Lambda) with health checks the LB routes to.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How do you address an ALB?<span class="hint">tap</span></div><div class="a">By its DNS name (Alias) — not a fixed IP.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Cross-zone default: ALB vs NLB?<span class="hint">tap</span></div><div class="a">ALB on by default; NLB off by default.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An app points to an ALB by IP and breaks. Why?</div>
+      <span class="opt">A) ALB IPs change — use the DNS name</span><span class="opt">B) Wrong AZ</span><span class="opt">C) No target group</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> ALB node IPs are dynamic; always use the DNS/Alias.</div></div>
+  </article>
+
+  <!-- ===== LESSON 4 ===== -->
+  <article class="card" id="l4">
+    <div class="lesson-head"><div class="num">4</div><div><h2>ALB vs NLB</h2><div class="sub">Layer 7 features vs Layer 4 speed.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Feature</th><th>ALB (Layer 7)</th><th>NLB (Layer 4)</th></tr>
+      <tr><td>Protocols</td><td>HTTP / HTTPS</td><td>TCP / UDP / TLS</td></tr>
+      <tr><td>Routing</td><td>Host / path / header</td><td>None (just forwards)</td></tr>
+      <tr><td>Speed</td><td>Fast</td><td>Ultra-fast, ms latency</td></tr>
+      <tr><td>Static IP</td><td>No</td><td>Yes (EIP)</td></tr>
+      <tr><td>WAF</td><td>Yes</td><td>No</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Content-based routing</td><td>Route by URL path, hostname or headers.</td></tr>
+      <tr><td>WAF</td><td>Web firewall that filters HTTP attacks.</td></tr>
+      <tr><td>PrivateLink</td><td>Private service access — uses NLB.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  Q{Need HTTP features or extreme speed?} -->|HTTP routing, WAF, web app| ALB[ALB - Layer 7]
+  Q -->|TCP/UDP, static IP, millions rps, PrivateLink| NLB[NLB - Layer 4]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class ALB a; class NLB b;
+    </pre></div>
+    <ul class="clean">
+      <li><b>ALB</b> (Layer 7): HTTP/HTTPS, <b>content-based routing</b> (host/path/headers), <b>WAF</b> integration — best for <b>web apps</b> and microservices.</li>
+      <li><b>NLB</b> (Layer 4): TCP/UDP/TLS, <b>ultra-low latency</b>, <b>millions of requests/sec</b>, <b>static IP/EIP</b>, preserves source IP — best for <b>non-HTTP</b>, gaming, and <b>PrivateLink</b>.</li>
+      <li>Need a <b>static IP</b> or extreme performance → <b>NLB</b>. Need <b>HTTP routing/WAF</b> → <b>ALB</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only (cost)</span>Comparison lesson; running balancers bills hourly. The choice is what the exam tests.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Both attach to ASG target groups (L6) and do health checks (L9).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>PrivateLink, API designs, container ingress.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Static IP / extreme performance / TCP-UDP / PrivateLink</b> → <b>NLB</b>.</li>
+      <li><b>HTTP routing / WAF / host-path rules</b> → <b>ALB</b>.</li>
+      <li>NLB <b>preserves source IP</b>; ALB does not (adds X-Forwarded-For).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which LB gives a static IP?<span class="hint">tap</span></div><div class="a">NLB (it can use an Elastic IP).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which LB does path/host routing + WAF?<span class="hint">tap</span></div><div class="a">ALB (Layer 7).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which LB for PrivateLink?<span class="hint">tap</span></div><div class="a">NLB.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A gaming backend needs millions of UDP packets/sec and a fixed IP. Which LB?</div>
+      <span class="opt">A) ALB</span><span class="opt">B) NLB</span><span class="opt">C) CLB</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> NLB handles UDP, extreme throughput and static IPs.</div></div>
+    <div class="quiz"><div class="qq">Route /api to one group and /img to another over HTTPS. Which LB?</div>
+      <span class="opt">A) ALB (path-based routing)</span><span class="opt">B) NLB</span><span class="opt">C) GWLB</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Path-based routing is a Layer 7 ALB feature.</div></div>
+  </article>
+
+  <!-- ===== LESSON 5 ===== -->
+  <article class="card" id="l5">
+    <div class="lesson-head"><div class="num">5</div><div><h2>Launch Configuration & Templates</h2><div class="sub">The "what" for Auto Scaling.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Defines WHAT</td><td>AMI, type, networking, SG, key, user data, IAM role.</td><td>Blueprint for instances.</td></tr>
+      <tr><td>Launch Template</td><td>Newer, versioned, more features.</td><td>Recommended.</td></tr>
+      <tr><td>Launch Configuration</td><td>Legacy, no versions, immutable.</td><td>Avoid for new.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Launch Template (LT)</td><td>A reusable, versioned definition of an instance.</td></tr>
+      <tr><td>Launch Configuration (LC)</td><td>The old version; can't be edited (make a new one).</td></tr>
+      <tr><td>Version</td><td>LTs keep numbered versions you can roll back to.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  LT[Launch Template] --> WHAT[AMI + type + SG + key + user data + IAM role]
+  WHAT --> ASG[Used by Auto Scaling Group]
+  LT --> VER[Versioned + newer features]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class LT a;
+    </pre></div>
+    <ul class="clean">
+      <li>Both define <b>WHAT</b> gets launched: AMI, instance type, networking/SG, key pair, user data, IAM role, storage.</li>
+      <li><b>Launch Template</b> is <b>versioned</b>, supports <b>newer features</b>, and is the <b>recommended</b> choice.</li>
+      <li><b>Launch Configuration</b> is <b>legacy</b> and <b>immutable</b> (edit = create a new one).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (creating an LT is free)</span><b>Situation:</b> make a Launch Template for the ASG. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Create a Launch Template</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>AMI=$(aws ssm get-parameters \
+  --names /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64 \
+  --query "Parameters[0].Value" --output text)
+aws ec2 create-launch-template --launch-template-name a4l-lt \
+  --launch-template-data "{\"ImageId\":\"$AMI\",\"InstanceType\":\"t3.micro\"}" \
+  --query "LaunchTemplate.LaunchTemplateId" --output text</code></pre></div>
+      <div class="expect"><b>Expect:</b> a launch-template ID like <code>lt-0abc...</code>.</div>
+      <div class="step"><div class="sh">List its versions</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 describe-launch-template-versions --launch-template-name a4l-lt \
+  --query "LaunchTemplateVersions[].VersionNumber"</code></pre></div>
+      <div class="expect"><b>Expect:</b> version <code>1</code>. Editing creates version 2, 3… (LCs can't do this).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Keep the LT — the ASG (L6) references it. Add user data, IAM role, SGs etc. as you build a real template.</div>
+      <div class="box term"><span class="tag">Clean up (after L6–L9)</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 delete-launch-template --launch-template-name a4l-lt</code></pre></div>
+      <div class="expect"><b>Expect:</b> template deleted (after the ASG is gone).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Feeds the ASG (L6); bundles EC2 settings from earlier sections.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Mixed instances, Spot in ASGs, golden AMIs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Use <b>Launch Templates</b> (versioned, newer features) over <b>Launch Configurations</b> (legacy).</li>
+      <li>LT/LC define <b>WHAT</b> to launch (the ASG defines <b>how many/where</b>).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">LT vs LC — which is recommended?<span class="hint">tap</span></div><div class="a">Launch Template (versioned, more features).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does a launch template define?<span class="hint">tap</span></div><div class="a">AMI, type, networking/SG, key, user data, IAM role, storage.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You want versioned instance blueprints with the latest features for an ASG. Use?</div>
+      <span class="opt">A) Launch Configuration</span><span class="opt">B) Launch Template</span><span class="opt">C) AMI only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Launch Templates are versioned and support newer features.</div></div>
+  </article>
+
+  <!-- ===== LESSON 6 ===== -->
+  <article class="card" id="l6">
+    <div class="lesson-head"><div class="num">6</div><div><h2>Auto Scaling Groups</h2><div class="sub">Keep the right number of healthy instances.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>min / desired / max</td><td>Floor, target, ceiling for instance count.</td><td>Core settings.</td></tr>
+      <tr><td>Self-healing</td><td>Replaces unhealthy instances automatically.</td><td>Resilience.</td></tr>
+      <tr><td>Spans AZs</td><td>Launches across the subnets you give it.</td><td>HA design.</td></tr>
+      <tr><td>+ ELB</td><td>Registers instances with a target group.</td><td>Scaling behind a LB.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Desired capacity</td><td>How many instances the ASG aims to run.</td></tr>
+      <tr><td>Self-healing</td><td>Bad instance is terminated + replaced.</td></tr>
+      <tr><td>Cooldown</td><td>A pause after scaling before scaling again.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  ASG[Auto Scaling Group] --> MIN[min]
+  ASG --> DES[desired]
+  ASG --> MAX[max]
+  ASG --> LT[uses Launch Template]
+  ASG --> AZ[launches across subnets/AZs]
+  ASG --> HEAL[replaces unhealthy instances]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class ASG a;
+    </pre></div>
+    <ul class="clean">
+      <li>An ASG keeps the <b>desired</b> number of instances between <b>min</b> and <b>max</b>, launching from a <b>Launch Template</b>.</li>
+      <li>It <b>self-heals</b> (replaces failed instances) and <b>spreads across AZs</b> for resilience.</li>
+      <li>It integrates with an <b>ELB target group</b> so new instances automatically receive traffic.</li>
+      <li>The ASG itself is <b>free</b> — you pay only for the instances.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (free-tier instances)</span><b>Situation:</b> create an ASG from the LT. <b>Check first:</b> the <code>a4l-lt</code> template (L5) + two subnet IDs.</div>
+      <div class="step"><div class="sh">Create the Auto Scaling group</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>VPC=$(aws ec2 describe-vpcs --filters Name=isDefault,Values=true \
+  --query "Vpcs[0].VpcId" --output text)
+SUBNETS=$(aws ec2 describe-subnets --filters Name=vpc-id,Values=$VPC \
+  --query "Subnets[0:2].SubnetId" --output text | tr '\t' ',')
+aws autoscaling create-auto-scaling-group --auto-scaling-group-name a4l-asg \
+  --launch-template "LaunchTemplateName=a4l-lt,Version=\$Latest" \
+  --min-size 1 --max-size 3 --desired-capacity 1 \
+  --vpc-zone-identifier "$SUBNETS"</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output = created. It launches 1 t3.micro and will keep 1 running.</div>
+      <div class="step"><div class="sh">Watch it maintain capacity</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names a4l-asg \
+  --query "AutoScalingGroups[0].Instances[].{Id:InstanceId,Health:HealthStatus}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> one healthy instance. If you terminate it, the ASG launches a replacement (self-healing).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Keep the ASG for L7–L9. The ASG decides <b>how many/where</b>; the LT decides <b>what</b>.</div>
+      <div class="box term"><span class="tag">Clean up (after L9)</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws autoscaling delete-auto-scaling-group --auto-scaling-group-name a4l-asg --force-delete</code></pre></div>
+      <div class="expect"><b>Expect:</b> ASG + its instances terminated.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses the LT (L5); scaled by policies (L7); health from L9.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Elastic web tiers, ECS capacity, cost optimisation.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>ASG keeps <b>desired</b> count between <b>min/max</b>; <b>self-heals</b>; spans <b>AZs</b>.</li>
+      <li>ASG is <b>free</b> (pay for instances); pairs with an <b>ELB target group</b>.</li>
+      <li>ASG = <b>how many/where</b>; LT = <b>what</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Three ASG capacity settings?<span class="hint">tap</span></div><div class="a">min, desired, max.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does the ASG do to a failed instance?<span class="hint">tap</span></div><div class="a">Terminates and replaces it (self-healing).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Does the ASG itself cost money?<span class="hint">tap</span></div><div class="a">No — you pay only for the instances it runs.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You want a web tier to keep exactly 2 healthy instances and replace failures. Use?</div>
+      <span class="opt">A) One big EC2</span><span class="opt">B) ASG with desired=2</span><span class="opt">C) Read replica</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> An ASG maintains the desired count and self-heals.</div></div>
+  </article>
+
+  <!-- ===== LESSON 7 ===== -->
+  <article class="card" id="l7">
+    <div class="lesson-head"><div class="num">7</div><div><h2>ASG Scaling Policies</h2><div class="sub">How the group grows and shrinks.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Policy</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Manual / Scheduled</td><td>Set capacity by hand or on a timetable.</td><td>Predictable patterns.</td></tr>
+      <tr><td>Target tracking</td><td>Keep a metric at a target (e.g. CPU 50%).</td><td>Simplest, recommended.</td></tr>
+      <tr><td>Step</td><td>Adjust by amount based on breach size.</td><td>Bigger breach = bigger step.</td></tr>
+      <tr><td>Simple</td><td>One adjustment per alarm.</td><td>Basic dynamic.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Target tracking</td><td>ASG adds/removes to hold a metric near a target.</td></tr>
+      <tr><td>Step scaling</td><td>Different size changes for different breach levels.</td></tr>
+      <tr><td>Scheduled</td><td>Scale at set times (e.g. business hours).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  P{Scaling policy} --> TT[Target tracking: hold CPU at 50%]
+  P --> STEP[Step: bigger breach → bigger change]
+  P --> SIMPLE[Simple: one change per alarm]
+  P --> SCHED[Scheduled: scale at set times]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class TT a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Target tracking</b> keeps a metric at a target (e.g. <b>average CPU 50%</b>) — the <b>simplest and recommended</b> dynamic policy.</li>
+      <li><b>Step</b> scaling changes capacity by amounts that depend on <b>how big</b> the alarm breach is.</li>
+      <li><b>Simple</b> scaling makes one adjustment per alarm; <b>scheduled</b> scaling acts at set times for predictable patterns.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (policy is free to define)</span><b>Situation:</b> add a target-tracking policy. <b>Check first:</b> the <code>a4l-asg</code> from L6.</div>
+      <div class="step"><div class="sh">Keep average CPU at 50%</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws autoscaling put-scaling-policy --auto-scaling-group-name a4l-asg \
+  --policy-name cpu50 --policy-type TargetTrackingScaling \
+  --target-tracking-configuration '{"PredefinedMetricSpecification":{"PredefinedMetricType":"ASGAverageCPUUtilization"},"TargetValue":50.0}'</code></pre></div>
+      <div class="expect"><b>Expect:</b> a policy ARN. The ASG now scales out/in to hold CPU near 50%.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Target tracking is usually the right default. Use <b>step</b> when you need different responses to different breach sizes.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws autoscaling delete-policy --auto-scaling-group-name a4l-asg --policy-name cpu50</code></pre></div>
+      <div class="expect"><b>Expect:</b> policy removed (ASG cleanup is in L6).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Drives the ASG (L6) using CloudWatch metrics.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Cost-efficient elasticity, predictive scaling.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Target tracking</b> = keep a metric at a value (simplest); <b>step</b> = scale by breach size.</li>
+      <li><b>Scheduled</b> scaling for known patterns (e.g. 9–5 traffic).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Simplest dynamic scaling policy?<span class="hint">tap</span></div><div class="a">Target tracking.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">When use step scaling?<span class="hint">tap</span></div><div class="a">When the change should depend on how big the breach is.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Policy for predictable daily patterns?<span class="hint">tap</span></div><div class="a">Scheduled scaling.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You simply want the ASG to keep CPU around 60%. Best policy?</div>
+      <span class="opt">A) Simple</span><span class="opt">B) Target tracking</span><span class="opt">C) Manual</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Target tracking holds a metric at a chosen value automatically.</div></div>
+  </article>
+
+  <!-- ===== LESSON 8 ===== -->
+  <article class="card" id="l8">
+    <div class="lesson-head"><div class="num">8</div><div><h2>ASG Lifecycle Hooks</h2><div class="sub">Pause instances for custom actions.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Lifecycle hook</td><td>Pause an instance as it launches or terminates.</td><td>Custom bootstrap/cleanup.</td></tr>
+      <tr><td>Wait state</td><td>Instance waits until you signal or it times out.</td><td>Default 1 hour.</td></tr>
+      <tr><td>Complete action</td><td>complete-lifecycle-action to continue.</td><td>How you resume.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Pending:Wait</td><td>Paused while launching.</td></tr>
+      <tr><td>Terminating:Wait</td><td>Paused while terminating.</td></tr>
+      <tr><td>Heartbeat timeout</td><td>How long it waits before auto-continuing.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  LAUNCH[Instance launching] --> WAIT[Pending:Wait - paused]
+  WAIT --> ACT[Run custom action: install/register/copy logs]
+  ACT --> DONE[complete-lifecycle-action OR timeout]
+  DONE --> INSERVICE[InService]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class WAIT a;
+    </pre></div>
+    <ul class="clean">
+      <li>A <b>lifecycle hook</b> pauses an instance at <b>launch</b> (Pending:Wait) or <b>terminate</b> (Terminating:Wait) so you can run a <b>custom action</b>.</li>
+      <li>The instance stays in a <b>wait state</b> until you call <b>complete-lifecycle-action</b> or the <b>timeout</b> (default 1 hour) passes.</li>
+      <li>Used for tasks like finishing bootstrap, registering, or draining/saving logs before termination.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (hook is free to define)</span><b>Situation:</b> add a launch lifecycle hook. <b>Check first:</b> the <code>a4l-asg</code> from L6.</div>
+      <div class="step"><div class="sh">Add a launch hook (300s wait)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws autoscaling put-lifecycle-hook --auto-scaling-group-name a4l-asg \
+  --lifecycle-hook-name a4l-launch-hook \
+  --lifecycle-transition autoscaling:EC2_INSTANCE_LAUNCHING \
+  --heartbeat-timeout 300 --default-result CONTINUE</code></pre></div>
+      <div class="expect"><b>Expect:</b> hook created. New instances pause in <code>Pending:Wait</code> for up to 300s (or until you complete the action).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Resume early with <code>complete-lifecycle-action</code>. <code>--default-result</code> decides what happens on timeout (CONTINUE or ABANDON).</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws autoscaling delete-lifecycle-hook --auto-scaling-group-name a4l-asg \
+  --lifecycle-hook-name a4l-launch-hook</code></pre></div>
+      <div class="expect"><b>Expect:</b> hook removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Refines ASG launches (L6); pairs with bootstrapping (Advanced EC2).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Graceful scale-in, log draining, custom registration.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Lifecycle hooks <b>pause</b> instances at <b>launch or terminate</b> for custom work.</li>
+      <li>Default timeout <b>1 hour</b>; resume with <b>complete-lifecycle-action</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does a lifecycle hook do?<span class="hint">tap</span></div><div class="a">Pauses an instance during launch or terminate for custom actions.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Default hook timeout?<span class="hint">tap</span></div><div class="a">One hour.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How do you resume early?<span class="hint">tap</span></div><div class="a">complete-lifecycle-action.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must copy logs off an instance before the ASG terminates it. Use?</div>
+      <span class="opt">A) A terminate lifecycle hook</span><span class="opt">B) Bigger instance</span><span class="opt">C) Step scaling</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> A Terminating:Wait hook pauses the instance so you can save logs first.</div></div>
+  </article>
+
+  <!-- ===== LESSON 9 ===== -->
+  <article class="card" id="l9">
+    <div class="lesson-head"><div class="num">9</div><div><h2>Health Checks: EC2 vs ELB</h2><div class="sub">Detect failures at the right level.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Type</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>EC2 (default)</td><td>Hardware/software status checks only.</td><td>Misses app failures.</td></tr>
+      <tr><td>ELB</td><td>App-level (HTTP response) checks.</td><td>Catches app problems.</td></tr>
+      <tr><td>Custom</td><td>You report health yourself.</td><td>Special cases.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>EC2 status check</td><td>Is the instance/host basically running?</td></tr>
+      <tr><td>ELB health check</td><td>Does the app respond correctly (e.g. HTTP 200)?</td></tr>
+      <tr><td>Grace period</td><td>Time after launch before health checks count.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  HC{ASG health check type} --> EC2[EC2: instance running? - default]
+  HC --> ELB[ELB: app responds? - deeper]
+  EC2 --> MISS[A hung app still passes EC2 checks]
+  ELB --> CATCH[ELB check catches the broken app]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class ELB a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>EC2 status checks</b> (the ASG default) only confirm the instance/host is <b>running</b> — a hung or broken app can still "pass".</li>
+      <li><b>ELB health checks</b> test the <b>application</b> (e.g. HTTP 200) and catch app-level failures — better for web tiers (enable them).</li>
+      <li>A <b>grace period</b> gives new instances time to boot before checks count.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> switch the ASG to use ELB health checks. <b>Check first:</b> the <code>a4l-asg</code> from L6 (an ELB target group is needed to actually use ELB checks).</div>
+      <div class="step"><div class="sh">Set health-check type to ELB</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws autoscaling update-auto-scaling-group --auto-scaling-group-name a4l-asg \
+  --health-check-type ELB --health-check-grace-period 120
+aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names a4l-asg \
+  --query "AutoScalingGroups[0].HealthCheckType"</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>ELB</code>. With an ELB attached, the ASG now replaces instances that fail the <b>app-level</b> check, not just hardware checks.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>For web apps behind an ELB, use <b>ELB health checks</b> so the ASG removes instances whose app is broken even if the host is "healthy".</div>
+      <div class="box term"><span class="tag">Clean up</span>Now tear down the chain: ASG (L6 cleanup) then the launch template (L5 cleanup).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Improves ASG self-healing (L6) using ELB (L3).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Reliable web tiers, blue/green, container health.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>ASG default = <b>EC2 status checks</b>; <b>enable ELB health checks</b> to catch app failures.</li>
+      <li>Use a <b>grace period</b> so new instances aren't killed before they boot.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">ASG default health check type?<span class="hint">tap</span></div><div class="a">EC2 status checks.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which check catches a broken app?<span class="hint">tap</span></div><div class="a">ELB health check (app-level).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What stops new instances being killed too early?<span class="hint">tap</span></div><div class="a">The health-check grace period.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Instances pass EC2 checks but the web app returns errors, and the ASG never replaces them. Fix?</div>
+      <span class="opt">A) Enable ELB health checks</span><span class="opt">B) Bigger instances</span><span class="opt">C) Disable scaling</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> ELB health checks test the app; EC2 checks only see the host.</div></div>
+  </article>
+
+  <!-- ===== LESSON 10 ===== -->
+  <article class="card" id="l10">
+    <div class="lesson-head"><div class="num">10</div><div><h2>SSL Offload & Session Stickiness</h2><div class="sub">How ELBs handle HTTPS, and keeping a user on one server.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>SSL Bridging</td><td>ELB decrypts, inspects, re-encrypts to backend.</td><td>Default ALB HTTPS.</td></tr>
+      <tr><td>SSL Pass-through</td><td>Encrypted traffic goes straight to the backend.</td><td>NLB; ELB can't read it.</td></tr>
+      <tr><td>SSL Offload</td><td>ELB decrypts, sends plaintext to backend.</td><td>Less backend CPU.</td></tr>
+      <tr><td>Stickiness</td><td>Same user → same target via a cookie.</td><td>Stateful apps.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>SSL/TLS</td><td>Encryption for data in transit (HTTPS).</td></tr>
+      <tr><td>Certificate</td><td>Proves identity + enables encryption.</td></tr>
+      <tr><td>Session stickiness</td><td>A user keeps hitting the same backend.</td></tr>
+      <tr><td>WPHOME</td><td>WordPress setting storing its own URL (can be hardcoded wrong).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  C[Client HTTPS] --> ELB[ELB]
+  ELB -->|Bridging: decrypt + inspect + re-encrypt| B1[Backend HTTPS]
+  ELB -->|Offload: decrypt then plaintext| B2[Backend HTTP]
+  ELB -.Pass-through: stays encrypted, ELB cannot read.-> B3[Backend decrypts]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class ELB a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>SSL Bridging</b>: ELB <b>decrypts</b>, can <b>inspect</b>, then <b>re-encrypts</b> to the backend. Needs a certificate on the <b>ELB and backend</b> (default for ALB HTTPS).</li>
+      <li><b>SSL Pass-through</b>: traffic stays <b>encrypted</b> to the backend (NLB/TCP); the <b>ELB can't read</b> it; cert only on the <b>backend</b>.</li>
+      <li><b>SSL Offload</b>: ELB decrypts and sends <b>plaintext HTTP</b> to the backend; cert only on the <b>ELB</b> — saves backend CPU but the internal hop is unencrypted.</li>
+      <li><b>Session stickiness</b>: an ALB <b>cookie</b> sends a user back to the <b>same target</b>. Useful for <b>stateful</b> apps, but it can unbalance load — better to <b>externalize sessions</b> (e.g. DynamoDB/ElastiCache).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo overview · Architecture Evolution (6 stages)</span><b>Situation:</b> evolve Animals4life WordPress from one manual box into a scalable, resilient design. Each stage reuses skills from earlier sections. (This is a multi-hour build with billable ALB/RDS/EFS — follow it stage-by-stage and clean up at Stage 6.)</div>
+      <div class="step"><div class="sh">Stage 1 — Manual single instance</div></div>
+      <div class="expect">Build WordPress + a local MariaDB on one EC2 by hand. Baseline: app + DB on the same box (fragile, can't scale).</div>
+      <div class="step"><div class="sh">Stage 2 — Automate with a Launch Template</div></div>
+      <div class="expect">Capture the build as <b>user data</b> in a <b>Launch Template</b> (L5) so the instance rebuilds automatically.</div>
+      <div class="step"><div class="sh">Stage 3 — Split the DB into RDS</div></div>
+      <div class="expect">Move the database to <b>RDS</b> (Section 010) and update the LT to point WordPress at the RDS <b>endpoint</b>. App + data now separated.</div>
+      <div class="step"><div class="sh">Stage 4 — Split the filesystem into EFS</div></div>
+      <div class="expect">Move <b>wp-content</b> to <b>EFS</b> (Section 011) and mount it from the LT, so many instances can share media.</div>
+      <div class="step"><div class="sh">Stage 5 — Add elasticity: ASG + ALB (fix hardcoded WPHOME)</div></div>
+      <div class="expect">Put instances in an <b>ASG</b> behind an <b>ALB</b>; fix WordPress's <b>hardcoded WPHOME</b> URL so it uses the ALB DNS. Now stateless, self-healing and scalable.</div>
+      <div class="step"><div class="sh">Stage 6 — Clean up</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code># delete in reverse: ALB + target group, then ASG, then EFS, then RDS, then LT
+aws autoscaling delete-auto-scaling-group --auto-scaling-group-name a4l-asg --force-delete
+# (delete ALB/target group, EFS mount targets + filesystem, RDS instance, launch template)</code></pre></div>
+      <div class="expect"><b>Expect:</b> all billable resources removed. Cleanup is critical — ALB, RDS and EFS all bill while running.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>The big lesson: <b>decouple state</b>. Moving the DB to RDS and files to EFS makes instances <b>stateless</b>, which is what lets the ASG add/remove them freely. Stickiness is a patch; externalizing state is the real fix.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Ties together LT (L5), ASG (L6), ELB (L3) + RDS/EFS from prior sections.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Stateless design, ElastiCache sessions, CI/CD.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Pass-through</b> = ELB can't see traffic (cert on backend); <b>Bridging</b> = decrypt + re-encrypt; <b>Offload</b> = plaintext to backend.</li>
+      <li>Need the LB to <b>read/route HTTP</b> → can't use pass-through.</li>
+      <li><b>Stickiness</b> keeps a user on one target (cookie); prefer <b>externalized sessions</b> for true scaling.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which SSL mode lets the ELB inspect then re-encrypt?<span class="hint">tap</span></div><div class="a">SSL Bridging.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which SSL mode keeps the ELB blind to the data?<span class="hint">tap</span></div><div class="a">SSL Pass-through.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Better alternative to sticky sessions?<span class="hint">tap</span></div><div class="a">Externalize session state (e.g. DynamoDB/ElastiCache).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Compliance forbids the load balancer from decrypting traffic. Which SSL mode?</div>
+      <span class="opt">A) Offload</span><span class="opt">B) Bridging</span><span class="opt">C) Pass-through</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> Pass-through keeps traffic encrypted end-to-end; the ELB never decrypts.</div></div>
+    <div class="quiz"><div class="qq">A stateful app breaks when users hit different servers. Quick fix vs best fix?</div>
+      <span class="opt">A) Sticky sessions (quick) / externalize state (best)</span><span class="opt">B) Bigger instances</span><span class="opt">C) Disable the LB</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Stickiness pins users to one target; the durable fix is to store sessions externally.</div></div>
+  </article>
+
+  <!-- ===== LESSON 11 ===== -->
+  <article class="card" id="l11">
+    <div class="lesson-head"><div class="num">11</div><div><h2>Gateway Load Balancer</h2><div class="sub">Run and scale network security appliances.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>For appliances</td><td>Firewalls, IDS/IPS, deep packet inspection.</td><td>Security at scale.</td></tr>
+      <tr><td>Transparent gateway</td><td>Single entry/exit point for all traffic.</td><td>Inline inspection.</td></tr>
+      <tr><td>Scales appliances</td><td>Adds/removes appliance capacity with demand.</td><td>Elastic security.</td></tr>
+      <tr><td>GENEVE 6081</td><td>The protocol/port it uses.</td><td>Remember the number.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Virtual appliance</td><td>Software firewall/IDS/IPS running on instances.</td></tr>
+      <tr><td>IDS/IPS</td><td>Intrusion detection / prevention systems.</td></tr>
+      <tr><td>GENEVE</td><td>The tunnelling protocol GWLB uses (port 6081).</td></tr>
+      <tr><td>GWLB endpoint</td><td>Where VPC traffic enters the appliance fleet.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  TRAFFIC[VPC traffic] --> GWE[GWLB endpoint]
+  GWE --> GWLB[Gateway Load Balancer]
+  GWLB --> APP[Fleet of appliances: firewall / IDS / IPS]
+  APP --> GWLB
+  GWLB --> DEST[On to destination]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class GWLB a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>GWLB</b> lets you deploy and <b>scale virtual appliances</b> (firewalls, IDS/IPS, deep packet inspection) behind a single, <b>transparent gateway</b>.</li>
+      <li>Traffic enters via <b>GWLB endpoints</b>, is sent through the appliance fleet for inspection, then continues — all <b>inline</b> and transparent.</li>
+      <li>It uses the <b>GENEVE</b> protocol on <b>port 6081</b> and works at the network layer (L3/4).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>GWLB needs third-party appliances + GWLB endpoints (cost/complexity); the exam only needs the "scale security appliances + GENEVE 6081" idea.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>The newest ELB type (L2); complements ALB/NLB.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Centralised inspection, security VPC, Transit Gateway designs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Deploy/scale firewalls or IDS/IPS appliances transparently</b>" → <b>Gateway Load Balancer</b>.</li>
+      <li>GWLB uses <b>GENEVE on port 6081</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is GWLB for?<span class="hint">tap</span></div><div class="a">Deploying + scaling network appliances (firewalls, IDS/IPS, DPI).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which protocol/port does GWLB use?<span class="hint">tap</span></div><div class="a">GENEVE, port 6081.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must run a fleet of third-party firewalls inline and scale them with traffic. Use?</div>
+      <span class="opt">A) ALB</span><span class="opt">B) NLB</span><span class="opt">C) Gateway Load Balancer</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> GWLB is purpose-built to scale inline security appliances.</div></div>
+  </article>
+
+  <!-- ===== MOCK EXAM ===== -->
+  <article class="card examcard" id="mock">
+    <div class="lesson-head"><div class="num">★</div><div><h2>Mock Exam</h2><div class="sub">HA/Scaling + IAM/Orgs + S3 + VPC + EC2 + Containers + Advanced EC2 + Route 53 + RDS + Network Storage.</div></div></div>
+    <div class="box exam"><span class="tag">How to use</span>Decide first, then tap <b>Show answer</b>. Pick the <b>best</b> option. 18 questions.</div>
+
+    <div class="quiz"><div class="qq">1. A new web app needs HTTPS path-based routing (/api, /img). Which LB?</div>
+      <span class="opt">A) CLB</span><span class="opt">B) ALB</span><span class="opt">C) NLB</span><span class="opt">D) GWLB</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Path/host routing is a Layer 7 ALB feature.</div></div>
+
+    <div class="quiz"><div class="qq">2. A backend needs a static IP and millions of TCP requests/sec. Which LB?</div>
+      <span class="opt">A) ALB</span><span class="opt">B) NLB</span><span class="opt">C) CLB</span><span class="opt">D) GWLB</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> NLB gives static IPs and extreme Layer 4 performance.</div></div>
+
+    <div class="quiz"><div class="qq">3. Scale a fleet of inline firewalls transparently. Which LB?</div>
+      <span class="opt">A) ALB</span><span class="opt">B) NLB</span><span class="opt">C) Gateway LB</span><span class="opt">D) Classic</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> GWLB scales virtual appliances (uses GENEVE 6081).</div></div>
+
+    <div class="quiz"><div class="qq">4. You want versioned instance blueprints with new features for an ASG. Use?</div>
+      <span class="opt">A) Launch Configuration</span><span class="opt">B) Launch Template</span><span class="opt">C) AMI only</span><span class="opt">D) User data</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Launch Templates are versioned and support newer features.</div></div>
+
+    <div class="quiz"><div class="qq">5. Keep exactly 2 healthy web instances and replace failures. Use?</div>
+      <span class="opt">A) One big EC2</span><span class="opt">B) ASG desired=2</span><span class="opt">C) Read replica</span><span class="opt">D) Spot fleet only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> An ASG maintains the desired count and self-heals.</div></div>
+
+    <div class="quiz"><div class="qq">6. Simplest policy to keep ASG CPU near 50%?</div>
+      <span class="opt">A) Simple</span><span class="opt">B) Step</span><span class="opt">C) Target tracking</span><span class="opt">D) Manual</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> Target tracking holds a metric at a chosen value.</div></div>
+
+    <div class="quiz"><div class="qq">7. Save logs off an instance before the ASG terminates it. Use?</div>
+      <span class="opt">A) Terminate lifecycle hook</span><span class="opt">B) Step scaling</span><span class="opt">C) Bigger instance</span><span class="opt">D) Cooldown</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> A Terminating:Wait hook pauses the instance for cleanup.</div></div>
+
+    <div class="quiz"><div class="qq">8. Instances pass EC2 checks but the app returns errors and aren't replaced. Fix?</div>
+      <span class="opt">A) Enable ELB health checks</span><span class="opt">B) Bigger instances</span><span class="opt">C) Disable scaling</span><span class="opt">D) Change AMI</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> ELB health checks test the app; EC2 checks only see the host.</div></div>
+
+    <div class="quiz"><div class="qq">9. Compliance: the load balancer must not decrypt traffic. SSL mode?</div>
+      <span class="opt">A) Offload</span><span class="opt">B) Bridging</span><span class="opt">C) Pass-through</span><span class="opt">D) None</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> Pass-through keeps traffic encrypted to the backend.</div></div>
+
+    <div class="quiz"><div class="qq">10. A stateful app breaks across servers. Durable fix?</div>
+      <span class="opt">A) Sticky sessions forever</span><span class="opt">B) Externalize sessions (DynamoDB/ElastiCache)</span><span class="opt">C) One server</span><span class="opt">D) Disable LB</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Externalizing state makes instances stateless and freely scalable.</div></div>
+
+    <div class="quiz"><div class="qq">11. (Route 53) Point apex a4l.com at the ALB. Record?</div>
+      <span class="opt">A) CNAME at apex</span><span class="opt">B) Alias A record</span><span class="opt">C) MX</span><span class="opt">D) TXT</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> CNAME can't be at the apex; an Alias points to AWS resources like an ALB.</div></div>
+
+    <div class="quiz"><div class="qq">12. (Network Storage) Multiple ASG instances must share wp-content. Storage?</div>
+      <span class="opt">A) EBS per instance</span><span class="opt">B) EFS</span><span class="opt">C) Instance store</span><span class="opt">D) S3 Glacier</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> EFS is shared across many instances — key for a scalable web tier.</div></div>
+
+    <div class="quiz"><div class="qq">13. (RDS) The web tier scales but the DB is the bottleneck on reads. Fix?</div>
+      <span class="opt">A) Read replica</span><span class="opt">B) Multi-AZ standby</span><span class="opt">C) Bigger ASG</span><span class="opt">D) EFS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Read replicas offload reads; a Multi-AZ standby can't serve reads.</div></div>
+
+    <div class="quiz"><div class="qq">14. (VPC) An ALB won't create — subnets lack capacity. Requirement?</div>
+      <span class="opt">A) Subnets in 2+ AZs with free IPs (/27+)</span><span class="opt">B) A NAT Gateway</span><span class="opt">C) IPv6 only</span><span class="opt">D) A VPN</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> ELBs place a node per AZ subnet and need spare IPs.</div></div>
+
+    <div class="quiz"><div class="qq">15. (IAM) ASG instances need AWS permissions for the app. Best practice?</div>
+      <span class="opt">A) Keys in user data</span><span class="opt">B) Instance role in the Launch Template</span><span class="opt">C) Root keys</span><span class="opt">D) Public bucket</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Attach an instance role via the LT — temporary, rotating creds.</div></div>
+
+    <div class="quiz"><div class="qq">16. (Containers) Run scaling containers with no servers to manage. ECS mode?</div>
+      <span class="opt">A) EC2 mode</span><span class="opt">B) Fargate</span><span class="opt">C) Dedicated Host</span><span class="opt">D) Spot only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Fargate is serverless; pay for running tasks.</div></div>
+
+    <div class="quiz"><div class="qq">17. (Adv EC2) Predictable daily traffic 9–5; scale ahead of demand. Policy?</div>
+      <span class="opt">A) Scheduled scaling</span><span class="opt">B) Simple scaling</span><span class="opt">C) Lifecycle hook</span><span class="opt">D) Manual</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Scheduled scaling acts at known times for predictable patterns.</div></div>
+
+    <div class="quiz"><div class="qq">18. (S3) Failover/holding page when the whole app tier is down. Route 53 + ?</div>
+      <span class="opt">A) Failover routing to an S3 static site</span><span class="opt">B) Weighted to EC2</span><span class="opt">C) Latency to RDS</span><span class="opt">D) GWLB</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Failover routing sends users to an S3 maintenance page when the primary is unhealthy.</div></div>
+  </article>
+
+  <div class="foot">
+    <div>
+      <span class="pill">ALB = Layer 7</span><span class="pill">NLB = Layer 4 + static IP</span>
+      <span class="pill">GWLB = appliances (GENEVE 6081)</span><span class="pill">LT over LC</span>
+      <span class="pill">ASG = self-healing</span><span class="pill">Target tracking = simplest</span>
+      <span class="pill">Lifecycle hook = pause</span><span class="pill">Enable ELB health checks</span>
+      <span class="pill">Pass-through = LB blind</span><span class="pill">Externalize sessions</span>
+    </div>
+    <p>Section 012 · HA &amp; Scaling + Mock Exam · built for SAA-C03 self-study.<br>
+    Tap a flashcard or "Show answer" to reveal. Use ☰ Lessons to jump around.</p>
+  </div>
+</main>
+
+<button class="toTop" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawerBg').classList.add('open');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerBg').classList.remove('open');}
+function cp(btn){
+  const code=btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard?.writeText(code).then(()=>{const t=btn.innerText;btn.innerText='copied!';setTimeout(()=>btn.innerText=t,1200);})
+  .catch(()=>{btn.innerText='select & copy';});
+}
+const tt=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{tt.classList.toggle('show',window.scrollY>500);});
+window.addEventListener('load',()=>{
+  try{
+    mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{
+      fontFamily:'Manrope, sans-serif',primaryColor:'#1b2128',primaryTextColor:'#e7edf3',
+      primaryBorderColor:'#2dd4bf',lineColor:'#60a5fa',secondaryColor:'#212934',tertiaryColor:'#161b21'}});
+  }catch(e){console.warn('mermaid init',e);}
+});
+</script>
+</body>
+</html>

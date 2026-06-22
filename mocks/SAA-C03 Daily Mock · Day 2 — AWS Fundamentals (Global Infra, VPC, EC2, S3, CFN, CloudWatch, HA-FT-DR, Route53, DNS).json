@@ -1,0 +1,414 @@
+{
+  "exam_id": "cantrill-saa-c03-daily",
+  "day": 2,
+  "date": "2026-06-23",
+  "title": "SAA-C03 Daily Mock",
+  "subtitle": "Day 2 — AWS Fundamentals (Global Infra, VPC, EC2, S3, CFN, CloudWatch, HA/FT/DR, Route53, DNS) + Day 1 Review",
+  "topics_covered": [
+    "AWS Public vs Private Services",
+    "AWS Global Infrastructure",
+    "AWS Default VPC",
+    "EC2 Basics",
+    "S3 Basics",
+    "CloudFormation Basics",
+    "CloudWatch Basics",
+    "Shared Responsibility Model",
+    "High-Availability vs Fault-Tolerance vs Disaster Recovery",
+    "Route53 Fundamentals",
+    "DNS Record Types",
+    "REVIEW: AWS Accounts — account isolation",
+    "REVIEW: IAM Basics — policy types (inline vs managed vs boundary)",
+    "REVIEW: IAM Access Keys — zero-downtime rotation"
+  ],
+  "config": {
+    "seconds_per_question": 120,
+    "pass_percent": 70,
+    "randomize_questions": true,
+    "randomize_options": true
+  },
+  "questions": [
+    {
+      "topic": "AWS Public vs Private Services",
+      "domain": "Secure",
+      "stem": "A developer running an EC2 instance inside a private subnet wants to call the S3 API endpoint directly. The instance has no NAT Gateway and no VPC endpoint configured. What happens when the instance attempts to reach S3?",
+      "options": [
+        {
+          "text": "The call succeeds because S3 is an AWS-managed service and AWS automatically routes traffic from private subnets to AWS public endpoints without additional configuration.",
+          "correct": false,
+          "why": "Wrong — AWS does not automatically bridge private subnets to public AWS service endpoints; without a route to the internet or a VPC endpoint, the instance has no path to reach S3's public zone endpoint."
+        },
+        {
+          "text": "The call fails because the instance has no network path to S3's public zone endpoint — it needs either a NAT Gateway, an internet gateway route, or a Gateway VPC Endpoint for S3.",
+          "correct": true,
+          "why": "Correct — S3 endpoints sit in the AWS public zone; a private subnet instance can only reach them via a route to the public internet (NAT/IGW) or a VPC endpoint that brings S3 into the VPC's private network space."
+        },
+        {
+          "text": "The call succeeds only if the S3 bucket policy explicitly allows traffic from the instance's private IP address range.",
+          "correct": false,
+          "why": "Wrong — A bucket policy controls authorisation, not routing; even a permissive bucket policy cannot create a network path where none exists at the VPC level."
+        },
+        {
+          "text": "The call fails because private subnets can only communicate with other resources inside the same VPC and cannot reach any AWS-managed service without VPC peering.",
+          "correct": false,
+          "why": "Wrong — VPC peering connects VPCs to each other, not VPCs to AWS public services; the correct mechanisms for reaching S3 from a private subnet are NAT, IGW routing, or a VPC endpoint."
+        }
+      ]
+    },
+    {
+      "topic": "AWS Global Infrastructure",
+      "domain": "Resilient",
+      "stem": "A company needs to deploy an application that must survive the complete loss of any single AWS data centre. They want the MINIMUM infrastructure footprint that achieves this goal within one AWS Region.",
+      "options": [
+        {
+          "text": "Deploy the application across two EC2 instances in two different AWS Regions, using Route53 latency routing to distribute traffic.",
+          "correct": false,
+          "why": "Wrong — Spreading across two Regions is more than the minimum required and introduces cross-region complexity; survivability against a single data centre failure only requires multiple Availability Zones within one Region."
+        },
+        {
+          "text": "Deploy the application in a single Availability Zone using two EC2 instances for redundancy within that AZ.",
+          "correct": false,
+          "why": "Wrong — A single Availability Zone may span multiple data centres but is treated as one failure domain; if the entire AZ is affected, both instances fail together, so this does not meet the stated requirement."
+        },
+        {
+          "text": "Deploy the application across at least two Availability Zones within one Region, since each AZ is isolated from failures in the others.",
+          "correct": true,
+          "why": "Correct — AWS Availability Zones are physically separate data centres (or groups of data centres) with independent power, cooling, and networking; spreading across two AZs in one Region is the minimum to survive the loss of any single facility."
+        },
+        {
+          "text": "Deploy the application into a Local Zone within the chosen Region, as Local Zones provide built-in multi-data-centre redundancy by design.",
+          "correct": false,
+          "why": "Wrong — Local Zones extend a Region's compute to edge locations for low-latency access; they are single-point extensions, not multi-AZ constructs, and do not provide built-in data centre redundancy."
+        }
+      ]
+    },
+    {
+      "topic": "AWS Default VPC",
+      "domain": "Operations/IaC",
+      "stem": "A new AWS account in us-east-1 has not been modified from its initial state. An engineer launches an EC2 instance without specifying a subnet. Which statement BEST describes the networking the instance receives?",
+      "options": [
+        {
+          "text": "The instance is placed in the default VPC, assigned to the default subnet in a randomly selected Availability Zone, and receives both a private and a public IPv4 address.",
+          "correct": true,
+          "why": "Correct — The default VPC exists in every Region, has a default subnet in each AZ, and those subnets have auto-assign public IPv4 enabled; an instance launched without specifying a subnet lands in one of these default subnets with both address types."
+        },
+        {
+          "text": "The instance is placed into a quarantine VPC with no internet access until the engineer assigns it to a specific subnet manually.",
+          "correct": false,
+          "why": "Wrong — AWS does not have a quarantine VPC concept; unspecified subnet selection falls back to the default VPC and its default subnets, which do have internet connectivity via the attached internet gateway."
+        },
+        {
+          "text": "The instance is placed in the default VPC but receives only a private IPv4 address because public IP assignment requires an explicit Elastic IP allocation.",
+          "correct": false,
+          "why": "Wrong — Default subnets have the auto-assign public IPv4 attribute enabled by default, so instances launched into them receive a public IP automatically without a separate Elastic IP allocation."
+        },
+        {
+          "text": "The instance fails to launch because AWS requires an explicit subnet selection when no custom VPC has been created in the account.",
+          "correct": false,
+          "why": "Wrong — AWS creates a default VPC (and default subnets) in every Region for every new account specifically to allow instances to launch immediately without explicit network configuration."
+        }
+      ]
+    },
+    {
+      "topic": "EC2 Basics",
+      "domain": "High-Performing",
+      "stem": "A startup is running a web application on a single EC2 instance. User traffic has grown and the instance is consistently hitting 90% CPU utilisation. The team needs a quick fix with minimal architectural change. What is the BEST immediate action?",
+      "options": [
+        {
+          "text": "Stop the instance, change it to a larger instance type with more vCPUs and memory, and restart it.",
+          "correct": true,
+          "why": "Correct — Vertical scaling (resizing the instance) addresses the immediate CPU constraint with minimal change to the application architecture; it requires only a brief stop and start cycle."
+        },
+        {
+          "text": "Create an AMI of the instance and launch a second identical instance, then split user sessions manually between the two.",
+          "correct": false,
+          "why": "Wrong — Manually splitting sessions is operationally fragile and requires a load balancer or DNS changes to route traffic, which is a more significant architectural change than simply resizing the instance."
+        },
+        {
+          "text": "Attach additional EBS volumes to the instance to increase available IOPS, which will reduce the CPU wait time that is causing the high utilisation reading.",
+          "correct": false,
+          "why": "Wrong — Additional EBS volumes increase storage I/O capacity, not CPU processing power; if the bottleneck is CPU utilisation, more storage has no effect on compute performance."
+        },
+        {
+          "text": "Enable EC2 Auto Scaling on the single instance so it can dynamically allocate more CPU cores from the underlying host as demand increases.",
+          "correct": false,
+          "why": "Wrong — Auto Scaling launches or terminates additional instances based on demand; it does not dynamically add CPU cores to a running instance, which is not how EC2 virtualisation works."
+        }
+      ]
+    },
+    {
+      "topic": "S3 Basics",
+      "domain": "Resilient",
+      "stem": "A company stores critical document archives in S3 Standard. A junior architect claims the service already handles durability automatically, so no additional configuration is needed. A senior architect insists the team must still consider durability separately. Which perspective is correct for this storage class?",
+      "options": [
+        {
+          "text": "The junior architect is correct; S3 Standard replicates data across a minimum of three AZs within the Region and is designed for 99.999999999% object durability, which is sufficient for most workloads without extra configuration.",
+          "correct": true,
+          "why": "Correct — S3 Standard distributes objects redundantly across at least three AZs automatically and delivers 11 nines of durability; no additional durability configuration is required for this storage class under normal circumstances."
+        },
+        {
+          "text": "The senior architect is correct; S3 Standard stores only a single copy of each object within one AZ, so Cross-Region Replication must be enabled to protect against Availability Zone failures.",
+          "correct": false,
+          "why": "Wrong — S3 Standard is not single-AZ; it automatically stores data across multiple AZs. Cross-Region Replication addresses different requirements such as compliance or geographic redundancy, not standard intra-region durability."
+        },
+        {
+          "text": "Both are partially right; S3 Standard replicates within one AZ by default and a separate replication rule must be created to extend redundancy to additional AZs in the same Region.",
+          "correct": false,
+          "why": "Wrong — S3 Standard is multi-AZ by default with no replication rule required; intra-region multi-AZ redundancy is built into the storage class, not an optional add-on."
+        },
+        {
+          "text": "The senior architect is correct because the 11 nines durability SLA applies only to buckets with versioning enabled; without versioning, S3 Standard offers no durability guarantees.",
+          "correct": false,
+          "why": "Wrong — The 11 nines durability figure is inherent to the S3 Standard storage class and is not conditional on versioning being enabled; versioning protects against accidental deletion or overwrite, which is a separate concern."
+        }
+      ]
+    },
+    {
+      "topic": "CloudFormation Basics",
+      "domain": "Operations/IaC",
+      "stem": "A team manages AWS resources using CloudFormation. A developer manually modifies a Security Group rule through the console that was originally created by a CFN stack. What is the MOST likely consequence when the stack is next updated?",
+      "options": [
+        {
+          "text": "CloudFormation detects the out-of-band change and automatically reverts it before applying the stack update, to ensure the template remains the source of truth.",
+          "correct": false,
+          "why": "Wrong — CloudFormation does not continuously monitor for drift and auto-remediate; drift detection must be triggered manually, and remediation requires a deliberate stack update — it is not performed automatically."
+        },
+        {
+          "text": "The manual change persists indefinitely because CloudFormation only manages resources during the initial stack creation and does not touch them on subsequent updates.",
+          "correct": false,
+          "why": "Wrong — CloudFormation reconciles managed resources on every update; if the Security Group resource is included in the update, CFN will overwrite it to match the template, removing the manual change."
+        },
+        {
+          "text": "The manual change persists until the next stack update, at which point CloudFormation reconciles the Security Group back to the template definition and overwrites the manual rule.",
+          "correct": true,
+          "why": "Correct — Out-of-band changes create stack drift; on the next update that includes the affected resource, CloudFormation enforces the template state, which overwrites any manual modifications made outside the stack."
+        },
+        {
+          "text": "The stack enters a DRIFT_DETECTED state and blocks all future updates until the manual change is reverted or the template is updated to match the live resource.",
+          "correct": false,
+          "why": "Wrong — CloudFormation does not block updates due to drift; drift detection is an informational feature and a DRIFT_DETECTED status does not prevent stack operations from proceeding."
+        }
+      ]
+    },
+    {
+      "topic": "CloudWatch Basics",
+      "domain": "Operations/IaC",
+      "stem": "An operations team wants an automated email alert whenever an EC2 instance's CPU utilisation exceeds 80% for five consecutive minutes. Which solution requires the least amount of custom code to implement?",
+      "options": [
+        {
+          "text": "Create a CloudWatch Alarm on the CPUUtilization metric with a threshold of 80% and a five-minute evaluation period, then configure an SNS topic as the alarm action to deliver the email.",
+          "correct": true,
+          "why": "Correct — CloudWatch Alarms natively evaluate metrics over configurable periods and trigger SNS actions; SNS delivers email to subscribers with no custom code, making this the simplest fully-managed solution."
+        },
+        {
+          "text": "Enable detailed monitoring on the instance, write a Lambda function that polls CPUUtilization every minute, and invoke SES to send an email when the value exceeds the threshold.",
+          "correct": false,
+          "why": "Wrong — This approach requires writing and maintaining custom Lambda code plus a polling mechanism; CloudWatch Alarms with SNS accomplish the same outcome natively without any code."
+        },
+        {
+          "text": "Build a CloudWatch Dashboard widget that turns red when CPUUtilization exceeds 80%, and instruct the operations team to check it at five-minute intervals.",
+          "correct": false,
+          "why": "Wrong — Dashboards are passive visualisation tools that require a human to actively monitor them; they do not generate automated notifications and do not meet the requirement for an automated alert."
+        },
+        {
+          "text": "Configure EC2 Status Check Alarms on the instance, since status checks evaluate all performance metrics including CPU utilisation and can trigger notifications.",
+          "correct": false,
+          "why": "Wrong — EC2 Status Check Alarms monitor system reachability and instance health, not workload performance metrics; CPUUtilization is a separate CloudWatch metric that requires a CloudWatch Alarm to alert on."
+        }
+      ]
+    },
+    {
+      "topic": "Shared Responsibility Model",
+      "domain": "Secure",
+      "stem": "A company using EC2 instances receives a CVE advisory for the Linux kernel version running on their fleet. According to the AWS Shared Responsibility Model, who must act on this advisory?",
+      "options": [
+        {
+          "text": "AWS, because the hypervisor and physical hardware underneath EC2 make OS-level security an AWS-managed concern shared with the customer.",
+          "correct": false,
+          "why": "Wrong — AWS manages the physical infrastructure and hypervisor, but the guest OS on EC2 is entirely the customer's responsibility; AWS does not patch operating systems running inside customer-controlled EC2 instances."
+        },
+        {
+          "text": "The customer, because EC2 is an IaaS offering where the customer owns and is responsible for the guest OS, including applying kernel patches and security updates.",
+          "correct": true,
+          "why": "Correct — For EC2, the shared responsibility boundary sits at the hypervisor; everything above it — including the guest OS kernel — is the customer's responsibility to configure, maintain, and patch."
+        },
+        {
+          "text": "AWS, because the AMI used to launch the instances was sourced from the AWS Marketplace, making AWS accountable for ongoing OS security maintenance.",
+          "correct": false,
+          "why": "Wrong — Using an AWS-provided or Marketplace AMI does not transfer OS maintenance responsibility to AWS; once launched, the running instance's OS is owned and managed by the customer."
+        },
+        {
+          "text": "The responsibility is split: AWS patches the kernel and networking stack, and the customer patches application-layer software installed above the OS.",
+          "correct": false,
+          "why": "Wrong — For EC2, the entire guest OS stack including the kernel is the customer's responsibility; AWS's remit ends at the hypervisor layer and does not include any part of the guest operating system."
+        }
+      ]
+    },
+    {
+      "topic": "HA vs FT vs DR",
+      "domain": "Resilient",
+      "stem": "A financial trading platform must continue processing transactions even if a component fails mid-operation, with no transaction loss and no manual recovery steps required. Which design goal BEST describes this requirement?",
+      "options": [
+        {
+          "text": "High Availability — deploying across multiple AZs with automatic failover ensures the system resumes operations within seconds, which meets the continuity need for financial workloads.",
+          "correct": false,
+          "why": "Wrong — Multi-AZ failover involves a brief interruption and potential in-flight transaction loss during the failover window; for zero-loss, zero-interruption operation the bar is higher than HA."
+        },
+        {
+          "text": "Fault Tolerance — the system continues operating correctly through component failures with no interruption and no data loss, requiring redundant components that take over instantly.",
+          "correct": true,
+          "why": "Correct — Fault Tolerance means the system keeps functioning correctly even as components fail, with no disruption to in-flight operations; it is a stricter requirement than HA because it demands continuity, not just fast recovery."
+        },
+        {
+          "text": "Disaster Recovery — a documented runbook allows engineers to restore the trading platform to a known-good state within the agreed RTO after any failure event.",
+          "correct": false,
+          "why": "Wrong — DR is about restoring a system after an outage and typically accepts some downtime and data loss up to the RPO; it does not describe continuous uninterrupted operation through a failure."
+        },
+        {
+          "text": "High Availability — the system achieves the five-nines uptime SLA through redundant components, which is the industry standard for financial transaction platforms.",
+          "correct": false,
+          "why": "Wrong — Five-nines HA still permits around 5 minutes of downtime per year and does not guarantee zero transaction loss during failover; the requirement for no loss and no manual steps during a failure describes Fault Tolerance."
+        }
+      ]
+    },
+    {
+      "topic": "Route53 Fundamentals",
+      "domain": "High-Performing",
+      "stem": "A company hosts a web application at app.example.com and wants to point it to an AWS Application Load Balancer DNS name. The DNS zone is hosted in Route53. Which record type should they create and why?",
+      "options": [
+        {
+          "text": "A CNAME record pointing app.example.com to the ALB DNS name, since CNAME records are the standard DNS mechanism for aliasing one hostname to another.",
+          "correct": false,
+          "why": "Wrong — A CNAME is valid for subdomains but cannot be used at the zone apex, incurs Route53 query charges, and does not automatically track IP address changes on the ALB; Route53 Alias records are the preferred choice for AWS resources."
+        },
+        {
+          "text": "A Route53 Alias A record pointing app.example.com to the ALB DNS name, because Alias records resolve to IP addresses natively, follow ALB IP changes automatically, and incur no Route53 query charges.",
+          "correct": true,
+          "why": "Correct — Route53 Alias records are a Route53 extension that function like CNAME at the DNS protocol level but return A records; they work at the zone apex, automatically follow IP changes on AWS targets, and do not incur per-query charges."
+        },
+        {
+          "text": "An MX record pointing app.example.com to the ALB DNS name, because MX records route application-layer traffic to the appropriate load balancer endpoint.",
+          "correct": false,
+          "why": "Wrong — MX records are exclusively for routing SMTP email traffic to mail servers; they play no role in routing HTTP or HTTPS web traffic to a load balancer."
+        },
+        {
+          "text": "A TXT record containing the ALB's DNS name, which browsers resolve when looking up app.example.com to determine the correct load balancer address.",
+          "correct": false,
+          "why": "Wrong — TXT records store arbitrary text for purposes like domain ownership verification and SPF; DNS resolvers and browsers do not use TXT records to resolve hostnames to IP addresses."
+        }
+      ]
+    },
+    {
+      "topic": "DNS Record Types",
+      "domain": "High-Performing",
+      "stem": "An engineer needs the zone apex example.com to resolve to a set of IPv4 addresses, and for email sent to @example.com to be routed to mail.example.com. Which TWO DNS records satisfy both requirements? (Select TWO.)",
+      "options": [
+        {
+          "text": "An A record for example.com mapping the domain to the required IPv4 addresses.",
+          "correct": true,
+          "why": "Correct — A records map a hostname directly to IPv4 addresses; this is the correct and only standard record type for pointing the zone apex to IP addresses."
+        },
+        {
+          "text": "An MX record for example.com pointing to mail.example.com with a numeric priority value.",
+          "correct": true,
+          "why": "Correct — MX records designate the mail server responsible for receiving email for a domain; setting the value to mail.example.com with a priority is exactly how email routing is configured in DNS."
+        },
+        {
+          "text": "A CNAME record for example.com pointing to mail.example.com to consolidate both web and email routing through a single record.",
+          "correct": false,
+          "why": "Wrong — A CNAME at the zone apex is prohibited by RFC 1912 because it conflicts with SOA and NS records that must exist there; a single CNAME also cannot serve double duty for both web resolution and email routing."
+        },
+        {
+          "text": "An AAAA record for example.com as a drop-in replacement for the A record, since AAAA records support both IPv4 and IPv6 address families.",
+          "correct": false,
+          "why": "Wrong — AAAA records map hostnames to IPv6 addresses only; they do not support IPv4 addresses, which require a separate A record."
+        },
+        {
+          "text": "An NS record for example.com listing mail.example.com as the target so the name server knows where to deliver email for the domain.",
+          "correct": false,
+          "why": "Wrong — NS records delegate DNS authority for a zone to name servers; they have nothing to do with email routing, which is solely the responsibility of MX records."
+        }
+      ]
+    },
+    {
+      "topic": "REVIEW: AWS Account Isolation",
+      "domain": "Secure",
+      "stem": "An organisation runs production and development in separate AWS accounts. The dev account's IAM admin user has AdministratorAccess within dev. A developer uses this user to attempt to list S3 buckets in the production account via the CLI. What is the result?",
+      "options": [
+        {
+          "text": "The request is denied because IAM identities are scoped to the account they belong to, and AdministratorAccess grants no permissions in any other account.",
+          "correct": true,
+          "why": "Correct — AWS accounts are hard isolation boundaries; an IAM user's permissions apply only within its own account, regardless of the permission level. Cross-account access requires an explicit trust relationship such as an IAM role with a cross-account trust policy."
+        },
+        {
+          "text": "The request succeeds in read-only mode because AdministratorAccess implicitly includes cross-account read permissions for shared services like S3.",
+          "correct": false,
+          "why": "Wrong — AdministratorAccess is scoped entirely to the account where the policy is attached; no cross-account read permissions are implied or included by any standard managed policy."
+        },
+        {
+          "text": "The request succeeds if the production account's root user has previously logged in from the same IP address, establishing implicit trust between the two accounts.",
+          "correct": false,
+          "why": "Wrong — AWS does not establish inter-account trust based on IP addresses or login history; cross-account access is configured explicitly through IAM role trust policies and resource-based policies."
+        },
+        {
+          "text": "The CLI request is redirected to a read-only sandbox view of the production account because AWS Organisations links the two accounts at the billing level, enabling limited visibility.",
+          "correct": false,
+          "why": "Wrong — AWS Organisations consolidates billing and enables SCPs but does not grant IAM identities in one account any visibility or access to resources in another account."
+        }
+      ]
+    },
+    {
+      "topic": "REVIEW: IAM Policy Types — Permissions Boundary",
+      "domain": "Secure",
+      "stem": "A permissions boundary on an IAM user permits only s3:GetObject and s3:ListBucket. An identity policy attached to the same user grants s3:GetObject, s3:ListBucket, and s3:DeleteObject. Which actions can the user actually perform?",
+      "options": [
+        {
+          "text": "The user can perform all three actions because the identity policy explicitly grants them and identity policies take precedence over permissions boundaries for actions not related to IAM.",
+          "correct": false,
+          "why": "Wrong — Identity policies do not outrank permissions boundaries; effective permissions are the intersection of both, so only actions allowed by the boundary AND the identity policy are usable."
+        },
+        {
+          "text": "The user can perform s3:GetObject and s3:ListBucket only, because effective permissions are limited to actions that appear in both the permissions boundary and the identity policy.",
+          "correct": true,
+          "why": "Correct — A permissions boundary sets the maximum ceiling of permissions; s3:DeleteObject is allowed by the identity policy but not by the boundary, so it is not available to the user despite being explicitly granted."
+        },
+        {
+          "text": "The user cannot perform any actions because the presence of a permissions boundary creates an implicit deny that overrides all identity policy grants.",
+          "correct": false,
+          "why": "Wrong — A permissions boundary does not deny everything; it allows the actions listed within it. Actions permitted by both the boundary and the identity policy are fully accessible."
+        },
+        {
+          "text": "The user can perform s3:DeleteObject but not the read actions, because boundaries restrict read permissions to prevent data exfiltration while preserving write capabilities.",
+          "correct": false,
+          "why": "Wrong — Permissions boundaries have no concept of preferring write over read actions; the boundary in this scenario explicitly lists s3:GetObject and s3:ListBucket as allowed, which are the only actions the user can effectively use."
+        }
+      ]
+    },
+    {
+      "topic": "REVIEW: IAM Access Keys — Zero-Downtime Rotation",
+      "domain": "Secure",
+      "stem": "A security team mandates 90-day key rotation with zero application downtime. An engineer's plan: generate a replacement key while the old key is still active, immediately deactivate the old key, update all applications with the new key, verify everything works, then delete the old key. Is this plan correct?",
+      "options": [
+        {
+          "text": "The plan is incorrect because IAM allows only one active access key per user, so the old key must be deleted before a new one can be generated.",
+          "correct": false,
+          "why": "Wrong — IAM supports up to two access keys per user simultaneously, which is exactly the feature designed to enable zero-downtime rotation without needing to delete the old key first."
+        },
+        {
+          "text": "The plan is mostly correct but deactivating before migration causes downtime; the correct sequence is to migrate applications first, then deactivate, then delete.",
+          "correct": true,
+          "why": "Correct — Deactivating the old key before updating the applications breaks any app still using it during the migration window. The safe sequence is: create new key, migrate apps, verify success, then deactivate and delete the old key — not deactivate first."
+        },
+        {
+          "text": "The plan is fully correct; deactivating the old key while applications are still using it is safe because IAM retries deactivated key requests for up to five minutes during rotation.",
+          "correct": false,
+          "why": "Wrong — IAM does not have a retry grace period for deactivated keys; any API call made with a deactivated key is rejected immediately, causing authentication failures for applications that haven't yet been updated."
+        },
+        {
+          "text": "The plan is incorrect because new IAM access keys require up to 30 minutes to propagate globally before applications can use them reliably.",
+          "correct": false,
+          "why": "Wrong — New IAM access keys become usable very shortly after creation; there is no 30-minute propagation delay. The flaw in the plan is the sequencing of deactivation, not a propagation issue."
+        }
+      ]
+    }
+  ]
+}

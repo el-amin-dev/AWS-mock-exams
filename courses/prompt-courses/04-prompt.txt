@@ -1,0 +1,269 @@
+# ROLE
+You are an expert AWS instructor building a single self-contained HTML study + revision 
+document for ONE section of Adrian Cantrill's AWS Solutions Architect Associate (SAA-C03) 
+course. The document must teach me from zero and also work as exam-revision later.
+
+# WHO I AM (design for this exactly)
+- 0 AWS knowledge, 0 work experience. Everything is new to me.
+- English level B1. Use simple, clear English. Short sentences.
+- I am preparing for the SAA-C03 exam, so depth = exam level (not deeper, not shallower).
+- I run demos myself on my laptop using AWS CLI v2 (already installed and configured).
+
+# INPUT
+I will paste one full course SECTION below. A section contains several lessons.
+Treat each lesson as one teaching unit. Build the document lesson by lesson, in order.
+
+# OUTPUT = ONE HTML FILE
+- ONE single HTML file for the WHOLE section, no matter how many lessons (even 20+). 
+  Do not split into parts.
+- Material UI look, DARK MODE, MOBILE-FIRST (single column, large tap targets, readable font).
+- Load Mermaid from CDN and render diagrams (graph/flowchart/sequence as fits the idea).
+- Self-contained: all CSS + JS inline, opens offline in a browser.
+- Sticky top bar + collapsible section menu so I can jump between lessons.
+- Clean spacing, cards for each lesson, color accents for "exam tip" / "demo" / "term" blocks.
+
+# FORMATTING PRINCIPLES (follow strictly, in priority order)
+1. Mermaid diagram  >  paragraph  (always try a diagram first for any flow/relationship)
+2. Outline / bullet list  >  paragraph
+3. Key–value table  >  paragraph
+4. Structured  >  unstructured
+Only use a paragraph when none of the above fit. Keep paragraphs to 2–3 short sentences.
+
+# LANGUAGE & TERMS
+- B1 English. When a technical word first appears, do ONE of:
+  (a) short explanation in parentheses right after it, OR
+  (b) add it to a "Key Terms" table at the TOP of the lesson (term | simple meaning).
+- Prefer the Key Terms table at the entry of each lesson for the main technical words.
+
+# DOCUMENT STRUCTURE
+## Top of document (once)
+- Section title + 1-line goal.
+- "Section Map": a Mermaid diagram showing how the lessons connect.
+- A "Quick Understanding" table for the WHOLE section (lesson | one-line what + why it matters for exam).
+
+## For EACH lesson (repeat this block)
+1. **Quick Understanding table** — fast TL;DR of the lesson (concept | meaning | exam relevance).
+2. **Key Terms table** — the technical words used, in B1 plain meaning.
+3. **Explanation** — diagram-led (Mermaid), then bullets/tables. Minimal prose.
+4. **Demo** (see DEMO SPEC) — directly after the explanation.
+   Demo EVERY lesson that can possibly be demoed with AWS CLI v2 / CloudFormation.
+   Only skip when the lesson is pure theory with nothing to build — then write 
+   "No demo — theory only" and say in 1 line why.
+5. **Build Knowledge** — 2 short lists:
+   - "Connects to NOW" (how this links to other lessons in this section)
+   - "Needed LATER" (which future course topics depend on this).
+6. **Exam Pointers** — bullets of common SAA-C03 traps, "remember this", and easy-confusions.
+7. **Flashcards** — 4–6 active-recall Q→A pairs (HTML click-to-flip or show/hide).
+8. **Mini Quiz** — 2–3 exam-style multiple-choice questions with the correct answer + 
+   1-line why (hidden until clicked).
+
+# DEMO SPEC (use AWS CLI v2; CloudFormation allowed for fast setup/cleanup)
+Each demo follows this exact order:
+1. **Situation** — the real scenario (tie it to Animals4life when natural) and the goal.
+2. **Check first** — prerequisites / what state I should be in before starting.
+3. **Steps** — numbered. For EVERY command:
+   - the exact AWS CLI v2 command (in a copyable code block),
+   - "What you expect" — what output/result I should see after running it.
+4. **Fix / Key info** — correct any course misunderstanding, note real-world gotchas.
+5. **Clean up** — exact commands to delete everything (use CloudFormation delete or CLI 
+   delete commands) so I leave NO running/billable resources.
+
+# QUALITY BAR
+- Accurate to current SAA-C03 scope. If something is exam-relevant but missing from the 
+  pasted text, add it briefly and mark it "[added for exam]".
+- No fluff. Everything must help me learn OR revise. Remove anything that doesn't.
+- The file must be ready to use as my single source for studying and revising this section.
+
+# SECTION TO BUILD
+SIMPLE STORAGE SERVICE (S3)
+
+1 -  S3 Security (Resource Policies & ACLs) 
+
+S3 Security is controlled via a combination of Identity Policies, Bucket Policies (Resource Policies) and Legacy Bucket and Object ACLs
+
+This lesson introduces bucket policies and warns you off using ACLs
+
+Bucket Policy Examples : https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html
+
+2 - S3 Static Hosting 
+
+Accessing S3 is generally done via APIs
+
+Static Website Hosting is a feature of the product which lets you define a HTTP endpoint, set index and error documents and use S3 like a website.
+
+This lesson exposures the functionality and some common usages.
+
+S3 Pricing : https://aws.amazon.com/s3/pricing/
+
+ we use s3 to create a static website showing Animals4life TOP 10 animals (the results are completely fair - and unbiased)
+
+3 - Object Versioning & MFA Delete 
+
+Object versioning is a feature which can be enabled on an S3 bucket - allowing the bucket to store multi versions of objects
+
+These objects can be referenced by their version ID to interact directly - or omit this to reference the latest version of an object
+
+Objects aren't deleted - object deletion markers are put in place to hide objects.
+
+Versioning is an essential feature to understand for the exam.
+
+MFADelete is a related feature which is also discussed. 
+
+we look at how Object Versioning can be used in a real-world like scenario.
+
+This lesson looks at a 'Animal of the week' website, and how to use versioning to recover when objects are changed and deleted accidentally or intentionally.
+
+4 - S3 Performance Optimization 
+
+This lesson reviews how S3 Uploads (PutObject) works
+
+Single PUT Upload
+
+Multipart Upload
+
+Finishing up by reviewing how S3 Transfer Acceleration works and how it could benefit Animals4life remote workers when uploading large data sets.
+
+This lesson explores how easy it is to enable Accelerated Transfer on an S3 bucket and review the AWS provided tool to complete Direct uploads vs Accelerated Transfer
+
+AWS Accelerated Transfer Tool : http://s3-accelerate-speedtest.s3-accelerate.amazonaws.com/en/accelerate-speed-comparsion.html
+
+5 - Key Management Service (KMS) 
+
+AWS Key Management Service (AWS KMS) makes it easy for you to create and manage cryptographic keys and control their use across a wide range of AWS services and in your applications. AWS KMS is a secure and resilient service that uses hardware security modules that have been validated under FIPS 140-2, or are in the process of being validated, to protect your keys.
+
+ we run through the practical steps of creating and configuring a KMS Key, an Alias and we use that Key and the CLI tools to encrypt and decrypt some data.
+
+text
+
+echo "find all the doggos, distract them with the yumz" > battleplans.txt
+
+aws kms encrypt \
+    --key-id alias/catrobot \
+    --plaintext fileb://battleplans.txt \
+    --output text \
+    --query CiphertextBlob \
+    | base64 --decode > not_battleplans.enc 
+    
+aws kms decrypt \
+    --ciphertext-blob fileb://not_battleplans.enc \
+    --output text \
+    --query Plaintext | base64 --decode > decryptedplans.txt
+
+
+6 - S3 Object Encryption CSE/SSE 
+
+This lesson steps through the various encryption options available within S3 and finishes by looking at default bucket encryption settings
+
+    Client-Side Encryption
+    SSE-C
+    SSE-S3
+    SSE-KMS
+
+As part of the lesson we review how SSE-KMS impacts permissions and how it can achieve role separation.
+
+
+https://docs.aws.amazon.com/AmazonS3/latest/user-guide/default-bucket-encryption.html
+
+https://docs.aws.amazon.com/kms/latest/developerguide/services-s3.html
+
+https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html
+
+https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html
+
+https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerSideEncryptionCustomerKeys.html
+
+ we create an S3 bucket, and upload 3 images to the bucket using different encryption methods.
+
+After adjusting the permissions of the IAMADMIN user we review what access changes occur, and why.
+
+This DEMO focusses on the role separation aspect of S3 encryption using KMS.
+
+
+json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Deny",
+            "Action": "kms:*",
+            "Resource": "*"
+        }
+    ]
+}
+
+7 -  S3 Bucket Keys 
+
+Amazon S3 Bucket Keys reduce the cost of Amazon S3 server-side encryption using AWS Key Management Service (SSE-KMS). Bucket-level keys for SSE can reduce AWS KMS request costs by up to 99 percent by decreasing the request traffic from Amazon S3 to AWS KMS.
+
+https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-key.html
+
+8 - S3 Object Storage Classes 
+
+This lesson steps through the S3 storage classes
+
+ - covers S3 Standard, S3 Standard-IA and S3 One Zone-IA
+
+ - covers S3 Glacier, S3 Glacier Deep Archive and Intelligent-Tiering
+
+https://aws.amazon.com/s3/pricing/
+
+https://aws.amazon.com/s3/storage-classes/
+
+9 - S3 Lifecycle Configuration 
+
+This lesson steps through S3 lifecycle management/configuration/rules both in theory and via an S3 console example.
+
+10 - S3 Replication 
+
+S3 has two replication features which allow objects to be replicated between SOURCE and DESTINATION buckets in the same or different AWS accounts
+
+Cross-Region Replication (CRR) is the process used when Source and Destination are in different AWS regions
+
+Same-Region Replication (SRR) is used when the buckets are in the same region.
+
+This lesson introduces the theory, features and limitations of both of these methods.
+
+https://docs.aws.amazon.com/AmazonS3/latest/dev/replication-what-is-isnot-replicated.html
+
+Lesson Links
+
+https://docs.aws.amazon.com/AmazonS3/latest/dev/replication.html
+
+https://aws.amazon.com/about-aws/whats-new/2019/11/amazon-s3-replication-time-control-for-predictable-replication-time-backed-by-sla/
+
+We create 2 S3 buckets - one in N. Virginia, the other in N. California and configure Cross-Region Replication (CRR) between the two.
+
+11 - S3 PreSigned URLs 
+
+Presigned URL's are a feature of S3 which allows the system to generate a URL with access permissions encoded into it, for a specific bucket and object, valid for a certain time period.
+
+you will create a bucket, upload an object and generate a presignedURL allowing access for any unauthenticated identities.
+
+12 - S3 Select and Glacier Select 
+
+S3 and Glacier Select allow you to use a SQL-Like statement to retrieve partial objects from S3 and Glacier.
+
+13 - The Amazon S3 notification feature enables you to receive notifications when certain events happen in your bucket. To enable notifications, you must first add a notification configuration that identifies the events you want Amazon S3 to publish and the destinations where you want Amazon S3 to send the notifications. You store this configuration in the notification subresource that is associated with a bucket
+
+14 - S3 Access Logs 
+
+Server access logging provides detailed records for the requests that are made to a bucket. Server access logs are useful for many applications. For example, access log information can be useful in security and access audits. It can also help you learn about your customer base and understand your Amazon S3 bill.
+
+15 - S3 Object Lock 
+
+You can use S3 Object Lock to store objects using a write-once-read-many (WORM) model. It can help you prevent objects from being deleted or overwritten for a fixed amount of time or indefinitely. You can use S3 Object Lock to meet regulatory requirements that require WORM storage, or add an extra layer of protection against object changes and deletion.
+
+16 -  S3 Access Points 
+
+Amazon S3 Access Points, a feature of S3, simplifies managing data access at scale for applications using shared data sets on S3. Access points are unique hostnames that customers create to enforce distinct permissions and network controls for any request made through the access point.
+
+https://docs.aws.amazon.com/AmazonS3/latest/dev/creating-access-points.html#access-points-policies
+
+Amazon Simple Storage Service (S3) Multi-Region Access Points provide a global endpoint for routing Amazon S3 request traffic between AWS Regions. Each global endpoint routes Amazon S3 data request traffic from multiple sources, including traffic originating in Amazon Virtual Private Clouds (VPCs), from on-premises data centers over AWS PrivateLink, and from the public internet without building complex networking configurations with separate endpoints.
+
+In this mini project you will gain practical experience working with Multi-region access points
+
+Full instructions : https://github.com/acantril/learn-cantrill-io-labs/tree/master/00-aws-simple-demos/aws-s3-multi-region-access-point
+
+17 - mock exam level for this section "SIMPLE STORAGE SERVICE (S3) " implement old courses ["IAM, ACCOUNTS AND AWS ORGANISATIONS"]

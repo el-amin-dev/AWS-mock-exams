@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03 · 018 · Infrastructure as Code (CloudFormation)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+:root{
+  --bg:#101418;--bg2:#161b21;--surface:#1b2128;--surface2:#212934;
+  --line:#2c3540;--line2:#3a4654;--text:#e7edf3;--muted:#9fb0c0;
+  --primary:#2dd4bf;--primary-d:#0f3b39;--exam:#fbbf24;--exam-d:#3a2f0c;
+  --demo:#60a5fa;--demo-d:#0e2647;--term:#c084fc;--term-d:#2a1640;
+  --warn:#fb7185;--warn-d:#3a151c;--ok:#34d399;
+  --radius:16px;--shadow:0 6px 22px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.25;margin:0}
+a{color:var(--primary);text-decoration:none}
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(16,20,24,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .badge{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--bg);background:var(--primary);padding:4px 9px;border-radius:8px}
+.topbar .ttl{font-family:'Sora';font-weight:600;font-size:15px}
+.topbar .ttl small{display:block;color:var(--muted);font-weight:500;font-size:11.5px;font-family:'Manrope'}
+.menu-btn{margin-left:auto;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+.menu-btn:active{transform:scale(.97)}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
+.drawer-bg.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(86vw,340px);background:var(--bg2);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .28s ease;z-index:80;overflow-y:auto;padding:18px 16px 40px}
+.drawer.open{transform:translateX(0)}
+.drawer h3{font-size:11.5px;color:var(--muted);margin:14px 4px 8px;text-transform:uppercase;letter-spacing:1px}
+.drawer a{display:block;color:var(--text);padding:8px 12px;border-radius:10px;font-weight:500;font-size:13px;border:1px solid transparent}
+.drawer a:active{background:var(--surface)}
+.drawer a .n{color:var(--primary);font-family:'Sora';font-weight:700;margin-right:8px}
+.drawer .close{width:100%;margin-top:18px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 90px}
+.hero{background:radial-gradient(120% 90% at 100% 0%, rgba(45,212,191,.16), transparent 55%),radial-gradient(120% 90% at 0% 100%, rgba(96,165,250,.12), transparent 55%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+.hero .eyebrow{color:var(--primary);font-weight:700;font-size:12.5px;letter-spacing:1.5px;font-family:'Sora'}
+.hero h1{font-size:25px;margin:6px 0 8px}
+.hero p{color:var(--muted);margin:0;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;margin-top:18px;box-shadow:var(--shadow)}
+.lesson-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.lesson-head .num{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:'Sora';font-weight:700;background:var(--primary);color:var(--bg);font-size:15px}
+.lesson-head h2{font-size:19px}
+.lesson-head .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+h3.block{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+h3.block::before{content:"";width:14px;height:3px;border-radius:3px;background:var(--primary)}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:360px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface2);color:var(--text);font-family:'Sora';font-weight:600;font-size:12.5px;letter-spacing:.3px}
+tr:last-child td{border-bottom:none}
+td b{color:var(--primary)}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{position:relative;padding:6px 0 6px 22px;font-size:15px;border-bottom:1px dashed var(--line)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"▸";position:absolute;left:2px;top:6px;color:var(--primary)}
+.two-col{display:grid;gap:12px}
+@media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+.box{border-radius:12px;padding:13px 14px;margin:12px 0;border:1px solid;font-size:14.5px}
+.box .tag{font-family:'Sora';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
+.box.exam{background:var(--exam-d);border-color:#6b551a}.box.exam .tag{color:var(--exam)}
+.box.term{background:var(--term-d);border-color:#4a2d6b}.box.term .tag{color:var(--term)}
+.box.warn{background:var(--warn-d);border-color:#6b2630}.box.warn .tag{color:var(--warn)}
+.box.demo{background:var(--demo-d);border-color:#1d4a82}.box.demo .tag{color:var(--demo)}
+.box ul{margin:4px 0 0;padding-left:18px}.box li{margin:3px 0}
+.mer{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;overflow-x:auto}
+.mermaid{display:flex;justify-content:center;min-width:fit-content}
+.code{position:relative;background:#0c1117;border:1px solid var(--line2);border-radius:10px;margin:10px 0}
+.code pre{margin:0;padding:13px 14px;overflow-x:auto;font-size:13px;line-height:1.55}
+.code code{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;color:#cfe9e6;white-space:pre}
+.code .cp{position:absolute;top:7px;right:7px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:7px;font-size:11px;padding:4px 9px;cursor:pointer;font-weight:600}
+.code .cp:active{color:var(--primary)}
+.expect{font-size:13px;color:var(--ok);background:rgba(52,211,153,.08);border-left:3px solid var(--ok);padding:7px 11px;margin:0 0 12px;border-radius:0 8px 8px 0}
+.expect b{color:var(--ok)}
+.step{counter-increment:st;margin:14px 0}
+.step .sh{display:flex;align-items:center;gap:9px;font-family:'Sora';font-weight:600;font-size:14.5px;margin-bottom:4px}
+.step .sh::before{content:counter(st);background:var(--demo);color:var(--bg);width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12.5px;flex:0 0 auto}
+.demo-wrap{counter-reset:st}
+.fc-grid{display:grid;gap:10px}
+.fc{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:13px 14px;cursor:pointer;transition:border-color .2s;user-select:none}
+.fc:active{border-color:var(--primary)}
+.fc .q{font-weight:600;font-size:14.5px;display:flex;gap:8px;align-items:flex-start}
+.fc .q::before{content:"Q";font-family:'Sora';color:var(--primary);font-weight:700;flex:0 0 auto}
+.fc .a{display:none;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);color:var(--muted);font-size:14px}
+.fc .a::before{content:"A ";color:var(--ok);font-weight:700;font-family:'Sora'}
+.fc.show .a{display:block}
+.fc .hint{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600}
+.quiz{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:14px;margin:10px 0}
+.quiz .qq{font-weight:600;font-size:15px;margin-bottom:8px}
+.quiz .opt{display:block;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin:6px 0;font-size:14px;cursor:pointer}
+.quiz .opt:active{border-color:var(--primary)}
+.quiz .reveal{margin-top:6px;background:var(--surface);color:var(--primary);border:1px solid var(--line2);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px;width:100%}
+.quiz .ans{display:none;margin-top:10px;border-left:3px solid var(--ok);background:rgba(52,211,153,.08);padding:9px 12px;border-radius:0 8px 8px 0;font-size:14px}
+.quiz .ans b{color:var(--ok)}
+.quiz.show .ans{display:block}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;line-height:1.7}
+.pill{display:inline-block;background:var(--surface2);border:1px solid var(--line2);color:var(--muted);font-size:11px;padding:2px 8px;border-radius:20px;margin:2px}
+.toTop{position:fixed;right:14px;bottom:16px;z-index:50;background:var(--primary);color:var(--bg);border:none;width:46px;height:46px;border-radius:50%;font-size:20px;box-shadow:var(--shadow);cursor:pointer;display:none}
+.toTop.show{display:block}
+kbd{background:var(--surface2);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-size:12px;font-family:monospace}
+.examcard{border-color:#6b551a;background:linear-gradient(180deg,var(--exam-d),var(--surface))}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="badge">SAA-C03</span>
+  <div class="ttl">Section 018<small>IaC · CloudFormation</small></div>
+  <button class="menu-btn" onclick="openDrawer()">☰ Lessons</button>
+</header>
+
+<div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer">
+  <h3>Basics</h3>
+  <a href="#l1" onclick="closeDrawer()"><span class="n">1</span>CFN vs Terraform</a>
+  <a href="#l2" onclick="closeDrawer()"><span class="n">2</span>Physical & Logical Resources</a>
+  <a href="#l3" onclick="closeDrawer()"><span class="n">3</span>Template & Pseudo Parameters</a>
+  <a href="#l4" onclick="closeDrawer()"><span class="n">4</span>Intrinsic Functions</a>
+  <h3>Portability</h3>
+  <a href="#l5" onclick="closeDrawer()"><span class="n">5</span>Mappings</a>
+  <a href="#l6" onclick="closeDrawer()"><span class="n">6</span>Outputs</a>
+  <a href="#l7" onclick="closeDrawer()"><span class="n">7</span>Conditions</a>
+  <a href="#l8" onclick="closeDrawer()"><span class="n">8</span>DependsOn</a>
+  <h3>Signals & structure</h3>
+  <a href="#l9" onclick="closeDrawer()"><span class="n">9</span>Wait Conditions & cfn-signal</a>
+  <a href="#l10" onclick="closeDrawer()"><span class="n">10</span>Nested Stacks</a>
+  <a href="#l11" onclick="closeDrawer()"><span class="n">11</span>Cross-Stack References</a>
+  <a href="#l12" onclick="closeDrawer()"><span class="n">12</span>Stack Sets</a>
+  <h3>Lifecycle & security</h3>
+  <a href="#l13" onclick="closeDrawer()"><span class="n">13</span>Deletion Policy</a>
+  <a href="#l14" onclick="closeDrawer()"><span class="n">14</span>Stack Roles</a>
+  <h3>EC2 config & advanced</h3>
+  <a href="#l15" onclick="closeDrawer()"><span class="n">15</span>cfn-init</a>
+  <a href="#l16" onclick="closeDrawer()"><span class="n">16</span>cfn-hup</a>
+  <a href="#l17" onclick="closeDrawer()"><span class="n">17</span>ChangeSets</a>
+  <a href="#l18" onclick="closeDrawer()"><span class="n">18</span>Custom Resources</a>
+  <h3>Revision</h3>
+  <a href="#mock" onclick="closeDrawer()"><span class="n">★</span>Mock Exam</a>
+  <button class="close" onclick="closeDrawer()">Close</button>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">SECTION GOAL</div>
+    <h1>Define and deploy AWS infrastructure as code.</h1>
+    <p>Learn CloudFormation templates end to end: logical vs physical resources, parameters, functions, mappings, outputs, conditions, signals, nesting, StackSets, and EC2 config helpers.</p>
+  </section>
+
+  <div class="card">
+    <h3 class="block">Section Map · how the lessons connect</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  T[2. Logical→Physical] --> P[3. Parameters]
+  P --> FN[4. Functions]
+  FN --> MAP[5. Mappings]
+  FN --> OUT[6. Outputs]
+  FN --> CON[7. Conditions]
+  T --> DEP[8. DependsOn / 9. signals]
+  OUT --> NEST[10-11. Nested + Cross-stack]
+  NEST --> SS[12. StackSets]
+  T --> DEL[13. DeletionPolicy / 14. Stack roles]
+  T --> INIT[15-16. cfn-init/cfn-hup]
+  T --> CS[17. ChangeSets / 18. Custom resources]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class T,P,FN,MAP,OUT,CON a;
+  class DEP,NEST,SS,DEL,INIT,CS b;
+    </pre></div>
+  </div>
+
+  <div class="card">
+    <h3 class="block">Quick Understanding · whole section</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Lesson</th><th>What + why it matters for the exam</th></tr>
+      <tr><td>1 CFN vs Terraform</td><td>AWS-native IaC vs multi-cloud (optional).</td></tr>
+      <tr><td>2 Logical/Physical</td><td>Template = WHAT; stack creates physical resources.</td></tr>
+      <tr><td>3 Parameters</td><td>Inputs + pseudo params (Region, AccountId…).</td></tr>
+      <tr><td>4 Functions</td><td>Ref, GetAtt, Sub, Join, FindInMap, If…</td></tr>
+      <tr><td>5 Mappings</td><td>Key→value lookups (e.g. region→AMI).</td></tr>
+      <tr><td>6 Outputs</td><td>Return + export values (cross-stack).</td></tr>
+      <tr><td>7 Conditions</td><td>Create resources only when true (prod/test).</td></tr>
+      <tr><td>8 DependsOn</td><td>Force creation order.</td></tr>
+      <tr><td>9 Wait/cfn-signal</td><td>Wait for EC2 bootstrap success.</td></tr>
+      <tr><td>10 Nested Stacks</td><td>Root stack creates child stacks (shared lifecycle).</td></tr>
+      <tr><td>11 Cross-Stack</td><td>Export/ImportValue between separate stacks.</td></tr>
+      <tr><td>12 StackSets</td><td>Deploy across many accounts/regions.</td></tr>
+      <tr><td>13 DeletionPolicy</td><td>Retain/Snapshot on delete.</td></tr>
+      <tr><td>14 Stack Roles</td><td>Stack uses a role (PassRole), not your identity.</td></tr>
+      <tr><td>15 cfn-init</td><td>Desired-state config on EC2.</td></tr>
+      <tr><td>16 cfn-hup</td><td>Re-apply config on stack update.</td></tr>
+      <tr><td>17 ChangeSets</td><td>Preview changes before applying.</td></tr>
+      <tr><td>18 Custom Resources</td><td>Custom logic via Lambda on create/update/delete.</td></tr>
+      <tr><td>★ Mock Exam</td><td>CloudFormation + all prior sections.</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ===== LESSON 1 ===== -->
+  <article class="card" id="l1">
+    <div class="lesson-head"><div class="num">1</div><div><h2>CloudFormation vs Terraform</h2><div class="sub">Picking an IaC tool (optional).</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Tool</th><th>What</th><th>Exam relevance</th></tr>
+      <tr><td>CloudFormation</td><td>AWS-native IaC, free, YAML/JSON.</td><td>AWS-only; managed state.</td></tr>
+      <tr><td>Terraform</td><td>3rd-party, multi-cloud, HCL.</td><td>You manage state.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>IaC</td><td>Infrastructure as Code — define infra in text files.</td></tr>
+      <tr><td>State</td><td>A record of what's been deployed.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>IaC</b> = define infrastructure in code so it's <b>repeatable</b> and version-controlled.</li>
+      <li><b>CloudFormation</b>: AWS-native, <b>free</b> (pay only for resources), <b>YAML/JSON</b>, AWS manages the <b>state</b> (stacks) — best for <b>AWS-only</b>.</li>
+      <li><b>Terraform</b>: third-party (HashiCorp), <b>multi-cloud</b>, <b>HCL</b> language, <b>you manage</b> a state file — best when you span multiple clouds.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>A tool comparison; the hands-on starts with deploying a CloudFormation stack (L2).</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Frames the whole section (CloudFormation).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Choosing IaC in real designs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>AWS-only + native</b> → <b>CloudFormation</b>; <b>multi-cloud</b> → <b>Terraform</b>.</li>
+      <li>CloudFormation is <b>free</b> + manages state; Terraform makes <b>you</b> manage state.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">CFN language(s)?<span class="hint">tap</span></div><div class="a">YAML or JSON.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which is multi-cloud?<span class="hint">tap</span></div><div class="a">Terraform.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Who manages state in CFN?<span class="hint">tap</span></div><div class="a">AWS (via stacks).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You only use AWS and want native, free IaC with managed state. Use?</div>
+      <span class="opt">A) Terraform</span><span class="opt">B) CloudFormation</span><span class="opt">C) Ansible</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> CloudFormation is AWS-native, free, and manages state for you.</div></div>
+  </article>
+
+  <!-- ===== LESSON 2 ===== -->
+  <article class="card" id="l2">
+    <div class="lesson-head"><div class="num">2</div><div><h2>Physical & Logical Resources</h2><div class="sub">Template = WHAT, stack = the real things.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Logical resource</td><td>The WHAT, declared in the template.</td><td>You write this.</td></tr>
+      <tr><td>Physical resource</td><td>The real thing CFN creates.</td><td>One per logical.</td></tr>
+      <tr><td>Stack</td><td>All resources from one template.</td><td>Create/update/delete together.</td></tr>
+      <tr><td>Portability</td><td>Avoid hardcoded values.</td><td>Reuse anywhere.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Template</td><td>A YAML/JSON file describing resources.</td></tr>
+      <tr><td>Stack</td><td>A deployed instance of a template.</td></tr>
+      <tr><td>Non-portable</td><td>Hardcoded so it only works once/one region.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  TPL[Template: logical resources - WHAT] --> STACK[Stack]
+  STACK --> PHYS[Physical resources - real AWS things]
+  TPL -->|update template| STACK
+  STACK -->|create/update/delete| PHYS
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class STACK a;
+    </pre></div>
+    <ul class="clean">
+      <li>A <b>template</b> declares <b>logical resources</b> (the WHAT); CloudFormation works out the HOW.</li>
+      <li>A <b>stack</b> creates one <b>physical resource</b> per logical resource, and <b>updates/deletes</b> them as the template changes.</li>
+      <li><b>Resources</b> is the only required section. <b>Non-portable</b> templates hardcode values (AMI IDs, names) — they break in other regions; use parameters/mappings to make them portable.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (deploying an empty S3 bucket is free)</span><b>Situation:</b> deploy your first stack. <b>Check first:</b> CLI configured. (Keep this stack for L17.)</div>
+      <div class="step"><div class="sh">Write a tiny template + validate it</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>cat > tpl.yaml << 'EOF'
+AWSTemplateFormatVersion: '2010-09-09'
+Description: A4L first stack
+Resources:
+  A4LBucket:
+    Type: AWS::S3::Bucket
+EOF
+aws cloudformation validate-template --template-body file://tpl.yaml</code></pre></div>
+      <div class="expect"><b>Expect:</b> the template validates (no errors).</div>
+      <div class="step"><div class="sh">Create the stack</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws cloudformation create-stack --stack-name a4l-demo \
+  --template-body file://tpl.yaml
+aws cloudformation wait stack-create-complete --stack-name a4l-demo
+aws cloudformation describe-stacks --stack-name a4l-demo \
+  --query "Stacks[0].StackStatus" --output text</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>CREATE_COMPLETE</code> + a physical S3 bucket created for the logical <code>A4LBucket</code>.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>The logical name (<code>A4LBucket</code>) is what you reference in the template; the <b>physical</b> name is auto-generated. Keep this stack — L17 reuses it.</div>
+      <div class="box term"><span class="tag">Clean up (or keep for L17)</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws cloudformation delete-stack --stack-name a4l-demo</code></pre></div>
+      <div class="expect"><b>Expect:</b> deleting the stack deletes the bucket (default behaviour).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Everything else (params, functions, outputs) goes in this template.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>All IaC deployments.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Logical</b> resource (template) → <b>physical</b> resource (stack creates it).</li>
+      <li><b>Resources</b> is the <b>only required</b> template section.</li>
+      <li>Hardcoded = <b>non-portable</b>; use parameters/mappings/pseudo params for portability.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Logical vs physical resource?<span class="hint">tap</span></div><div class="a">Logical = declared in template; physical = the real thing the stack creates.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Only required template section?<span class="hint">tap</span></div><div class="a">Resources.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What makes a template non-portable?<span class="hint">tap</span></div><div class="a">Hardcoded values (AMI IDs, names, AZs).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A template hardcodes an AMI ID and fails in another region. Fix?</div>
+      <span class="opt">A) Use parameters/mappings (portable)</span><span class="opt">B) Bigger stack</span><span class="opt">C) JSON not YAML</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Parameters/mappings/pseudo params remove hardcoding and make it portable.</div></div>
+  </article>
+
+  <!-- ===== LESSON 3 ===== -->
+  <article class="card" id="l3">
+    <div class="lesson-head"><div class="num">3</div><div><h2>Template & Pseudo Parameters</h2><div class="sub">Inputs to a template.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Parameters</td><td>Inputs you supply at deploy time.</td><td>Typed + validated.</td></tr>
+      <tr><td>Pseudo parameters</td><td>Values AWS provides automatically.</td><td>Region, AccountId…</td></tr>
+      <tr><td>NoEcho</td><td>Hides a parameter value.</td><td>For secrets.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Parameter</td><td>A value passed in when deploying.</td></tr>
+      <tr><td>Pseudo parameter</td><td>A built-in value like AWS::Region.</td></tr>
+      <tr><td>AllowedValues</td><td>A fixed list a parameter must match.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Parameters</b> are typed inputs (String/Number/AWS-specific like <code>AWS::EC2::KeyPair::KeyName</code>) with <b>Default</b>, <b>AllowedValues</b>, constraints, and <b>NoEcho</b> for secrets.</li>
+      <li><b>Pseudo parameters</b> are provided by AWS automatically: <code>AWS::Region</code>, <code>AWS::AccountId</code>, <code>AWS::StackName</code>, <code>AWS::StackId</code>, <code>AWS::NoValue</code>.</li>
+    </ul>
+    <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>Parameters:
+  EnvType:
+    Type: String
+    AllowedValues: [test, prod]
+    Default: test
+# use them:
+#   !Ref EnvType            (parameter value)
+#   !Ref AWS::Region        (pseudo parameter)</code></pre></div>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — template feature</span>Add these to the L2 template and deploy with <code>--parameters</code>; the exam tests parameter types + pseudo params.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Used with functions (L4), mappings (L5), conditions (L7).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Portable, reusable templates.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Pseudo parameters</b> (Region, AccountId, StackName) need <b>no input</b> — AWS fills them.</li>
+      <li><b>NoEcho: true</b> hides sensitive parameter values.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Name three pseudo parameters.<span class="hint">tap</span></div><div class="a">AWS::Region, AWS::AccountId, AWS::StackName.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How to hide a secret parameter?<span class="hint">tap</span></div><div class="a">Set NoEcho: true.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How to restrict a parameter to a list?<span class="hint">tap</span></div><div class="a">AllowedValues.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You need the current region inside a template without asking the user. Use?</div>
+      <span class="opt">A) A parameter</span><span class="opt">B) AWS::Region pseudo parameter</span><span class="opt">C) Hardcode it</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> AWS::Region is supplied automatically by AWS.</div></div>
+  </article>
+
+  <!-- ===== LESSON 4 ===== -->
+  <article class="card" id="l4">
+    <div class="lesson-head"><div class="num">4</div><div><h2>Intrinsic Functions</h2><div class="sub">Built-in helpers for runtime values.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Function</th><th>Does</th><th>Exam relevance</th></tr>
+      <tr><td>!Ref</td><td>Value of a param or resource.</td><td>Most common.</td></tr>
+      <tr><td>!GetAtt</td><td>An attribute of a resource.</td><td>e.g. ARN/DNS.</td></tr>
+      <tr><td>!Sub</td><td>Insert values into a string.</td><td>Build names/URLs.</td></tr>
+      <tr><td>!FindInMap / !If</td><td>Map lookup / conditional value.</td><td>With L5/L7.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Intrinsic function</td><td>A built-in helper that computes a value at deploy time.</td></tr>
+      <tr><td>Attribute</td><td>A property of a created resource (e.g. its ARN).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li>Functions assign values <b>not known until runtime</b>. Common ones: <b>!Ref</b>, <b>!GetAtt</b>, <b>!Sub</b>, <b>!Join</b>, <b>!FindInMap</b> (L5), <b>!ImportValue</b> (L11), <b>!If</b> (L7), <b>!Base64</b> (userdata), <b>!GetAZs</b>, <b>!Select</b>, <b>!Split</b>, <b>!Cidr</b>.</li>
+    </ul>
+    <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>BucketName: !Sub "a4l-${AWS::AccountId}-${AWS::Region}"
+RoleArn:    !GetAtt MyRole.Arn
+VpcId:      !Ref MyVPC</code></pre></div>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — template feature</span>Functions are used inside templates (deploy via the L2 method); the exam tests what each returns.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Glue for params (L3), mappings (L5), outputs (L6), conditions (L7).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Every non-trivial template.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>!Ref</b> = value of param/resource; <b>!GetAtt</b> = a resource <b>attribute</b> (ARN/DNS).</li>
+      <li><b>!Sub</b> builds strings with variables; <b>!Base64</b> encodes EC2 userdata.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">!Ref vs !GetAtt?<span class="hint">tap</span></div><div class="a">!Ref = main value; !GetAtt = a specific attribute (e.g. ARN).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which function builds a string with variables?<span class="hint">tap</span></div><div class="a">!Sub.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which encodes EC2 user data?<span class="hint">tap</span></div><div class="a">!Base64.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You need a role's ARN inside the template. Use?</div>
+      <span class="opt">A) !Ref Role</span><span class="opt">B) !GetAtt Role.Arn</span><span class="opt">C) !Sub Role</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> !GetAtt returns a resource attribute like its ARN.</div></div>
+  </article>
+
+  <!-- ===== LESSON 5 ===== -->
+  <article class="card" id="l5">
+    <div class="lesson-head"><div class="num">5</div><div><h2>Mappings</h2><div class="sub">Key-to-value lookups inside a template.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Mappings section</td><td>Static lookup tables.</td><td>Region→AMI etc.</td></tr>
+      <tr><td>FindInMap</td><td>Reads a value from a map.</td><td>The retrieval function.</td></tr>
+      <tr><td>Portability</td><td>Pick values per region/env.</td><td>Reusable templates.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Mapping</td><td>A fixed lookup table of keys → values.</td></tr>
+      <tr><td>FindInMap</td><td>The function that reads a mapping.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Mappings</b> match a <b>key</b> to a set of named values — classic use is <b>region → AMI ID</b>, so one template works in many regions.</li>
+      <li>Read with <b>!FindInMap [MapName, TopKey, SecondKey]</b>.</li>
+      <li>Modern alternative for AMIs: <b>SSM public parameters</b>. <span class="pill">[added for exam]</span></li>
+    </ul>
+    <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>Mappings:
+  RegionAMI:
+    us-east-1: { AMI: ami-1111 }
+    eu-west-1: { AMI: ami-2222 }
+Resources:
+  Inst:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]</code></pre></div>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — template feature</span>Mappings live in a template (deploy via L2); the exam tests FindInMap + region→AMI use.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses !FindInMap (L4); a portability tool with parameters (L3).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Multi-region templates.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"Pick a value <b>per region</b> (e.g. AMI)" → a <b>Mapping</b> + <b>!FindInMap</b>.</li>
+      <li>Mappings are <b>static</b> (no logic) — use Parameters/Conditions for dynamic choices.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Classic use of Mappings?<span class="hint">tap</span></div><div class="a">Region → AMI ID lookups.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which function reads a mapping?<span class="hint">tap</span></div><div class="a">!FindInMap.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">One template must launch the right AMI in any region. Use?</div>
+      <span class="opt">A) Mappings + FindInMap (or SSM param)</span><span class="opt">B) Hardcode AMI</span><span class="opt">C) Outputs</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> A region→AMI mapping (or an SSM public parameter) keeps it portable.</div></div>
+  </article>
+
+  <!-- ===== LESSON 6 ===== -->
+  <article class="card" id="l6">
+    <div class="lesson-head"><div class="num">6</div><div><h2>Outputs</h2><div class="sub">Return and share values.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Outputs section</td><td>Declares values to return.</td><td>Console/CLI/import.</td></tr>
+      <tr><td>Export</td><td>Makes a value importable elsewhere.</td><td>Cross-stack (L11).</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Output</td><td>A value the stack returns after deploy.</td></tr>
+      <tr><td>Export</td><td>A named output other stacks can import.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Outputs</b> return values (e.g. a bucket name) shown in the <b>console</b>, in <b>describe-stacks</b>, or <b>exported</b> for other stacks to import.</li>
+    </ul>
+    <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>Outputs:
+  BucketName:
+    Value: !Ref A4LBucket
+    Export:
+      Name: a4l-bucket-name   # importable by other stacks</code></pre></div>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — template feature</span>Add an Outputs section to the L2 template; values appear in describe-stacks. Exam tests export → ImportValue (L11).</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Exports feed Cross-Stack References (L11).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Composable, layered stacks.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Export</b> an output → another stack uses <b>!ImportValue</b> (cross-stack).</li>
+      <li>Export names must be <b>unique</b> per region/account; you can't delete an output while it's imported.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does an Output do?<span class="hint">tap</span></div><div class="a">Returns a value (console/CLI) and can export it for other stacks.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How is an output used by another stack?<span class="hint">tap</span></div><div class="a">Export it, then !ImportValue.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Stack B needs a VPC ID created by stack A. Best?</div>
+      <span class="opt">A) Export the VPC ID from A, ImportValue in B</span><span class="opt">B) Hardcode it</span><span class="opt">C) Parameter only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Export the output from A and import it in B (cross-stack).</div></div>
+  </article>
+
+  <!-- ===== LESSON 7 ===== -->
+  <article class="card" id="l7">
+    <div class="lesson-head"><div class="num">7</div><div><h2>Conditions</h2><div class="sub">Create resources only when true.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Conditions section</td><td>Define true/false logic.</td><td>prod vs test.</td></tr>
+      <tr><td>Condition attribute</td><td>Attach to a resource/output.</td><td>Create it or not.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Condition</td><td>A named true/false test.</td></tr>
+      <tr><td>Fn::Equals</td><td>Checks if two values are equal.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Conditions</b> use logic (<b>Fn::Equals/And/Or/Not</b>) on parameters/pseudo params; attach <b>Condition:</b> to a resource so it's created <b>only when true</b> (e.g. prod-only resources).</li>
+    </ul>
+    <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>Parameters:
+  EnvType: { Type: String, AllowedValues: [test, prod] }
+Conditions:
+  IsProd: !Equals [!Ref EnvType, prod]
+Resources:
+  ProdOnlyBucket:
+    Type: AWS::S3::Bucket
+    Condition: IsProd</code></pre></div>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — template feature</span>Conditions control what a deploy creates; the exam tests prod/test reuse with one template.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses parameters (L3) + functions like !If (L4).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>One template for many environments.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"Reuse one template for <b>prod vs test</b>, creating different resources" → <b>Conditions</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What do Conditions control?<span class="hint">tap</span></div><div class="a">Whether a resource/output is created, based on logic.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Common use case?<span class="hint">tap</span></div><div class="a">prod vs test environments from one template.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You want a backup resource created only in prod from a shared template. Use?</div>
+      <span class="opt">A) Conditions</span><span class="opt">B) Mappings</span><span class="opt">C) Outputs</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> A Condition (e.g. IsProd) gates resource creation.</div></div>
+  </article>
+
+  <!-- ===== LESSON 8 ===== -->
+  <article class="card" id="l8">
+    <div class="lesson-head"><div class="num">8</div><div><h2>DependsOn</h2><div class="sub">Force the order of creation.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Implicit order</td><td>References (Ref/GetAtt) create order.</td><td>Usually automatic.</td></tr>
+      <tr><td>DependsOn</td><td>Explicit "create B after A".</td><td>When no reference exists.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Dependency</td><td>One resource must exist before another.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li>CloudFormation usually orders resources automatically from <b>references</b> (!Ref / !GetAtt create implicit dependencies).</li>
+      <li>Use <b>DependsOn</b> when there is <b>no reference</b> but order still matters (e.g. an EC2 instance must wait for an Internet Gateway attachment).</li>
+    </ul>
+    <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>Resources:
+  Inst:
+    Type: AWS::EC2::Instance
+    DependsOn: GatewayAttach
+    Properties: { ... }</code></pre></div>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — template feature</span>DependsOn is a resource attribute; the exam tests "force order when there's no reference".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Pairs with signals (L9) for bootstrap ordering.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Reliable multi-resource templates.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>References create <b>implicit</b> dependencies; <b>DependsOn</b> is for <b>explicit</b> ordering when there's none.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How does CFN normally order resources?<span class="hint">tap</span></div><div class="a">From references (Ref/GetAtt) between them.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">When use DependsOn?<span class="hint">tap</span></div><div class="a">When order matters but there's no reference linking them.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An instance must be created only after a gateway attachment that it doesn't reference. Use?</div>
+      <span class="opt">A) DependsOn</span><span class="opt">B) Condition</span><span class="opt">C) Mapping</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> DependsOn forces creation order when no reference exists.</div></div>
+  </article>
+
+  <!-- ===== LESSON 9 ===== -->
+  <article class="card" id="l9">
+    <div class="lesson-head"><div class="num">9</div><div><h2>Wait Conditions & cfn-signal</h2><div class="sub">Wait until EC2 is really ready.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>CreationPolicy</td><td>Wait for N signals or timeout.</td><td>Preferred method.</td></tr>
+      <tr><td>cfn-signal</td><td>Script that signals success/failure.</td><td>Run in userdata.</td></tr>
+      <tr><td>WaitCondition</td><td>Older signalling method.</td><td>Legacy.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Signal</td><td>A message saying "I'm ready / I failed".</td></tr>
+      <tr><td>CreationPolicy</td><td>Tells CFN to wait for signals before "complete".</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  EC2[EC2 launches] --> BOOT[userdata bootstraps app]
+  BOOT --> SIG[cfn-signal: success/failure]
+  SIG --> CFN{CreationPolicy: got N signals?}
+  CFN -->|yes| OK[CREATE_COMPLETE]
+  CFN -->|timeout| FAIL[Failed]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class SIG a;
+    </pre></div>
+    <ul class="clean">
+      <li>A <b>CreationPolicy</b> makes CloudFormation <b>wait</b> for a set number of <b>success signals</b> (or a <b>timeout</b>) before marking a resource <b>CREATE_COMPLETE</b>.</li>
+      <li>The <b>cfn-signal</b> helper (run in userdata) sends success/failure <b>after bootstrap</b> — so the stack isn't "done" until the app actually works.</li>
+      <li><b>WaitCondition + WaitConditionHandle</b> is the older method; <b>CreationPolicy</b> is preferred.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — needs EC2 + bootstrap</span>This requires launching an instance with userdata; the exam tests "wait for signals before complete = CreationPolicy + cfn-signal".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Works with cfn-init (L15) in the 4-step evolution (L16).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Reliable EC2/ASG provisioning.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"Don't mark complete until the app is ready" → <b>CreationPolicy + cfn-signal</b>.</li>
+      <li><b>CreationPolicy</b> is preferred over the older <b>WaitCondition</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What makes CFN wait for signals?<span class="hint">tap</span></div><div class="a">A CreationPolicy.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What sends the success signal?<span class="hint">tap</span></div><div class="a">cfn-signal (run in userdata).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Preferred over WaitCondition?<span class="hint">tap</span></div><div class="a">CreationPolicy.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A stack reports complete before the web app finished installing. Fix?</div>
+      <span class="opt">A) CreationPolicy + cfn-signal</span><span class="opt">B) DependsOn</span><span class="opt">C) Mapping</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Wait for a success signal from cfn-signal before CREATE_COMPLETE.</div></div>
+  </article>
+
+  <!-- ===== LESSON 10 ===== -->
+  <article class="card" id="l10">
+    <div class="lesson-head"><div class="num">10</div><div><h2>Nested Stacks</h2><div class="sub">A root stack that creates child stacks.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Root + nested</td><td>One stack creates child stacks.</td><td>Hierarchy.</td></tr>
+      <tr><td>Shared lifecycle</td><td>Created/deleted together.</td><td>When to use.</td></tr>
+      <tr><td>Reuse</td><td>Reuse templates as components.</td><td>Overcome limits.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Root stack</td><td>The top stack that creates the others.</td></tr>
+      <tr><td>Nested stack</td><td>A child stack created by the root.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  ROOT[Root stack] --> N1[Nested: VPC]
+  ROOT --> N2[Nested: App]
+  ROOT --> N3[Nested: DB]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class ROOT a;
+    </pre></div>
+    <ul class="clean">
+      <li>A <b>root stack</b> creates <b>nested (child) stacks</b> via <code>AWS::CloudFormation::Stack</code> (template in S3), passing <b>parameters</b> down and reading <b>outputs</b> up.</li>
+      <li>Use nested stacks when resources <b>share a lifecycle</b> and are <b>tightly related</b> — and to <b>reuse</b> templates / overcome size limits.</li>
+      <li>The whole thing is deployed and deleted <b>together</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — needs S3-hosted child templates</span>Nested stacks need child templates in S3; the exam tests "shared lifecycle + reuse → nested stacks" (vs cross-stack in L11).</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Contrast with cross-stack references (L11).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Large, modular deployments.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Nested</b> = one lifecycle, tightly related, reuse via a root stack.</li>
+      <li>If stacks have <b>different lifecycles</b> + just need to share a value → <b>cross-stack</b> (L11).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">When use nested stacks?<span class="hint">tap</span></div><div class="a">When resources share a lifecycle + are tightly related (and for reuse).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What resource type creates a nested stack?<span class="hint">tap</span></div><div class="a">AWS::CloudFormation::Stack.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You want one deploy that builds tightly-related VPC + app + DB stacks together. Use?</div>
+      <span class="opt">A) Nested stacks</span><span class="opt">B) Cross-stack references</span><span class="opt">C) StackSets</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Nested stacks share one lifecycle under a root stack.</div></div>
+  </article>
+
+  <!-- ===== LESSON 11 ===== -->
+  <article class="card" id="l11">
+    <div class="lesson-head"><div class="num">11</div><div><h2>Cross-Stack References</h2><div class="sub">Share values between separate stacks.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Export output</td><td>Publish a value from one stack.</td><td>Reusable value.</td></tr>
+      <tr><td>!ImportValue</td><td>Read another stack's export.</td><td>The function.</td></tr>
+      <tr><td>Different lifecycles</td><td>Independent stacks share data.</td><td>vs nested.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Export</td><td>A named, shareable output.</td></tr>
+      <tr><td>ImportValue</td><td>Function to read an export.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  A[Stack A: Output + Export name] -->|!ImportValue| B[Stack B uses the value]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class A a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Export</b> an output in stack A (give it an Export <b>Name</b>); stack B reads it with <b>!ImportValue</b>.</li>
+      <li>Use when stacks have <b>different lifecycles</b> but must <b>share</b> a value (e.g. a shared VPC ID).</li>
+      <li>You <b>can't delete/modify</b> an exported value while another stack imports it. Same region/account.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — needs two stacks</span>Cross-stack needs an exporting + importing stack; the exam tests Export + !ImportValue vs nested (L10).</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses Outputs/Export (L6) + !ImportValue (L4).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Shared infrastructure (network/security stacks).</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Cross-stack</b> = independent lifecycles sharing a value (Export → !ImportValue).</li>
+      <li><b>Nested</b> = one lifecycle, reuse. Pick by whether lifecycles match.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How does a stack share a value cross-stack?<span class="hint">tap</span></div><div class="a">Export an output; another stack uses !ImportValue.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Nested vs cross-stack?<span class="hint">tap</span></div><div class="a">Nested = same lifecycle/reuse; cross-stack = independent lifecycles sharing values.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A long-lived network stack must share its VPC ID with many app stacks deployed separately. Use?</div>
+      <span class="opt">A) Cross-stack (Export/ImportValue)</span><span class="opt">B) Nested stacks</span><span class="opt">C) Hardcode</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Independent lifecycles sharing a value = cross-stack references.</div></div>
+  </article>
+
+  <!-- ===== LESSON 12 ===== -->
+  <article class="card" id="l12">
+    <div class="lesson-head"><div class="num">12</div><div><h2>Stack Sets</h2><div class="sub">Deploy across many accounts & regions.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Multi-account/region</td><td>One template, many targets.</td><td>Central control.</td></tr>
+      <tr><td>Self vs service-managed</td><td>Manual roles vs via Organizations.</td><td>Two modes.</td></tr>
+      <tr><td>Auto-deploy</td><td>New Org accounts get the stack.</td><td>Dynamic.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Stack instance</td><td>A stack deployed to one account+region.</td></tr>
+      <tr><td>Admin / target account</td><td>Where you manage from / where it deploys.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  ADMIN[Admin account - StackSet] --> A1[Account A / region 1]
+  ADMIN --> A2[Account B / region 2]
+  ADMIN --> A3[Account C / region 3]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class ADMIN a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>StackSets</b> deploy + manage one template across <b>many accounts and regions</b> from a single place (each deployment is a <b>stack instance</b>).</li>
+      <li><b>Self-managed</b>: you create the IAM roles. <b>Service-managed</b>: via <b>AWS Organizations</b>, with <b>auto-deploy</b> to new accounts (and removal when accounts leave).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — needs multi-account</span>StackSets need Organizations/roles + multiple accounts; the exam tests "deploy to many accounts/regions = StackSets".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Scales a template (L2) org-wide; uses Organizations (IAM section).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Governance baselines across an org.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"Deploy to <b>many accounts/regions</b> from one place, auto to new accounts" → <b>StackSets</b> (service-managed via Organizations).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What do StackSets deploy across?<span class="hint">tap</span></div><div class="a">Many accounts and regions from one place.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which mode auto-deploys to new Org accounts?<span class="hint">tap</span></div><div class="a">Service-managed (via AWS Organizations).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must deploy a security baseline to all current + future Org accounts automatically. Use?</div>
+      <span class="opt">A) StackSets (service-managed)</span><span class="opt">B) Nested stacks</span><span class="opt">C) Cross-stack</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Service-managed StackSets auto-deploy to new Organization accounts.</div></div>
+  </article>
+
+  <!-- ===== LESSON 13 ===== -->
+  <article class="card" id="l13">
+    <div class="lesson-head"><div class="num">13</div><div><h2>Deletion Policy</h2><div class="sub">Protect data when a stack is deleted.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Value</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Delete (default)</td><td>Resource is removed.</td><td>Risky for data.</td></tr>
+      <tr><td>Retain</td><td>Keep the resource.</td><td>Protect prod data.</td></tr>
+      <tr><td>Snapshot</td><td>Take a final snapshot, then delete.</td><td>EBS/RDS/etc.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>DeletionPolicy</td><td>Per-resource rule for what happens on delete.</td></tr>
+      <tr><td>Snapshot</td><td>A point-in-time backup.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>DeletionPolicy</b> is a per-resource attribute: <b>Delete</b> (default), <b>Retain</b> (keep it), or <b>Snapshot</b> (final snapshot then delete — for EBS, RDS, etc.).</li>
+      <li>Protects important data (e.g. don't delete a prod database when removing a stack).</li>
+    </ul>
+    <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>Resources:
+  Data:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Snapshot   # or Retain / Delete</code></pre></div>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — template feature</span>DeletionPolicy is a resource attribute; the exam tests Retain/Snapshot to protect data on delete.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Resource attribute like DependsOn (L8).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Safe production stack management.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Default is <b>Delete</b>. Use <b>Retain</b> to keep data, <b>Snapshot</b> to back up first.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Default DeletionPolicy?<span class="hint">tap</span></div><div class="a">Delete.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Keep data on stack delete?<span class="hint">tap</span></div><div class="a">DeletionPolicy: Retain.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Back up before delete?<span class="hint">tap</span></div><div class="a">DeletionPolicy: Snapshot.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must ensure a prod database is backed up if its stack is deleted. Use?</div>
+      <span class="opt">A) DeletionPolicy: Snapshot</span><span class="opt">B) DependsOn</span><span class="opt">C) Condition</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Snapshot takes a final backup before deleting the resource.</div></div>
+  </article>
+
+  <!-- ===== LESSON 14 ===== -->
+  <article class="card" id="l14">
+    <div class="lesson-head"><div class="num">14</div><div><h2>Stack Roles</h2><div class="sub">The stack acts with a role, not you.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>PassRole</td><td>Give the stack an IAM role.</td><td>Permission to pass.</td></tr>
+      <tr><td>Stack uses role</td><td>Not your identity's permissions.</td><td>Role separation.</td></tr>
+      <tr><td>Least privilege</td><td>Deployer needs fewer perms.</td><td>Security win.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Stack role</td><td>An IAM role the stack assumes to act.</td></tr>
+      <tr><td>PassRole</td><td>Permission to hand a role to a service.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  USER[User - limited perms] -->|PassRole| STACK[Stack]
+  STACK -->|uses the role| ROLE[IAM role - broad perms]
+  ROLE --> RES[Creates resources]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class ROLE a;
+    </pre></div>
+    <ul class="clean">
+      <li>You can <b>pass an IAM role</b> to a stack (needs <b>iam:PassRole</b>). The stack then uses <b>that role's</b> permissions to create/update/delete — <b>not your identity's</b>.</li>
+      <li>This enables <b>role separation</b>: a user can deploy a stack that creates resources they <b>couldn't</b> create directly (least privilege for the person).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — IAM setup</span>Stack roles need an IAM role + PassRole; the exam tests "stack uses a role, not your identity (role separation)".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses IAM roles + PassRole (IAM section).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Secure, least-privilege deployments.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"Let a user deploy resources they can't create directly" → a <b>stack role</b> (via <b>PassRole</b>).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Whose permissions does a stack use with a stack role?<span class="hint">tap</span></div><div class="a">The role's, not the deploying user's.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What permission lets you give the role?<span class="hint">tap</span></div><div class="a">iam:PassRole.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A junior must deploy a stack creating resources they lack permission for. Best?</div>
+      <span class="opt">A) A stack role (PassRole)</span><span class="opt">B) Give them admin</span><span class="opt">C) Root</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> The stack uses the role's permissions; the user stays least-privilege.</div></div>
+  </article>
+
+  <!-- ===== LESSON 15 ===== -->
+  <article class="card" id="l15">
+    <div class="lesson-head"><div class="num">15</div><div><h2>cfn-init</h2><div class="sub">Desired-state config on EC2.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Init metadata</td><td>AWS::CloudFormation::Init block.</td><td>Packages/files/services.</td></tr>
+      <tr><td>cfn-init helper</td><td>Reads metadata + applies it.</td><td>Run in userdata.</td></tr>
+      <tr><td>Desired-state</td><td>Describe the end state (idempotent).</td><td>vs procedural userdata.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Desired-state</td><td>You say what the result should be, not the steps.</td></tr>
+      <tr><td>Idempotent</td><td>Running it again gives the same result.</td></tr>
+      <tr><td>Procedural</td><td>A fixed list of steps (raw userdata).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li>Put config in the <b>AWS::CloudFormation::Init</b> metadata of an EC2 resource (packages, files, services, commands, users).</li>
+      <li>The <b>cfn-init</b> helper (called from userdata) reads that metadata and brings the instance to the <b>desired state</b> — more structured + <b>idempotent</b> than raw <b>procedural</b> userdata.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — needs EC2</span>cfn-init runs on a launched instance; the exam tests "desired-state EC2 config = cfn-init metadata".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Pairs with cfn-signal (L9) + cfn-hup (L16).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Repeatable EC2 configuration.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>cfn-init</b> = <b>desired-state</b> config (idempotent); raw <b>userdata</b> = procedural (runs once).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Where does cfn-init read config from?<span class="hint">tap</span></div><div class="a">The AWS::CloudFormation::Init metadata on the EC2 resource.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">cfn-init vs raw userdata?<span class="hint">tap</span></div><div class="a">cfn-init = desired-state/idempotent; userdata = procedural/once.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You want structured, idempotent EC2 config inside a template. Use?</div>
+      <span class="opt">A) cfn-init metadata</span><span class="opt">B) Plain userdata only</span><span class="opt">C) Mapping</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> cfn-init applies desired-state config from Init metadata.</div></div>
+  </article>
+
+  <!-- ===== LESSON 16 ===== -->
+  <article class="card" id="l16">
+    <div class="lesson-head"><div class="num">16</div><div><h2>cfn-hup</h2><div class="sub">Re-apply config on stack updates.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>cfn-hup daemon</td><td>Watches metadata for changes.</td><td>Runs on the instance.</td></tr>
+      <tr><td>On UpdateStack</td><td>Re-runs cfn-init actions.</td><td>Update without replace.</td></tr>
+      <tr><td>4-step evolution</td><td>userdata → +signal → +init → +hup.</td><td>Course pattern.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Daemon</td><td>A background process that keeps running.</td></tr>
+      <tr><td>UpdateStack</td><td>Changing an existing stack.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  S1[userdata] --> S2[+ cfn-signal]
+  S2 --> S3[+ cfn-init]
+  S3 --> S4[+ cfn-hup]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class S4 a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>cfn-hup</b> is a <b>daemon</b> on the instance that <b>detects metadata changes</b> (when you run <b>UpdateStack</b>) and <b>re-runs cfn-init</b> actions — so you update <b>running</b> instances without replacing them.</li>
+      <li>The course's <b>4-step evolution</b>: <b>userdata</b> → <b>+ cfn-signal</b> → <b>cfn-init + cfn-signal</b> → <b>+ cfn-hup</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — needs EC2</span>cfn-hup runs on a live instance; the exam tests "update running instances on UpdateStack = cfn-hup".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Completes the cfn-init (L15) + cfn-signal (L9) story.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>In-place config updates.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>cfn-hup</b> re-applies cfn-init config on <b>UpdateStack</b> — update <b>without replacing</b> the instance.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does cfn-hup watch for?<span class="hint">tap</span></div><div class="a">Changes to resource metadata (on UpdateStack).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">The 4-step evolution?<span class="hint">tap</span></div><div class="a">userdata → +cfn-signal → cfn-init+cfn-signal → +cfn-hup.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You want to push config changes to running EC2 by updating the stack. Use?</div>
+      <span class="opt">A) cfn-hup</span><span class="opt">B) DependsOn</span><span class="opt">C) Replace the instance</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> cfn-hup detects metadata changes and re-runs cfn-init.</div></div>
+  </article>
+
+  <!-- ===== LESSON 17 ===== -->
+  <article class="card" id="l17">
+    <div class="lesson-head"><div class="num">17</div><div><h2>ChangeSets</h2><div class="sub">Preview changes before applying.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Preview</td><td>See add/modify/replace/delete.</td><td>Avoid surprises.</td></tr>
+      <tr><td>Replacement risk</td><td>Some changes recreate a resource.</td><td>Downtime/data loss.</td></tr>
+      <tr><td>Execute or discard</td><td>Apply only when ready.</td><td>Safe updates.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Change set</td><td>A preview of what an update would do.</td></tr>
+      <tr><td>Replacement</td><td>Deleting + recreating a resource.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li>A <b>change set</b> shows what an update would <b>add/modify/replace/delete</b> — especially whether a resource will be <b>replaced</b> (which can mean downtime/data loss).</li>
+      <li>CloudFormation only applies changes when you <b>execute</b> the change set — otherwise you can discard it.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (uses the L2 stack)</span><b>Situation:</b> preview a change before applying. <b>Check first:</b> the <code>a4l-demo</code> stack from L2 exists.</div>
+      <div class="step"><div class="sh">Edit the template (add a tag), create a change set</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>cat > tpl2.yaml << 'EOF'
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  A4LBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      Tags:
+        - { Key: env, Value: demo }
+EOF
+aws cloudformation create-change-set --stack-name a4l-demo \
+  --change-set-name a4l-cs --template-body file://tpl2.yaml</code></pre></div>
+      <div class="expect"><b>Expect:</b> a change set is created (status CREATE_COMPLETE when ready).</div>
+      <div class="step"><div class="sh">Preview what will change</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws cloudformation describe-change-set --stack-name a4l-demo \
+  --change-set-name a4l-cs \
+  --query "Changes[].ResourceChange.{Action:Action,Res:LogicalResourceId,Replace:Replacement}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> a <code>Modify</code> on <code>A4LBucket</code> with <code>Replacement: False</code> (a tag is a safe change).</div>
+      <div class="step"><div class="sh">Execute it (apply the change)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws cloudformation execute-change-set --stack-name a4l-demo \
+  --change-set-name a4l-cs</code></pre></div>
+      <div class="expect"><b>Expect:</b> the stack updates; the bucket gets the tag.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Change sets warn you when a change forces a <b>Replacement</b> (recreate) — critical for stateful resources.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws cloudformation delete-stack --stack-name a4l-demo
+rm -f tpl.yaml tpl2.yaml</code></pre></div>
+      <div class="expect"><b>Expect:</b> stack + bucket deleted (this removes the L2 stack too).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Safer updates to any stack (L2); pairs with DeletionPolicy (L13).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Production change management.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Preview the impact</b> of a stack update (esp. replacements) before applying" → <b>change set</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does a change set show?<span class="hint">tap</span></div><div class="a">What an update will add/modify/replace/delete before you apply.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Why care about "Replacement"?<span class="hint">tap</span></div><div class="a">A replaced resource is recreated — possible downtime/data loss.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Before a risky prod update, you must see if any resource will be replaced. Use?</div>
+      <span class="opt">A) Change set</span><span class="opt">B) DependsOn</span><span class="opt">C) Mapping</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> A change set previews replacements/deletes before you execute.</div></div>
+  </article>
+
+  <!-- ===== LESSON 18 ===== -->
+  <article class="card" id="l18">
+    <div class="lesson-head"><div class="num">18</div><div><h2>Custom Resources</h2><div class="sub">Run your own logic during a deploy.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Custom logic</td><td>CFN calls your code on create/update/delete.</td><td>Beyond built-in resources.</td></tr>
+      <tr><td>Backed by Lambda</td><td>(or SNS) does the work.</td><td>How it runs.</td></tr>
+      <tr><td>Response signal</td><td>Your code replies SUCCESS/FAILED.</td><td>CFN waits for it.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Custom resource</td><td>A resource whose logic you write.</td></tr>
+      <tr><td>Provisioning logic</td><td>Code that creates/updates/deletes something.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  CFN[CloudFormation] -->|create/update/delete event| L[Lambda - your logic]
+  L -->|SUCCESS/FAILED response| CFN
+  L --> WORK[e.g. populate S3, fetch AMI, empty bucket before delete]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class L a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Custom resources</b> let you run <b>your own provisioning logic</b> (backed by <b>Lambda</b> or SNS) whenever a stack is <b>created, updated, or deleted</b>.</li>
+      <li>CFN sends an event to your code; the code does the work + replies <b>SUCCESS/FAILED</b>.</li>
+      <li>Uses: things CFN can't do natively — <b>populate an S3 bucket</b>, look up an <b>AMI ID</b>, or <b>empty a bucket before delete</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — needs a Lambda</span>Custom resources need a backing Lambda + response handling; the exam tests "custom provisioning logic on create/update/delete = custom resource".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses Lambda (serverless section) inside a template.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Extending CloudFormation.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"CloudFormation can't do X natively / run custom code during deploy" → <b>custom resource</b> (Lambda-backed).</li>
+      <li>Classic use: <b>empty an S3 bucket</b> so the stack can delete it.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What backs a custom resource?<span class="hint">tap</span></div><div class="a">A Lambda function (or SNS topic).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">When does CFN call it?<span class="hint">tap</span></div><div class="a">On stack create, update, and delete.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">A classic use case?<span class="hint">tap</span></div><div class="a">Emptying an S3 bucket before the stack deletes it.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A stack delete fails because an S3 bucket isn't empty. Best fix?</div>
+      <span class="opt">A) A custom resource (Lambda) to empty it on delete</span><span class="opt">B) DependsOn</span><span class="opt">C) Mapping</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> A custom resource runs Lambda logic to empty the bucket on delete.</div></div>
+  </article>
+
+  <!-- ===== MOCK EXAM ===== -->
+  <article class="card examcard" id="mock">
+    <div class="lesson-head"><div class="num">★</div><div><h2>Mock Exam</h2><div class="sub">CloudFormation + IAM/Orgs + S3 + VPC + EC2 + Containers + Adv EC2 + Network Storage + Route 53 + RDS + HA/Scaling + Serverless + CDN + Adv VPC + Hybrid + Security.</div></div></div>
+    <div class="box exam"><span class="tag">How to use</span>Decide first, then tap <b>Show answer</b>. Pick the <b>best</b> option. 20 questions.</div>
+
+    <div class="quiz"><div class="qq">1. AWS-only, free IaC with managed state. Use?</div>
+      <span class="opt">A) Terraform</span><span class="opt">B) CloudFormation</span><span class="opt">C) Ansible</span><span class="opt">D) Chef</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> CloudFormation is AWS-native, free, manages state.</div></div>
+
+    <div class="quiz"><div class="qq">2. The only required template section?</div>
+      <span class="opt">A) Parameters</span><span class="opt">B) Resources</span><span class="opt">C) Outputs</span><span class="opt">D) Mappings</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Resources is the only mandatory section.</div></div>
+
+    <div class="quiz"><div class="qq">3. Get the current region without asking the user. Use?</div>
+      <span class="opt">A) A parameter</span><span class="opt">B) AWS::Region pseudo parameter</span><span class="opt">C) Hardcode</span><span class="opt">D) Mapping</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Pseudo parameters are supplied by AWS automatically.</div></div>
+
+    <div class="quiz"><div class="qq">4. Get a role's ARN inside a template. Use?</div>
+      <span class="opt">A) !Ref Role</span><span class="opt">B) !GetAtt Role.Arn</span><span class="opt">C) !Sub</span><span class="opt">D) !FindInMap</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> !GetAtt returns a resource attribute like its ARN.</div></div>
+
+    <div class="quiz"><div class="qq">5. Launch the right AMI in any region from one template. Use?</div>
+      <span class="opt">A) Mappings + FindInMap</span><span class="opt">B) Hardcode AMI</span><span class="opt">C) Outputs</span><span class="opt">D) DependsOn</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> A region→AMI mapping (or SSM param) keeps it portable.</div></div>
+
+    <div class="quiz"><div class="qq">6. Create a resource only in prod from a shared template. Use?</div>
+      <span class="opt">A) Conditions</span><span class="opt">B) Mappings</span><span class="opt">C) Outputs</span><span class="opt">D) DependsOn</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> A Condition gates resource creation by environment.</div></div>
+
+    <div class="quiz"><div class="qq">7. Force creation order when there's no reference between resources. Use?</div>
+      <span class="opt">A) DependsOn</span><span class="opt">B) Condition</span><span class="opt">C) Mapping</span><span class="opt">D) Output</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> DependsOn forces explicit ordering.</div></div>
+
+    <div class="quiz"><div class="qq">8. Stack reports complete before the app installed. Fix?</div>
+      <span class="opt">A) CreationPolicy + cfn-signal</span><span class="opt">B) DependsOn</span><span class="opt">C) Mapping</span><span class="opt">D) Output</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Wait for a success signal before CREATE_COMPLETE.</div></div>
+
+    <div class="quiz"><div class="qq">9. Build tightly-related VPC+app+DB stacks together in one deploy. Use?</div>
+      <span class="opt">A) Nested stacks</span><span class="opt">B) Cross-stack</span><span class="opt">C) StackSets</span><span class="opt">D) Conditions</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Nested stacks share one lifecycle under a root stack.</div></div>
+
+    <div class="quiz"><div class="qq">10. A long-lived network stack shares its VPC ID with many separate app stacks. Use?</div>
+      <span class="opt">A) Cross-stack (Export/ImportValue)</span><span class="opt">B) Nested stacks</span><span class="opt">C) Hardcode</span><span class="opt">D) Mapping</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Independent lifecycles sharing a value = cross-stack.</div></div>
+
+    <div class="quiz"><div class="qq">11. Deploy a baseline to all current + future Org accounts automatically. Use?</div>
+      <span class="opt">A) StackSets (service-managed)</span><span class="opt">B) Nested</span><span class="opt">C) Cross-stack</span><span class="opt">D) Custom resource</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Service-managed StackSets auto-deploy to new accounts.</div></div>
+
+    <div class="quiz"><div class="qq">12. Ensure a prod DB is backed up if its stack is deleted. Use?</div>
+      <span class="opt">A) DeletionPolicy: Snapshot</span><span class="opt">B) DependsOn</span><span class="opt">C) Condition</span><span class="opt">D) Mapping</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Snapshot takes a final backup before deleting.</div></div>
+
+    <div class="quiz"><div class="qq">13. Let a junior deploy resources they lack permission for. Best?</div>
+      <span class="opt">A) A stack role (PassRole)</span><span class="opt">B) Give admin</span><span class="opt">C) Root</span><span class="opt">D) Condition</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> The stack uses the role's perms; the user stays least-privilege.</div></div>
+
+    <div class="quiz"><div class="qq">14. Structured, idempotent EC2 config inside a template. Use?</div>
+      <span class="opt">A) cfn-init metadata</span><span class="opt">B) Plain userdata only</span><span class="opt">C) Mapping</span><span class="opt">D) Output</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> cfn-init applies desired-state config from Init metadata.</div></div>
+
+    <div class="quiz"><div class="qq">15. Push config changes to running EC2 via UpdateStack. Use?</div>
+      <span class="opt">A) cfn-hup</span><span class="opt">B) DependsOn</span><span class="opt">C) Replace instance</span><span class="opt">D) Mapping</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> cfn-hup re-runs cfn-init on metadata changes.</div></div>
+
+    <div class="quiz"><div class="qq">16. Preview whether a prod update will replace a resource. Use?</div>
+      <span class="opt">A) Change set</span><span class="opt">B) DependsOn</span><span class="opt">C) Output</span><span class="opt">D) Mapping</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> A change set previews replacements/deletes before execute.</div></div>
+
+    <div class="quiz"><div class="qq">17. Stack delete fails because an S3 bucket isn't empty. Fix?</div>
+      <span class="opt">A) Custom resource (Lambda) to empty it</span><span class="opt">B) DependsOn</span><span class="opt">C) Condition</span><span class="opt">D) Mapping</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> A custom resource runs Lambda logic to empty the bucket on delete.</div></div>
+
+    <div class="quiz"><div class="qq">18. (Serverless) What backs a CloudFormation custom resource?</div>
+      <span class="opt">A) Lambda (or SNS)</span><span class="opt">B) EC2</span><span class="opt">C) RDS</span><span class="opt">D) S3 only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Custom resources are backed by Lambda (or SNS).</div></div>
+
+    <div class="quiz"><div class="qq">19. (Security) Stack must create resources the user can't, with least privilege. Use?</div>
+      <span class="opt">A) Stack role via PassRole</span><span class="opt">B) Root keys</span><span class="opt">C) Public policy</span><span class="opt">D) Condition</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Stack roles give role separation (the stack acts as the role).</div></div>
+
+    <div class="quiz"><div class="qq">20. (EC2/HA) Bootstrap an ASG instance + signal success before complete. Use?</div>
+      <span class="opt">A) cfn-init + cfn-signal + CreationPolicy</span><span class="opt">B) Mapping</span><span class="opt">C) Output</span><span class="opt">D) Custom resource</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> cfn-init configures, cfn-signal reports, CreationPolicy waits.</div></div>
+  </article>
+
+  <div class="foot">
+    <div>
+      <span class="pill">Resources = only required section</span><span class="pill">Logical → physical</span>
+      <span class="pill">Pseudo params: Region/AccountId</span><span class="pill">!Ref vs !GetAtt</span>
+      <span class="pill">Mappings = region→AMI</span><span class="pill">Export → !ImportValue</span>
+      <span class="pill">Nested = lifecycle / Cross = share</span><span class="pill">StackSets = multi-account</span>
+      <span class="pill">DeletionPolicy Retain/Snapshot</span><span class="pill">CreationPolicy + cfn-signal</span>
+      <span class="pill">cfn-init = desired state</span><span class="pill">ChangeSet = preview</span>
+      <span class="pill">Custom resource = Lambda logic</span>
+    </div>
+    <p>Section 018 · Infrastructure as Code (CloudFormation) + Mock Exam · built for SAA-C03 self-study.<br>
+    Tap a flashcard or "Show answer" to reveal. Use ☰ Lessons to jump around.</p>
+  </div>
+</main>
+
+<button class="toTop" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawerBg').classList.add('open');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerBg').classList.remove('open');}
+function cp(btn){
+  const code=btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard?.writeText(code).then(()=>{const t=btn.innerText;btn.innerText='copied!';setTimeout(()=>btn.innerText=t,1200);})
+  .catch(()=>{btn.innerText='select & copy';});
+}
+const tt=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{tt.classList.toggle('show',window.scrollY>500);});
+window.addEventListener('load',()=>{
+  try{
+    mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{
+      fontFamily:'Manrope, sans-serif',primaryColor:'#1b2128',primaryTextColor:'#e7edf3',
+      primaryBorderColor:'#2dd4bf',lineColor:'#60a5fa',secondaryColor:'#212934',tertiaryColor:'#161b21'}});
+  }catch(e){console.warn('mermaid init',e);}
+});
+</script>
+</body>
+</html>

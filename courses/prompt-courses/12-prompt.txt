@@ -1,0 +1,174 @@
+# ROLE
+You are an expert AWS instructor building a single self-contained HTML study + revision 
+document for ONE section of Adrian Cantrill's AWS Solutions Architect Associate (SAA-C03) 
+course. The document must teach me from zero and also work as exam-revision later.
+
+# WHO I AM (design for this exactly)
+- 0 AWS knowledge, 0 work experience. Everything is new to me.
+- English level B1. Use simple, clear English. Short sentences.
+- I am preparing for the SAA-C03 exam, so depth = exam level (not deeper, not shallower).
+- I run demos myself on my laptop using AWS CLI v2 (already installed and configured).
+
+# INPUT
+I will paste one full course SECTION below. A section contains several lessons.
+Treat each lesson as one teaching unit. Build the document lesson by lesson, in order.
+
+# OUTPUT = ONE HTML FILE
+- ONE single HTML file for the WHOLE section, no matter how many lessons (even 20+). 
+  Do not split into parts.
+- Material UI look, DARK MODE, MOBILE-FIRST (single column, large tap targets, readable font).
+- Load Mermaid from CDN and render diagrams (graph/flowchart/sequence as fits the idea).
+- Self-contained: all CSS + JS inline, opens offline in a browser.
+- Sticky top bar + collapsible section menu so I can jump between lessons.
+- Clean spacing, cards for each lesson, color accents for "exam tip" / "demo" / "term" blocks.
+
+# FORMATTING PRINCIPLES (follow strictly, in priority order)
+1. Mermaid diagram  >  paragraph  (always try a diagram first for any flow/relationship)
+2. Outline / bullet list  >  paragraph
+3. Key–value table  >  paragraph
+4. Structured  >  unstructured
+Only use a paragraph when none of the above fit. Keep paragraphs to 2–3 short sentences.
+
+# LANGUAGE & TERMS
+- B1 English. When a technical word first appears, do ONE of:
+  (a) short explanation in parentheses right after it, OR
+  (b) add it to a "Key Terms" table at the TOP of the lesson (term | simple meaning).
+- Prefer the Key Terms table at the entry of each lesson for the main technical words.
+
+# DOCUMENT STRUCTURE
+## Top of document (once)
+- Section title + 1-line goal.
+- "Section Map": a Mermaid diagram showing how the lessons connect.
+- A "Quick Understanding" table for the WHOLE section (lesson | one-line what + why it matters for exam).
+
+## For EACH lesson (repeat this block)
+1. **Quick Understanding table** — fast TL;DR of the lesson (concept | meaning | exam relevance).
+2. **Key Terms table** — the technical words used, in B1 plain meaning.
+3. **Explanation** — diagram-led (Mermaid), then bullets/tables. Minimal prose.
+4. **Demo** (see DEMO SPEC) — directly after the explanation.
+   Demo EVERY lesson that can possibly be demoed with AWS CLI v2 / CloudFormation.
+   Only skip when the lesson is pure theory with nothing to build — then write 
+   "No demo — theory only" and say in 1 line why.
+5. **Build Knowledge** — 2 short lists:
+   - "Connects to NOW" (how this links to other lessons in this section)
+   - "Needed LATER" (which future course topics depend on this).
+6. **Exam Pointers** — bullets of common SAA-C03 traps, "remember this", and easy-confusions.
+7. **Flashcards** — 4–6 active-recall Q→A pairs (HTML click-to-flip or show/hide).
+8. **Mini Quiz** — 2–3 exam-style multiple-choice questions with the correct answer + 
+   1-line why (hidden until clicked).
+
+# DEMO SPEC (use AWS CLI v2; CloudFormation allowed for fast setup/cleanup)
+Each demo follows this exact order:
+1. **Situation** — the real scenario (tie it to Animals4life when natural) and the goal.
+2. **Check first** — prerequisites / what state I should be in before starting.
+3. **Steps** — numbered. For EVERY command:
+   - the exact AWS CLI v2 command (in a copyable code block),
+   - "What you expect" — what output/result I should see after running it.
+4. **Fix / Key info** — correct any course misunderstanding, note real-world gotchas.
+5. **Clean up** — exact commands to delete everything (use CloudFormation delete or CLI 
+   delete commands) so I leave NO running/billable resources.
+
+# QUALITY BAR
+- Accurate to current SAA-C03 scope. If something is exam-relevant but missing from the 
+  pasted text, add it briefly and mark it "[added for exam]".
+- No fluff. Everything must help me learn OR revise. Remove anything that doesn't.
+- The file must be ready to use as my single source for studying and revising this section.
+
+# SECTION TO BUILD
+HA & SCALING
+1 - Regional and Global AWS Architecture 
+
+This lesson steps through the high level components and considerations of AWS architecture.
+
+It introduces global and regional perspectives and the tiers or components which make up most applications.
+
+2 - Evolution of the Elastic Load Balancer 
+
+The Elastic Load Balancer (ELB) was introduced in 2009 with the 'now called' Classic Load Balancer
+
+Two new versions the v2 Application and v2 Network load balancers are now the recommended solutions.
+
+3 - Elastic Load Balancer Architecture
+
+Elastic Load Balancers are a core part of any scaling architecture within AWS.
+
+This lesson reviews the architectural fundamentals of ELB's - further detail will be added in additional lessons throughout this section of the course
+
+Elastic Load Balancers are a core part of any scaling architecture within AWS.
+
+This lesson reviews the architectural fundamentals of ELB's - further detail will be added in additional lessons throughout this section of the course
+
+4 - Application Load balancing (ALB) vs Network Load Balancing (NLB) 
+
+This lesson steps through the main features and some important considerations when using Application Load Balancers and Network Load Balancers
+
+5 -  Launch Configuration and Templates 
+
+Launch Configurations and Launch Templates provide the WHAT to Auto scaling groups.
+
+They define WHAT gets provisioned
+
+The AMI, the Instance Type, the networking & security, the key pair to use, the userdata to inject and IAM Role to attach.
+
+This lesson steps through briefly how they both work.
+
+6 - Auto-Scaling Groups 
+
+An Auto Scaling group contains a collection of Amazon EC2 instances that are treated as a logical grouping for the purposes of automatic scaling and management. An Auto Scaling group also enables you to use Amazon EC2 Auto Scaling features such as health check replacements and scaling policies. Both maintaining the number of instances in an Auto Scaling group and automatic scaling are the core functionality of the Amazon EC2 Auto Scaling service.
+
+7 - ASG Scaling Policies 
+
+With step scaling and simple scaling, you choose scaling metrics and threshold values for the CloudWatch alarms that trigger the scaling process. You also define how your Auto Scaling group should be scaled when a threshold is in breach for a specified number of evaluation periods.
+
+Step scaling policies and simple scaling policies are two of the dynamic scaling options available for you to use. Both require you to create CloudWatch alarms for the scaling policies. Both require you to specify the high and low thresholds for the alarms. Both require you to define whether to add or remove instances, and how many, or set the group to an exact size. 
+
+The main difference between the policy types is the step adjustments that you get with step scaling policies. When step adjustments are applied, and they increase or decrease the current capacity of your Auto Scaling group, the adjustments vary based on the size of the alarm breach.
+
+8 - ASG Lifecycle Hooks 
+
+Lifecycle hooks enable you to perform custom actions by pausing instances as an Auto Scaling group launches or terminates them. When an instance is paused, it remains in a wait state either until you complete the lifecycle action using the complete-lifecycle-action command or the CompleteLifecycleAction operation, or until the timeout period ends (one hour by default).
+
+9 - ASG HealthCheck Comparison - EC2 vs ELB 
+
+Amazon EC2 Auto Scaling can determine the health status of an instance using one or more of the following:
+
+    Status checks provided by Amazon EC2 to identify hardware and software issues that may impair an instance. The default health checks for an Auto Scaling group are EC2 status checks only.
+    Health checks provided by Elastic Load Balancing (ELB). These health checks are disabled by default but can be enabled.
+    Your custom health checks.
+
+
+10 - SSL Offload & Session Stickiness 
+
+
+Teach online with teachable logo
+  SSL Offload & Session Stickiness
+
+This lesson steps through 3 different ways that ELB's can handle SSL
+
+    SSL Bridging
+    SSL Pass Through
+    SSL Offloading
+
+Additionally the lesson steps through what session stickiness means, and why it matters to the solutions we design as solutions architects.
+
+
+Seeing Session Stickiness in Action you will get some practical experience of how session stickiness works with Application Load Balancers
+
+Architecture Evolution - STAGE1 In this advanced demo lesson you are going to evolve the architecture of a popular web application wordpress The architecture will start with a manually built single instance, running the application and database over the stages of the demo you will evolve this until its a scalable and resilient architecture
+The demo consists of 6 stages, each implementing additional components of the architecture
+
+    Stage 1 - Setup the environment and manually build wordpress
+    Stage 2 - Automate the build using a Launch Template
+    Stage 3 - Split out the DB into RDS and Update the LT
+    Stage 4 - Split out the WP filesystem into EFS and Update the LT
+    Stage 5 - Enable elasticity via a ASG & ALB and fix wordpress (hardcoded WPHOME)
+    Stage 6 - Cleanup
+
+Architecture Evolution 
+In this advanced demo lesson you are going to evolve the architecture of a popular web application wordpress The architecture will start with a manually built single instance, running the application and database over the stages of the demo you will evolve this until its a scalable and resilient architecture
+
+11 - Gateway Load Balancer 
+
+Gateway Load Balancers enable you to deploy, scale, and manage virtual appliances, such as firewalls, intrusion detection and prevention systems, and deep packet inspection systems. It combines a transparent network gateway (that is, a single entry and exit point for all traffic) and distributes traffic while scaling your virtual appliances with the demand.
+
+12 - mock exam level for this section " HA & SCALING " implement old courses ["IAM, ACCOUNTS AND AWS ORGANISATIONS", "SIMPLE STORAGE SERVICE(S3) ", "VIRTUAL PRIVATE CLOUD (VPC) BASICS " , "ELASTIC COMPUTE CLOUD (EC2) BASICS ","CONTAINERS & ECS " , "ADVANCED EC2 " , "Route 53 - Global DNS", "RelationalDatabase Service (RDS) ","NETWORK STORAGE & DATA LIFECYCLE "]

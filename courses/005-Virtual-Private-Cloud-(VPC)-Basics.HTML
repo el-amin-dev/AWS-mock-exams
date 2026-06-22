@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03 · 005 · VPC Basics</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+:root{
+  --bg:#101418;--bg2:#161b21;--surface:#1b2128;--surface2:#212934;
+  --line:#2c3540;--line2:#3a4654;--text:#e7edf3;--muted:#9fb0c0;
+  --primary:#2dd4bf;--primary-d:#0f3b39;--exam:#fbbf24;--exam-d:#3a2f0c;
+  --demo:#60a5fa;--demo-d:#0e2647;--term:#c084fc;--term-d:#2a1640;
+  --warn:#fb7185;--warn-d:#3a151c;--ok:#34d399;
+  --radius:16px;--shadow:0 6px 22px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.25;margin:0}
+a{color:var(--primary);text-decoration:none}
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(16,20,24,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .badge{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--bg);background:var(--primary);padding:4px 9px;border-radius:8px}
+.topbar .ttl{font-family:'Sora';font-weight:600;font-size:15px}
+.topbar .ttl small{display:block;color:var(--muted);font-weight:500;font-size:11.5px;font-family:'Manrope'}
+.menu-btn{margin-left:auto;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+.menu-btn:active{transform:scale(.97)}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
+.drawer-bg.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(86vw,340px);background:var(--bg2);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .28s ease;z-index:80;overflow-y:auto;padding:18px 16px 40px}
+.drawer.open{transform:translateX(0)}
+.drawer h3{font-size:11.5px;color:var(--muted);margin:14px 4px 8px;text-transform:uppercase;letter-spacing:1px}
+.drawer a{display:block;color:var(--text);padding:10px 12px;border-radius:10px;font-weight:500;font-size:14px;border:1px solid transparent}
+.drawer a:active{background:var(--surface)}
+.drawer a .n{color:var(--primary);font-family:'Sora';font-weight:700;margin-right:8px}
+.drawer .close{width:100%;margin-top:18px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 90px}
+.hero{background:radial-gradient(120% 90% at 100% 0%, rgba(45,212,191,.16), transparent 55%),radial-gradient(120% 90% at 0% 100%, rgba(96,165,250,.12), transparent 55%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+.hero .eyebrow{color:var(--primary);font-weight:700;font-size:12.5px;letter-spacing:1.5px;font-family:'Sora'}
+.hero h1{font-size:25px;margin:6px 0 8px}
+.hero p{color:var(--muted);margin:0;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;margin-top:18px;box-shadow:var(--shadow)}
+.lesson-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.lesson-head .num{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:'Sora';font-weight:700;background:var(--primary);color:var(--bg);font-size:15px}
+.lesson-head h2{font-size:19px}
+.lesson-head .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+h3.block{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+h3.block::before{content:"";width:14px;height:3px;border-radius:3px;background:var(--primary)}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:360px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface2);color:var(--text);font-family:'Sora';font-weight:600;font-size:12.5px;letter-spacing:.3px}
+tr:last-child td{border-bottom:none}
+td b{color:var(--primary)}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{position:relative;padding:6px 0 6px 22px;font-size:15px;border-bottom:1px dashed var(--line)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"▸";position:absolute;left:2px;top:6px;color:var(--primary)}
+.two-col{display:grid;gap:12px}
+@media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+.box{border-radius:12px;padding:13px 14px;margin:12px 0;border:1px solid;font-size:14.5px}
+.box .tag{font-family:'Sora';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
+.box.exam{background:var(--exam-d);border-color:#6b551a}.box.exam .tag{color:var(--exam)}
+.box.term{background:var(--term-d);border-color:#4a2d6b}.box.term .tag{color:var(--term)}
+.box.warn{background:var(--warn-d);border-color:#6b2630}.box.warn .tag{color:var(--warn)}
+.box.demo{background:var(--demo-d);border-color:#1d4a82}.box.demo .tag{color:var(--demo)}
+.box ul{margin:4px 0 0;padding-left:18px}.box li{margin:3px 0}
+.mer{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;overflow-x:auto}
+.mermaid{display:flex;justify-content:center;min-width:fit-content}
+.code{position:relative;background:#0c1117;border:1px solid var(--line2);border-radius:10px;margin:10px 0}
+.code pre{margin:0;padding:13px 14px;overflow-x:auto;font-size:13px;line-height:1.55}
+.code code{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;color:#cfe9e6;white-space:pre}
+.code .cp{position:absolute;top:7px;right:7px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:7px;font-size:11px;padding:4px 9px;cursor:pointer;font-weight:600}
+.code .cp:active{color:var(--primary)}
+.expect{font-size:13px;color:var(--ok);background:rgba(52,211,153,.08);border-left:3px solid var(--ok);padding:7px 11px;margin:0 0 12px;border-radius:0 8px 8px 0}
+.expect b{color:var(--ok)}
+.step{counter-increment:st;margin:14px 0}
+.step .sh{display:flex;align-items:center;gap:9px;font-family:'Sora';font-weight:600;font-size:14.5px;margin-bottom:4px}
+.step .sh::before{content:counter(st);background:var(--demo);color:var(--bg);width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12.5px;flex:0 0 auto}
+.demo-wrap{counter-reset:st}
+.fc-grid{display:grid;gap:10px}
+.fc{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:13px 14px;cursor:pointer;transition:border-color .2s;user-select:none}
+.fc:active{border-color:var(--primary)}
+.fc .q{font-weight:600;font-size:14.5px;display:flex;gap:8px;align-items:flex-start}
+.fc .q::before{content:"Q";font-family:'Sora';color:var(--primary);font-weight:700;flex:0 0 auto}
+.fc .a{display:none;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);color:var(--muted);font-size:14px}
+.fc .a::before{content:"A ";color:var(--ok);font-weight:700;font-family:'Sora'}
+.fc.show .a{display:block}
+.fc .hint{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600}
+.quiz{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:14px;margin:10px 0}
+.quiz .qq{font-weight:600;font-size:15px;margin-bottom:8px}
+.quiz .opt{display:block;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin:6px 0;font-size:14px;cursor:pointer}
+.quiz .opt:active{border-color:var(--primary)}
+.quiz .reveal{margin-top:6px;background:var(--surface);color:var(--primary);border:1px solid var(--line2);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px;width:100%}
+.quiz .ans{display:none;margin-top:10px;border-left:3px solid var(--ok);background:rgba(52,211,153,.08);padding:9px 12px;border-radius:0 8px 8px 0;font-size:14px}
+.quiz .ans b{color:var(--ok)}
+.quiz.show .ans{display:block}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;line-height:1.7}
+.pill{display:inline-block;background:var(--surface2);border:1px solid var(--line2);color:var(--muted);font-size:11px;padding:2px 8px;border-radius:20px;margin:2px}
+.toTop{position:fixed;right:14px;bottom:16px;z-index:50;background:var(--primary);color:var(--bg);border:none;width:46px;height:46px;border-radius:50%;font-size:20px;box-shadow:var(--shadow);cursor:pointer;display:none}
+.toTop.show{display:block}
+kbd{background:var(--surface2);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-size:12px;font-family:monospace}
+.examcard{border-color:#6b551a;background:linear-gradient(180deg,var(--exam-d),var(--surface))}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="badge">SAA-C03</span>
+  <div class="ttl">Section 005<small>Virtual Private Cloud (VPC) Basics</small></div>
+  <button class="menu-btn" onclick="openDrawer()">☰ Lessons</button>
+</header>
+
+<div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer">
+  <h3>Design &amp; build</h3>
+  <a href="#l1" onclick="closeDrawer()"><span class="n">1</span>VPC Sizing & Structure</a>
+  <a href="#l2" onclick="closeDrawer()"><span class="n">2</span>Custom VPCs</a>
+  <a href="#l3" onclick="closeDrawer()"><span class="n">3</span>VPC Subnets</a>
+  <h3>Connectivity</h3>
+  <a href="#l4" onclick="closeDrawer()"><span class="n">4</span>Routing, IGW & Bastion</a>
+  <a href="#l8" onclick="closeDrawer()"><span class="n">8</span>NAT & NAT Gateway</a>
+  <h3>Security</h3>
+  <a href="#l5" onclick="closeDrawer()"><span class="n">5</span>Stateful vs Stateless</a>
+  <a href="#l6" onclick="closeDrawer()"><span class="n">6</span>NACLs</a>
+  <a href="#l7" onclick="closeDrawer()"><span class="n">7</span>Security Groups</a>
+  <h3>Revision</h3>
+  <a href="#mock" onclick="closeDrawer()"><span class="n">★</span>Mock Exam (VPC + IAM + S3)</a>
+  <button class="close" onclick="closeDrawer()">Close</button>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">SECTION GOAL</div>
+    <h1>Build and secure a private AWS network — the foundation under almost everything.</h1>
+    <p>VPC is heavily tested and underpins EC2, databases, load balancers and more. Plan IP space, build subnets, route to the internet, and control traffic with NACLs and Security Groups.</p>
+  </section>
+
+  <div class="card">
+    <h3 class="block">Section Map · how the lessons connect</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  SZ[1. Sizing & IP plan] --> VPC[2. Custom VPC]
+  VPC --> SUB[3. Subnets]
+  SUB --> RT[4. Routing + IGW + Bastion]
+  RT --> NAT[8. NAT Gateway]
+  FW[5. Stateful vs Stateless] --> NACL[6. NACLs]
+  FW --> SG[7. Security Groups]
+  SUB --> NACL
+  SUB --> SG
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class SZ,VPC,SUB,RT,NAT a;
+  class FW,NACL,SG b;
+    </pre></div>
+  </div>
+
+  <div class="card">
+    <h3 class="block">Quick Understanding · whole section</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Lesson</th><th>What + why it matters for the exam</th></tr>
+      <tr><td>1 Sizing & Structure</td><td>Pick VPC CIDR + plan IPs to avoid overlaps. Design thinking.</td></tr>
+      <tr><td>2 Custom VPC</td><td>Build the VPC shell; DNS options; regional resource.</td></tr>
+      <tr><td>3 Subnets</td><td>AZ-bound subnets; 5 reserved IPs; auto-assign IP; IPv6.</td></tr>
+      <tr><td>4 Routing/IGW/Bastion</td><td>Route tables, internet gateway, public IPv4, jump box.</td></tr>
+      <tr><td>5 Stateful vs Stateless</td><td>Why return traffic matters; SG vs NACL behaviour.</td></tr>
+      <tr><td>6 NACLs</td><td>Stateless subnet firewall; can explicitly DENY.</td></tr>
+      <tr><td>7 Security Groups</td><td>Stateful firewall on resources; allow-only; can reference SGs.</td></tr>
+      <tr><td>8 NAT Gateway</td><td>Private subnets reach internet outbound only; costs money.</td></tr>
+      <tr><td>★ Mock Exam</td><td>Exam-style questions over VPC + IAM/Orgs + S3.</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ===== LESSON 1 ===== -->
+  <article class="card" id="l1">
+    <div class="lesson-head"><div class="num">1</div><div><h2>VPC Sizing & Structure</h2><div class="sub">Plan your IP address space before building.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>VPC CIDR</td><td>The IP range a VPC uses (e.g. 10.16.0.0/16).</td><td>Pick once; hard to change.</td></tr>
+      <tr><td>Private ranges</td><td>RFC1918: 10.x, 172.16–31.x, 192.168.x.</td><td>Use these inside a VPC.</td></tr>
+      <tr><td>Avoid overlaps</td><td>Don't clash with other VPCs, on-prem, other clouds.</td><td>Needed for peering/VPN.</td></tr>
+      <tr><td>Size limits</td><td>VPC CIDR: min /28, max /16.</td><td>Common number question.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>CIDR</td><td>A way to write an IP range, e.g. <code>10.16.0.0/16</code>.</td></tr>
+      <tr><td>/16</td><td>A big range = 65,536 addresses. Smaller number = bigger range.</td></tr>
+      <tr><td>RFC1918</td><td>The standard private IP ranges, not used on the public internet.</td></tr>
+      <tr><td>Overlap</td><td>Two networks sharing the same IPs — breaks connections between them.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  PLAN[Plan IP space first] --> R[Use private RFC1918 ranges]
+  R --> AVOID[Avoid common ranges<br/>e.g. 192.168.x, 10.0.x]
+  AVOID --> NOOVERLAP[No overlap with on-prem / other VPCs / clouds]
+  NOOVERLAP --> SIZE[Size per VPC: a /16 is a safe default]
+  SIZE --> ROOM[Leave room: regions x accounts x AZs x growth]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class PLAN a;
+    </pre></div>
+    <ul class="clean">
+      <li>Pick <b>private ranges</b> (RFC1918). Avoid ranges others commonly use, so you can peer/VPN later.</li>
+      <li>VPC CIDR can be <b>/28 (16 IPs) to /16 (65,536 IPs)</b>. You can add <b>secondary CIDRs</b> later, but resizing the primary is painful — plan well.</li>
+      <li>Reserve enough space for <b>multiple regions, accounts, AZs</b> and future growth.</li>
+      <li>Animals4life plan: each VPC gets its own <b>/16</b> (e.g. <code>10.16.0.0/16</code> = US region 1, General account, VPC1), starting at 10.16 to dodge common ranges.</li>
+    </ul>
+    <div class="box term"><span class="tag">CIDR size cheat</span><ul>
+      <li>/16 = 65,536 IPs · /20 = 4,096 · /24 = 256 · /28 = 16.</li>
+      <li>Each +1 to the number <b>halves</b> the range; each −1 <b>doubles</b> it.</li>
+    </ul></div>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>This lesson is IP planning (a design exercise). The actual VPC is built in Lesson 2.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>The chosen CIDR is used to build the VPC (L2) and split into subnets (L3).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>VPC peering, VPN, Transit Gateway, hybrid networking — all need non-overlapping ranges.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>VPC CIDR limits: <b>min /28, max /16</b>.</li>
+      <li>Use <b>private (RFC1918)</b> ranges; avoid overlaps for future peering/VPN.</li>
+      <li>You can <b>add secondary CIDRs</b> but can't easily shrink the primary — plan ahead.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Smallest and largest VPC CIDR?<span class="hint">tap</span></div><div class="a">Smallest /28 (16 IPs), largest /16 (65,536 IPs).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Why avoid common ranges like 192.168.x?<span class="hint">tap</span></div><div class="a">To prevent overlap with home/office or other networks you might connect later.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How many IPs in a /24?<span class="hint">tap</span></div><div class="a">256.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You plan to connect your VPC to an on-prem network using 10.0.0.0/16. Best VPC range?</div>
+      <span class="opt">A) 10.0.0.0/16</span><span class="opt">B) 10.16.0.0/16 (no overlap)</span><span class="opt">C) 192.168.1.0/24</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Pick a non-overlapping private range so the two networks can route to each other.</div></div>
+  </article>
+
+  <!-- ===== LESSON 2 ===== -->
+  <article class="card" id="l2">
+    <div class="lesson-head"><div class="num">2</div><div><h2>Custom VPCs</h2><div class="sub">Your own isolated network in a region.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>VPC</td><td>A private, isolated network you control.</td><td>Foundation of everything.</td></tr>
+      <tr><td>Regional</td><td>A VPC spans all AZs in ONE region.</td><td>Not global, not one-AZ.</td></tr>
+      <tr><td>DNS options</td><td>enableDnsSupport + enableDnsHostnames.</td><td>Needed for public DNS names.</td></tr>
+      <tr><td>Tenancy</td><td>Default (shared) vs Dedicated (own hardware, costly).</td><td>Pick default unless required.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Custom VPC</td><td>A VPC you create and configure (vs the default one).</td></tr>
+      <tr><td>Secondary CIDR</td><td>Extra IP ranges you can add to a VPC.</td></tr>
+      <tr><td>enableDnsSupport</td><td>Lets resources resolve DNS names inside the VPC.</td></tr>
+      <tr><td>enableDnsHostnames</td><td>Gives instances with public IPs a public DNS name.</td></tr>
+      <tr><td>Tenancy</td><td>Whether your instances share hardware (default) or not (dedicated).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  REGION[AWS Region] --> VPC[Custom VPC 10.16.0.0/16]
+  VPC --> AZA[AZ-a]
+  VPC --> AZB[AZ-b]
+  VPC --> AZC[AZ-c]
+  VPC --> DNS[DNS: support + hostnames]
+  VPC --> IPV6[Optional IPv6 /56 from Amazon]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class VPC a;
+    </pre></div>
+    <ul class="clean">
+      <li>A VPC is <b>regional</b> — it covers every AZ in that region.</li>
+      <li>It has a <b>primary IPv4 CIDR</b> (and optional secondary CIDRs), plus an optional <b>IPv6 /56</b>.</li>
+      <li>For instances to get <b>public DNS names</b>, enable <b>DNS support + DNS hostnames</b>.</li>
+      <li>Keep <b>default tenancy</b> unless a rule forces dedicated hardware (dedicated is expensive).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> build the A4L VPC shell (10.16.0.0/16) with DNS on. <b>Check first:</b> CLI configured; region us-east-1.</div>
+      <div class="step"><div class="sh">Create the VPC</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>VPC=$(aws ec2 create-vpc --cidr-block 10.16.0.0/16 \
+  --tag-specifications 'ResourceType=vpc,Tags=[{Key=Name,Value=a4l-vpc}]' \
+  --query Vpc.VpcId --output text)
+echo $VPC</code></pre></div>
+      <div class="expect"><b>Expect:</b> a VPC ID like <code>vpc-0abc...</code>. Save it.</div>
+      <div class="step"><div class="sh">Turn on DNS support + hostnames</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 modify-vpc-attribute --vpc-id $VPC --enable-dns-support '{"Value":true}'
+aws ec2 modify-vpc-attribute --vpc-id $VPC --enable-dns-hostnames '{"Value":true}'</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output = both enabled.</div>
+      <div class="step"><div class="sh">Confirm</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 describe-vpcs --vpc-ids $VPC \
+  --query "Vpcs[0].{Cidr:CidrBlock,State:State}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> CIDR <code>10.16.0.0/16</code>, state <code>available</code>.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Keep <code>$VPC</code> for the next lessons — subnets, gateways and routes all attach to it. (Creating a VPC is free.)</div>
+      <div class="box term"><span class="tag">Clean up</span>Wait until the end of Lesson 8 (everything builds on this VPC). To delete now:</div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 delete-vpc --vpc-id $VPC</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output (only works once subnets/gateways are removed).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses the CIDR planned in L1; holds the subnets in L3.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>EC2, RDS, ELB, Lambda-in-VPC all live inside a VPC.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>A VPC is <b>regional</b> (all AZs in one region), not global, not single-AZ.</li>
+      <li>Public DNS names need <b>DNS support + DNS hostnames</b> on.</li>
+      <li>Default VPC uses <code>172.31.0.0/16</code>; <b>custom</b> VPCs let you pick. <span style="color:var(--muted)">[added for exam]</span></li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Is a VPC global, regional, or one-AZ?<span class="hint">tap</span></div><div class="a">Regional — it spans all AZs in one region.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Two DNS settings on a VPC?<span class="hint">tap</span></div><div class="a">enableDnsSupport and enableDnsHostnames.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">When use Dedicated tenancy?<span class="hint">tap</span></div><div class="a">Only when a compliance rule needs isolated hardware — it's costly.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Your instances get private DNS but no public DNS name. What's likely off?</div>
+      <span class="opt">A) enableDnsHostnames</span><span class="opt">B) Versioning</span><span class="opt">C) Tenancy</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Public DNS hostnames require enableDnsHostnames (plus DNS support).</div></div>
+  </article>
+
+  <!-- ===== LESSON 3 ===== -->
+  <article class="card" id="l3">
+    <div class="lesson-head"><div class="num">3</div><div><h2>VPC Subnets</h2><div class="sub">Split the VPC into AZ-based pieces.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Subnet</td><td>A slice of the VPC CIDR, living in ONE AZ.</td><td>Subnet = one AZ. Key fact.</td></tr>
+      <tr><td>Reserved IPs</td><td>5 IPs per subnet are reserved by AWS.</td><td>Very common question.</td></tr>
+      <tr><td>Auto-assign IP</td><td>Per-subnet switch to give instances a public IPv4.</td><td>Makes a subnet "public".</td></tr>
+      <tr><td>IPv6</td><td>Each subnet gets a /64 from the VPC /56.</td><td>Detail question.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>AZ</td><td>Availability Zone — one isolated data-center area in a region.</td></tr>
+      <tr><td>Reserved IP</td><td>An address AWS keeps for itself in each subnet.</td></tr>
+      <tr><td>Auto-assign public IPv4</td><td>Subnet option: new instances get a public IP automatically.</td></tr>
+      <tr><td>/64</td><td>The IPv6 size each subnet uses.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  VPC[VPC 10.16.0.0/16] --> A[Subnet web-A 10.16.48.0/20 - AZ a]
+  VPC --> B[Subnet app-A 10.16.32.0/20 - AZ a]
+  VPC --> C[Subnet db-A 10.16.16.0/20 - AZ a]
+  A --> R[5 IPs reserved per subnet]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class VPC a;
+    </pre></div>
+    <div class="box term"><span class="tag">The 5 reserved IPs (in e.g. 10.16.16.0/24)</span><ul>
+      <li><b>.0</b> network address</li>
+      <li><b>.1</b> VPC router</li>
+      <li><b>.2</b> DNS (and AWS services)</li>
+      <li><b>.3</b> reserved for future use</li>
+      <li><b>.255</b> network broadcast (not supported, but reserved)</li>
+    </ul></div>
+    <ul class="clean">
+      <li>A subnet lives in <b>one AZ</b> and uses a <b>sub-range</b> of the VPC CIDR.</li>
+      <li><b>5 IPs are reserved</b> per subnet, so usable = total − 5.</li>
+      <li>Set <b>auto-assign public IPv4</b> on a subnet to make instances reachable (with routing).</li>
+      <li>If the VPC has IPv6, each subnet takes a <b>/64</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> create A4L web/app/db subnets in AZ-a. <b>Check first:</b> <code>$VPC</code> from Lesson 2 still set.</div>
+      <div class="step"><div class="sh">Create three subnets in AZ-a</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>AZ=us-east-1a
+WEBA=$(aws ec2 create-subnet --vpc-id $VPC --cidr-block 10.16.48.0/20 \
+  --availability-zone $AZ \
+  --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=sn-web-A}]' \
+  --query Subnet.SubnetId --output text)
+APPA=$(aws ec2 create-subnet --vpc-id $VPC --cidr-block 10.16.32.0/20 \
+  --availability-zone $AZ \
+  --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=sn-app-A}]' \
+  --query Subnet.SubnetId --output text)
+DBA=$(aws ec2 create-subnet --vpc-id $VPC --cidr-block 10.16.16.0/20 \
+  --availability-zone $AZ \
+  --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=sn-db-A}]' \
+  --query Subnet.SubnetId --output text)
+echo "web=$WEBA app=$APPA db=$DBA"</code></pre></div>
+      <div class="expect"><b>Expect:</b> three subnet IDs printed.</div>
+      <div class="step"><div class="sh">Make the web subnet auto-assign public IPv4</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 modify-subnet-attribute --subnet-id $WEBA --map-public-ip-on-launch</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output. New instances in <code>sn-web-A</code> will now get a public IPv4 (once routing is added in L4).</div>
+      <div class="step"><div class="sh">Check usable IP count</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 describe-subnets --subnet-ids $WEBA \
+  --query "Subnets[0].{Cidr:CidrBlock,Free:AvailableIpAddressCount}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> a /20 shows ~4091 free (4096 − 5 reserved).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Auto-assign public IP makes a subnet "public-capable", but it isn't truly public until it also has a <b>route to an internet gateway</b> (Lesson 4).</div>
+      <div class="box term"><span class="tag">Clean up</span>Keep these for Lesson 4. To remove now: <code>aws ec2 delete-subnet --subnet-id $WEBA</code> (repeat for each).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Subnets get routes in L4 and firewalls (NACL/SG) in L6/L7.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>EC2/RDS launch into subnets; multi-AZ HA uses subnets in different AZs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>A subnet is in exactly one AZ</b>; a VPC spans many AZs.</li>
+      <li><b>5 IPs reserved</b> per subnet (network, router, DNS, future, broadcast).</li>
+      <li>"Public subnet" = <b>auto-assign public IP</b> + <b>route to internet gateway</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How many IPs are reserved per subnet?<span class="hint">tap</span></div><div class="a">5 (network, VPC router, DNS, future use, broadcast).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can a subnet span two AZs?<span class="hint">tap</span></div><div class="a">No — one subnet lives in exactly one AZ.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Usable IPs in a /24 subnet?<span class="hint">tap</span></div><div class="a">256 − 5 = 251.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What size IPv6 block does a subnet use?<span class="hint">tap</span></div><div class="a">A /64.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">How many usable IPs does a /28 subnet have?</div>
+      <span class="opt">A) 16</span><span class="opt">B) 11</span><span class="opt">C) 14</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> 16 total − 5 reserved = 11 usable.</div></div>
+    <div class="quiz"><div class="qq">For high availability across a region, you should place subnets in…</div>
+      <span class="opt">A) One AZ</span><span class="opt">B) Multiple AZs</span><span class="opt">C) Multiple regions only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Spreading subnets across AZs survives a single-AZ failure.</div></div>
+  </article>
+
+  <!-- ===== LESSON 4 ===== -->
+  <article class="card" id="l4">
+    <div class="lesson-head"><div class="num">4</div><div><h2>Routing, Internet Gateway & Bastion</h2><div class="sub">Make a subnet public and reach the internet.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Route table</td><td>Rules deciding where a subnet's traffic goes.</td><td>One RT per subnet.</td></tr>
+      <tr><td>Internet Gateway (IGW)</td><td>VPC's door to the internet; does NAT for public IPv4.</td><td>One per VPC, HA, regional.</td></tr>
+      <tr><td>Public subnet</td><td>Auto-assign IP + route 0.0.0.0/0 → IGW.</td><td>Definition trap.</td></tr>
+      <tr><td>Bastion / jump box</td><td>Public EC2 used to reach private instances.</td><td>Know it's legacy.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Route</td><td>One rule: "to reach X, send via Y".</td></tr>
+      <tr><td>Local route</td><td>Built-in route for the VPC CIDR; can't be removed.</td></tr>
+      <tr><td>Association</td><td>Linking a route table to a subnet.</td></tr>
+      <tr><td>0.0.0.0/0</td><td>"Everywhere else" — the default route to the internet.</td></tr>
+      <tr><td>Bastion host</td><td>A gateway server you log into first, then hop inward.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  EC2[Instance in web subnet] --> RT[Route Table]
+  RT -->|10.16.0.0/16 = local| VPC[Inside VPC]
+  RT -->|0.0.0.0/0| IGW[Internet Gateway]
+  IGW --> NET[Internet]
+  IGW -. maps public IP to private IP .-> EC2
+  classDef k fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class IGW k;
+    </pre></div>
+    <ul class="clean">
+      <li>Each subnet uses <b>one route table</b>; routes pick the <b>most specific match</b> (longest prefix).</li>
+      <li>The <b>local route</b> (the VPC CIDR) is always there and can't be removed.</li>
+      <li><b>IGW</b> is one-per-VPC, highly available, regional. It performs <b>static NAT</b>: maps an instance's public IPv4 ↔ its private IP.</li>
+      <li>The instance OS only ever sees its <b>private IP</b> — the IGW does the public translation.</li>
+      <li><b>Public subnet</b> = auto-assign public IP <b>and</b> a default route to the IGW.</li>
+      <li><b>Bastion host</b>: a public jump box to reach private instances. It's <b>legacy</b> — prefer <b>SSM Session Manager</b>. <span style="color:var(--muted)">[added for exam]</span></li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> make <code>sn-web-A</code> public and launch a bastion. <b>Check first:</b> <code>$VPC</code> and <code>$WEBA</code> from L2/L3 set. <b>Note:</b> launches a t3.micro EC2 (free tier) — clean up after.</div>
+      <div class="step"><div class="sh">Create + attach an internet gateway</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>IGW=$(aws ec2 create-internet-gateway \
+  --tag-specifications 'ResourceType=internet-gateway,Tags=[{Key=Name,Value=a4l-igw}]' \
+  --query InternetGateway.InternetGatewayId --output text)
+aws ec2 attach-internet-gateway --internet-gateway-id $IGW --vpc-id $VPC
+echo $IGW</code></pre></div>
+      <div class="expect"><b>Expect:</b> an IGW ID; attach gives no output.</div>
+      <div class="step"><div class="sh">Create a public route table + default route to IGW</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>RT=$(aws ec2 create-route-table --vpc-id $VPC \
+  --tag-specifications 'ResourceType=route-table,Tags=[{Key=Name,Value=a4l-rt-public}]' \
+  --query RouteTable.RouteTableId --output text)
+aws ec2 create-route --route-table-id $RT \
+  --destination-cidr-block 0.0.0.0/0 --gateway-id $IGW
+aws ec2 associate-route-table --route-table-id $RT --subnet-id $WEBA</code></pre></div>
+      <div class="expect"><b>Expect:</b> create-route returns <code>"Return": true</code>; association returns an ID. <code>sn-web-A</code> is now public.</div>
+      <div class="step"><div class="sh">Security group allowing SSH</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>SG=$(aws ec2 create-security-group --group-name a4l-bastion-sg \
+  --description "bastion ssh" --vpc-id $VPC --query GroupId --output text)
+aws ec2 authorize-security-group-ingress --group-id $SG \
+  --protocol tcp --port 22 --cidr 0.0.0.0/0   # demo only - tighten to your IP!</code></pre></div>
+      <div class="expect"><b>Expect:</b> an SG ID; ingress rule added. (In real life allow only your own IP, not 0.0.0.0/0.)</div>
+      <div class="step"><div class="sh">Launch a bastion (free-tier) instance</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>AMI=$(aws ssm get-parameters \
+  --names /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64 \
+  --query "Parameters[0].Value" --output text)
+aws ec2 create-key-pair --key-name a4l-key \
+  --query KeyMaterial --output text > a4l-key.pem && chmod 400 a4l-key.pem
+INST=$(aws ec2 run-instances --image-id $AMI --instance-type t3.micro \
+  --key-name a4l-key --subnet-id $WEBA --security-group-ids $SG \
+  --query "Instances[0].InstanceId" --output text)
+echo $INST</code></pre></div>
+      <div class="expect"><b>Expect:</b> an instance ID. Verify the free-tier type for your region (t2.micro vs t3.micro).</div>
+      <div class="step"><div class="sh">Get its public IP and connect</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 describe-instances --instance-ids $INST \
+  --query "Reservations[0].Instances[0].PublicIpAddress" --output text
+# ssh -i a4l-key.pem ec2-user@THAT_PUBLIC_IP</code></pre></div>
+      <div class="expect"><b>Expect:</b> a public IPv4; SSH connects → you have a working public VPC + bastion.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>The instance never "sees" its public IP — the IGW maps it. SSH-open-to-the-world bastions are a classic <b>bad practice</b>; the exam wants you to recognise this and prefer SSM.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 terminate-instances --instance-ids $INST
+aws ec2 wait instance-terminated --instance-ids $INST
+aws ec2 delete-key-pair --key-name a4l-key ; rm -f a4l-key.pem
+aws ec2 delete-security-group --group-id $SG
+aws ec2 disassociate-route-table --association-id $(aws ec2 describe-route-tables \
+  --route-table-ids $RT --query "RouteTables[0].Associations[0].RouteTableAssociationId" --output text)
+aws ec2 delete-route-table --route-table-id $RT
+aws ec2 detach-internet-gateway --internet-gateway-id $IGW --vpc-id $VPC
+aws ec2 delete-internet-gateway --internet-gateway-id $IGW</code></pre></div>
+      <div class="expect"><b>Expect:</b> instance terminated, then all networking removed. Keep <code>$VPC</code>/subnets if continuing to L8 (else delete subnets + VPC too).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses subnets (L3); SG used here is detailed in L7.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>NAT Gateway (L8) for private subnets; load balancers in public subnets.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Public subnet</b> needs BOTH auto-assign public IP AND a <b>0.0.0.0/0 → IGW</b> route.</li>
+      <li><b>IGW = one per VPC</b>, regional, highly available.</li>
+      <li>Routing uses <b>longest-prefix match</b>; the <b>local route</b> can't be deleted.</li>
+      <li>Bastion/jump box = <b>legacy</b>; prefer SSM Session Manager (no open SSH).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Two things that make a subnet public?<span class="hint">tap</span></div><div class="a">Auto-assign public IP + a default route (0.0.0.0/0) to an internet gateway.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How many IGWs per VPC?<span class="hint">tap</span></div><div class="a">One (it's HA and regional).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Does the instance OS know its public IP?<span class="hint">tap</span></div><div class="a">No — the IGW maps public ↔ private; the OS only has the private IP.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Modern alternative to a bastion?<span class="hint">tap</span></div><div class="a">AWS Systems Manager Session Manager.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An instance has a public IP but can't reach the internet. Most likely missing?</div>
+      <span class="opt">A) A 0.0.0.0/0 route to the IGW</span><span class="opt">B) Versioning</span><span class="opt">C) A second VPC</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Without a default route to the IGW, the subnet isn't truly public.</div></div>
+    <div class="quiz"><div class="qq">Best way to administer private instances without exposing SSH to the internet?</div>
+      <span class="opt">A) Open port 22 to 0.0.0.0/0</span><span class="opt">B) SSM Session Manager</span><span class="opt">C) Make them public</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Session Manager avoids bastions and open inbound ports.</div></div>
+  </article>
+
+  <!-- ===== LESSON 5 ===== -->
+  <article class="card" id="l5">
+    <div class="lesson-head"><div class="num">5</div><div><h2>Stateful vs Stateless Firewalls</h2><div class="sub">Why return traffic is the whole story.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Stateful</td><td>Remembers a connection; return traffic is auto-allowed.</td><td>= Security Groups.</td></tr>
+      <tr><td>Stateless</td><td>Each direction judged alone; must allow responses too.</td><td>= NACLs.</td></tr>
+      <tr><td>Ephemeral ports</td><td>Random high ports used for replies (1024–65535).</td><td>NACL outbound rules.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Connection state</td><td>Knowing a reply belongs to a request you already allowed.</td></tr>
+      <tr><td>Ephemeral port</td><td>A temporary high-numbered port a client uses to receive a reply.</td></tr>
+      <tr><td>Inbound / outbound</td><td>Traffic coming in / going out.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  REQ[Request out on port 443] --> RESP[Reply comes back on a random high port]
+  RESP --> SF{Firewall type?}
+  SF -->|Stateful SG| AUTO[Reply auto-allowed - remembers the request]
+  SF -->|Stateless NACL| MANUAL[Must add a rule for the ephemeral reply port]
+  classDef k fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class AUTO,MANUAL k;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Stateful</b> firewalls track connections — allow a request and the <b>reply is automatic</b>.</li>
+      <li><b>Stateless</b> firewalls judge each packet alone — you must <b>also allow the return traffic</b>.</li>
+      <li>Replies usually come back on <b>ephemeral ports (1024–65535)</b>, so stateless rules must allow that range.</li>
+      <li>In AWS: <b>Security Groups = stateful</b>, <b>NACLs = stateless</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>This is a concept that explains NACL (L6) and Security Group (L7) behaviour; those lessons have the hands-on.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Directly explains why NACLs (L6) need return-traffic rules and SGs (L7) don't.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Troubleshooting connectivity in any VPC scenario.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>SG = stateful</b> (return traffic automatic). <b>NACL = stateless</b> (allow both directions).</li>
+      <li>Stateless rules must cover <b>ephemeral ports (1024–65535)</b> for replies.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which AWS firewall is stateful?<span class="hint">tap</span></div><div class="a">Security Groups.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which is stateless?<span class="hint">tap</span></div><div class="a">NACLs.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What port range do replies use?<span class="hint">tap</span></div><div class="a">Ephemeral ports, 1024–65535.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A NACL allows inbound 443 but responses fail. Why?</div>
+      <span class="opt">A) NACLs are stateless — outbound ephemeral ports aren't allowed</span>
+      <span class="opt">B) SGs block it</span><span class="opt">C) Wrong AZ</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Being stateless, the NACL also needs an outbound rule for the ephemeral reply ports.</div></div>
+  </article>
+
+  <!-- ===== LESSON 6 ===== -->
+  <article class="card" id="l6">
+    <div class="lesson-head"><div class="num">6</div><div><h2>Network Access Control Lists (NACLs)</h2><div class="sub">Stateless firewall at the subnet edge.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>NACL</td><td>Optional stateless firewall around one or more subnets.</td><td>Subnet-level control.</td></tr>
+      <tr><td>Numbered rules</td><td>Evaluated low → high; first match wins.</td><td>Order matters.</td></tr>
+      <tr><td>Can DENY</td><td>NACLs can explicitly block (SGs can't).</td><td>Block bad IPs.</td></tr>
+      <tr><td>Stateless</td><td>Need inbound + outbound (ephemeral) rules.</td><td>Return traffic trap.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Rule number</td><td>The order position; lower numbers are checked first.</td></tr>
+      <tr><td>Explicit deny</td><td>A rule that blocks specific traffic.</td></tr>
+      <tr><td>Default NACL</td><td>Comes allowing all traffic; a custom NACL denies all until you add rules.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  PKT[Packet enters subnet] --> N1[Rule 100?]
+  N1 -->|match| ACT[Allow or Deny - stop]
+  N1 -->|no match| N2[Rule 200?]
+  N2 -->|no match| STAR[Rule * = DENY all]
+  classDef w fill:#3a151c,stroke:#fb7185,color:#e7edf3;
+  class STAR w;
+    </pre></div>
+    <ul class="clean">
+      <li>NACLs sit at the <b>subnet boundary</b> and are <b>stateless</b> (need inbound + outbound rules).</li>
+      <li>Rules are <b>numbered</b>; lowest number that matches wins, then it stops.</li>
+      <li>NACLs can <b>explicitly deny</b> — useful to block a specific IP/range.</li>
+      <li>A subnet has <b>one</b> NACL; a NACL can cover <b>many</b> subnets. They <b>can't reference SGs</b> or AWS resources — only IP ranges/ports.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> create a NACL, allow web + ephemeral, attach to <code>sn-web-A</code>. <b>Check first:</b> <code>$VPC</code> and <code>$WEBA</code> set.</div>
+      <div class="step"><div class="sh">Create the NACL</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>NACL=$(aws ec2 create-network-acl --vpc-id $VPC \
+  --tag-specifications 'ResourceType=network-acl,Tags=[{Key=Name,Value=a4l-web-nacl}]' \
+  --query NetworkAcl.NetworkAclId --output text)
+echo $NACL</code></pre></div>
+      <div class="expect"><b>Expect:</b> a NACL ID. A new custom NACL denies everything until rules are added.</div>
+      <div class="step"><div class="sh">Allow inbound HTTPS + outbound ephemeral (stateless!)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 create-network-acl-entry --network-acl-id $NACL --rule-number 100 \
+  --protocol tcp --port-range From=443,To=443 --cidr-block 0.0.0.0/0 \
+  --rule-action allow --ingress
+aws ec2 create-network-acl-entry --network-acl-id $NACL --rule-number 100 \
+  --protocol tcp --port-range From=1024,To=65535 --cidr-block 0.0.0.0/0 \
+  --rule-action allow --egress</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output. Inbound 443 allowed; outbound ephemeral ports allowed so replies can leave.</div>
+      <div class="step"><div class="sh">Attach the NACL to the web subnet</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>ASSOC=$(aws ec2 describe-network-acls \
+  --filters Name=association.subnet-id,Values=$WEBA \
+  --query "NetworkAcls[0].Associations[?SubnetId=='$WEBA'].NetworkAclAssociationId" --output text)
+aws ec2 replace-network-acl-association --association-id $ASSOC --network-acl-id $NACL</code></pre></div>
+      <div class="expect"><b>Expect:</b> a new association ID — the subnet now uses your NACL.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Because NACLs are <b>stateless</b>, the outbound ephemeral rule is essential — without it, allowed inbound requests get no reply.</div>
+      <div class="box term"><span class="tag">Clean up</span>Re-attach the default NACL, then delete yours:</div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>DEF=$(aws ec2 describe-network-acls --filters Name=vpc-id,Values=$VPC \
+  Name=default,Values=true --query "NetworkAcls[0].NetworkAclId" --output text)
+NEWASSOC=$(aws ec2 describe-network-acls --network-acl-ids $NACL \
+  --query "NetworkAcls[0].Associations[?SubnetId=='$WEBA'].NetworkAclAssociationId" --output text)
+aws ec2 replace-network-acl-association --association-id $NEWASSOC --network-acl-id $DEF
+aws ec2 delete-network-acl --network-acl-id $NACL</code></pre></div>
+      <div class="expect"><b>Expect:</b> subnet back on the default NACL; custom NACL deleted.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Applies the stateless idea from L5; pairs with SGs (L7) for layered security.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Subnet-level blocking, defence in depth in real designs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>NACL = <b>stateless</b>, <b>subnet</b> level, <b>numbered</b> rules (low wins).</li>
+      <li>Only NACLs can <b>explicitly DENY</b> (e.g. block one IP).</li>
+      <li>NACLs work on <b>IP/port only</b> — they can't reference SGs or AWS resources.</li>
+      <li>Need both <b>inbound and outbound (ephemeral)</b> rules.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">NACL level: subnet or resource?<span class="hint">tap</span></div><div class="a">Subnet level.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can a NACL explicitly deny traffic?<span class="hint">tap</span></div><div class="a">Yes — unlike Security Groups.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How are NACL rules evaluated?<span class="hint">tap</span></div><div class="a">By number, lowest first; first match wins.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can a NACL reference a security group?<span class="hint">tap</span></div><div class="a">No — NACLs only use IPs/ports.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must block ONE malicious IP from a whole subnet. Best tool?</div>
+      <span class="opt">A) Security Group</span><span class="opt">B) NACL deny rule</span><span class="opt">C) Bucket policy</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Only NACLs can explicitly deny; SGs are allow-only.</div></div>
+    <div class="quiz"><div class="qq">Two NACL rules match a packet: #100 allow, #200 deny. Result?</div>
+      <span class="opt">A) Deny</span><span class="opt">B) Allow (lower number wins)</span><span class="opt">C) Both</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Lowest matching rule number wins, then evaluation stops.</div></div>
+  </article>
+
+  <!-- ===== LESSON 7 ===== -->
+  <article class="card" id="l7">
+    <div class="lesson-head"><div class="num">7</div><div><h2>Security Groups (SG)</h2><div class="sub">Stateful firewall attached to resources.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Security Group</td><td>Stateful firewall on an ENI (a resource), not a subnet.</td><td>Resource-level control.</td></tr>
+      <tr><td>Allow-only</td><td>SGs can only allow; there's an implicit deny.</td><td>Can't block one IP.</td></tr>
+      <tr><td>Reference SGs</td><td>Rules can point at other SGs (or itself).</td><td>Scales with changing IPs.</td></tr>
+      <tr><td>Stateful</td><td>Return traffic is automatic.</td><td>No ephemeral rules needed.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>ENI</td><td>Elastic Network Interface — a virtual network card on a resource.</td></tr>
+      <tr><td>Implicit deny</td><td>Anything not allowed is automatically blocked.</td></tr>
+      <tr><td>SG reference</td><td>A rule that says "allow from whatever has this SG".</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  WEBSG[web-SG: allow 443 from anywhere] --> WEB[Web instances]
+  APPSG[app-SG: allow 8080 FROM web-SG] --> APP[App instances]
+  WEB -->|traffic on 8080| APP
+  NOTE[SG reference auto-follows instances<br/>even when their IPs change]
+  classDef k fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class WEBSG,APPSG k;
+    </pre></div>
+    <ul class="clean">
+      <li>SGs attach to <b>resources (ENIs)</b>, are <b>stateful</b> (replies automatic), and are <b>allow-only</b>.</li>
+      <li>Because there's an <b>implicit deny</b> and no explicit deny, SGs <b>can't block a single IP</b> — use a NACL for that.</li>
+      <li>Rules can <b>reference another SG</b> (or itself), so they keep working as instances scale and IPs change.</li>
+      <li>Often paired with NACLs: SGs for normal allow-rules, NACLs for explicit blocks.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> make a web SG and an app SG, where app only accepts traffic FROM the web SG. <b>Check first:</b> <code>$VPC</code> set.</div>
+      <div class="step"><div class="sh">Create both security groups</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>WEBSG=$(aws ec2 create-security-group --group-name a4l-web-sg \
+  --description "web" --vpc-id $VPC --query GroupId --output text)
+APPSG=$(aws ec2 create-security-group --group-name a4l-app-sg \
+  --description "app" --vpc-id $VPC --query GroupId --output text)
+echo "web=$WEBSG app=$APPSG"</code></pre></div>
+      <div class="expect"><b>Expect:</b> two SG IDs.</div>
+      <div class="step"><div class="sh">Allow HTTPS to web from anywhere</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 authorize-security-group-ingress --group-id $WEBSG \
+  --protocol tcp --port 443 --cidr 0.0.0.0/0</code></pre></div>
+      <div class="expect"><b>Expect:</b> rule added (JSON shows the rule).</div>
+      <div class="step"><div class="sh">Allow app port 8080 ONLY from the web SG (reference)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 authorize-security-group-ingress --group-id $APPSG \
+  --protocol tcp --port 8080 --source-group $WEBSG</code></pre></div>
+      <div class="expect"><b>Expect:</b> rule added. App accepts 8080 only from instances that have the web SG — no IPs to maintain.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>SG references are the clean way to wire tiers together. They keep working as Auto Scaling adds/removes instances.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code># delete the referencing SG first, then the referenced one
+aws ec2 delete-security-group --group-id $APPSG
+aws ec2 delete-security-group --group-id $WEBSG</code></pre></div>
+      <div class="expect"><b>Expect:</b> both removed (order matters because of the reference).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Stateful behaviour from L5; complements NACLs (L6).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>EC2, ELB, RDS, Auto Scaling all use SGs and SG references.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>SG = <b>stateful</b>, on <b>resources/ENIs</b>, <b>allow-only</b> (implicit deny).</li>
+      <li>SGs <b>can't explicitly block</b> a single IP → use a <b>NACL</b> for that.</li>
+      <li>SGs can <b>reference other SGs</b> (and themselves) — great for tiers + scaling.</li>
+      <li>NACL vs SG: <b>subnet/stateless/can-deny</b> vs <b>resource/stateful/allow-only</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Where do SGs attach?<span class="hint">tap</span></div><div class="a">To resources (ENIs), not subnets.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can an SG explicitly deny?<span class="hint">tap</span></div><div class="a">No — allow-only, with an implicit deny.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What can SG rules reference?<span class="hint">tap</span></div><div class="a">IPs/ports AND other SGs (and themselves).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Do SGs need return-traffic rules?<span class="hint">tap</span></div><div class="a">No — they're stateful, replies are automatic.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">App tier should accept traffic only from web tier instances, which scale up/down. Best rule?</div>
+      <span class="opt">A) Allow the web subnet CIDR</span><span class="opt">B) Reference the web Security Group</span><span class="opt">C) Allow 0.0.0.0/0</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Referencing the web SG follows instances automatically as they scale.</div></div>
+    <div class="quiz"><div class="qq">Which statement is true?</div>
+      <span class="opt">A) SGs are stateless and subnet-level</span><span class="opt">B) SGs are stateful and resource-level</span><span class="opt">C) NACLs are stateful</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> SGs are stateful and attach to resources; NACLs are stateless and subnet-level.</div></div>
+  </article>
+
+  <!-- ===== LESSON 8 ===== -->
+  <article class="card" id="l8">
+    <div class="lesson-head"><div class="num">8</div><div><h2>NAT & NAT Gateway</h2><div class="sub">Let private instances reach out, without being reachable.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>NAT</td><td>Many private IPs share one public IP for outbound traffic.</td><td>Outbound only.</td></tr>
+      <tr><td>NAT Gateway</td><td>AWS-managed NAT in a public subnet; needs an Elastic IP.</td><td>HA per AZ.</td></tr>
+      <tr><td>Per-AZ HA</td><td>One NAT GW per AZ for resilience.</td><td>Design trap.</td></tr>
+      <tr><td>Costs money</td><td>Hourly + data charges (not free tier).</td><td>Delete after demo!</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>NAT</td><td>Network Address Translation — swaps private IPs for a shared public IP.</td></tr>
+      <tr><td>Elastic IP (EIP)</td><td>A fixed public IPv4 you own.</td></tr>
+      <tr><td>Egress-only IGW</td><td>The IPv6 equivalent of NAT (outbound-only).</td></tr>
+      <tr><td>NAT instance</td><td>An older DIY NAT on an EC2 instance.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  PRIV[Private instance 10.16.x] --> RT[Private route table]
+  RT -->|0.0.0.0/0| NATGW[NAT Gateway in PUBLIC subnet + EIP]
+  NATGW --> IGW[Internet Gateway]
+  IGW --> NET[Internet]
+  NET -. cannot start a connection inward .-x PRIV
+  classDef k fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class NATGW k;
+    </pre></div>
+    <ul class="clean">
+      <li>NAT lets <b>private</b> instances make <b>outbound</b> connections (updates, APIs) but blocks <b>inbound</b> from the internet.</li>
+      <li><b>NAT Gateway</b> sits in a <b>public</b> subnet, needs an <b>Elastic IP</b>, and private subnets route <code>0.0.0.0/0</code> to it.</li>
+      <li>A NAT GW is <b>resilient only within its AZ</b> → put <b>one per AZ</b> for high availability.</li>
+      <li>It's <b>managed and scales</b>, but <b>costs money</b> (hourly + data) — not free tier.</li>
+      <li>A NAT GW <b>can't have a security group</b> (it uses the subnet's NACL). For <b>IPv6</b>, use an <b>egress-only IGW</b> instead. <span style="color:var(--muted)">[added for exam]</span></li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box warn"><span class="tag">Cost warning</span>A NAT Gateway is <b>NOT free</b> (~hourly charge + data). Do this quickly and run the cleanup straight after.</div>
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> give a private subnet outbound internet via a NAT GW. <b>Check first:</b> <code>$VPC</code>, a public subnet (<code>$WEBA</code> with IGW route from L4), and a private subnet (<code>$APPA</code> from L3).</div>
+      <div class="step"><div class="sh">Allocate an Elastic IP</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>EIP=$(aws ec2 allocate-address --domain vpc --query AllocationId --output text)
+echo $EIP</code></pre></div>
+      <div class="expect"><b>Expect:</b> an allocation ID like <code>eipalloc-...</code>.</div>
+      <div class="step"><div class="sh">Create the NAT Gateway in the PUBLIC subnet</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>NATGW=$(aws ec2 create-nat-gateway --subnet-id $WEBA \
+  --allocation-id $EIP --query NatGateway.NatGatewayId --output text)
+aws ec2 wait nat-gateway-available --nat-gateway-ids $NATGW
+echo $NATGW</code></pre></div>
+      <div class="expect"><b>Expect:</b> a NAT GW ID; the wait finishes when it's <code>available</code> (a minute or two).</div>
+      <div class="step"><div class="sh">Private route table → NAT GW, attach to private subnet</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>PRT=$(aws ec2 create-route-table --vpc-id $VPC \
+  --tag-specifications 'ResourceType=route-table,Tags=[{Key=Name,Value=a4l-rt-private}]' \
+  --query RouteTable.RouteTableId --output text)
+aws ec2 create-route --route-table-id $PRT \
+  --destination-cidr-block 0.0.0.0/0 --nat-gateway-id $NATGW
+aws ec2 associate-route-table --route-table-id $PRT --subnet-id $APPA</code></pre></div>
+      <div class="expect"><b>Expect:</b> route created (<code>"Return": true</code>) and associated. Instances in <code>sn-app-A</code> can now reach the internet outbound (e.g. <code>yum update</code>) but stay unreachable inbound.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>For real HA you'd create a NAT GW in <b>each AZ</b> and point each AZ's private route table at its local NAT GW.</div>
+      <div class="box term"><span class="tag">Clean up (do this now — NAT GW bills hourly)</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 delete-nat-gateway --nat-gateway-id $NATGW
+aws ec2 wait nat-gateway-deleted --nat-gateway-ids $NATGW
+aws ec2 release-address --allocation-id $EIP
+ASSOC=$(aws ec2 describe-route-tables --route-table-ids $PRT \
+  --query "RouteTables[0].Associations[0].RouteTableAssociationId" --output text)
+aws ec2 disassociate-route-table --association-id $ASSOC
+aws ec2 delete-route-table --route-table-id $PRT</code></pre></div>
+      <div class="expect"><b>Expect:</b> NAT GW deleted, EIP released (stops charges), route table removed. Then tear down any remaining subnets/VPC if you're finished.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses public subnet + IGW (L4) and private subnets (L3).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Private app/DB tiers needing patches/updates; HA network designs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>NAT = <b>outbound only</b> for private instances; nothing can start a connection inward.</li>
+      <li>NAT GW lives in a <b>public</b> subnet, needs an <b>EIP</b>, is <b>AZ-resilient only</b> → one per AZ for HA.</li>
+      <li>NAT GW <b>has no security group</b>; <b>IPv6 uses an egress-only IGW</b> (NAT is IPv4-only).</li>
+      <li>NAT Gateway <b>costs money</b> — watch for "reduce NAT cost" questions (e.g. VPC endpoints for S3).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does NAT allow / block?<span class="hint">tap</span></div><div class="a">Allows outbound internet for private instances; blocks inbound from the internet.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Where does a NAT Gateway live?<span class="hint">tap</span></div><div class="a">In a public subnet, with an Elastic IP.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How to make NAT highly available?<span class="hint">tap</span></div><div class="a">Deploy one NAT Gateway per AZ.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">NAT for IPv6?<span class="hint">tap</span></div><div class="a">Not used — IPv6 uses an egress-only internet gateway.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Private instances must download OS patches but never be reachable from the internet. Use?</div>
+      <span class="opt">A) Internet Gateway route directly</span><span class="opt">B) NAT Gateway</span><span class="opt">C) Public IPs on all</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A NAT Gateway gives outbound-only internet to private subnets.</div></div>
+    <div class="quiz"><div class="qq">A single NAT Gateway serves three AZs. What's the resilience risk?</div>
+      <span class="opt">A) None</span><span class="opt">B) If that AZ fails, the other AZs lose outbound internet</span><span class="opt">C) Costs less</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A NAT GW is AZ-bound; use one per AZ so an AZ failure doesn't cut the others.</div></div>
+  </article>
+
+  <!-- ===== MOCK EXAM ===== -->
+  <article class="card examcard" id="mock">
+    <div class="lesson-head"><div class="num">★</div><div><h2>Mock Exam</h2><div class="sub">Exam-style questions over VPC + IAM/Accounts/Orgs + S3.</div></div></div>
+    <div class="box exam"><span class="tag">How to use</span>Decide your answer first, then tap <b>Show answer</b>. Pick the <b>best</b> option. 15 questions.</div>
+
+    <div class="quiz"><div class="qq">1. How many IP addresses are reserved by AWS in every subnet?</div>
+      <span class="opt">A) 2</span><span class="opt">B) 3</span><span class="opt">C) 5</span><span class="opt">D) 8</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> 5: network, VPC router, DNS, future use, and broadcast.</div></div>
+
+    <div class="quiz"><div class="qq">2. A subnet's instances have public IPs but can't reach the internet. What's missing?</div>
+      <span class="opt">A) A NAT Gateway</span><span class="opt">B) A 0.0.0.0/0 route to an internet gateway</span><span class="opt">C) Versioning</span><span class="opt">D) A second AZ</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A subnet is only public with both auto-assign IP and a default route to the IGW.</div></div>
+
+    <div class="quiz"><div class="qq">3. You must explicitly block one malicious IP for an entire subnet. Use?</div>
+      <span class="opt">A) Security Group</span><span class="opt">B) NACL deny rule</span><span class="opt">C) IAM policy</span><span class="opt">D) Bucket policy</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Only NACLs can explicitly deny; SGs are allow-only.</div></div>
+
+    <div class="quiz"><div class="qq">4. Private instances need outbound internet for updates but must stay unreachable inbound. Best?</div>
+      <span class="opt">A) Give them public IPs</span><span class="opt">B) NAT Gateway in a public subnet</span><span class="opt">C) Internet gateway route in the private subnet</span><span class="opt">D) Pre-signed URL</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A NAT Gateway gives outbound-only access; inbound connections can't start.</div></div>
+
+    <div class="quiz"><div class="qq">5. An app tier must accept traffic only from web instances that scale up and down. Best rule?</div>
+      <span class="opt">A) Allow the web subnet CIDR in a NACL</span><span class="opt">B) Security Group rule referencing the web SG</span><span class="opt">C) Allow 0.0.0.0/0</span><span class="opt">D) A bastion host</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> SG-to-SG references follow instances automatically as they scale.</div></div>
+
+    <div class="quiz"><div class="qq">6. Inbound is allowed on a NACL but replies fail. Why?</div>
+      <span class="opt">A) NACLs are stateless; outbound ephemeral ports aren't allowed</span><span class="opt">B) Wrong region</span><span class="opt">C) SG is stateful</span><span class="opt">D) Missing IGW</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Being stateless, the NACL also needs outbound rules for ephemeral (1024–65535) replies.</div></div>
+
+    <div class="quiz"><div class="qq">7. Smallest and largest allowed VPC CIDR sizes?</div>
+      <span class="opt">A) /16 and /8</span><span class="opt">B) /28 and /16</span><span class="opt">C) /24 and /16</span><span class="opt">D) /32 and /20</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A VPC CIDR can be from /28 (16 IPs) up to /16 (65,536 IPs).</div></div>
+
+    <div class="quiz"><div class="qq">8. (IAM) A user has an Allow for s3:*, but an explicit Deny on one bucket. Access to that bucket?</div>
+      <span class="opt">A) Allowed</span><span class="opt">B) Denied — explicit deny wins</span><span class="opt">C) Read only</span><span class="opt">D) Depends on region</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Explicit Deny overrides any Allow in IAM evaluation.</div></div>
+
+    <div class="quiz"><div class="qq">9. (Orgs) Restrict every member account to a single region. Best tool?</div>
+      <span class="opt">A) IAM group</span><span class="opt">B) SCP at root/OU</span><span class="opt">C) NACL</span><span class="opt">D) Bucket policy</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> An SCP sets an org-wide boundary (the management account is not affected).</div></div>
+
+    <div class="quiz"><div class="qq">10. (IAM) An EC2 app needs to read S3. Best practice?</div>
+      <span class="opt">A) Store access keys on the instance</span><span class="opt">B) Attach an instance role</span><span class="opt">C) Use root keys</span><span class="opt">D) Make the bucket public</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Instance roles give temporary, rotating credentials — no stored keys.</div></div>
+
+    <div class="quiz"><div class="qq">11. (S3) A bucket policy allows public read but objects return Access Denied. First check?</div>
+      <span class="opt">A) Storage class</span><span class="opt">B) Block Public Access</span><span class="opt">C) Versioning</span><span class="opt">D) Lifecycle</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Block Public Access overrides any policy granting public access.</div></div>
+
+    <div class="quiz"><div class="qq">12. (S3) Records must be un-deletable for 5 years, no exceptions even for root. Feature?</div>
+      <span class="opt">A) Versioning</span><span class="opt">B) Object Lock — Governance</span><span class="opt">C) Object Lock — Compliance</span><span class="opt">D) Lifecycle expiration</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> Compliance mode blocks deletion for the whole period, even for root.</div></div>
+
+    <div class="quiz"><div class="qq">13. (S3) Cheapest storage for backups kept 10 years, rarely read, 12-hour restore OK?</div>
+      <span class="opt">A) S3 Standard</span><span class="opt">B) Standard-IA</span><span class="opt">C) Glacier Deep Archive</span><span class="opt">D) One Zone-IA</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> Deep Archive is cheapest for rarely-read, slow-restore data.</div></div>
+
+    <div class="quiz"><div class="qq">14. (VPC) True statement about Security Groups vs NACLs?</div>
+      <span class="opt">A) SG stateless / NACL stateful</span><span class="opt">B) SG stateful + resource-level; NACL stateless + subnet-level</span><span class="opt">C) Both can explicitly deny</span><span class="opt">D) NACLs attach to instances</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> SGs are stateful on resources; NACLs are stateless on subnets and can deny.</div></div>
+
+    <div class="quiz"><div class="qq">15. (VPC) A single NAT Gateway serves instances in 3 AZs. Main risk?</div>
+      <span class="opt">A) Higher durability</span><span class="opt">B) If that AZ fails, other AZs lose outbound internet</span><span class="opt">C) Cheaper</span><span class="opt">D) No risk</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A NAT GW is AZ-bound; deploy one per AZ for resilience.</div></div>
+  </article>
+
+  <div class="foot">
+    <div>
+      <span class="pill">Subnet = 1 AZ</span><span class="pill">5 IPs reserved</span>
+      <span class="pill">Public = auto-IP + IGW route</span><span class="pill">SG stateful / NACL stateless</span>
+      <span class="pill">NACL can deny</span><span class="pill">NAT = outbound only, per-AZ</span>
+    </div>
+    <p>Section 005 · Virtual Private Cloud (VPC) Basics + Mock Exam · built for SAA-C03 self-study.<br>
+    Tap a flashcard or "Show answer" to reveal. Use ☰ Lessons to jump around.</p>
+  </div>
+</main>
+
+<button class="toTop" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawerBg').classList.add('open');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerBg').classList.remove('open');}
+function cp(btn){
+  const code=btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard?.writeText(code).then(()=>{const t=btn.innerText;btn.innerText='copied!';setTimeout(()=>btn.innerText=t,1200);})
+  .catch(()=>{btn.innerText='select & copy';});
+}
+const tt=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{tt.classList.toggle('show',window.scrollY>500);});
+window.addEventListener('load',()=>{
+  try{
+    mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{
+      fontFamily:'Manrope, sans-serif',primaryColor:'#1b2128',primaryTextColor:'#e7edf3',
+      primaryBorderColor:'#2dd4bf',lineColor:'#60a5fa',secondaryColor:'#212934',tertiaryColor:'#161b21'}});
+  }catch(e){console.warn('mermaid init',e);}
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03 · 006 · EC2 Basics</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+:root{
+  --bg:#101418;--bg2:#161b21;--surface:#1b2128;--surface2:#212934;
+  --line:#2c3540;--line2:#3a4654;--text:#e7edf3;--muted:#9fb0c0;
+  --primary:#2dd4bf;--primary-d:#0f3b39;--exam:#fbbf24;--exam-d:#3a2f0c;
+  --demo:#60a5fa;--demo-d:#0e2647;--term:#c084fc;--term-d:#2a1640;
+  --warn:#fb7185;--warn-d:#3a151c;--ok:#34d399;
+  --radius:16px;--shadow:0 6px 22px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.25;margin:0}
+a{color:var(--primary);text-decoration:none}
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(16,20,24,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .badge{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--bg);background:var(--primary);padding:4px 9px;border-radius:8px}
+.topbar .ttl{font-family:'Sora';font-weight:600;font-size:15px}
+.topbar .ttl small{display:block;color:var(--muted);font-weight:500;font-size:11.5px;font-family:'Manrope'}
+.menu-btn{margin-left:auto;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+.menu-btn:active{transform:scale(.97)}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
+.drawer-bg.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(86vw,340px);background:var(--bg2);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .28s ease;z-index:80;overflow-y:auto;padding:18px 16px 40px}
+.drawer.open{transform:translateX(0)}
+.drawer h3{font-size:11.5px;color:var(--muted);margin:14px 4px 8px;text-transform:uppercase;letter-spacing:1px}
+.drawer a{display:block;color:var(--text);padding:9px 12px;border-radius:10px;font-weight:500;font-size:13.5px;border:1px solid transparent}
+.drawer a:active{background:var(--surface)}
+.drawer a .n{color:var(--primary);font-family:'Sora';font-weight:700;margin-right:8px}
+.drawer .close{width:100%;margin-top:18px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 90px}
+.hero{background:radial-gradient(120% 90% at 100% 0%, rgba(45,212,191,.16), transparent 55%),radial-gradient(120% 90% at 0% 100%, rgba(96,165,250,.12), transparent 55%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+.hero .eyebrow{color:var(--primary);font-weight:700;font-size:12.5px;letter-spacing:1.5px;font-family:'Sora'}
+.hero h1{font-size:25px;margin:6px 0 8px}
+.hero p{color:var(--muted);margin:0;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;margin-top:18px;box-shadow:var(--shadow)}
+.lesson-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.lesson-head .num{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:'Sora';font-weight:700;background:var(--primary);color:var(--bg);font-size:15px}
+.lesson-head h2{font-size:19px}
+.lesson-head .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+h3.block{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+h3.block::before{content:"";width:14px;height:3px;border-radius:3px;background:var(--primary)}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:360px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface2);color:var(--text);font-family:'Sora';font-weight:600;font-size:12.5px;letter-spacing:.3px}
+tr:last-child td{border-bottom:none}
+td b{color:var(--primary)}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{position:relative;padding:6px 0 6px 22px;font-size:15px;border-bottom:1px dashed var(--line)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"▸";position:absolute;left:2px;top:6px;color:var(--primary)}
+.two-col{display:grid;gap:12px}
+@media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+.box{border-radius:12px;padding:13px 14px;margin:12px 0;border:1px solid;font-size:14.5px}
+.box .tag{font-family:'Sora';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
+.box.exam{background:var(--exam-d);border-color:#6b551a}.box.exam .tag{color:var(--exam)}
+.box.term{background:var(--term-d);border-color:#4a2d6b}.box.term .tag{color:var(--term)}
+.box.warn{background:var(--warn-d);border-color:#6b2630}.box.warn .tag{color:var(--warn)}
+.box.demo{background:var(--demo-d);border-color:#1d4a82}.box.demo .tag{color:var(--demo)}
+.box ul{margin:4px 0 0;padding-left:18px}.box li{margin:3px 0}
+.mer{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;overflow-x:auto}
+.mermaid{display:flex;justify-content:center;min-width:fit-content}
+.code{position:relative;background:#0c1117;border:1px solid var(--line2);border-radius:10px;margin:10px 0}
+.code pre{margin:0;padding:13px 14px;overflow-x:auto;font-size:13px;line-height:1.55}
+.code code{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;color:#cfe9e6;white-space:pre}
+.code .cp{position:absolute;top:7px;right:7px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:7px;font-size:11px;padding:4px 9px;cursor:pointer;font-weight:600}
+.code .cp:active{color:var(--primary)}
+.expect{font-size:13px;color:var(--ok);background:rgba(52,211,153,.08);border-left:3px solid var(--ok);padding:7px 11px;margin:0 0 12px;border-radius:0 8px 8px 0}
+.expect b{color:var(--ok)}
+.step{counter-increment:st;margin:14px 0}
+.step .sh{display:flex;align-items:center;gap:9px;font-family:'Sora';font-weight:600;font-size:14.5px;margin-bottom:4px}
+.step .sh::before{content:counter(st);background:var(--demo);color:var(--bg);width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12.5px;flex:0 0 auto}
+.demo-wrap{counter-reset:st}
+.fc-grid{display:grid;gap:10px}
+.fc{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:13px 14px;cursor:pointer;transition:border-color .2s;user-select:none}
+.fc:active{border-color:var(--primary)}
+.fc .q{font-weight:600;font-size:14.5px;display:flex;gap:8px;align-items:flex-start}
+.fc .q::before{content:"Q";font-family:'Sora';color:var(--primary);font-weight:700;flex:0 0 auto}
+.fc .a{display:none;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);color:var(--muted);font-size:14px}
+.fc .a::before{content:"A ";color:var(--ok);font-weight:700;font-family:'Sora'}
+.fc.show .a{display:block}
+.fc .hint{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600}
+.quiz{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:14px;margin:10px 0}
+.quiz .qq{font-weight:600;font-size:15px;margin-bottom:8px}
+.quiz .opt{display:block;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin:6px 0;font-size:14px;cursor:pointer}
+.quiz .opt:active{border-color:var(--primary)}
+.quiz .reveal{margin-top:6px;background:var(--surface);color:var(--primary);border:1px solid var(--line2);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px;width:100%}
+.quiz .ans{display:none;margin-top:10px;border-left:3px solid var(--ok);background:rgba(52,211,153,.08);padding:9px 12px;border-radius:0 8px 8px 0;font-size:14px}
+.quiz .ans b{color:var(--ok)}
+.quiz.show .ans{display:block}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;line-height:1.7}
+.pill{display:inline-block;background:var(--surface2);border:1px solid var(--line2);color:var(--muted);font-size:11px;padding:2px 8px;border-radius:20px;margin:2px}
+.toTop{position:fixed;right:14px;bottom:16px;z-index:50;background:var(--primary);color:var(--bg);border:none;width:46px;height:46px;border-radius:50%;font-size:20px;box-shadow:var(--shadow);cursor:pointer;display:none}
+.toTop.show{display:block}
+kbd{background:var(--surface2);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-size:12px;font-family:monospace}
+.examcard{border-color:#6b551a;background:linear-gradient(180deg,var(--exam-d),var(--surface))}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="badge">SAA-C03</span>
+  <div class="ttl">Section 006<small>Elastic Compute Cloud (EC2) Basics</small></div>
+  <button class="menu-btn" onclick="openDrawer()">☰ Lessons</button>
+</header>
+
+<div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer">
+  <h3>Foundations</h3>
+  <a href="#l1" onclick="closeDrawer()"><span class="n">1</span>Virtualization 101</a>
+  <a href="#l2" onclick="closeDrawer()"><span class="n">2</span>EC2 Architecture & Resilience</a>
+  <a href="#l3" onclick="closeDrawer()"><span class="n">3</span>Instance Types</a>
+  <h3>Storage</h3>
+  <a href="#l4" onclick="closeDrawer()"><span class="n">4</span>Storage Refresher</a>
+  <a href="#l5" onclick="closeDrawer()"><span class="n">5</span>EBS Architecture</a>
+  <a href="#l6" onclick="closeDrawer()"><span class="n">6</span>EBS – General Purpose</a>
+  <a href="#l7" onclick="closeDrawer()"><span class="n">7</span>EBS – Provisioned IOPS</a>
+  <a href="#l8" onclick="closeDrawer()"><span class="n">8</span>EBS – HDD</a>
+  <a href="#l9" onclick="closeDrawer()"><span class="n">9</span>Instance Store</a>
+  <a href="#l10" onclick="closeDrawer()"><span class="n">10</span>EBS vs Instance Store</a>
+  <a href="#l11" onclick="closeDrawer()"><span class="n">11</span>Snapshots & FSR</a>
+  <a href="#l12" onclick="closeDrawer()"><span class="n">12</span>EBS Encryption</a>
+  <h3>Networking & images</h3>
+  <a href="#l13" onclick="closeDrawer()"><span class="n">13</span>ENIs, IPs & DNS</a>
+  <a href="#l14" onclick="closeDrawer()"><span class="n">14</span>AMIs (create/copy/share)</a>
+  <h3>Cost, ops & scaling</h3>
+  <a href="#l15" onclick="closeDrawer()"><span class="n">15</span>Purchase Options</a>
+  <a href="#l16" onclick="closeDrawer()"><span class="n">16</span>Reserved – the rest</a>
+  <a href="#l17" onclick="closeDrawer()"><span class="n">17</span>Status Checks & Recovery</a>
+  <a href="#l18" onclick="closeDrawer()"><span class="n">18</span>Horizontal vs Vertical</a>
+  <a href="#l19" onclick="closeDrawer()"><span class="n">19</span>Instance Metadata</a>
+  <h3>Revision</h3>
+  <a href="#mock" onclick="closeDrawer()"><span class="n">★</span>Mock Exam</a>
+  <button class="close" onclick="closeDrawer()">Close</button>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">SECTION GOAL</div>
+    <h1>Master EC2: instances, storage, networking, images, cost and scaling.</h1>
+    <p>EC2 is the core compute service and a huge part of SAA-C03. Learn how instances run, how EBS and instance store differ, how to bake AMIs, how to buy compute cheaply, and how to keep it healthy.</p>
+  </section>
+
+  <div class="card">
+    <h3 class="block">Section Map · how the lessons connect</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  VIRT[1. Virtualization] --> ARCH[2. EC2 Architecture]
+  ARCH --> TYPE[3. Instance Types]
+  ARCH --> STORE[4-10. Storage: EBS + Instance Store]
+  STORE --> SNAP[11. Snapshots]
+  STORE --> ENC[12. EBS Encryption]
+  ARCH --> NET[13. ENIs / IPs / DNS]
+  NET --> AMI[14. AMIs]
+  TYPE --> BUY[15-16. Purchase Options]
+  ARCH --> OPS[17. Status & Recovery]
+  ARCH --> SCALE[18. Scaling]
+  ARCH --> META[19. Metadata]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class VIRT,ARCH,TYPE,STORE,SNAP,ENC a;
+  class NET,AMI,BUY,OPS,SCALE,META b;
+    </pre></div>
+  </div>
+
+  <div class="card">
+    <h3 class="block">Quick Understanding · whole section</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Lesson</th><th>What + why it matters for the exam</th></tr>
+      <tr><td>1 Virtualization</td><td>How VMs share hardware; SR-IOV = enhanced networking.</td></tr>
+      <tr><td>2 Architecture</td><td>Instances live on a host in one AZ; EBS is AZ-resilient.</td></tr>
+      <tr><td>3 Instance Types</td><td>Families + naming decode; pick the right type for a workload.</td></tr>
+      <tr><td>4 Storage Refresher</td><td>Block vs file vs object; IOPS vs throughput.</td></tr>
+      <tr><td>5 EBS Architecture</td><td>Network block storage in one AZ, persistent, snapshot-able.</td></tr>
+      <tr><td>6 EBS GP</td><td>gp2/gp3 general purpose SSD; gp3 cheaper + flexible.</td></tr>
+      <tr><td>7 EBS PIOPS</td><td>io1/io2 for high, consistent IOPS + low latency.</td></tr>
+      <tr><td>8 EBS HDD</td><td>st1 throughput, sc1 cold; cheap, can't boot.</td></tr>
+      <tr><td>9 Instance Store</td><td>Ephemeral local disk; fast but lost on stop/terminate.</td></tr>
+      <tr><td>10 EBS vs Store</td><td>Choosing between persistent and ephemeral.</td></tr>
+      <tr><td>11 Snapshots</td><td>Incremental backups on S3; migrate across AZ/region; FSR.</td></tr>
+      <tr><td>12 EBS Encryption</td><td>KMS-based, covers volume + snapshots; OS unaware.</td></tr>
+      <tr><td>13 ENIs/IPs/DNS</td><td>Network cards, public/private/elastic IPs, DNS behaviour.</td></tr>
+      <tr><td>14 AMIs</td><td>Images to launch/clone instances; copy + share rules.</td></tr>
+      <tr><td>15 Purchase Options</td><td>On-Demand, Spot, Reserved, Dedicated.</td></tr>
+      <tr><td>16 Reserved – rest</td><td>Regional vs zonal, capacity reservations.</td></tr>
+      <tr><td>17 Status & Recovery</td><td>System vs instance checks; auto recovery; termination protection.</td></tr>
+      <tr><td>18 Scaling</td><td>Scale out (horizontal) vs scale up (vertical).</td></tr>
+      <tr><td>19 Metadata</td><td>169.254.169.254; IMDSv2; role credentials.</td></tr>
+      <tr><td>★ Mock Exam</td><td>EC2 + IAM/Orgs + S3 + VPC questions.</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ===== LESSON 1 ===== -->
+  <article class="card" id="l1">
+    <div class="lesson-head"><div class="num">1</div><div><h2>Virtualization 101</h2><div class="sub">How many virtual machines share one physical server.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Virtualization</td><td>Running many virtual machines on one physical host.</td><td>Background for EC2.</td></tr>
+      <tr><td>Hardware-assisted</td><td>CPU helps the hypervisor → faster, modern.</td><td>What AWS uses today.</td></tr>
+      <tr><td>SR-IOV</td><td>The network card presents virtual NICs to instances.</td><td>= Enhanced Networking.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Hypervisor</td><td>Software that creates and runs virtual machines.</td></tr>
+      <tr><td>Emulation</td><td>Software pretends to be hardware (slow).</td></tr>
+      <tr><td>Paravirtualization</td><td>The guest OS is modified to cooperate with the hypervisor.</td></tr>
+      <tr><td>SR-IOV</td><td>Hardware lets one physical card act as many virtual cards.</td></tr>
+      <tr><td>Nitro</td><td>AWS's modern system that offloads work to dedicated hardware.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  EMU[Emulated: software fakes hardware - slow] --> PARA[Paravirtual: guest cooperates - faster]
+  PARA --> HW[Hardware-assisted: CPU helps - fast]
+  HW --> SRIOV[SR-IOV: network card offload = Enhanced Networking]
+  SRIOV --> NITRO[AWS Nitro: offloads compute/storage/network to hardware]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class NITRO a;
+    </pre></div>
+    <ul class="clean">
+      <li>Old way (<b>emulation</b>) was slow; <b>paravirtualization</b> sped it up; <b>hardware-assisted</b> is the modern base.</li>
+      <li><b>SR-IOV</b> lets the physical network card present <b>virtual NICs</b> to instances → this is <b>Enhanced Networking</b> (lower latency, higher throughput, less host overhead).</li>
+      <li>AWS now uses the <b>Nitro system</b>, offloading networking/storage to dedicated hardware. <span style="color:var(--muted)">[added for exam]</span></li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>This is background concept; nothing to build. EC2 launches start in Lesson 9 onward.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Explains why EC2 hosts can run many instances (L2).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Enhanced Networking, placement groups, high-performance instances.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>SR-IOV = Enhanced Networking</b> (remember this link).</li>
+      <li>Modern AWS = <b>hardware-assisted</b> + the <b>Nitro</b> system.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does SR-IOV provide in AWS?<span class="hint">tap</span></div><div class="a">Enhanced Networking — virtual NICs from the physical card, lower latency/higher throughput.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which virtualization is fastest/modern?<span class="hint">tap</span></div><div class="a">Hardware-assisted (with the Nitro system).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An instance needs the lowest network latency and highest packet rate. Which feature?</div>
+      <span class="opt">A) Emulation</span><span class="opt">B) Enhanced Networking (SR-IOV)</span><span class="opt">C) Paravirtualization</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> SR-IOV-based Enhanced Networking gives the best network performance.</div></div>
+  </article>
+
+  <!-- ===== LESSON 2 ===== -->
+  <article class="card" id="l2">
+    <div class="lesson-head"><div class="num">2</div><div><h2>EC2 Architecture & Resilience</h2><div class="sub">Where instances run and why the AZ matters.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>EC2 Host</td><td>A physical server in ONE AZ that runs instances.</td><td>Instances are AZ-locked.</td></tr>
+      <tr><td>AZ resilience</td><td>An instance fails if its AZ fails.</td><td>Spread across AZs for HA.</td></tr>
+      <tr><td>EBS in same AZ</td><td>An instance and its EBS volume share one AZ.</td><td>Can't attach across AZs.</td></tr>
+      <tr><td>Stop/Start = move</td><td>Stopping then starting can move to a new host.</td><td>Fixes host issues.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Instance</td><td>A virtual server running on a host.</td></tr>
+      <tr><td>EC2 Host</td><td>The physical machine the instance runs on.</td></tr>
+      <tr><td>AZ</td><td>Availability Zone — an isolated data-center area in a region.</td></tr>
+      <tr><td>EBS</td><td>Network block storage that lives in one AZ.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  REGION[Region] --> AZA[AZ-a]
+  REGION --> AZB[AZ-b]
+  AZA --> HOST[EC2 Host]
+  HOST --> INST[Instance]
+  INST --- EBS[EBS volume - same AZ]
+  AZA -. if AZ-a fails .- DOWN[Instance + its EBS go down]
+  classDef w fill:#3a151c,stroke:#fb7185,color:#e7edf3;
+  class DOWN w;
+    </pre></div>
+    <ul class="clean">
+      <li>Instances run on an <b>EC2 host</b> inside <b>one AZ</b> — they don't move between AZs by themselves.</li>
+      <li>An instance and its <b>EBS volumes</b> must be in the <b>same AZ</b>.</li>
+      <li>If the AZ fails, the instance fails → for HA, run instances <b>across multiple AZs</b>.</li>
+      <li><b>Stop then start</b> can move an instance to a <b>different host</b> (useful to escape a failing host); a <b>reboot</b> keeps the same host.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Architecture concept; the hands-on EC2 + EBS work happens in Lessons 9, 11 and 13.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Explains EBS being AZ-bound (L5) and why snapshots move data across AZs (L11).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Auto Scaling Groups, ELB, multi-AZ HA designs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>An instance + its EBS are in <b>one AZ</b>; can't attach EBS across AZs.</li>
+      <li><b>Stop/start</b> may move hosts (new host); <b>reboot</b> keeps the same host.</li>
+      <li>For resilience, spread instances over <b>multiple AZs</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can an EBS volume attach to an instance in another AZ?<span class="hint">tap</span></div><div class="a">No — both must be in the same AZ.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How to move an instance off a failing host?<span class="hint">tap</span></div><div class="a">Stop then start it (reboot keeps the same host).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How to survive an AZ failure?<span class="hint">tap</span></div><div class="a">Run instances across multiple AZs.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An instance is on a degraded host. Which action most likely moves it to healthy hardware?</div>
+      <span class="opt">A) Reboot</span><span class="opt">B) Stop then Start</span><span class="opt">C) Resize the volume</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Stop/start can place the instance on a new host; reboot stays on the same one.</div></div>
+  </article>
+
+  <!-- ===== LESSON 3 ===== -->
+  <article class="card" id="l3">
+    <div class="lesson-head"><div class="num">3</div><div><h2>EC2 Instance Types</h2><div class="sub">Read the name; pick the right family.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Categories</td><td>General, Compute, Memory, Storage, Accelerated.</td><td>Match workload to category.</td></tr>
+      <tr><td>Name decode</td><td>family + generation + features . size.</td><td>Read <code>c5n.xlarge</code>.</td></tr>
+      <tr><td>Instance Connect</td><td>SSH via IAM, no shared keys.</td><td>Secure access option.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Family</td><td>The letter group, e.g. <code>c</code> = compute optimized.</td></tr>
+      <tr><td>Generation</td><td>The version number; higher = newer/better.</td></tr>
+      <tr><td>Feature flags</td><td>Extra letters, e.g. <code>n</code> network, <code>g</code> Graviton, <code>d</code> NVMe.</td></tr>
+      <tr><td>Size</td><td>nano…micro…large…xlarge… — bigger = more resources.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  NAME["c5n.xlarge"] --> F[c = compute optimized]
+  NAME --> G[5 = 5th generation]
+  NAME --> X[n = extra feature - network]
+  NAME --> S[xlarge = size]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class NAME a;
+    </pre></div>
+    <div class="tbl-scroll"><table>
+      <tr><th>Category</th><th>Example families</th><th>Use for</th></tr>
+      <tr><td>General purpose</td><td>T, M (A = Graviton)</td><td>Balanced; web/app servers.</td></tr>
+      <tr><td>Compute optimized</td><td>C</td><td>CPU-heavy: batch, gaming, media.</td></tr>
+      <tr><td>Memory optimized</td><td>R, X</td><td>Big in-memory: databases, caches.</td></tr>
+      <tr><td>Storage optimized</td><td>I, D, H</td><td>High disk IOPS/throughput.</td></tr>
+      <tr><td>Accelerated</td><td>P, G, Inf, F</td><td>GPU/FPGA: ML, graphics.</td></tr>
+    </table></div>
+    <ul class="clean">
+      <li><b>T family</b> is burstable (uses CPU credits) — good for low/variable load.</li>
+      <li><b>EC2 Instance Connect</b> uses IAM to control SSH, so you don't share key pairs.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (read-only)</span><b>Situation:</b> look up the specs of an instance type. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Describe a type's vCPU + memory</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 describe-instance-types --instance-types t3.micro \
+  --query "InstanceTypes[0].{vCPU:VCpuInfo.DefaultVCpus,MemMiB:MemoryInfo.SizeInMiB,Net:NetworkInfo.NetworkPerformance}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> JSON showing 2 vCPUs, 1024 MiB RAM, network performance. No cost (read-only).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Use this to compare types before launching. <code>ec2instances.info</code> is a handy external comparison table.</div>
+      <div class="box term"><span class="tag">Clean up</span>Nothing created — read-only call.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Pairs with purchase options (L15) and scaling (L18).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Right-sizing, Graviton cost savings, GPU workloads.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Map the workload to a <b>category</b>: CPU→C, memory→R/X, GPU→P/G, balanced→T/M.</li>
+      <li>Decode names: <b>family + generation + features . size</b>.</li>
+      <li><b>T</b> = burstable (CPU credits).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Family for memory-heavy databases?<span class="hint">tap</span></div><div class="a">Memory optimized — R or X.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">In c5n.xlarge what is the 5?<span class="hint">tap</span></div><div class="a">The generation (5th).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is EC2 Instance Connect?<span class="hint">tap</span></div><div class="a">SSH access controlled by IAM, without sharing key pairs.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A heavy CPU batch job needs the best price/CPU. Which category?</div>
+      <span class="opt">A) Memory optimized (R)</span><span class="opt">B) Compute optimized (C)</span><span class="opt">C) Storage optimized (I)</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Compute optimized (C family) suits CPU-bound work.</div></div>
+  </article>
+
+  <!-- ===== LESSON 4 ===== -->
+  <article class="card" id="l4">
+    <div class="lesson-head"><div class="num">4</div><div><h2>Storage Refresher</h2><div class="sub">The words behind every storage choice.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Block storage</td><td>Raw disk you format + mount (EBS, instance store).</td><td>EC2 boot/data volumes.</td></tr>
+      <tr><td>File storage</td><td>A shared network file system (EFS, FSx).</td><td>Many clients share files.</td></tr>
+      <tr><td>Object storage</td><td>Flat store of objects via API (S3).</td><td>Not mountable like a disk.</td></tr>
+      <tr><td>IOPS vs throughput</td><td>Operations/sec vs amount of data/sec.</td><td>Pick the right metric.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>IO block size</td><td>The size of each read/write chunk.</td></tr>
+      <tr><td>IOPS</td><td>Input/Output operations per second (how many small ops).</td></tr>
+      <tr><td>Throughput</td><td>How much data moves per second (MB/s).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  BLOCK[Block - EBS / Instance Store] --> MOUNT[Format + mount as a drive]
+  FILE[File - EFS / FSx] --> SHARE[Many clients share over network]
+  OBJ[Object - S3] --> API[Access by API, not mounted]
+  IOPS[IOPS x block size ≈ throughput]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class BLOCK a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Block</b> = a raw disk you format and mount (EBS, instance store).</li>
+      <li><b>File</b> = a shared file system many machines mount (EFS, FSx).</li>
+      <li><b>Object</b> = store/retrieve whole objects by API (S3) — not a mounted disk.</li>
+      <li><b>IOPS</b> matters for many small operations (databases); <b>throughput</b> matters for big sequential data. Roughly: <b>IOPS × block size ≈ throughput</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Definitions/refresher. The hands-on storage work is in Lessons 9–12.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Sets up EBS (L5–8) and instance store (L9) understanding.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>EFS, FSx, choosing storage for databases and analytics.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Block</b> = mountable disk (EBS); <b>object</b> = S3 (not mountable); <b>file</b> = EFS/FSx (shared).</li>
+      <li>Lots of small ops → think <b>IOPS</b>; big sequential transfers → think <b>throughput</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Is S3 block, file, or object?<span class="hint">tap</span></div><div class="a">Object storage — accessed by API, not mounted.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which metric for many tiny database reads?<span class="hint">tap</span></div><div class="a">IOPS.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which service is shared file storage?<span class="hint">tap</span></div><div class="a">EFS (or FSx).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You need a single disk to boot and run an OS on EC2. Which storage type?</div>
+      <span class="opt">A) Object</span><span class="opt">B) Block</span><span class="opt">C) File</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Block storage (EBS) can be formatted and used as a boot/data disk.</div></div>
+  </article>
+
+  <!-- ===== LESSON 5 ===== -->
+  <article class="card" id="l5">
+    <div class="lesson-head"><div class="num">5</div><div><h2>EBS Service Architecture</h2><div class="sub">Network block storage that outlives the instance.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>EBS volume</td><td>A raw block device you attach to an instance.</td><td>Main EC2 storage.</td></tr>
+      <tr><td>AZ-scoped</td><td>Lives in one AZ; replicated within that AZ.</td><td>Same AZ as instance.</td></tr>
+      <tr><td>Persistent</td><td>Survives instance stop/terminate (if not delete-on-terminate).</td><td>Data stays.</td></tr>
+      <tr><td>Snapshot to S3</td><td>Back up to S3; move across AZ/region.</td><td>Migration path.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Volume</td><td>A virtual disk you attach to an instance.</td></tr>
+      <tr><td>Attach / detach</td><td>Connect or disconnect a volume from an instance.</td></tr>
+      <tr><td>Block device</td><td>A disk the OS can format and use.</td></tr>
+      <tr><td>Multi-attach</td><td>io1/io2 can attach to several instances at once (special case).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  AZ[AZ-a] --> EBS[EBS volume - replicated in AZ-a]
+  EBS -->|attach| INST[Instance in AZ-a]
+  EBS -->|snapshot| S3[(S3 - move across AZ/region)]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class EBS a;
+    </pre></div>
+    <ul class="clean">
+      <li>EBS is <b>network-attached block storage</b>, living in <b>one AZ</b> (replicated inside that AZ).</li>
+      <li>Volumes are <b>persistent</b> — they keep data when an instance stops, and can be <b>detached/re-attached</b>.</li>
+      <li>Usually one volume attaches to <b>one instance</b>; <b>io1/io2 multi-attach</b> is the exception.</li>
+      <li>Back up via <b>snapshots</b> (to S3) to move data across AZs or regions.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> create a small EBS volume and inspect it. <b>Check first:</b> CLI configured; pick an AZ (us-east-1a).</div>
+      <div class="step"><div class="sh">Create a 8 GiB gp3 volume</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>VOL=$(aws ec2 create-volume --availability-zone us-east-1a \
+  --size 8 --volume-type gp3 \
+  --tag-specifications 'ResourceType=volume,Tags=[{Key=Name,Value=a4l-vol}]' \
+  --query VolumeId --output text)
+echo $VOL</code></pre></div>
+      <div class="expect"><b>Expect:</b> a volume ID like <code>vol-0abc...</code>.</div>
+      <div class="step"><div class="sh">See its state + AZ</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 describe-volumes --volume-ids $VOL \
+  --query "Volumes[0].{State:State,AZ:AvailabilityZone,Type:VolumeType}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> state <code>available</code>, AZ <code>us-east-1a</code>, type <code>gp3</code>.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>A volume can only attach to an instance in <b>the same AZ</b>. The full attach/mount/snapshot flow is in Lesson 11.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 delete-volume --volume-id $VOL</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output. (A small gp3 volume costs pennies/day; delete to be safe.)</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Volume types (L6–8) describe these volumes; snapshots (L11) back them up.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Boot volumes, databases on EBS, DR via snapshots.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>EBS is <b>AZ-scoped</b> and <b>persistent</b>; same AZ as the instance.</li>
+      <li>One volume → one instance, <b>except io1/io2 multi-attach</b>.</li>
+      <li>Move EBS data across AZ/region via <b>snapshots</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What scope is an EBS volume?<span class="hint">tap</span></div><div class="a">A single AZ (replicated within that AZ).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Does EBS data survive instance stop?<span class="hint">tap</span></div><div class="a">Yes — EBS is persistent and independent of the instance.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which volume types support multi-attach?<span class="hint">tap</span></div><div class="a">io1 and io2.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must move an EBS volume's data to another region. How?</div>
+      <span class="opt">A) Detach and drag it</span><span class="opt">B) Snapshot it, copy the snapshot to the region</span><span class="opt">C) Change its AZ</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Snapshots (on S3) are the way to move EBS data across AZ/region.</div></div>
+  </article>
+
+  <!-- ===== LESSON 6 ===== -->
+  <article class="card" id="l6">
+    <div class="lesson-head"><div class="num">6</div><div><h2>EBS Volume Types — General Purpose</h2><div class="sub">gp2 and gp3 SSD for most workloads.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>gp2</td><td>SSD; IOPS tied to size (3 IOPS/GB), burst credits.</td><td>Older default.</td></tr>
+      <tr><td>gp3</td><td>SSD; 3000 IOPS + 125 MB/s baseline, scale separately.</td><td>Cheaper + flexible.</td></tr>
+      <tr><td>Default choice</td><td>General purpose suits most workloads.</td><td>"Balanced" answer.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Baseline</td><td>The performance you always get.</td></tr>
+      <tr><td>Burst credits</td><td>gp2 saves credits when idle to spend on spikes.</td></tr>
+      <tr><td>Decouple</td><td>gp3 lets you set IOPS/throughput independent of size.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>gp2</b>: IOPS scale with size (<b>3 IOPS per GB</b>), up to <b>16,000 IOPS</b>; small volumes use a <b>burst</b> credit pool.</li>
+      <li><b>gp3</b>: starts at <b>3,000 IOPS + 125 MB/s</b> regardless of size; you can pay to raise to <b>16,000 IOPS / 1,000 MB/s</b> independently.</li>
+      <li><b>gp3 is usually cheaper</b> than gp2 for the same baseline — default to gp3.</li>
+      <li>Both are <b>SSD</b>, good for boot volumes and most general workloads.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> create a gp3 volume with extra IOPS/throughput. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Create gp3 with 4000 IOPS + 200 MB/s</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>VOL=$(aws ec2 create-volume --availability-zone us-east-1a \
+  --size 20 --volume-type gp3 --iops 4000 --throughput 200 \
+  --query VolumeId --output text)
+aws ec2 describe-volumes --volume-ids $VOL \
+  --query "Volumes[0].{Iops:Iops,Tput:Throughput,Type:VolumeType}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> IOPS 4000, throughput 200, type gp3 — performance set independent of the 20 GiB size.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>With gp2 you'd need a much bigger volume to reach 4000 IOPS; gp3 decouples size from performance.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 delete-volume --volume-id $VOL</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Compare with PIOPS (L7) and HDD (L8).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Right-sizing volume cost/performance.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>gp3</b> baseline = <b>3,000 IOPS + 125 MB/s</b>, size-independent, usually cheaper.</li>
+      <li><b>gp2</b> = <b>3 IOPS/GB</b> with bursting; both max ~16,000 IOPS.</li>
+      <li>"Balanced/general workload, lowest cost SSD" → <b>gp3</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">gp3 baseline IOPS + throughput?<span class="hint">tap</span></div><div class="a">3,000 IOPS and 125 MB/s, regardless of size.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">gp2 IOPS rule?<span class="hint">tap</span></div><div class="a">3 IOPS per GB (with burst credits for small volumes).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which GP type is usually cheaper?<span class="hint">tap</span></div><div class="a">gp3.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You need 3,000 IOPS on a small 30 GB SSD volume at lowest cost. Best type?</div>
+      <span class="opt">A) gp2</span><span class="opt">B) gp3</span><span class="opt">C) st1</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> gp3 gives 3,000 IOPS baseline on any size; gp2 small volumes can't sustain it.</div></div>
+  </article>
+
+  <!-- ===== LESSON 7 ===== -->
+  <article class="card" id="l7">
+    <div class="lesson-head"><div class="num">7</div><div><h2>EBS Volume Types — Provisioned IOPS</h2><div class="sub">io1 / io2 for the highest, steadiest performance.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Provisioned IOPS</td><td>You set an exact, high IOPS number.</td><td>Mission-critical DBs.</td></tr>
+      <tr><td>High IOPS:GB</td><td>Lots of IOPS without a huge volume.</td><td>io2 up to 1000:1.</td></tr>
+      <tr><td>io2 Block Express</td><td>Highest IOPS/throughput + low latency.</td><td>Extreme workloads.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Provisioned</td><td>You request and pay for a set performance level.</td></tr>
+      <tr><td>Latency</td><td>The delay before each operation completes.</td></tr>
+      <tr><td>Block Express</td><td>The fastest io2 tier (very high IOPS + low latency).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>io1/io2</b> let you <b>provision</b> a precise, high IOPS level for <b>consistent low latency</b>.</li>
+      <li>Useful when you need <b>more than gp3 can give</b>, or a very high <b>IOPS-to-size ratio</b> (io2 up to <b>1,000 IOPS per GB</b>; io1 up to 50:1).</li>
+      <li><b>io2</b> has higher durability than io1; <b>io2 Block Express</b> reaches the highest IOPS/throughput (up to 256,000 IOPS) and lowest latency.</li>
+      <li>Support <b>multi-attach</b> (share one volume across instances).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box warn"><span class="tag">Cost warning</span>Provisioned IOPS volumes bill per provisioned IOPS. If you run this, <b>delete immediately</b> after.</div>
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> create an io2 volume with 5000 provisioned IOPS, then delete it. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Create io2 with 5000 IOPS</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>VOL=$(aws ec2 create-volume --availability-zone us-east-1a \
+  --size 20 --volume-type io2 --iops 5000 --query VolumeId --output text)
+aws ec2 describe-volumes --volume-ids $VOL \
+  --query "Volumes[0].{Iops:Iops,Type:VolumeType,State:State}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> IOPS 5000, type io2. A 20 GiB volume couldn't reach this on gp3.</div>
+      <div class="box term"><span class="tag">Clean up (now!)</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 delete-volume --volume-id $VOL</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output — stops the per-IOPS charge.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Step up from gp3 (L6) when you need more/steadier IOPS.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>High-performance databases, shared-storage clusters (multi-attach).</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Need <b>&gt;16,000 IOPS</b>, very low latency, or high <b>IOPS:GB</b> → <b>io1/io2</b>.</li>
+      <li><b>io2 Block Express</b> = the extreme tier (highest IOPS/throughput).</li>
+      <li>io1/io2 support <b>multi-attach</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">When choose io1/io2 over gp3?<span class="hint">tap</span></div><div class="a">When you need higher/consistent IOPS, very low latency, or high IOPS-per-GB.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which tier gives the highest IOPS?<span class="hint">tap</span></div><div class="a">io2 Block Express.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can io2 attach to multiple instances?<span class="hint">tap</span></div><div class="a">Yes — multi-attach.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A critical database needs 30,000 consistent IOPS with low latency. Best volume?</div>
+      <span class="opt">A) gp2</span><span class="opt">B) io2 (Provisioned IOPS)</span><span class="opt">C) st1</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> gp3 maxes ~16,000 IOPS; io2 provides higher, steady provisioned IOPS.</div></div>
+  </article>
+
+  <!-- ===== LESSON 8 ===== -->
+  <article class="card" id="l8">
+    <div class="lesson-head"><div class="num">8</div><div><h2>EBS Volume Types — HDD-Based</h2><div class="sub">st1 and sc1 for cheap, big, sequential data.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>st1</td><td>Throughput-optimized HDD; big sequential reads/writes.</td><td>Logs, data warehouse.</td></tr>
+      <tr><td>sc1</td><td>Cold HDD; cheapest, rarely accessed.</td><td>Archive-ish on EBS.</td></tr>
+      <tr><td>Not for boot</td><td>HDD volumes can't be boot volumes.</td><td>Common trap.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Sequential</td><td>Reading/writing data in long continuous streams.</td></tr>
+      <tr><td>Throughput-optimized</td><td>Designed for high MB/s, not lots of tiny ops.</td></tr>
+      <tr><td>Cold</td><td>Rarely accessed data.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>st1</b> = throughput HDD for <b>big sequential</b> workloads (logs, data warehouses, streaming). Low cost, decent MB/s, poor at tiny random IOPS.</li>
+      <li><b>sc1</b> = <b>cold</b> HDD, the cheapest, for data you rarely touch.</li>
+      <li>Both are <b>HDD</b>, have a <b>125 GiB minimum size</b>, and <b>cannot be boot volumes</b>. <span style="color:var(--muted)">[added for exam]</span></li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box warn"><span class="tag">Cost warning</span>HDD volumes have a <b>125 GiB minimum</b>, so you pay for 125 GiB while it exists. Delete right away (a minute = a fraction of a cent).</div>
+      <div class="box demo"><span class="tag">Demo · CLI v2 (optional)</span><b>Situation:</b> create an st1 volume then delete it. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Create st1 (min 125 GiB)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>VOL=$(aws ec2 create-volume --availability-zone us-east-1a \
+  --size 125 --volume-type st1 --query VolumeId --output text)
+aws ec2 describe-volumes --volume-ids $VOL --query "Volumes[0].VolumeType"</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>"st1"</code>. (Trying to use it as a boot volume would fail.)</div>
+      <div class="box term"><span class="tag">Clean up (now!)</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 delete-volume --volume-id $VOL</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>The cheap end of EBS vs SSD (L6/L7).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Big-data and log storage cost design.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>st1</b> = throughput/sequential (logs, warehouse). <b>sc1</b> = cheapest, cold.</li>
+      <li>HDD volumes <b>can't boot</b> and have a <b>125 GiB minimum</b>.</li>
+      <li>Lots of small random IOPS → <b>don't</b> pick HDD; use SSD.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Best EBS type for streaming big log files cheaply?<span class="hint">tap</span></div><div class="a">st1 (throughput-optimized HDD).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can st1/sc1 be a boot volume?<span class="hint">tap</span></div><div class="a">No — HDD volumes can't boot.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Cheapest EBS volume type?<span class="hint">tap</span></div><div class="a">sc1 (cold HDD).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A data warehouse does large sequential scans and wants low storage cost. Best EBS type?</div>
+      <span class="opt">A) gp3</span><span class="opt">B) st1</span><span class="opt">C) io2</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> st1 is built for cheap, high-throughput sequential workloads.</div></div>
+  </article>
+
+  <!-- ===== LESSON 9 ===== -->
+  <article class="card" id="l9">
+    <div class="lesson-head"><div class="num">9</div><div><h2>Instance Store Volumes</h2><div class="sub">Fast local disk that disappears.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Instance store</td><td>Temporary disk physically attached to the host.</td><td>Ephemeral storage.</td></tr>
+      <tr><td>Highest performance</td><td>Local = very high IOPS/throughput.</td><td>Speed answer.</td></tr>
+      <tr><td>Lost on stop/terminate</td><td>Data gone if you stop or terminate (or host fails).</td><td>Reboot keeps it.</td></tr>
+      <tr><td>Attach at launch only</td><td>Can't add instance store later.</td><td>Launch-time only.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Ephemeral</td><td>Temporary — not kept long term.</td></tr>
+      <tr><td>Physically attached</td><td>The disk is inside the actual host machine.</td></tr>
+      <tr><td>Reboot vs stop</td><td>Reboot keeps the host; stop/start may move hosts.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  HOST[EC2 Host] --> IS[Instance Store - local disk]
+  IS --> REBOOT[Reboot: data SURVIVES - same host]
+  IS --> STOP[Stop/Start: data LOST - maybe new host]
+  IS --> TERM[Terminate: data LOST]
+  classDef w fill:#3a151c,stroke:#fb7185,color:#e7edf3;
+  class STOP,TERM w;
+    </pre></div>
+    <ul class="clean">
+      <li>Instance store is <b>local to the host</b> → <b>very high performance</b>, included in the instance price.</li>
+      <li>It's <b>ephemeral</b>: data <b>survives a reboot</b> but is <b>lost on stop/start, terminate, or host failure</b>.</li>
+      <li>Must be <b>attached at launch</b> (can't add later); size/number depend on the instance type.</li>
+      <li>Great for <b>caches, scratch, temporary</b> data that you can lose or rebuild.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">Demo — concept (covered hands-on in L11)</span>Instance store can't be created on its own; it appears only when you launch an instance type that includes it. In the Lesson 11 hands-on you launch such an instance, write a file, then see it <b>survive a reboot</b> but <b>vanish after stop/start</b> (new host). That stop/start test is the key instance-store demo.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Contrasts with persistent EBS (L5); the choice is L10.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>High-performance temp storage, big-data nodes.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Instance store survives <b>reboot</b> but is <b>lost on stop/start or terminate</b>.</li>
+      <li>Attach <b>only at launch</b>; you can't add it afterwards.</li>
+      <li>Pick it for <b>top performance + temporary</b> data; pick EBS for persistence.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Does instance store survive a reboot?<span class="hint">tap</span></div><div class="a">Yes — but not a stop/start or terminate.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">When can you attach instance store?<span class="hint">tap</span></div><div class="a">Only at launch time.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Why choose instance store?<span class="hint">tap</span></div><div class="a">Highest local performance for temporary/replaceable data.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An app stored important data only on instance store, then stopped the instance. Result?</div>
+      <span class="opt">A) Data is safe</span><span class="opt">B) Data is lost</span><span class="opt">C) Data moved to S3</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Stop/start wipes instance store; persistent data belongs on EBS.</div></div>
+  </article>
+
+  <!-- ===== LESSON 10 ===== -->
+  <article class="card" id="l10">
+    <div class="lesson-head"><div class="num">10</div><div><h2>Choosing EBS vs Instance Store</h2><div class="sub">Persistent vs ephemeral — pick correctly.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>EBS</td><td>Persistent, network, snapshot-able, detach/move.</td><td>Default for real data.</td></tr>
+      <tr><td>Instance store</td><td>Ephemeral, local, fastest, free with instance.</td><td>Temp/extreme speed.</td></tr>
+      <tr><td>Decision drivers</td><td>Persistence, resilience, performance, cost.</td><td>Scenario picking.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Persistence</td><td>Data survives stop/terminate.</td></tr>
+      <tr><td>Resilience</td><td>How well storage survives failures.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Need</th><th>Choose</th></tr>
+      <tr><td>Data must persist / survive stop</td><td><b>EBS</b></td></tr>
+      <tr><td>Need snapshots / move across AZ-region</td><td><b>EBS</b></td></tr>
+      <tr><td>Resilience / detach + reattach</td><td><b>EBS</b></td></tr>
+      <tr><td>Cheap, large, sequential (logs/warehouse)</td><td><b>EBS st1/sc1</b></td></tr>
+      <tr><td>Maximum IOPS/throughput, can lose data</td><td><b>Instance store</b></td></tr>
+      <tr><td>Temporary cache/scratch, cost included</td><td><b>Instance store</b></td></tr>
+    </table></div>
+    <ul class="clean">
+      <li>Default to <b>EBS</b> for anything that must <b>persist</b> or be <b>backed up</b>.</li>
+      <li>Pick <b>instance store</b> only for <b>temporary</b> data needing <b>extreme local speed</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>This is a decision-making lesson; the behaviour is shown in L9 (instance store) and L11 (EBS).</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Summarises L5–L9.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Storage decisions in almost every architecture question.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"Must persist / snapshot / survive stop" → <b>EBS</b>.</li>
+      <li>"Fastest local, temporary, OK to lose" → <b>instance store</b>.</li>
+      <li>"Highest IOPS possible regardless of persistence" → instance store; "highest persistent IOPS" → <b>io2</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Data must survive an instance stop. EBS or instance store?<span class="hint">tap</span></div><div class="a">EBS (persistent).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Need the absolute fastest local disk for scratch data?<span class="hint">tap</span></div><div class="a">Instance store.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Need to back up and move data across regions?<span class="hint">tap</span></div><div class="a">EBS (snapshots).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A node holds a temporary cache rebuilt each launch and wants top speed at no extra cost. Use?</div>
+      <span class="opt">A) EBS io2</span><span class="opt">B) Instance store</span><span class="opt">C) S3</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Instance store is fastest and included; the cache can be rebuilt if lost.</div></div>
+  </article>
+
+  <!-- ===== LESSON 11 ===== -->
+  <article class="card" id="l11">
+    <div class="lesson-head"><div class="num">11</div><div><h2>Snapshots, Restore & FSR</h2><div class="sub">Back up EBS and move it anywhere.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Snapshot</td><td>A backup of a volume, stored on S3 (AWS-managed).</td><td>EBS backup/migration.</td></tr>
+      <tr><td>Incremental</td><td>First is full; later snapshots store only changes.</td><td>Cost + speed.</td></tr>
+      <tr><td>Cross AZ/region</td><td>Make a volume in another AZ; copy snapshot to a region.</td><td>DR + migration.</td></tr>
+      <tr><td>FSR</td><td>Fast Snapshot Restore = full speed immediately.</td><td>Avoids lazy-load lag.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Incremental</td><td>Only the changed blocks since the last snapshot are saved.</td></tr>
+      <tr><td>Lazy load</td><td>A new volume from a snapshot pulls blocks on first use (slow at first).</td></tr>
+      <tr><td>FSR</td><td>Pre-warms the volume so it's full-speed from the start (costs extra).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  VOL[EBS volume AZ-a] -->|snapshot| SNAP[(Snapshot on S3)]
+  SNAP -->|create volume| AZB[New volume in AZ-b]
+  SNAP -->|copy| REGION[Snapshot in another region]
+  SNAP -->|FSR| FAST[Full speed immediately]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class SNAP a;
+    </pre></div>
+    <ul class="clean">
+      <li>Snapshots are <b>incremental</b> backups on <b>S3</b>; the first is full, later ones store only changes.</li>
+      <li>Create a <b>new volume in another AZ</b> from a snapshot, or <b>copy the snapshot to another region</b> → that's how EBS data moves.</li>
+      <li>New volumes from a snapshot <b>lazy-load</b> (slower until warmed); <b>FSR</b> removes that lag (extra cost, limited per region).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> snapshot a volume, make a new volume in another AZ, copy the snapshot to another region. <b>Check first:</b> CLI configured. <b>Note:</b> tiny gp3 + snapshot = pennies; clean up after.</div>
+      <div class="step"><div class="sh">Create + snapshot a volume</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>VOL=$(aws ec2 create-volume --availability-zone us-east-1a --size 8 \
+  --volume-type gp3 --query VolumeId --output text)
+aws ec2 wait volume-available --volume-ids $VOL
+SNAP=$(aws ec2 create-snapshot --volume-id $VOL \
+  --description "a4l-snap" --query SnapshotId --output text)
+aws ec2 wait snapshot-completed --snapshot-ids $SNAP
+echo "vol=$VOL snap=$SNAP"</code></pre></div>
+      <div class="expect"><b>Expect:</b> a volume + a completed snapshot ID.</div>
+      <div class="step"><div class="sh">Restore to a volume in AZ-b</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>VOLB=$(aws ec2 create-volume --availability-zone us-east-1b \
+  --snapshot-id $SNAP --volume-type gp3 --query VolumeId --output text)
+aws ec2 describe-volumes --volume-ids $VOLB \
+  --query "Volumes[0].{AZ:AvailabilityZone,State:State}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> a new volume in <code>us-east-1b</code> — data moved across AZs via the snapshot.</div>
+      <div class="step"><div class="sh">Copy the snapshot to another region</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>COPY=$(aws ec2 copy-snapshot --source-region us-east-1 \
+  --source-snapshot-id $SNAP --region us-west-2 \
+  --description "a4l-snap-copy" --query SnapshotId --output text)
+echo "copied snapshot in us-west-2: $COPY"</code></pre></div>
+      <div class="expect"><b>Expect:</b> a new snapshot ID in <code>us-west-2</code>.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Snapshots are how EBS crosses AZ/region boundaries. For instant full performance on restore, enable <b>FSR</b> (extra cost).</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 delete-snapshot --snapshot-id $COPY --region us-west-2
+aws ec2 delete-snapshot --snapshot-id $SNAP
+aws ec2 delete-volume --volume-id $VOLB
+aws ec2 delete-volume --volume-id $VOL</code></pre></div>
+      <div class="expect"><b>Expect:</b> all volumes + snapshots (both regions) removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses EBS (L5) + AZ rules (L2); pairs with encryption (L12) and AMIs (L14).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>DR strategies, Data Lifecycle Manager, AMI creation.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Snapshots are <b>incremental</b>, stored on <b>S3</b>.</li>
+      <li>Move EBS across <b>AZ</b> = new volume from snapshot; across <b>region</b> = copy snapshot.</li>
+      <li><b>FSR</b> fixes the slow lazy-load on restore (extra cost, capped per region).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Where are EBS snapshots stored?<span class="hint">tap</span></div><div class="a">On S3 (AWS-managed).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Are snapshots full or incremental?<span class="hint">tap</span></div><div class="a">First is full; later ones are incremental.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does FSR fix?<span class="hint">tap</span></div><div class="a">The slow lazy-load — gives full performance immediately.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must copy a volume's data into another AWS region for DR. How?</div>
+      <span class="opt">A) Change the volume's region</span><span class="opt">B) Snapshot it, then copy the snapshot to the region</span><span class="opt">C) Detach and move</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Snapshots are the cross-region path for EBS data.</div></div>
+    <div class="quiz"><div class="qq">A restored volume is slow at first use. Best fix for instant performance?</div>
+      <span class="opt">A) Bigger volume</span><span class="opt">B) Fast Snapshot Restore</span><span class="opt">C) Reboot</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> FSR pre-warms the volume so there's no lazy-load lag.</div></div>
+  </article>
+
+  <!-- ===== LESSON 12 ===== -->
+  <article class="card" id="l12">
+    <div class="lesson-head"><div class="num">12</div><div><h2>EBS Encryption</h2><div class="sub">Protect volumes + snapshots with KMS.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>KMS-based</td><td>EBS uses a KMS key + a data key per volume.</td><td>Ties to KMS lesson.</td></tr>
+      <tr><td>Covers snapshots</td><td>Snapshots + volumes from them are also encrypted.</td><td>Encryption flows through.</td></tr>
+      <tr><td>OS unaware</td><td>Encryption is transparent; no performance cost noticeable.</td><td>No app change.</td></tr>
+      <tr><td>Account default</td><td>You can force encryption by default.</td><td>Compliance.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Data key (DEK)</td><td>The key that actually encrypts the volume data.</td></tr>
+      <tr><td>At rest</td><td>Data stored on disk is encrypted.</td></tr>
+      <tr><td>Default encryption</td><td>Account/region setting to encrypt all new volumes.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  KMS[KMS key] -->|generates| DEK[Data key per volume]
+  DEK --> VOL[Encrypts EBS volume at rest]
+  VOL -->|snapshot| SNAP[Snapshot also encrypted]
+  SNAP -->|new volume| V2[New volume also encrypted]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class KMS a;
+    </pre></div>
+    <ul class="clean">
+      <li>EBS encryption uses a <b>KMS key</b> to make a per-volume <b>data key</b>; data is encrypted <b>at rest</b> and in transit to the volume.</li>
+      <li>Encryption <b>flows through</b>: snapshots of an encrypted volume, and volumes made from them, are also encrypted.</li>
+      <li>It's <b>transparent</b> to the OS, with <b>no extra charge</b> for the feature.</li>
+      <li>You can set <b>default encryption</b> per region so every new volume is encrypted. <span style="color:var(--muted)">[added for exam]</span></li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> create an encrypted volume. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Create an encrypted gp3 volume (default KMS key)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>VOL=$(aws ec2 create-volume --availability-zone us-east-1a --size 8 \
+  --volume-type gp3 --encrypted --query VolumeId --output text)
+aws ec2 describe-volumes --volume-ids $VOL \
+  --query "Volumes[0].{Enc:Encrypted,Kms:KmsKeyId}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>Encrypted: true</code> and a KMS key ARN (the default <code>aws/ebs</code> key unless you pass <code>--kms-key-id</code>).</div>
+      <div class="step"><div class="sh">(Optional) turn on default encryption for the region</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 enable-ebs-encryption-by-default
+aws ec2 get-ebs-encryption-by-default</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>EbsEncryptionByDefault: true</code> — all new volumes will be encrypted.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>You can't directly encrypt an existing unencrypted volume — snapshot it, then create an <b>encrypted</b> volume from a copy of that snapshot.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 delete-volume --volume-id $VOL
+# optional: aws ec2 disable-ebs-encryption-by-default</code></pre></div>
+      <div class="expect"><b>Expect:</b> volume removed. (Leave default encryption on if you like — it's free.)</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses KMS (S3 section); applies to snapshots (L11) and AMIs (L14).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Compliance, encrypted AMIs, cross-account sharing rules.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>EBS encryption uses <b>KMS</b>; it's <b>transparent</b> and <b>free</b> (you pay for KMS use only).</li>
+      <li>Encryption <b>flows through</b> snapshots and volumes made from them.</li>
+      <li>Encrypt an existing volume by <b>snapshot → copy with encryption → new volume</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What service backs EBS encryption?<span class="hint">tap</span></div><div class="a">KMS (a KMS key + per-volume data key).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Are snapshots of an encrypted volume encrypted?<span class="hint">tap</span></div><div class="a">Yes — and volumes made from them too.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How to encrypt an existing unencrypted volume?<span class="hint">tap</span></div><div class="a">Snapshot it, copy the snapshot with encryption, create a new volume.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Compliance requires every new EBS volume to be encrypted automatically. Best setting?</div>
+      <span class="opt">A) Encrypt each manually</span><span class="opt">B) Enable EBS encryption by default (per region)</span><span class="opt">C) Use instance store</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Default encryption forces all new volumes to be encrypted.</div></div>
+  </article>
+
+  <!-- ===== LESSON 13 ===== -->
+  <article class="card" id="l13">
+    <div class="lesson-head"><div class="num">13</div><div><h2>Network Interfaces, IPs & DNS</h2><div class="sub">ENIs, public/private/elastic IPs, and DNS names.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>ENI</td><td>A virtual network card on an instance.</td><td>Holds IPs + SGs.</td></tr>
+      <tr><td>Private IP</td><td>Fixed internal IP for the instance's life.</td><td>Stays the same.</td></tr>
+      <tr><td>Public IPv4</td><td>Dynamic; changes on stop/start.</td><td>Common trap.</td></tr>
+      <tr><td>Elastic IP</td><td>A static public IP you keep.</td><td>Stable public address.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>ENI</td><td>Elastic Network Interface — a virtual NIC with IPs, MAC, SGs.</td></tr>
+      <tr><td>Primary ENI (eth0)</td><td>The main interface; can't be detached.</td></tr>
+      <tr><td>Elastic IP (EIP)</td><td>A static public IPv4 you own and can move.</td></tr>
+      <tr><td>Private DNS</td><td>Name that always resolves to the private IP.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  INST[Instance] --> ENI[Primary ENI eth0]
+  ENI --> PRIV[Private IP - fixed for life]
+  ENI --> PUB[Public IPv4 - changes on stop/start]
+  ENI --> EIP[Elastic IP - static, optional]
+  ENI --> SG[Security Groups live on the ENI]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class ENI a;
+    </pre></div>
+    <ul class="clean">
+      <li>An <b>ENI</b> holds the IPs, MAC and <b>security groups</b>. The <b>primary ENI</b> can't be removed; secondary ENIs can move between instances <b>in the same AZ</b>.</li>
+      <li><b>Private IP</b> stays the same for the instance's life; <b>public IPv4 is dynamic</b> and changes on <b>stop/start</b>.</li>
+      <li>Need a <b>stable public IP</b> → use an <b>Elastic IP</b>.</li>
+      <li><b>Public DNS</b> resolves to the public IP from outside and the private IP from inside the VPC; <b>private DNS</b> always → private IP.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 + user-data</span><b>Situation:</b> install WordPress manually on one instance (to appreciate why we automate later). <b>Check first:</b> a public subnet + SG allowing 80/22 (from VPC section) or use the default VPC.</div>
+      <div class="step"><div class="sh">Launch an instance that installs WordPress via user-data</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>cat > wp.sh <<'EOF'
+#!/bin/bash
+dnf install -y httpd wget php php-mysqlnd mariadb105-server
+systemctl enable --now httpd mariadb
+wget https://wordpress.org/latest.tar.gz -P /tmp
+tar -xzf /tmp/latest.tar.gz -C /var/www/html --strip-components=1
+chown -R apache:apache /var/www/html
+systemctl restart httpd
+EOF
+AMI=$(aws ssm get-parameters \
+  --names /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64 \
+  --query "Parameters[0].Value" --output text)
+INST=$(aws ec2 run-instances --image-id $AMI --instance-type t3.micro \
+  --user-data file://wp.sh --query "Instances[0].InstanceId" --output text)
+echo $INST</code></pre></div>
+      <div class="expect"><b>Expect:</b> an instance ID; the script installs Apache + MariaDB + WordPress on first boot. Verify the free-tier type for your region.</div>
+      <div class="step"><div class="sh">Find its public IP, then browse to it</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 describe-instances --instance-ids $INST \
+  --query "Reservations[0].Instances[0].PublicIpAddress" --output text
+# open http://THAT_IP in a browser → WordPress install screen</code></pre></div>
+      <div class="expect"><b>Expect:</b> a public IP; the browser shows the WordPress setup page.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Stop/start changes the <b>public IPv4</b> — the WordPress site config can break. An <b>Elastic IP</b> (or, better, a load balancer + DNS) avoids this.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 terminate-instances --instance-ids $INST
+aws ec2 wait instance-terminated --instance-ids $INST
+rm -f wp.sh</code></pre></div>
+      <div class="expect"><b>Expect:</b> instance terminated; its root EBS is removed too (default delete-on-terminate).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>SGs (VPC section) live on the ENI; AMIs (L14) capture this build.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Bootstrapping, load balancers, Auto Scaling, Route 53.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Public IPv4 changes</b> on stop/start; use an <b>Elastic IP</b> for a stable address.</li>
+      <li><b>Private IP</b> and <b>private DNS</b> stay constant for the instance's life.</li>
+      <li>Security groups attach to the <b>ENI</b>, not the instance directly.</li>
+      <li>Secondary ENIs move between instances <b>in the same AZ</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What happens to the public IPv4 on stop/start?<span class="hint">tap</span></div><div class="a">It changes (it's dynamic). Use an Elastic IP for a fixed one.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Where do security groups attach?<span class="hint">tap</span></div><div class="a">To the ENI.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Does the private IP change?<span class="hint">tap</span></div><div class="a">No — it's fixed for the instance's life.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An app breaks every time the instance is stopped because its address changes. Fix?</div>
+      <span class="opt">A) Assign an Elastic IP</span><span class="opt">B) Reboot instead</span><span class="opt">C) Bigger instance</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> An Elastic IP stays constant across stop/start.</div></div>
+  </article>
+
+  <!-- ===== LESSON 14 ===== -->
+  <article class="card" id="l14">
+    <div class="lesson-head"><div class="num">14</div><div><h2>Amazon Machine Images (AMIs)</h2><div class="sub">Bake an image; copy and share it.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>AMI</td><td>A template to launch instances (config + root snapshot).</td><td>Baking pattern.</td></tr>
+      <tr><td>Region-specific</td><td>An AMI lives in one region; copy to use elsewhere.</td><td>Copy = new AMI ID.</td></tr>
+      <tr><td>Permissions</td><td>Private, shared with accounts, or public.</td><td>Sharing rules.</td></tr>
+      <tr><td>Encrypted AMIs</td><td>Can't be made public.</td><td>Security trap.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Baking</td><td>Customising an instance, then making an AMI from it.</td></tr>
+      <tr><td>Block device mapping</td><td>Which volumes/snapshots the AMI creates.</td></tr>
+      <tr><td>Launch permission</td><td>Who is allowed to launch instances from the AMI.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  SRC[Customise an instance - install WordPress] --> AMI[Create AMI - bake]
+  AMI --> LAUNCH[Launch identical instances]
+  AMI -->|copy| REGION[AMI in another region - new ID]
+  AMI -->|share| ACC[Specific accounts / public / private]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class AMI a;
+    </pre></div>
+    <ul class="clean">
+      <li>An AMI stores the <b>root volume snapshot</b>, <b>block device mapping</b> and <b>launch permissions</b>.</li>
+      <li><b>Bake</b> = set up one instance perfectly, then create an AMI to launch many copies.</li>
+      <li>AMIs are <b>region-specific</b>; <b>copy</b> to another region (gets a new AMI ID).</li>
+      <li>Share as <b>private</b>, with <b>specific accounts</b>, or <b>public</b>. An <b>encrypted</b> AMI <b>can't be public</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> bake an AMI from a customised instance, launch from it. <b>Check first:</b> an instance ID to image (e.g. the WordPress one from L13, or any running instance).</div>
+      <div class="step"><div class="sh">Create an AMI from a running instance</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>AMI=$(aws ec2 create-image --instance-id $INST \
+  --name "a4l-wordpress-$(date +%s)" \
+  --description "WordPress baked" --query ImageId --output text)
+aws ec2 wait image-available --image-ids $AMI
+echo $AMI</code></pre></div>
+      <div class="expect"><b>Expect:</b> an AMI ID like <code>ami-0abc...</code>; the wait completes when it's <code>available</code>.</div>
+      <div class="step"><div class="sh">Launch a new instance from the baked AMI</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>NEW=$(aws ec2 run-instances --image-id $AMI --instance-type t3.micro \
+  --query "Instances[0].InstanceId" --output text)
+echo $NEW</code></pre></div>
+      <div class="expect"><b>Expect:</b> a new instance ID — it boots with WordPress already installed (no manual setup).</div>
+      <div class="step"><div class="sh">(Optional) copy the AMI to another region</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 copy-image --source-region us-east-1 --source-image-id $AMI \
+  --region us-west-2 --name "a4l-wordpress-copy" --query ImageId --output text</code></pre></div>
+      <div class="expect"><b>Expect:</b> a new AMI ID in us-west-2.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Creating an AMI also creates <b>snapshots</b> (storage cost). Deregister the AMI <b>and</b> delete its snapshots to fully clean up.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 terminate-instances --instance-ids $NEW $INST
+aws ec2 wait instance-terminated --instance-ids $NEW $INST
+SNAPID=$(aws ec2 describe-images --image-ids $AMI \
+  --query "Images[0].BlockDeviceMappings[0].Ebs.SnapshotId" --output text)
+aws ec2 deregister-image --image-id $AMI
+aws ec2 delete-snapshot --snapshot-id $SNAPID
+# remember to also deregister/delete the us-west-2 copy + its snapshot</code></pre></div>
+      <div class="expect"><b>Expect:</b> instances gone, AMI deregistered, snapshot deleted. Don't forget the copied AMI in us-west-2.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Built on snapshots (L11) + the L13 build; encryption rules from L12.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Launch templates, Auto Scaling, golden images, EC2 Image Builder.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>AMIs are <b>region-specific</b>; <b>copy</b> to another region (new ID).</li>
+      <li><b>Encrypted AMIs can't be made public.</b></li>
+      <li>AMIs store <b>snapshots</b> → remember snapshot storage cost when cleaning up.</li>
+      <li>"Faster, consistent launches with software pre-installed" → <b>bake an AMI</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Are AMIs global or regional?<span class="hint">tap</span></div><div class="a">Regional — copy to other regions (new AMI ID).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can an encrypted AMI be public?<span class="hint">tap</span></div><div class="a">No.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does "baking" mean?<span class="hint">tap</span></div><div class="a">Customising an instance then creating an AMI from it.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You want new instances to launch in 30 seconds with all software ready. Best approach?</div>
+      <span class="opt">A) Install on each launch via user-data</span><span class="opt">B) Bake a custom AMI</span><span class="opt">C) Bigger instance</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A baked AMI launches fast with software pre-installed (no boot-time install).</div></div>
+    <div class="quiz"><div class="qq">An AMI works in us-east-1 but a launch in eu-west-1 fails with "image not found". Why?</div>
+      <span class="opt">A) AMIs are region-specific</span><span class="opt">B) Wrong key pair</span><span class="opt">C) Encryption</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Copy the AMI to eu-west-1 first; AMI IDs don't cross regions.</div></div>
+  </article>
+
+  <!-- ===== LESSON 15 ===== -->
+  <article class="card" id="l15">
+    <div class="lesson-head"><div class="num">15</div><div><h2>Purchase Options</h2><div class="sub">Pay for EC2 the right way for each workload.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Option</th><th>Meaning</th><th>Use when…</th></tr>
+      <tr><td>On-Demand</td><td>Pay as you go, no commitment.</td><td>Short/unpredictable, default.</td></tr>
+      <tr><td>Spot</td><td>Up to 90% off spare capacity; can be interrupted.</td><td>Fault-tolerant, flexible.</td></tr>
+      <tr><td>Reserved</td><td>1 or 3-yr commit for big discount.</td><td>Steady, always-on.</td></tr>
+      <tr><td>Dedicated Instance</td><td>Hardware not shared with others.</td><td>Isolation rules.</td></tr>
+      <tr><td>Dedicated Host</td><td>A whole physical server you control.</td><td>BYOL licensing.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Spot price</td><td>The changing market price for spare capacity.</td></tr>
+      <tr><td>Interruption</td><td>AWS reclaims a Spot instance when it needs the capacity.</td></tr>
+      <tr><td>BYOL</td><td>Bring Your Own License (some software is licensed per physical host).</td></tr>
+      <tr><td>Savings Plans</td><td>Commit to $/hour of compute for 1–3 yrs for a discount.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  Q{Workload pattern?} --> A[Short / unpredictable] --> OD[On-Demand]
+  Q --> B[Interruptible / flexible] --> SPOT[Spot - up to 90% off]
+  Q --> C[Steady 24/7] --> RI[Reserved / Savings Plans]
+  Q --> D[Hardware isolation] --> DI[Dedicated Instance]
+  Q --> E[Per-socket licensing / control] --> DH[Dedicated Host]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class OD,SPOT,RI a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>On-Demand</b>: flexible, no commit, default for new/unknown workloads.</li>
+      <li><b>Spot</b>: cheapest (up to ~90% off) but can be <b>interrupted</b> — only for <b>fault-tolerant / restartable</b> work (batch, big data, CI).</li>
+      <li><b>Reserved / Savings Plans</b>: big discount for a <b>1 or 3-year</b> commitment on steady usage.</li>
+      <li><b>Dedicated Instance</b> = isolated hardware; <b>Dedicated Host</b> = a whole physical server (for <b>BYOL</b> per-socket licensing or placement control).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (read-only)</span><b>Situation:</b> peek at recent Spot prices. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Get recent Spot price history for t3.micro</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 describe-spot-price-history --instance-types t3.micro \
+  --product-descriptions "Linux/UNIX" --max-items 5 \
+  --query "SpotPriceHistory[].{AZ:AvailabilityZone,Price:SpotPrice}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> a few recent Spot prices per AZ — usually far below On-Demand. No cost (read-only).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Spot is great for savings but design for <b>interruption</b> (checkpoints, queues). Never run a stateful, must-stay-up server on pure Spot.</div>
+      <div class="box term"><span class="tag">Clean up</span>Nothing created.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Pairs with instance types (L3) and the rest of Reserved (L16).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Auto Scaling mixed instances, cost optimisation pillar.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Fault-tolerant + cheap</b> → <b>Spot</b>. <b>Steady 24/7</b> → <b>Reserved/Savings Plans</b>.</li>
+      <li><b>Unpredictable/short</b> → <b>On-Demand</b>.</li>
+      <li><b>BYOL / per-socket licensing</b> → <b>Dedicated Host</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Cheapest option for interruptible batch jobs?<span class="hint">tap</span></div><div class="a">Spot instances.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Best for steady 24/7 servers?<span class="hint">tap</span></div><div class="a">Reserved Instances or Savings Plans.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which option suits per-socket BYOL licensing?<span class="hint">tap</span></div><div class="a">Dedicated Host.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A nightly batch job can restart safely and must be cheap. Best purchase option?</div>
+      <span class="opt">A) On-Demand</span><span class="opt">B) Spot</span><span class="opt">C) Dedicated Host</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Spot is cheapest; the job tolerates interruptions.</div></div>
+    <div class="quiz"><div class="qq">A steady production database runs 24/7 for 3 years. Lowest cost?</div>
+      <span class="opt">A) On-Demand</span><span class="opt">B) Spot</span><span class="opt">C) Reserved (3-year)</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> Reserved/Savings Plans give the biggest discount for steady long-term use.</div></div>
+  </article>
+
+  <!-- ===== LESSON 16 ===== -->
+  <article class="card" id="l16">
+    <div class="lesson-head"><div class="num">16</div><div><h2>Reserved Instances — the rest</h2><div class="sub">Regional vs zonal, and capacity reservations.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Regional RI</td><td>Discount across AZs in a region; no capacity guarantee.</td><td>Flexible discount.</td></tr>
+      <tr><td>Zonal RI</td><td>Tied to one AZ; reserves capacity there.</td><td>Capacity + discount.</td></tr>
+      <tr><td>Capacity Reservation</td><td>Reserve capacity in an AZ; no term discount.</td><td>Guaranteed launch.</td></tr>
+      <tr><td>Standard vs Convertible</td><td>Convertible can change type; smaller discount.</td><td>Flexibility trade-off.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Capacity</td><td>Physical room in an AZ to launch your instance.</td></tr>
+      <tr><td>Regional vs Zonal</td><td>Discount across a region vs locked to one AZ (with capacity).</td></tr>
+      <tr><td>On-Demand Capacity Reservation</td><td>Hold capacity in an AZ, billed even if unused, no long commit.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Regional RI</b>: discount applies to matching usage <b>across AZs</b> in the region, but <b>doesn't reserve capacity</b>.</li>
+      <li><b>Zonal RI</b>: locked to <b>one AZ</b> and <b>reserves capacity</b> there.</li>
+      <li><b>On-Demand Capacity Reservation</b>: guarantees capacity in an AZ with <b>no term commitment</b> — you pay whether or not you use it (combine with Savings Plans for a discount).</li>
+      <li><b>Standard RI</b> = biggest discount, can't change type; <b>Convertible RI</b> = can change instance family/type, smaller discount.</li>
+      <li><b>Scheduled RIs</b> are an old, now-retired option. <span style="color:var(--muted)">[added for exam]</span></li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Buying RIs or capacity reservations creates real, billable commitments, so we won't run them. Know the concepts for the exam.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Extends purchase options (L15).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Cost optimisation, capacity planning for critical launches.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Need <b>guaranteed capacity in a specific AZ</b> → <b>Zonal RI</b> or <b>Capacity Reservation</b>.</li>
+      <li>Need <b>flexible discount across AZs</b> → <b>Regional RI</b> (no capacity guarantee).</li>
+      <li><b>Convertible RI</b> if you may change instance type.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which RI reserves capacity?<span class="hint">tap</span></div><div class="a">Zonal RI (regional RIs don't reserve capacity).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Guarantee capacity with no long commitment?<span class="hint">tap</span></div><div class="a">On-Demand Capacity Reservation.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Standard vs Convertible RI?<span class="hint">tap</span></div><div class="a">Standard = bigger discount, fixed; Convertible = can change type, smaller discount.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must guarantee you can launch 10 instances in one AZ for a launch event, no 1-yr commit. Use?</div>
+      <span class="opt">A) Regional RI</span><span class="opt">B) On-Demand Capacity Reservation</span><span class="opt">C) Spot</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Capacity Reservations hold AZ capacity without a long-term commitment.</div></div>
+  </article>
+
+  <!-- ===== LESSON 17 ===== -->
+  <article class="card" id="l17">
+    <div class="lesson-head"><div class="num">17</div><div><h2>Status Checks & Auto Recovery</h2><div class="sub">Detect failures; recover; protect from deletion.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>System status</td><td>Checks AWS host/infra. Fix: stop/start (new host).</td><td>Hardware problems.</td></tr>
+      <tr><td>Instance status</td><td>Checks the instance/OS. Fix: reboot / fix config.</td><td>Software problems.</td></tr>
+      <tr><td>Auto recovery</td><td>CloudWatch alarm recovers an impaired instance.</td><td>Same ID + IPs kept.</td></tr>
+      <tr><td>Termination protection</td><td>Flag that blocks terminate; enables role separation.</td><td>Prevent accidents.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Impaired</td><td>Failing a status check.</td></tr>
+      <tr><td>Auto recovery</td><td>Automatically move the instance to healthy hardware.</td></tr>
+      <tr><td>Termination protection</td><td>A flag that stops the instance being terminated.</td></tr>
+      <tr><td>Shutdown behavior</td><td>What OS shutdown does: stop (default) or terminate.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  CHK[2 status checks] --> SYS[System: AWS host/infra]
+  CHK --> INS[Instance: OS/config]
+  SYS -->|fix| SS[Stop/Start = new host]
+  INS -->|fix| RB[Reboot / fix config]
+  SYS -->|alarm action| AR[Auto Recovery - same ID + IPs]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class AR a;
+    </pre></div>
+    <ul class="clean">
+      <li>Each instance has <b>two checks</b>: <b>system</b> (AWS hardware/infra) and <b>instance</b> (OS/config).</li>
+      <li><b>System</b> failure → <b>stop/start</b> (moves to a healthy host) or <b>auto recovery</b>.</li>
+      <li><b>Instance</b> failure → <b>reboot</b> or fix the OS/config.</li>
+      <li><b>Auto recovery</b> (CloudWatch alarm) keeps the same <b>instance ID, private + Elastic IPs, and metadata</b>. <b>Terminated instances can't be recovered.</b></li>
+      <li><b>Termination protection</b> blocks accidental terminate and supports <b>role separation</b> (juniors can only terminate unprotected instances).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> enable termination protection + create an auto-recovery alarm. <b>Check first:</b> a running instance ID in <code>$INST</code>.</div>
+      <div class="step"><div class="sh">Turn on termination protection</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 modify-instance-attribute --instance-id $INST --disable-api-termination
+aws ec2 describe-instance-attribute --instance-id $INST \
+  --attribute disableApiTermination --query "DisableApiTermination.Value"</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>true</code> — a terminate attempt will now be blocked.</div>
+      <div class="step"><div class="sh">Create an auto-recovery CloudWatch alarm (system check)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>REGION=us-east-1
+aws cloudwatch put-metric-alarm --alarm-name "recover-$INST" \
+  --namespace AWS/EC2 --metric-name StatusCheckFailed_System \
+  --statistic Maximum --period 60 --evaluation-periods 2 \
+  --threshold 1 --comparison-operator GreaterThanOrEqualToThreshold \
+  --dimensions Name=InstanceId,Value=$INST \
+  --alarm-actions arn:aws:automate:$REGION:ec2:recover</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output = alarm created. If the system check fails, EC2 auto-recovers the instance (same ID + IPs).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Auto recovery only handles <b>system</b> (host) problems, not OS issues. Recovery keeps the instance identity; termination can't be undone.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws cloudwatch delete-alarms --alarm-names "recover-$INST"
+aws ec2 modify-instance-attribute --instance-id $INST --enable-api-termination
+aws ec2 terminate-instances --instance-ids $INST</code></pre></div>
+      <div class="expect"><b>Expect:</b> alarm deleted, protection removed, then the instance terminates.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses CloudWatch alarms (earlier sections); ties to stop/start from L2.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Auto Scaling health checks, self-healing designs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>System check fail</b> → stop/start or auto recovery. <b>Instance check fail</b> → reboot/fix OS.</li>
+      <li><b>Auto recovery keeps</b> instance ID, private + Elastic IPs, metadata; <b>terminated = unrecoverable</b>.</li>
+      <li><b>Termination protection</b> prevents accidental deletes + enables role separation.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">System check fails — best fix?<span class="hint">tap</span></div><div class="a">Stop/start (new host) or auto recovery.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Does auto recovery keep the instance ID/IPs?<span class="hint">tap</span></div><div class="a">Yes — same ID, private IP, Elastic IP, metadata.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does termination protection do?<span class="hint">tap</span></div><div class="a">Blocks terminate while enabled; supports role separation.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An instance fails the SYSTEM status check due to host hardware. Best automatic response?</div>
+      <span class="opt">A) Reboot</span><span class="opt">B) CloudWatch auto-recovery action</span><span class="opt">C) Resize volume</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Auto recovery handles host/system failures and keeps the instance identity.</div></div>
+  </article>
+
+  <!-- ===== LESSON 18 ===== -->
+  <article class="card" id="l18">
+    <div class="lesson-head"><div class="num">18</div><div><h2>Horizontal & Vertical Scaling</h2><div class="sub">Scale out vs scale up.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Horizontal (scale out)</td><td>Add more instances.</td><td>No downtime; needs LB.</td></tr>
+      <tr><td>Vertical (scale up)</td><td>Use a bigger instance.</td><td>Needs restart; size cap.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Scale out / in</td><td>Add / remove instances.</td></tr>
+      <tr><td>Scale up / down</td><td>Make an instance bigger / smaller.</td></tr>
+      <tr><td>Sessions</td><td>User state; should be external so any instance can serve a user.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  LOAD[More load] --> H[Horizontal: add instances behind a load balancer]
+  LOAD --> V[Vertical: replace with a bigger instance]
+  H --> HP[+ No downtime, resilient, near-limitless]
+  H --> HC[- Needs load balancing + external sessions]
+  V --> VP[+ Simple, no app change]
+  V --> VC[- Restart/downtime, capped by max size]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class H a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Horizontal</b>: add more instances behind a <b>load balancer</b> → no downtime, more resilient, scales almost without limit. Needs <b>stateless</b> app / external sessions.</li>
+      <li><b>Vertical</b>: swap to a <b>bigger</b> instance → simple, no app change, but needs a <b>restart</b> (downtime) and is <b>capped</b> by the largest size.</li>
+      <li>Most cloud-native designs prefer <b>horizontal</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Concept lesson. Hands-on scaling comes with Load Balancers + Auto Scaling Groups in a later section.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses instance types (L3); leads into ASG/ELB later.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Auto Scaling Groups, ELB, stateless app design.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Horizontal</b> = no downtime + resilient, but needs <b>load balancing + sessions handled externally</b>.</li>
+      <li><b>Vertical</b> = simple but has <b>downtime</b> and a <b>maximum size</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which scaling avoids downtime?<span class="hint">tap</span></div><div class="a">Horizontal (add more instances).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">A limit of vertical scaling?<span class="hint">tap</span></div><div class="a">It needs a restart (downtime) and is capped by the max instance size.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What must apps handle to scale horizontally well?<span class="hint">tap</span></div><div class="a">Sessions/state stored externally (stateless instances).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A web tier must grow with no downtime and survive instance failures. Which scaling?</div>
+      <span class="opt">A) Vertical</span><span class="opt">B) Horizontal</span><span class="opt">C) Neither</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Horizontal scaling adds instances behind a load balancer with no downtime.</div></div>
+  </article>
+
+  <!-- ===== LESSON 19 ===== -->
+  <article class="card" id="l19">
+    <div class="lesson-head"><div class="num">19</div><div><h2>Instance Metadata</h2><div class="sub">Data about the instance, from inside it.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Metadata service</td><td>Info about the instance at a special internal address.</td><td>169.254.169.254.</td></tr>
+      <tr><td>Role credentials</td><td>Temp credentials for the instance role appear here.</td><td>How SDKs get creds.</td></tr>
+      <tr><td>IMDSv2</td><td>Token-based, more secure version.</td><td>Preferred.</td></tr>
+      <tr><td>Not secret</td><td>No authentication by default → don't store secrets in user-data.</td><td>Security trap.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Metadata</td><td>Facts about the instance (IP, hostname, role creds, user-data).</td></tr>
+      <tr><td>169.254.169.254</td><td>The link-local address where metadata lives.</td></tr>
+      <tr><td>IMDSv2</td><td>Version 2: you must fetch a token first (safer).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  APP[App on instance] -->|GET token then data| MD[169.254.169.254/latest/meta-data]
+  MD --> INFO[hostname, IPs, AZ, SGs]
+  MD --> ROLE[iam/security-credentials = temp role creds]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class MD a;
+    </pre></div>
+    <ul class="clean">
+      <li>Reach metadata at <b>http://169.254.169.254/latest/meta-data/</b> from inside the instance.</li>
+      <li>It exposes hostname, IPs, AZ, security groups, and the <b>IAM role's temporary credentials</b> (this is how SDKs/CLI on the instance authenticate).</li>
+      <li><b>IMDSv2</b> requires a session <b>token</b> first → use it (more secure than IMDSv1).</li>
+      <li>Metadata has <b>no authentication</b> by default, so <b>never put secrets in user-data</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · run ON an instance</span><b>Situation:</b> read metadata using IMDSv2. <b>Check first:</b> you're connected to an EC2 instance (SSH/Session Manager).</div>
+      <div class="step"><div class="sh">Get a token, then read metadata</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" \
+  -H "X-aws-ec2-metadata-token-ttl-seconds: 300")
+curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/instance-type
+echo
+curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/placement/availability-zone</code></pre></div>
+      <div class="expect"><b>Expect:</b> the instance type (e.g. <code>t3.micro</code>) and its AZ (e.g. <code>us-east-1a</code>).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>If the instance has a role, <code>.../iam/security-credentials/ROLE</code> shows temporary keys — what the SDK/CLI uses automatically. Don't store secrets in user-data; metadata is readable by anything on the instance.</div>
+      <div class="box term"><span class="tag">Clean up</span>Nothing created — read-only on the instance.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>How instance roles (IAM section) deliver credentials.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Bootstrapping scripts, SSM, credential best practices.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Metadata address = <b>169.254.169.254</b> (link-local, inside the instance only).</li>
+      <li>Instance <b>role credentials</b> are delivered via metadata.</li>
+      <li>Prefer <b>IMDSv2</b> (token-based); metadata is <b>not authenticated</b> → no secrets in user-data.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Metadata IP address?<span class="hint">tap</span></div><div class="a">169.254.169.254.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How does an SDK on EC2 get role credentials?<span class="hint">tap</span></div><div class="a">From the instance metadata service.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Why avoid secrets in user-data?<span class="hint">tap</span></div><div class="a">Metadata isn't authenticated; anything on the instance can read it.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An app on EC2 needs AWS credentials. Best source?</div>
+      <span class="opt">A) Hard-code keys</span><span class="opt">B) An instance role via metadata</span><span class="opt">C) Put keys in user-data</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> An instance role delivers temporary credentials through metadata — no stored keys.</div></div>
+  </article>
+
+  <!-- ===== MOCK EXAM ===== -->
+  <article class="card examcard" id="mock">
+    <div class="lesson-head"><div class="num">★</div><div><h2>Mock Exam</h2><div class="sub">EC2 + IAM/Accounts/Orgs + S3 + VPC.</div></div></div>
+    <div class="box exam"><span class="tag">How to use</span>Decide first, then tap <b>Show answer</b>. Pick the <b>best</b> option. 16 questions.</div>
+
+    <div class="quiz"><div class="qq">1. Instance store data is gone after which action?</div>
+      <span class="opt">A) Reboot</span><span class="opt">B) Stop/Start</span><span class="opt">C) Attaching an EBS volume</span><span class="opt">D) Creating a snapshot</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Instance store survives reboot but is lost on stop/start or terminate.</div></div>
+
+    <div class="quiz"><div class="qq">2. A critical DB needs 40,000 consistent IOPS, low latency. Volume type?</div>
+      <span class="opt">A) gp2</span><span class="opt">B) gp3</span><span class="opt">C) io2</span><span class="opt">D) st1</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> Provisioned IOPS io2 exceeds gp3's ~16,000 IOPS ceiling with steady low latency.</div></div>
+
+    <div class="quiz"><div class="qq">3. Move a volume's data to another region. How?</div>
+      <span class="opt">A) Change the volume region</span><span class="opt">B) Snapshot, then copy the snapshot</span><span class="opt">C) Detach and reattach</span><span class="opt">D) Instance store</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Snapshots (on S3) are the cross-region path for EBS.</div></div>
+
+    <div class="quiz"><div class="qq">4. Cheapest compute for an interruptible, restartable batch job?</div>
+      <span class="opt">A) On-Demand</span><span class="opt">B) Reserved</span><span class="opt">C) Spot</span><span class="opt">D) Dedicated Host</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> Spot is cheapest and the job tolerates interruptions.</div></div>
+
+    <div class="quiz"><div class="qq">5. A public IPv4 keeps changing on stop/start and breaks the app. Fix?</div>
+      <span class="opt">A) Elastic IP</span><span class="opt">B) Bigger instance</span><span class="opt">C) Instance store</span><span class="opt">D) Reboot only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> An Elastic IP is a static public IPv4 that survives stop/start.</div></div>
+
+    <div class="quiz"><div class="qq">6. (VPC) What makes a subnet "public"?</div>
+      <span class="opt">A) A NAT Gateway</span><span class="opt">B) Auto-assign public IP + 0.0.0.0/0 route to an IGW</span><span class="opt">C) A NACL</span><span class="opt">D) IPv6</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Both the public IP and an internet-gateway route are required.</div></div>
+
+    <div class="quiz"><div class="qq">7. (VPC) Block one malicious IP for an entire subnet. Use?</div>
+      <span class="opt">A) Security Group</span><span class="opt">B) NACL deny rule</span><span class="opt">C) IAM policy</span><span class="opt">D) Route table</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Only NACLs can explicitly deny; SGs are allow-only.</div></div>
+
+    <div class="quiz"><div class="qq">8. (IAM) Best practice for an EC2 app needing S3 access?</div>
+      <span class="opt">A) Store access keys on disk</span><span class="opt">B) Instance role</span><span class="opt">C) Root keys</span><span class="opt">D) Public bucket</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Instance roles give temporary, rotating credentials via metadata.</div></div>
+
+    <div class="quiz"><div class="qq">9. (S3) Object returns Access Denied despite a public-read bucket policy. First check?</div>
+      <span class="opt">A) Storage class</span><span class="opt">B) Block Public Access</span><span class="opt">C) Versioning</span><span class="opt">D) Region</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Block Public Access overrides policies that grant public access.</div></div>
+
+    <div class="quiz"><div class="qq">10. (Orgs) Restrict every member account to one region. Tool?</div>
+      <span class="opt">A) IAM group</span><span class="opt">B) SCP</span><span class="opt">C) NACL</span><span class="opt">D) Security Group</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> An SCP boundary applies org-wide (management account excepted).</div></div>
+
+    <div class="quiz"><div class="qq">11. An AMI launch fails in a new region with "image not found". Why?</div>
+      <span class="opt">A) Wrong key pair</span><span class="opt">B) AMIs are region-specific — copy it first</span><span class="opt">C) Encryption</span><span class="opt">D) No IGW</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Copy the AMI into the target region (new AMI ID).</div></div>
+
+    <div class="quiz"><div class="qq">12. A SYSTEM status check fails (host hardware). Best automatic action?</div>
+      <span class="opt">A) Reboot</span><span class="opt">B) CloudWatch auto-recovery</span><span class="opt">C) Resize volume</span><span class="opt">D) Detach ENI</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Auto recovery handles host failures and keeps the instance identity.</div></div>
+
+    <div class="quiz"><div class="qq">13. Web tier must scale with no downtime and survive failures. Scaling type?</div>
+      <span class="opt">A) Vertical</span><span class="opt">B) Horizontal</span><span class="opt">C) Neither</span><span class="opt">D) Bigger volume</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Horizontal scaling adds instances behind a load balancer, no downtime.</div></div>
+
+    <div class="quiz"><div class="qq">14. Compliance: every new EBS volume must be encrypted automatically. Set?</div>
+      <span class="opt">A) Encrypt manually each time</span><span class="opt">B) EBS encryption by default (per region)</span><span class="opt">C) Instance store</span><span class="opt">D) Object Lock</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Default encryption forces all new volumes to be encrypted.</div></div>
+
+    <div class="quiz"><div class="qq">15. App on EC2 needs maximum local disk speed for a rebuildable cache. Storage?</div>
+      <span class="opt">A) io2 EBS</span><span class="opt">B) Instance store</span><span class="opt">C) st1</span><span class="opt">D) S3</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Instance store gives top local performance; the cache can be rebuilt if lost.</div></div>
+
+    <div class="quiz"><div class="qq">16. Need guaranteed capacity in one AZ for a launch event, no long commitment. Use?</div>
+      <span class="opt">A) Regional RI</span><span class="opt">B) Spot</span><span class="opt">C) On-Demand Capacity Reservation</span><span class="opt">D) Convertible RI</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>C.</b> Capacity Reservations hold AZ capacity with no term commitment.</div></div>
+  </article>
+
+  <div class="foot">
+    <div>
+      <span class="pill">Instance + EBS = same AZ</span><span class="pill">Instance store lost on stop</span>
+      <span class="pill">gp3 = 3000 IOPS baseline</span><span class="pill">Snapshots on S3</span>
+      <span class="pill">Public IPv4 changes on stop/start</span><span class="pill">AMIs are regional</span>
+      <span class="pill">Spot = interruptible & cheap</span><span class="pill">Metadata = 169.254.169.254</span>
+    </div>
+    <p>Section 006 · Elastic Compute Cloud (EC2) Basics + Mock Exam · built for SAA-C03 self-study.<br>
+    Tap a flashcard or "Show answer" to reveal. Use ☰ Lessons to jump around.</p>
+  </div>
+</main>
+
+<button class="toTop" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawerBg').classList.add('open');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerBg').classList.remove('open');}
+function cp(btn){
+  const code=btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard?.writeText(code).then(()=>{const t=btn.innerText;btn.innerText='copied!';setTimeout(()=>btn.innerText=t,1200);})
+  .catch(()=>{btn.innerText='select & copy';});
+}
+const tt=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{tt.classList.toggle('show',window.scrollY>500);});
+window.addEventListener('load',()=>{
+  try{
+    mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{
+      fontFamily:'Manrope, sans-serif',primaryColor:'#1b2128',primaryTextColor:'#e7edf3',
+      primaryBorderColor:'#2dd4bf',lineColor:'#60a5fa',secondaryColor:'#212934',tertiaryColor:'#161b21'}});
+  }catch(e){console.warn('mermaid init',e);}
+});
+</script>
+</body>
+</html>

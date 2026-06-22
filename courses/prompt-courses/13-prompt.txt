@@ -1,0 +1,273 @@
+# ROLE
+You are an expert AWS instructor building a single self-contained HTML study + revision 
+document for ONE section of Adrian Cantrill's AWS Solutions Architect Associate (SAA-C03) 
+course. The document must teach me from zero and also work as exam-revision later.
+
+# WHO I AM (design for this exactly)
+- 0 AWS knowledge, 0 work experience. Everything is new to me.
+- English level B1. Use simple, clear English. Short sentences.
+- I am preparing for the SAA-C03 exam, so depth = exam level (not deeper, not shallower).
+- I run demos myself on my laptop using AWS CLI v2 (already installed and configured).
+
+# INPUT
+I will paste one full course SECTION below. A section contains several lessons.
+Treat each lesson as one teaching unit. Build the document lesson by lesson, in order.
+
+# OUTPUT = ONE HTML FILE
+- ONE single HTML file for the WHOLE section, no matter how many lessons (even 20+). 
+  Do not split into parts.
+- Material UI look, DARK MODE, MOBILE-FIRST (single column, large tap targets, readable font).
+- Load Mermaid from CDN and render diagrams (graph/flowchart/sequence as fits the idea).
+- Self-contained: all CSS + JS inline, opens offline in a browser.
+- Sticky top bar + collapsible section menu so I can jump between lessons.
+- Clean spacing, cards for each lesson, color accents for "exam tip" / "demo" / "term" blocks.
+
+# FORMATTING PRINCIPLES (follow strictly, in priority order)
+1. Mermaid diagram  >  paragraph  (always try a diagram first for any flow/relationship)
+2. Outline / bullet list  >  paragraph
+3. Key–value table  >  paragraph
+4. Structured  >  unstructured
+Only use a paragraph when none of the above fit. Keep paragraphs to 2–3 short sentences.
+
+# LANGUAGE & TERMS
+- B1 English. When a technical word first appears, do ONE of:
+  (a) short explanation in parentheses right after it, OR
+  (b) add it to a "Key Terms" table at the TOP of the lesson (term | simple meaning).
+- Prefer the Key Terms table at the entry of each lesson for the main technical words.
+
+# DOCUMENT STRUCTURE
+## Top of document (once)
+- Section title + 1-line goal.
+- "Section Map": a Mermaid diagram showing how the lessons connect.
+- A "Quick Understanding" table for the WHOLE section (lesson | one-line what + why it matters for exam).
+
+## For EACH lesson (repeat this block)
+1. **Quick Understanding table** — fast TL;DR of the lesson (concept | meaning | exam relevance).
+2. **Key Terms table** — the technical words used, in B1 plain meaning.
+3. **Explanation** — diagram-led (Mermaid), then bullets/tables. Minimal prose.
+4. **Demo** (see DEMO SPEC) — directly after the explanation.
+   Demo EVERY lesson that can possibly be demoed with AWS CLI v2 / CloudFormation.
+   Only skip when the lesson is pure theory with nothing to build — then write 
+   "No demo — theory only" and say in 1 line why.
+5. **Build Knowledge** — 2 short lists:
+   - "Connects to NOW" (how this links to other lessons in this section)
+   - "Needed LATER" (which future course topics depend on this).
+6. **Exam Pointers** — bullets of common SAA-C03 traps, "remember this", and easy-confusions.
+7. **Flashcards** — 4–6 active-recall Q→A pairs (HTML click-to-flip or show/hide).
+8. **Mini Quiz** — 2–3 exam-style multiple-choice questions with the correct answer + 
+   1-line why (hidden until clicked).
+
+# DEMO SPEC (use AWS CLI v2; CloudFormation allowed for fast setup/cleanup)
+Each demo follows this exact order:
+1. **Situation** — the real scenario (tie it to Animals4life when natural) and the goal.
+2. **Check first** — prerequisites / what state I should be in before starting.
+3. **Steps** — numbered. For EVERY command:
+   - the exact AWS CLI v2 command (in a copyable code block),
+   - "What you expect" — what output/result I should see after running it.
+4. **Fix / Key info** — correct any course misunderstanding, note real-world gotchas.
+5. **Clean up** — exact commands to delete everything (use CloudFormation delete or CLI 
+   delete commands) so I leave NO running/billable resources.
+
+# QUALITY BAR
+- Accurate to current SAA-C03 scope. If something is exam-relevant but missing from the 
+  pasted text, add it briefly and mark it "[added for exam]".
+- No fluff. Everything must help me learn OR revise. Remove anything that doesn't.
+- The file must be ready to use as my single source for studying and revising this section.
+
+# SECTION TO BUILD
+SERVERLESS AND APPLICATION SERVICES
+
+1 - Architecture Deep Dive
+
+In PART1 of this lesson I step through how a video uploading architecture 'CatTube' can be evolved from monolithic to tiered.
+
+Part 2 continues by looking at evolutions using a queue based design, to achieve improved asynchronous communications and scaling and finishes by looking at microservices and event driven architectures.
+
+2 - AWS Lambda 
+
+This 3-part series steps through Lambdas architecture and features in depth.
+
+Part 1 is a refresher of the topics covered at an associate level with some additional detail
+
+Part 2 looks at public & VPC networking, security and logging
+
+Part 3 looks at invocation modes, versions & aliases, Latency, destinations and execution context
+
+3 - CloudWatchEvents and EventBridge 
+
+CloudWatch Events and EventBridge have visibility over events generated by supported AWS services within an account.
+
+They can monitor the default account event bus - and pattern match events flowing through and deliver these events to multiple targets.
+
+They are also the source of scheduled events which can perform certain actions at certain times of day, days of the week, or multiple combinations of both - using the Unix CRON time expression format.
+
+Both services are one way how event driven architectures can be implemented within AWS.
+
+
+Automated EC2 Control using Lambda and Events  you will gain experience of using Lambda for some simple account management tasks.
+
+PART1 will deal with simple manual Lambda function invocations
+
+PART2 will give you experience of using an event-driven architecture within AWS using EventBridge
+
+USE PYTHON 3.9 FOR ALL LAMBDAS
+
+1-Click Deployment
+
+lambdarole.json
+
+lambda_instance_stop.py
+
+lambda_instance_start.py
+
+lambda_instance_protect.py
+
+4 - Serverless Architecture 
+
+The Serverless architecture is a evolution/combination of other popular architectures such as event-driven and microservices.
+
+It aims to use 3rd party services where possible and FAAS products for any on-demand computing needs.
+
+Using a serverless architecture means little to no base costs for an environment - and any cost incurred during operations scale in a way with matches the incoming load.
+
+Serverless starts to feature more and more on the AWS exams - so its a critical architecture to understand.
+
+5 - Simple Notification Service 
+
+The Simple Notification Service or SNS .. is a PUB SUB style notification system which is used within AWS products and services but can also form an essential part of serverless, event-driven and traditional application architectures.
+
+Publishers send messages to TOPICS
+
+Subscribers receive messages SENT to TOPICS.
+
+SNS supports a wide variety of subscriber types including other AWS services such as LAMBDA and SQS.
+
+6 - Step Functions 
+
+Step functions is a product which lets you build long running serverless workflow based applications within AWS which integrate with many AWS services.
+
+7 - API Gateway 101 
+
+API Gateway is a managed service from AWS which allows the creation of API Endpoints, Resources & Methods.
+
+The API gateway integrates with other AWS services - and can even access some without the need for dedicated compute.
+
+It serves as a core component of many serverless architectures using Lambda as event-driven and on-demand backing for methods.
+
+It can also connect to legacy monolithic applications and act as a stable API endpoint during an evolution from a monolith to microservices and potentially through to serverless.
+
+https://docs.aws.amazon.com/apigateway/latest/api/CommonErrors.html
+
+8 - Build A Serverless App - Pet-Cuddle-o-Tron 
+
+In this _Advanced Demo_ you will be implementing a serverless reminder application.
+
+The application will load from an S3 bucket and run in browser
+
+.. communicating with Lambda and Step functions via an API Gateway Endpoint
+
+Using the application you will be able to configure reminders for 'pet cuddles' to be send using email and SMS.
+
+
+IF YOU HAVE ANY ISSUES WITH THIS DEMO - CHECK THE COMMON PROBLEMS PAGE https://github.com/acantril/learn-cantrill-io-labs/blob/master/aws-serverless-pet-cuddle-o-tron/02_LABINSTRUCTIONS/CommonIssues.md AND PLEASE MAKE SURE YOU FOLLOW THE UPDATED TEXT INSTRUCTIONS https://github.com/acantril/learn-cantrill-io-labs/tree/master/aws-serverless-pet-cuddle-o-tron
+
+
+This advanced demo consists of 6 stages :-
+
+- STAGE 1 : Configure Simple Email service & SNS **<= THIS STAGE**
+
+- STAGE 2 : Add a email lambda function to use SES to send emails for the serverless application
+
+- STAGE 3 : Implement and configure the state machine, the core of the application
+
+- STAGE 4 : Implement the API Gateway, API and supporting lambda function
+
+- STAGE 5 : Implement the static frontend application and test functionality
+
+- STAGE 6 : Cleanup the account
+
+
+GitHub for Advanced demo : https://github.com/acantril/learn-cantrill-io-labs/tree/master/aws-serverless-pet-cuddle-o-tron
+
+This STAGE Instructions
+
+This STAGE Architecture
+
+
+
+9 - Simple Queue Service 
+
+SQS queues are a managed message queue service in AWS which help to decouple application components, allow Asynchronous messaging or the implementation of worker pools.
+
+10 - SQS Standard vs FIFO Queues 
+
+This lesson reviews the differences between Standard SQS Queues and First-In-First-Out (FIFO) SQS Queues
+
+11 -  SQS Delay Queues 
+
+Delay queues provide an initial period of invisibility for messages. Predefine periods can ensure that processing of messages doesn't begin until this period has expired.
+
+https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-message-timers.html
+
+https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-delay-queues.html
+
+https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html
+
+12 - SQS Dead-Letter Queues 
+
+Dead letter queues allow for messages which are causing repeated processing errors to be moved into a dead letter queue
+
+in this queue, different processing methods, diagnostic methods or logging methods can be used to identity message faults
+
+13 -  Kinesis Data Streams 
+
+Kinesis data streams are a streaming service within AWS designed to ingest large quantities of data and allow access to that data for consumers.
+
+Kinesis is ideal for dashboards and large scale real time analytics needs.
+
+Kinesis data firehose allows the long term persistent storage of kinesis data onto services like S3
+
+This lesson ends by evaluating the differences between SQS and Kinesis, and identifying key factors in exam questions which suggest picking one vs the other.
+
+14 - Kinesis Data Firehose 
+
+Kinesis Data Firehose is a stream based delivery service capable of delivering high throughput streaming data to supported destinations in near realtime.
+
+Its a member of the kinesis family and for the PRO level exam it's critical to have a good understanding of how it functions in isolation and how it integrates with AWS products and services
+
+15 - Kinesis Data Analytics 
+
+Amazon Kinesis Data Analytics is the easiest way to analyze streaming data, gain actionable insights, and respond to your business and customer needs in real time.
+
+it is part of the kinesis family of products and is capable of operating in realtime on high throughput streaming data.
+
+16 - Kinesis Video Streams 
+
+Amazon Kinesis Video Streams makes it easy to securely stream video from connected devices to AWS for analytics, machine learning (ML), playback, and other processing. Kinesis Video Streams automatically provisions and elastically scales all the infrastructure needed to ingest streaming video data from millions of devices
+
+17 - Amazon Cognito - User and Identity Pools 
+
+A user pool is a user directory in Amazon Cognito. With a user pool, your users can sign in to your web or mobile app through Amazon Cognito. Your users can also sign in through social identity providers like Google, Facebook, Amazon, or Apple, and through SAML identity providers. Whether your users sign in directly or through a third party, all members of the user pool have a directory profile that you can access through a Software Development Kit (SDK).
+
+Amazon Cognito identity pools (federated identities) enable you to create unique identities for your users and federate them with identity providers. With an identity pool, you can obtain temporary, limited-privilege AWS credentials to access other AWS services. 
+
+This lesson reviews the features of the product and talks through some example architectures.
+
+18 - AWS Glue 101 
+
+AWS Glue is a fully managed extract, transform, and load (ETL) service that makes it easy for customers to prepare and load their data for analytics. You can create and run an ETL job with a few clicks in the AWS Management Console. You simply point AWS Glue to your data stored on AWS, and AWS Glue discovers your data and stores the associated metadata (e.g. table definition and schema) in the AWS Glue Data Catalog. Once cataloged, your data is immediately searchable, queryable, and available for ETL.
+
+19 - Amazon MQ 101 
+
+AmazonMQ is an AWS implementation of Apache ActiveMQ
+
+It supports open standards such as JMS, AMQP, MQTT, OpenWire and STOMP
+
+If you need to support any of these, and use queues and topics - AmazonMQ is the tool to use.
+
+20 - Amazon AppFlow 
+
+Amazon AppFlow is a fully managed integration service that enables you to securely transfer data between Software-as-a-Service (SaaS) applications like Salesforce, SAP, Zendesk, Slack, and ServiceNow, and AWS services like Amazon S3 and Amazon Redshift, in just a few clicks. With AppFlow, you can run data flows at enterprise scale at the frequency you choose - on a schedule, in response to a business event, or on demand. You can configure data transformation capabilities like filtering and validation to generate rich, ready-to-use data as part of the flow itself, without additional steps. AppFlow automatically encrypts data in motion, and allows users to restrict data from flowing over the public Internet for SaaS applications that are integrated with AWS PrivateLink, reducing exposure to security threats.
+
+21 -  mock exam level for this section "SERVERLESS AND APPLICATION SERVICES " implement old courses ["IAM, ACCOUNTS AND AWS ORGANISATIONS", "SIMPLE STORAGE SERVICE   (S3) ", "VIRTUAL PRIVATE CLOUD (VPC) BASICS " , "ELASTIC COMPUTE CLOUD (EC2) BASICS ","CONTAINERS & ECS " , "ADVANCED EC2 " ,"NETWORK STORAGE & DATA LIFECYCLE ", "Route 53 - Global DNS", "Relational Database Service (RDS) ", "HA & SCALING"]
+

@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03 · 020 · Machine Learning 101</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+:root{
+  --bg:#101418;--bg2:#161b21;--surface:#1b2128;--surface2:#212934;
+  --line:#2c3540;--line2:#3a4654;--text:#e7edf3;--muted:#9fb0c0;
+  --primary:#2dd4bf;--primary-d:#0f3b39;--exam:#fbbf24;--exam-d:#3a2f0c;
+  --demo:#60a5fa;--demo-d:#0e2647;--term:#c084fc;--term-d:#2a1640;
+  --warn:#fb7185;--warn-d:#3a151c;--ok:#34d399;
+  --radius:16px;--shadow:0 6px 22px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.25;margin:0}
+a{color:var(--primary);text-decoration:none}
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(16,20,24,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .badge{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--bg);background:var(--primary);padding:4px 9px;border-radius:8px}
+.topbar .ttl{font-family:'Sora';font-weight:600;font-size:15px}
+.topbar .ttl small{display:block;color:var(--muted);font-weight:500;font-size:11.5px;font-family:'Manrope'}
+.menu-btn{margin-left:auto;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+.menu-btn:active{transform:scale(.97)}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
+.drawer-bg.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(86vw,340px);background:var(--bg2);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .28s ease;z-index:80;overflow-y:auto;padding:18px 16px 40px}
+.drawer.open{transform:translateX(0)}
+.drawer h3{font-size:11.5px;color:var(--muted);margin:14px 4px 8px;text-transform:uppercase;letter-spacing:1px}
+.drawer a{display:block;color:var(--text);padding:9px 12px;border-radius:10px;font-weight:500;font-size:13.5px;border:1px solid transparent}
+.drawer a:active{background:var(--surface)}
+.drawer a .n{color:var(--primary);font-family:'Sora';font-weight:700;margin-right:8px}
+.drawer .close{width:100%;margin-top:18px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 90px}
+.hero{background:radial-gradient(120% 90% at 100% 0%, rgba(45,212,191,.16), transparent 55%),radial-gradient(120% 90% at 0% 100%, rgba(96,165,250,.12), transparent 55%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+.hero .eyebrow{color:var(--primary);font-weight:700;font-size:12.5px;letter-spacing:1.5px;font-family:'Sora'}
+.hero h1{font-size:25px;margin:6px 0 8px}
+.hero p{color:var(--muted);margin:0;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;margin-top:18px;box-shadow:var(--shadow)}
+.lesson-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.lesson-head .num{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:'Sora';font-weight:700;background:var(--primary);color:var(--bg);font-size:15px}
+.lesson-head h2{font-size:19px}
+.lesson-head .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+h3.block{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+h3.block::before{content:"";width:14px;height:3px;border-radius:3px;background:var(--primary)}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:360px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface2);color:var(--text);font-family:'Sora';font-weight:600;font-size:12.5px;letter-spacing:.3px}
+tr:last-child td{border-bottom:none}
+td b{color:var(--primary)}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{position:relative;padding:6px 0 6px 22px;font-size:15px;border-bottom:1px dashed var(--line)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"▸";position:absolute;left:2px;top:6px;color:var(--primary)}
+.two-col{display:grid;gap:12px}
+@media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+.box{border-radius:12px;padding:13px 14px;margin:12px 0;border:1px solid;font-size:14.5px}
+.box .tag{font-family:'Sora';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
+.box.exam{background:var(--exam-d);border-color:#6b551a}.box.exam .tag{color:var(--exam)}
+.box.term{background:var(--term-d);border-color:#4a2d6b}.box.term .tag{color:var(--term)}
+.box.warn{background:var(--warn-d);border-color:#6b2630}.box.warn .tag{color:var(--warn)}
+.box.demo{background:var(--demo-d);border-color:#1d4a82}.box.demo .tag{color:var(--demo)}
+.box ul{margin:4px 0 0;padding-left:18px}.box li{margin:3px 0}
+.mer{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;overflow-x:auto}
+.mermaid{display:flex;justify-content:center;min-width:fit-content}
+.code{position:relative;background:#0c1117;border:1px solid var(--line2);border-radius:10px;margin:10px 0}
+.code pre{margin:0;padding:13px 14px;overflow-x:auto;font-size:13px;line-height:1.55}
+.code code{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;color:#cfe9e6;white-space:pre}
+.code .cp{position:absolute;top:7px;right:7px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:7px;font-size:11px;padding:4px 9px;cursor:pointer;font-weight:600}
+.code .cp:active{color:var(--primary)}
+.expect{font-size:13px;color:var(--ok);background:rgba(52,211,153,.08);border-left:3px solid var(--ok);padding:7px 11px;margin:0 0 12px;border-radius:0 8px 8px 0}
+.expect b{color:var(--ok)}
+.step{counter-increment:st;margin:14px 0}
+.step .sh{display:flex;align-items:center;gap:9px;font-family:'Sora';font-weight:600;font-size:14.5px;margin-bottom:4px}
+.step .sh::before{content:counter(st);background:var(--demo);color:var(--bg);width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12.5px;flex:0 0 auto}
+.demo-wrap{counter-reset:st}
+.fc-grid{display:grid;gap:10px}
+.fc{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:13px 14px;cursor:pointer;transition:border-color .2s;user-select:none}
+.fc:active{border-color:var(--primary)}
+.fc .q{font-weight:600;font-size:14.5px;display:flex;gap:8px;align-items:flex-start}
+.fc .q::before{content:"Q";font-family:'Sora';color:var(--primary);font-weight:700;flex:0 0 auto}
+.fc .a{display:none;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);color:var(--muted);font-size:14px}
+.fc .a::before{content:"A ";color:var(--ok);font-weight:700;font-family:'Sora'}
+.fc.show .a{display:block}
+.fc .hint{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600}
+.quiz{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:14px;margin:10px 0}
+.quiz .qq{font-weight:600;font-size:15px;margin-bottom:8px}
+.quiz .opt{display:block;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin:6px 0;font-size:14px;cursor:pointer}
+.quiz .opt:active{border-color:var(--primary)}
+.quiz .reveal{margin-top:6px;background:var(--surface);color:var(--primary);border:1px solid var(--line2);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px;width:100%}
+.quiz .ans{display:none;margin-top:10px;border-left:3px solid var(--ok);background:rgba(52,211,153,.08);padding:9px 12px;border-radius:0 8px 8px 0;font-size:14px}
+.quiz .ans b{color:var(--ok)}
+.quiz.show .ans{display:block}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;line-height:1.7}
+.pill{display:inline-block;background:var(--surface2);border:1px solid var(--line2);color:var(--muted);font-size:11px;padding:2px 8px;border-radius:20px;margin:2px}
+.toTop{position:fixed;right:14px;bottom:16px;z-index:50;background:var(--primary);color:var(--bg);border:none;width:46px;height:46px;border-radius:50%;font-size:20px;box-shadow:var(--shadow);cursor:pointer;display:none}
+.toTop.show{display:block}
+kbd{background:var(--surface2);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-size:12px;font-family:monospace}
+.examcard{border-color:#6b551a;background:linear-gradient(180deg,var(--exam-d),var(--surface))}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="badge">SAA-C03</span>
+  <div class="ttl">Section 020<small>Machine Learning 101</small></div>
+  <button class="menu-btn" onclick="openDrawer()">☰ Lessons</button>
+</header>
+
+<div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer">
+  <h3>Text & language</h3>
+  <a href="#l1" onclick="closeDrawer()"><span class="n">1</span>Comprehend (NLP)</a>
+  <a href="#l2" onclick="closeDrawer()"><span class="n">2</span>Kendra (search)</a>
+  <a href="#l3" onclick="closeDrawer()"><span class="n">3</span>Lex (chatbots)</a>
+  <a href="#l4" onclick="closeDrawer()"><span class="n">4</span>Polly (text→speech)</a>
+  <h3>Vision & documents</h3>
+  <a href="#l5" onclick="closeDrawer()"><span class="n">5</span>Rekognition (images/video)</a>
+  <a href="#l6" onclick="closeDrawer()"><span class="n">6</span>Textract (documents)</a>
+  <h3>Speech & translation</h3>
+  <a href="#l7" onclick="closeDrawer()"><span class="n">7</span>Transcribe (speech→text)</a>
+  <a href="#l8" onclick="closeDrawer()"><span class="n">8</span>Translate (languages)</a>
+  <h3>Predict & custom</h3>
+  <a href="#l9" onclick="closeDrawer()"><span class="n">9</span>Forecast (time-series)</a>
+  <a href="#l10" onclick="closeDrawer()"><span class="n">10</span>Fraud Detector</a>
+  <a href="#l11" onclick="closeDrawer()"><span class="n">11</span>SageMaker (build your own)</a>
+  <h3>Revision</h3>
+  <a href="#mock" onclick="closeDrawer()"><span class="n">★</span>Mock Exam</a>
+  <button class="close" onclick="closeDrawer()">Close</button>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">SECTION GOAL</div>
+    <h1>Pick the right AWS AI/ML service for the job.</h1>
+    <p>These are managed AI services with pre-trained models — the exam tests which one fits a scenario. Plus SageMaker, the service for building your own custom models.</p>
+  </section>
+
+  <div class="card">
+    <h3 class="block">Section Map · how the services group</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  TEXT[Text/language: Comprehend, Kendra, Lex, Translate] --> AI[Pre-trained AI services]
+  SPEECH[Speech: Polly = text→speech, Transcribe = speech→text] --> AI
+  VISION[Vision/docs: Rekognition, Textract] --> AI
+  PRED[Predict: Forecast, Fraud Detector] --> AI
+  SM[SageMaker: build/train/deploy YOUR model] --> CUSTOM[Custom ML]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class TEXT,SPEECH,VISION,PRED a;
+  class SM b;
+    </pre></div>
+  </div>
+
+  <div class="card">
+    <h3 class="block">Quick Understanding · whole section</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Lesson</th><th>What + why it matters for the exam</th></tr>
+      <tr><td>1 Comprehend</td><td>NLP: sentiment, entities, language from text.</td></tr>
+      <tr><td>2 Kendra</td><td>Intelligent ML search over your documents.</td></tr>
+      <tr><td>3 Lex</td><td>Chatbots / conversational interfaces.</td></tr>
+      <tr><td>4 Polly</td><td>Text → lifelike speech (TTS).</td></tr>
+      <tr><td>5 Rekognition</td><td>Computer vision on images + video.</td></tr>
+      <tr><td>6 Textract</td><td>Extract text/forms/tables from documents.</td></tr>
+      <tr><td>7 Transcribe</td><td>Speech → text (ASR).</td></tr>
+      <tr><td>8 Translate</td><td>Translate text between languages.</td></tr>
+      <tr><td>9 Forecast</td><td>Time-series predictions.</td></tr>
+      <tr><td>10 Fraud Detector</td><td>Detect online fraud / fake accounts.</td></tr>
+      <tr><td>11 SageMaker</td><td>Build/train/deploy your OWN models.</td></tr>
+      <tr><td>★ Mock Exam</td><td>ML service selection + all prior sections.</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ===== LESSON 1 ===== -->
+  <article class="card" id="l1">
+    <div class="lesson-head"><div class="num">1</div><div><h2>Amazon Comprehend</h2><div class="sub">Find meaning + insights inside text.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>NLP service</td><td>Reads text, finds insights.</td><td>Text analysis.</td></tr>
+      <tr><td>Detects</td><td>Language, sentiment, entities, key phrases, PII.</td><td>What it outputs.</td></tr>
+      <tr><td>Input → insight</td><td>Give text, get structured findings.</td><td>Reviews, social.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>NLP</td><td>Natural Language Processing — understanding text.</td></tr>
+      <tr><td>Sentiment</td><td>Is the text positive, negative, neutral?</td></tr>
+      <tr><td>Entity</td><td>A named thing (person, place, date…).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  TXT[Text] --> COMP[Comprehend]
+  COMP --> S[Sentiment]
+  COMP --> E[Entities + key phrases]
+  COMP --> L[Language + PII]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class COMP a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Comprehend</b> is an <b>NLP</b> service: give it text, get insights — <b>sentiment</b>, <b>entities</b>, <b>key phrases</b>, <b>dominant language</b>, <b>PII</b>, topics.</li>
+      <li>Use for analysing reviews, support tickets, social media, or finding personal data in text.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (tiny text, free tier)</span><b>Situation:</b> analyse a customer comment. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Detect sentiment</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws comprehend detect-sentiment --language-code en \
+  --text "I absolutely love the Animals4life service, it is wonderful!"</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>Sentiment: POSITIVE</code> + confidence scores.</div>
+      <div class="step"><div class="sh">Detect the language</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws comprehend detect-dominant-language \
+  --text "Bonjour, je voudrais adopter un chat."</code></pre></div>
+      <div class="expect"><b>Expect:</b> language code <code>fr</code> with a score.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>No infrastructure — you just call the API. Nothing to clean up (no resources created).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Text service alongside Translate (L8); Kendra (L2) for search.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Text analytics pipelines.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Sentiment / entities / language from text</b>" → <b>Comprehend</b>.</li>
+      <li>Don't confuse with <b>Translate</b> (language→language) or <b>Kendra</b> (search).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Comprehend do?<span class="hint">tap</span></div><div class="a">NLP — finds sentiment, entities, language, key phrases in text.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Analyse review sentiment — which service?<span class="hint">tap</span></div><div class="a">Amazon Comprehend.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You want to score thousands of product reviews as positive/negative. Use?</div>
+      <span class="opt">A) Comprehend</span><span class="opt">B) Translate</span><span class="opt">C) Polly</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Comprehend detects sentiment + insights from text.</div></div>
+  </article>
+
+  <!-- ===== LESSON 2 ===== -->
+  <article class="card" id="l2">
+    <div class="lesson-head"><div class="num">2</div><div><h2>Amazon Kendra</h2><div class="sub">Smart search that answers questions.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Intelligent search</td><td>ML-powered enterprise search.</td><td>Find answers.</td></tr>
+      <tr><td>Natural questions</td><td>Ask in plain language.</td><td>Returns answers, not just links.</td></tr>
+      <tr><td>Many sources</td><td>S3, SharePoint, databases, etc.</td><td>Connects your docs.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Enterprise search</td><td>Search across a company's documents.</td></tr>
+      <tr><td>Index</td><td>The searchable store Kendra builds.</td></tr>
+      <tr><td>Data source</td><td>Where the documents come from.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Kendra</b> is an <b>intelligent, ML-powered search</b> service for your own documents.</li>
+      <li>Users ask <b>natural-language questions</b> and get <b>precise answers</b> (not just a list of links).</li>
+      <li>It connects to many <b>data sources</b> (S3, SharePoint, databases) and builds a searchable <b>index</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — cost</span>A Kendra index runs continuously (hourly cost) + needs data sources; the exam tests "intelligent document search → Kendra".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Text service with Comprehend (L1); searches S3 docs.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Knowledge bases, internal Q&amp;A.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Ask questions and get answers from our documents</b>" → <b>Kendra</b>.</li>
+      <li>Kendra = <b>search</b>; Lex = <b>chatbot</b>; Comprehend = <b>analyse text</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is Kendra?<span class="hint">tap</span></div><div class="a">ML-powered intelligent search over your documents.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Kendra returns…?<span class="hint">tap</span></div><div class="a">Precise answers to natural-language questions.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Staff need to ask plain-English questions and get answers from internal manuals in S3. Use?</div>
+      <span class="opt">A) Kendra</span><span class="opt">B) Comprehend</span><span class="opt">C) Athena</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Kendra is intelligent search that answers questions over your docs.</div></div>
+  </article>
+
+  <!-- ===== LESSON 3 ===== -->
+  <article class="card" id="l3">
+    <div class="lesson-head"><div class="num">3</div><div><h2>Amazon Lex</h2><div class="sub">Build chatbots and voice bots.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Conversational AI</td><td>Chatbots / voice assistants.</td><td>Same tech as Alexa.</td></tr>
+      <tr><td>ASR + NLU</td><td>Understands speech + intent.</td><td>How it works.</td></tr>
+      <tr><td>Intents/slots</td><td>What the user wants + details.</td><td>Bot design.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Intent</td><td>What the user wants to do (e.g. book a vet).</td></tr>
+      <tr><td>Utterance</td><td>A phrase the user might say.</td></tr>
+      <tr><td>Slot</td><td>A detail the bot needs (date, pet name).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Lex</b> builds <b>conversational interfaces</b> (chatbots, voice bots) — the same technology behind <b>Alexa</b>.</li>
+      <li>It does <b>ASR</b> (speech→text) + <b>NLU</b> (understands the <b>intent</b>), using <b>intents</b>, <b>utterances</b>, and <b>slots</b>.</li>
+      <li>Often combined with <b>Polly</b> (speak back) + <b>Transcribe</b> for full voice bots.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — build/config heavy</span>A Lex bot needs intents/slots configured + a runtime; the exam tests "chatbot / conversational interface → Lex".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Pairs with Polly (L4) + Transcribe (L7) for voice bots.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Customer-service bots, IVR.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Build a chatbot / conversational interface</b>" → <b>Lex</b>.</li>
+      <li>Voice bot = <b>Lex + Polly + Transcribe</b> together.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Lex build?<span class="hint">tap</span></div><div class="a">Chatbots / conversational interfaces (like Alexa).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Lex understands what?<span class="hint">tap</span></div><div class="a">The user's intent (via ASR + NLU).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You want a customer chatbot that understands requests and replies. Use?</div>
+      <span class="opt">A) Lex</span><span class="opt">B) Kendra</span><span class="opt">C) Comprehend</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Lex builds conversational chatbots/voice bots.</div></div>
+  </article>
+
+  <!-- ===== LESSON 4 ===== -->
+  <article class="card" id="l4">
+    <div class="lesson-head"><div class="num">4</div><div><h2>Amazon Polly</h2><div class="sub">Turn text into lifelike speech.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Text → speech (TTS)</td><td>Reads text aloud.</td><td>Output is audio.</td></tr>
+      <tr><td>Lifelike voices</td><td>Many languages + voices.</td><td>Natural sound.</td></tr>
+      <tr><td>SSML</td><td>Control pronunciation/pace.</td><td>Fine tuning.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>TTS</td><td>Text-To-Speech.</td></tr>
+      <tr><td>SSML</td><td>Markup to control how speech sounds.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Polly</b> converts <b>text into lifelike speech</b> (TTS); output is an <b>audio file</b> (mp3/ogg/pcm).</li>
+      <li>It supports many <b>languages + voices</b> and <b>SSML</b> for control.</li>
+      <li><b>Remember:</b> Polly = <b>text → speech</b>; <b>Transcribe</b> (L7) = <b>speech → text</b> (opposites).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (tiny, free tier)</span><b>Situation:</b> make an audio greeting. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Synthesize speech to an mp3</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws polly synthesize-speech --output-format mp3 \
+  --voice-id Joanna \
+  --text "Hello from Animals for Life" hello.mp3</code></pre></div>
+      <div class="expect"><b>Expect:</b> a <code>hello.mp3</code> file you can play — Joanna reads the text aloud.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>No infrastructure created — just an output file. Polly is the opposite of Transcribe.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>rm -f hello.mp3</code></pre></div>
+      <div class="expect"><b>Expect:</b> local file removed (nothing billable in AWS).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Voice output for Lex bots (L3); opposite of Transcribe (L7).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Talking apps, accessibility.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Polly = text → speech.</b> <b>Transcribe = speech → text.</b> Don't swap them.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Polly do?<span class="hint">tap</span></div><div class="a">Turns text into lifelike speech (TTS).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Polly vs Transcribe?<span class="hint">tap</span></div><div class="a">Polly = text→speech; Transcribe = speech→text.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An app must read articles aloud to users. Use?</div>
+      <span class="opt">A) Transcribe</span><span class="opt">B) Polly</span><span class="opt">C) Comprehend</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Polly converts text to speech.</div></div>
+  </article>
+
+  <!-- ===== LESSON 5 ===== -->
+  <article class="card" id="l5">
+    <div class="lesson-head"><div class="num">5</div><div><h2>Amazon Rekognition</h2><div class="sub">Computer vision for images + video.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Computer vision</td><td>Analyse images + video.</td><td>Visual content.</td></tr>
+      <tr><td>Detects</td><td>Objects, faces, text, moderation.</td><td>What it finds.</td></tr>
+      <tr><td>Face features</td><td>Compare/search faces, celebrities.</td><td>Identity use cases.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>CV</td><td>Computer Vision — understanding pictures.</td></tr>
+      <tr><td>Label</td><td>A detected object/scene (e.g. "dog").</td></tr>
+      <tr><td>Moderation</td><td>Flagging unsafe content.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Rekognition</b> is <b>computer vision</b> for <b>images and video</b>.</li>
+      <li>It detects <b>objects/scenes (labels)</b>, <b>faces</b> (analysis, comparison, search), <b>text in images</b>, <b>celebrities</b>, and does <b>content moderation</b> + PPE detection.</li>
+      <li>Use for photo tagging, face search, moderation, and video analysis.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — needs image data</span>Rekognition needs an image (usually in S3) + bills per image; the exam tests "analyse images/video → Rekognition".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Vision service; pairs with Textract (L6) for documents.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Media analysis, moderation pipelines.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Detect objects/faces in images or video</b>" → <b>Rekognition</b>.</li>
+      <li><b>Rekognition</b> = photos/video; <b>Textract</b> = documents/forms/OCR.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Rekognition analyse?<span class="hint">tap</span></div><div class="a">Images and video (objects, faces, text, moderation).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Rekognition vs Textract?<span class="hint">tap</span></div><div class="a">Rekognition = images/video; Textract = documents/forms.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A site must auto-flag unsafe uploaded photos + tag objects. Use?</div>
+      <span class="opt">A) Rekognition</span><span class="opt">B) Textract</span><span class="opt">C) Comprehend</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Rekognition does object detection + content moderation on images.</div></div>
+  </article>
+
+  <!-- ===== LESSON 6 ===== -->
+  <article class="card" id="l6">
+    <div class="lesson-head"><div class="num">6</div><div><h2>Amazon Textract</h2><div class="sub">Extract text + data from documents.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Document extraction</td><td>Text, handwriting, forms, tables.</td><td>Beyond OCR.</td></tr>
+      <tr><td>Understands structure</td><td>Key-value forms + tables.</td><td>Not just raw text.</td></tr>
+      <tr><td>Scanned docs</td><td>Works on images/PDFs.</td><td>Paperwork.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>OCR</td><td>Reading printed text from an image.</td></tr>
+      <tr><td>Key-value pair</td><td>A form field + its value (Name: Bob).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Textract</b> extracts <b>text, handwriting, and data</b> from <b>scanned documents</b>.</li>
+      <li>It goes <b>beyond OCR</b>: it understands <b>forms (key-value)</b> and <b>tables</b>.</li>
+      <li>Use for invoices, IDs, forms, contracts — turning paperwork into structured data.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — needs document data</span>Textract needs a document (usually in S3) + bills per page; the exam tests "extract data from documents/forms → Textract".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Pairs with Comprehend (L1) to analyse extracted text.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Document-processing pipelines.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Extract text/forms/tables from scanned documents</b>" → <b>Textract</b>.</li>
+      <li>Textract = <b>documents</b>; Rekognition = <b>photos/video</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Textract extract?<span class="hint">tap</span></div><div class="a">Text, handwriting, forms and tables from documents.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How is Textract more than OCR?<span class="hint">tap</span></div><div class="a">It understands form key-values and table structure.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must pull fields from thousands of scanned invoices into a database. Use?</div>
+      <span class="opt">A) Textract</span><span class="opt">B) Rekognition</span><span class="opt">C) Transcribe</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Textract extracts text + form/table data from documents.</div></div>
+  </article>
+
+  <!-- ===== LESSON 7 ===== -->
+  <article class="card" id="l7">
+    <div class="lesson-head"><div class="num">7</div><div><h2>Amazon Transcribe</h2><div class="sub">Convert speech into text.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Speech → text (ASR)</td><td>Audio in, text out.</td><td>Opposite of Polly.</td></tr>
+      <tr><td>Features</td><td>Speaker ID, custom vocab.</td><td>Transcripts.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>ASR</td><td>Automatic Speech Recognition.</td></tr>
+      <tr><td>Speaker ID</td><td>Tells apart who is speaking.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Transcribe</b> is <b>automatic speech recognition</b>: it turns <b>audio into text</b>.</li>
+      <li>Features: <b>speaker identification</b>, <b>custom vocabulary</b>, channel identification.</li>
+      <li>Use for subtitles, call-centre transcripts, meeting notes. <b>Opposite of Polly.</b></li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — needs audio in S3 + a job</span>Transcribe runs an async job on an audio file in S3; the exam tests "speech → text → Transcribe".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Opposite of Polly (L4); feeds Comprehend (L1) to analyse transcripts.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Voice analytics, captioning.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Transcribe = speech → text</b>; <b>Polly = text → speech</b>.</li>
+      <li>Transcribe + Comprehend = analyse call sentiment from audio.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Transcribe do?<span class="hint">tap</span></div><div class="a">Converts audio (speech) into text.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Transcribe vs Polly?<span class="hint">tap</span></div><div class="a">Transcribe = speech→text; Polly = text→speech.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You need written transcripts of recorded support calls. Use?</div>
+      <span class="opt">A) Polly</span><span class="opt">B) Transcribe</span><span class="opt">C) Lex</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Transcribe converts speech to text.</div></div>
+  </article>
+
+  <!-- ===== LESSON 8 ===== -->
+  <article class="card" id="l8">
+    <div class="lesson-head"><div class="num">8</div><div><h2>Amazon Translate</h2><div class="sub">Translate text between languages.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Machine translation</td><td>Text in one language → another.</td><td>Localization.</td></tr>
+      <tr><td>Neural</td><td>High-quality ML translation.</td><td>Fast + affordable.</td></tr>
+      <tr><td>Auto-detect</td><td>Can detect the source language.</td><td>Convenience.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Source / target language</td><td>From / to language.</td></tr>
+      <tr><td>Neural MT</td><td>ML-based translation.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Translate</b> is a <b>neural machine translation</b> service: convert text from one language to another.</li>
+      <li>It can <b>auto-detect</b> the source language (often paired with Comprehend).</li>
+      <li>Use for localizing content, real-time chat translation, multilingual apps.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (tiny text, free tier)</span><b>Situation:</b> translate a greeting to Spanish. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Translate text EN → ES</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws translate translate-text \
+  --source-language-code en --target-language-code es \
+  --text "Welcome to Animals for Life"</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>TranslatedText: "Bienvenido a Animals for Life"</code> (or similar).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Use <code>auto</code> as the source code to auto-detect. No resources created — nothing to clean up.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Text service with Comprehend (L1); used in multilingual pipelines.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Global, multilingual apps.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Translate text to other languages</b>" → <b>Translate</b>.</li>
+      <li>Comprehend = <b>insights</b>; Translate = <b>language conversion</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Translate do?<span class="hint">tap</span></div><div class="a">Converts text from one language to another (neural MT).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Comprehend vs Translate?<span class="hint">tap</span></div><div class="a">Comprehend finds insights; Translate changes the language.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A website must show content in 10 languages automatically. Use?</div>
+      <span class="opt">A) Translate</span><span class="opt">B) Comprehend</span><span class="opt">C) Polly</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Translate converts text between languages.</div></div>
+  </article>
+
+  <!-- ===== LESSON 9 ===== -->
+  <article class="card" id="l9">
+    <div class="lesson-head"><div class="num">9</div><div><h2>Amazon Forecast</h2><div class="sub">Predict future values from time-series.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Time-series forecasting</td><td>Predict future numbers over time.</td><td>Demand/sales.</td></tr>
+      <tr><td>Uses history + related data</td><td>Past data + extra signals.</td><td>Better accuracy.</td></tr>
+      <tr><td>Fully managed</td><td>No ML expertise needed.</td><td>Easy predictions.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Time-series</td><td>Data points over time (e.g. daily sales).</td></tr>
+      <tr><td>Forecast</td><td>A prediction of future values.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Forecast</b> uses statistical + ML algorithms to make <b>time-series predictions</b>.</li>
+      <li>You feed <b>historical time-series</b> (+ optional related data) and get <b>future forecasts</b>.</li>
+      <li>Use for demand planning, sales/inventory forecasting, capacity planning.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — needs datasets + training</span>Forecast needs imported datasets + a trained predictor (cost + time); the exam tests "time-series prediction → Forecast".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Prediction service alongside Fraud Detector (L10).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Capacity + demand planning.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Predict future demand/sales over time</b>" → <b>Forecast</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Forecast do?<span class="hint">tap</span></div><div class="a">Makes time-series predictions of future values.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What input does it need?<span class="hint">tap</span></div><div class="a">Historical time-series data (+ optional related data).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A retailer wants to predict next quarter's product demand. Use?</div>
+      <span class="opt">A) Forecast</span><span class="opt">B) Comprehend</span><span class="opt">C) Kendra</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Forecast makes time-series predictions.</div></div>
+  </article>
+
+  <!-- ===== LESSON 10 ===== -->
+  <article class="card" id="l10">
+    <div class="lesson-head"><div class="num">10</div><div><h2>Amazon Fraud Detector</h2><div class="sub">Spot fraud and fake accounts.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Fraud detection</td><td>Find risky online activity.</td><td>Payments/sign-ups.</td></tr>
+      <tr><td>Uses your data</td><td>Trains on your history.</td><td>Custom risk.</td></tr>
+      <tr><td>Fully managed</td><td>No ML expertise needed.</td><td>Easy to adopt.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Fraud</td><td>Dishonest activity (fake accounts, bad payments).</td></tr>
+      <tr><td>Risk score</td><td>How likely an event is fraudulent.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Fraud Detector</b> automates detecting <b>potentially fraudulent online activity</b> — fake accounts, risky transactions.</li>
+      <li>It uses <b>your historical data + ML</b> to score the risk of each event.</li>
+      <li>Use for payment fraud, fake-account detection, suspicious sign-ups.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — needs data + a model</span>Fraud Detector needs event data + a trained model (cost + setup); the exam tests "detect online fraud → Fraud Detector".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Prediction/risk service alongside Forecast (L9).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Payment + account-security workflows.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Detect fraudulent transactions / fake accounts</b>" → <b>Fraud Detector</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Fraud Detector do?<span class="hint">tap</span></div><div class="a">Detects potentially fraudulent online activity using ML.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does it train on?<span class="hint">tap</span></div><div class="a">Your historical event data.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An online store wants to flag likely-fraudulent checkouts in real time. Use?</div>
+      <span class="opt">A) Fraud Detector</span><span class="opt">B) GuardDuty</span><span class="opt">C) Forecast</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Fraud Detector scores online activity for fraud (GuardDuty is for AWS account threats).</div></div>
+  </article>
+
+  <!-- ===== LESSON 11 ===== -->
+  <article class="card" id="l11">
+    <div class="lesson-head"><div class="num">11</div><div><h2>Amazon SageMaker</h2><div class="sub">Build, train and deploy your OWN models.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Full ML platform</td><td>Build → train → deploy models.</td><td>Custom ML.</td></tr>
+      <tr><td>For data scientists</td><td>You bring the model/data.</td><td>Not pre-built.</td></tr>
+      <tr><td>Hosted endpoints</td><td>Deploy models for predictions.</td><td>Production serving.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Train</td><td>Teach a model using data.</td></tr>
+      <tr><td>Deploy / endpoint</td><td>Make the model available for predictions.</td></tr>
+      <tr><td>Notebook</td><td>An interactive coding environment.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  DATA[Your data] --> BUILD[Build - notebooks]
+  BUILD --> TRAIN[Train]
+  TRAIN --> DEPLOY[Deploy - hosted endpoint]
+  DEPLOY --> PRED[Predictions]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class TRAIN a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>SageMaker</b> is a fully managed platform to <b>build, train and deploy your own ML models</b>.</li>
+      <li>Unlike the pre-trained services above, <b>you bring the data + model</b>; SageMaker handles notebooks, training, and <b>hosted endpoints</b>.</li>
+      <li><b>Key distinction:</b> pre-built AI services (Comprehend, Rekognition…) solve known problems out of the box; <b>SageMaker</b> is for <b>custom</b> ML.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — cost/complex</span>SageMaker training + endpoints run on billed instances; the exam tests "build/train your OWN model → SageMaker".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>The "DIY" counterpart to all the pre-trained services (L1–L10).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Custom ML solutions.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Build/train/deploy a custom model</b>" → <b>SageMaker</b>.</li>
+      <li>A <b>known task</b> (sentiment, images, speech) → use the matching <b>pre-built</b> service, not SageMaker.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is SageMaker for?<span class="hint">tap</span></div><div class="a">Building, training and deploying your own ML models.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">SageMaker vs the pre-built services?<span class="hint">tap</span></div><div class="a">SageMaker = custom ML; the others = ready-made AI for known tasks.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Data scientists need to train a custom model on proprietary data + host it. Use?</div>
+      <span class="opt">A) Comprehend</span><span class="opt">B) SageMaker</span><span class="opt">C) Forecast</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> SageMaker builds/trains/deploys custom models; the rest are pre-built.</div></div>
+  </article>
+
+  <!-- ===== MOCK EXAM ===== -->
+  <article class="card examcard" id="mock">
+    <div class="lesson-head"><div class="num">★</div><div><h2>Mock Exam</h2><div class="sub">ML service selection + IAM/Orgs + S3 + VPC + EC2 + Containers + Adv EC2 + Network Storage + Route 53 + RDS + HA/Scaling + Serverless + CDN + Adv VPC + Hybrid + Security + CloudFormation + DynamoDB.</div></div></div>
+    <div class="box exam"><span class="tag">How to use</span>Decide first, then tap <b>Show answer</b>. Pick the <b>best</b> option. 20 questions.</div>
+
+    <div class="quiz"><div class="qq">1. Score thousands of reviews as positive/negative. Use?</div>
+      <span class="opt">A) Comprehend</span><span class="opt">B) Translate</span><span class="opt">C) Polly</span><span class="opt">D) Lex</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Comprehend detects sentiment from text.</div></div>
+
+    <div class="quiz"><div class="qq">2. Ask plain-English questions over internal docs in S3, get answers. Use?</div>
+      <span class="opt">A) Kendra</span><span class="opt">B) Athena</span><span class="opt">C) Comprehend</span><span class="opt">D) Macie</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Kendra is intelligent ML search over documents.</div></div>
+
+    <div class="quiz"><div class="qq">3. Build a customer chatbot that understands requests. Use?</div>
+      <span class="opt">A) Lex</span><span class="opt">B) Polly</span><span class="opt">C) Kendra</span><span class="opt">D) Comprehend</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Lex builds conversational interfaces.</div></div>
+
+    <div class="quiz"><div class="qq">4. Read articles aloud to users (audio out). Use?</div>
+      <span class="opt">A) Transcribe</span><span class="opt">B) Polly</span><span class="opt">C) Translate</span><span class="opt">D) Lex</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Polly = text → speech.</div></div>
+
+    <div class="quiz"><div class="qq">5. Auto-flag unsafe uploaded photos + tag objects. Use?</div>
+      <span class="opt">A) Rekognition</span><span class="opt">B) Textract</span><span class="opt">C) Comprehend</span><span class="opt">D) SageMaker</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Rekognition = computer vision on images/video.</div></div>
+
+    <div class="quiz"><div class="qq">6. Extract fields from scanned invoices into a database. Use?</div>
+      <span class="opt">A) Textract</span><span class="opt">B) Rekognition</span><span class="opt">C) Transcribe</span><span class="opt">D) Kendra</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Textract extracts text/forms/tables from documents.</div></div>
+
+    <div class="quiz"><div class="qq">7. Get written transcripts of recorded calls. Use?</div>
+      <span class="opt">A) Polly</span><span class="opt">B) Transcribe</span><span class="opt">C) Lex</span><span class="opt">D) Comprehend</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Transcribe = speech → text.</div></div>
+
+    <div class="quiz"><div class="qq">8. Show website content in 10 languages. Use?</div>
+      <span class="opt">A) Translate</span><span class="opt">B) Comprehend</span><span class="opt">C) Polly</span><span class="opt">D) Kendra</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Translate converts text between languages.</div></div>
+
+    <div class="quiz"><div class="qq">9. Predict next quarter's product demand. Use?</div>
+      <span class="opt">A) Forecast</span><span class="opt">B) Comprehend</span><span class="opt">C) Fraud Detector</span><span class="opt">D) Athena</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Forecast makes time-series predictions.</div></div>
+
+    <div class="quiz"><div class="qq">10. Flag likely-fraudulent checkouts in real time. Use?</div>
+      <span class="opt">A) Fraud Detector</span><span class="opt">B) GuardDuty</span><span class="opt">C) Forecast</span><span class="opt">D) Macie</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Fraud Detector scores online activity (GuardDuty = AWS account threats).</div></div>
+
+    <div class="quiz"><div class="qq">11. Train a custom model on proprietary data + host it. Use?</div>
+      <span class="opt">A) SageMaker</span><span class="opt">B) Comprehend</span><span class="opt">C) Rekognition</span><span class="opt">D) Forecast</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> SageMaker builds/trains/deploys custom models.</div></div>
+
+    <div class="quiz"><div class="qq">12. Polly vs Transcribe — which is speech → text?</div>
+      <span class="opt">A) Polly</span><span class="opt">B) Transcribe</span><span class="opt">C) Both</span><span class="opt">D) Neither</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Transcribe = speech→text; Polly = text→speech.</div></div>
+
+    <div class="quiz"><div class="qq">13. Analyse the sentiment of recorded calls (audio). Best combo?</div>
+      <span class="opt">A) Transcribe + Comprehend</span><span class="opt">B) Polly + Translate</span><span class="opt">C) Lex + Kendra</span><span class="opt">D) Rekognition + Textract</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Transcribe makes text; Comprehend scores sentiment.</div></div>
+
+    <div class="quiz"><div class="qq">14. (Serverless) Glue these AI services to an event with no servers. Use?</div>
+      <span class="opt">A) Lambda</span><span class="opt">B) EC2</span><span class="opt">C) Redshift</span><span class="opt">D) DAX</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Lambda commonly calls AI service APIs in event-driven pipelines.</div></div>
+
+    <div class="quiz"><div class="qq">15. (S3) Where do Rekognition/Textract usually read their input from?</div>
+      <span class="opt">A) S3</span><span class="opt">B) DynamoDB</span><span class="opt">C) EBS</span><span class="opt">D) EFS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Images/documents are typically stored in and read from S3.</div></div>
+
+    <div class="quiz"><div class="qq">16. (Security) Fraud Detector vs GuardDuty — which finds AWS account threats?</div>
+      <span class="opt">A) Fraud Detector</span><span class="opt">B) GuardDuty</span><span class="opt">C) Both</span><span class="opt">D) Neither</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> GuardDuty = AWS threat detection; Fraud Detector = online business fraud.</div></div>
+
+    <div class="quiz"><div class="qq">17. A known task (detect faces) — pre-built or SageMaker?</div>
+      <span class="opt">A) Pre-built (Rekognition)</span><span class="opt">B) SageMaker</span><span class="opt">C) Either, prefer SageMaker</span><span class="opt">D) Neither</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Use the matching pre-built service for known tasks; SageMaker is for custom.</div></div>
+
+    <div class="quiz"><div class="qq">18. (CloudFront) Deliver Polly audio globally with low latency. Add?</div>
+      <span class="opt">A) CloudFront in front of S3</span><span class="opt">B) DAX</span><span class="opt">C) NAT</span><span class="opt">D) Kendra</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Store the audio in S3 and serve via CloudFront for global low latency.</div></div>
+
+    <div class="quiz"><div class="qq">19. Find personal data (PII) inside free-text fields. Use?</div>
+      <span class="opt">A) Comprehend</span><span class="opt">B) Macie</span><span class="opt">C) Translate</span><span class="opt">D) Both A and B can detect PII</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>D.</b> Comprehend detects PII in text; Macie detects PII in S3 objects.</div></div>
+
+    <div class="quiz"><div class="qq">20. Build a voice bot that listens, understands and replies in speech. Combo?</div>
+      <span class="opt">A) Transcribe + Lex + Polly</span><span class="opt">B) Polly + Translate</span><span class="opt">C) Kendra + Comprehend</span><span class="opt">D) Rekognition + Lex</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Transcribe (speech→text), Lex (understand), Polly (speak back).</div></div>
+  </article>
+
+  <div class="foot">
+    <div>
+      <span class="pill">Comprehend = NLP insights</span><span class="pill">Kendra = search answers</span>
+      <span class="pill">Lex = chatbots</span><span class="pill">Polly = text→speech</span>
+      <span class="pill">Transcribe = speech→text</span><span class="pill">Translate = languages</span>
+      <span class="pill">Rekognition = images/video</span><span class="pill">Textract = documents</span>
+      <span class="pill">Forecast = time-series</span><span class="pill">Fraud Detector = online fraud</span>
+      <span class="pill">SageMaker = build your own</span>
+    </div>
+    <p>Section 020 · Machine Learning 101 + Mock Exam · built for SAA-C03 self-study.<br>
+    Tap a flashcard or "Show answer" to reveal. Use ☰ Lessons to jump around.</p>
+  </div>
+</main>
+
+<button class="toTop" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawerBg').classList.add('open');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerBg').classList.remove('open');}
+function cp(btn){
+  const code=btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard?.writeText(code).then(()=>{const t=btn.innerText;btn.innerText='copied!';setTimeout(()=>btn.innerText=t,1200);})
+  .catch(()=>{btn.innerText='select & copy';});
+}
+const tt=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{tt.classList.toggle('show',window.scrollY>500);});
+window.addEventListener('load',()=>{
+  try{
+    mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{
+      fontFamily:'Manrope, sans-serif',primaryColor:'#1b2128',primaryTextColor:'#e7edf3',
+      primaryBorderColor:'#2dd4bf',lineColor:'#60a5fa',secondaryColor:'#212934',tertiaryColor:'#161b21'}});
+  }catch(e){console.warn('mermaid init',e);}
+});
+</script>
+</body>
+</html>

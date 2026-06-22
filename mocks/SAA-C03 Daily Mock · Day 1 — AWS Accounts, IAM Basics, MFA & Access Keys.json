@@ -1,0 +1,357 @@
+{
+  "exam_id": "cantrill-saa-c03-daily",
+  "day": 1,
+  "date": "2026-06-22",
+  "title": "SAA-C03 Daily Mock",
+  "subtitle": "Day 1 — AWS Accounts, IAM Basics, MFA & Access Keys",
+  "topics_covered": [
+    "AWS Account fundamentals",
+    "Root user vs IAM user",
+    "Multi-Factor Authentication (MFA)",
+    "IAM Basics (users, groups, policies, roles)",
+    "IAM Access Keys",
+    "AWS CLI configuration"
+  ],
+  "config": {
+    "seconds_per_question": 120,
+    "pass_percent": 70,
+    "randomize_questions": true,
+    "randomize_options": true
+  },
+  "questions": [
+    {
+      "topic": "AWS Accounts — Basics",
+      "domain": "Secure",
+      "stem": "A company is setting up its first AWS environment. A cloud engineer explains that an AWS account provides a boundary around all resources inside it. Which statement BEST describes what this boundary enforces by default?",
+      "options": [
+        {
+          "text": "Resources inside one AWS account cannot be accessed by identities in a different AWS account unless explicit cross-account permissions are granted.",
+          "correct": true,
+          "why": "Correct — AWS accounts act as hard security and resource containers; cross-account access requires deliberate trust relationships such as resource-based policies or IAM role assumption."
+        },
+        {
+          "text": "Resources inside one AWS account are automatically shared with other accounts owned by the same organisation to reduce duplication.",
+          "correct": false,
+          "why": "Wrong — AWS accounts are isolated by default; resource sharing across accounts requires explicit configuration even within the same AWS Organisation."
+        },
+        {
+          "text": "The account boundary controls billing consolidation but does not restrict access between accounts when the same IAM user exists in both.",
+          "correct": false,
+          "why": "Wrong — IAM users are local to the account in which they are created; the same username in two accounts represents two entirely separate identities with no implicit trust between them."
+        },
+        {
+          "text": "All AWS accounts share a global IAM namespace, so a user created in one account is automatically visible to administrators in every other account.",
+          "correct": false,
+          "why": "Wrong — IAM is scoped to the individual account; there is no global IAM namespace and no automatic visibility of users across account boundaries."
+        }
+      ]
+    },
+    {
+      "topic": "AWS Accounts — Root User",
+      "domain": "Secure",
+      "stem": "A newly created AWS account has only the root user configured. A security consultant reviews this setup and recommends immediate changes. Which action is the MOST important first step the consultant should recommend?",
+      "options": [
+        {
+          "text": "Enable MFA on the root user and create a dedicated IAM admin user for day-to-day tasks.",
+          "correct": true,
+          "why": "Correct — The root user has unrestricted access and cannot be limited by IAM policies; adding MFA protects it from credential compromise, and creating an IAM admin user lets you avoid using root for routine work."
+        },
+        {
+          "text": "Generate access keys for the root user so the CLI can be used securely with the highest privilege level available.",
+          "correct": false,
+          "why": "Wrong — Creating root access keys is actively discouraged by AWS; if those keys were leaked, an attacker would have unrestricted account access with no way to limit permissions via IAM."
+        },
+        {
+          "text": "Create an IAM user for each team member and assign the AdministratorAccess managed policy to all of them.",
+          "correct": false,
+          "why": "Wrong — Granting AdministratorAccess to every team member violates least-privilege; this step is also secondary to securing the root user first."
+        },
+        {
+          "text": "Delete the root user account immediately, as IAM users provide the same capabilities without the security risk.",
+          "correct": false,
+          "why": "Wrong — The root user cannot be deleted; it is permanently associated with the account and is required for certain tasks that only root can perform."
+        }
+      ]
+    },
+    {
+      "topic": "Multi-Factor Authentication (MFA)",
+      "domain": "Secure",
+      "stem": "An administrator has just enabled a virtual MFA device for the AWS account root user. Which statement accurately reflects how MFA changes the root user's authentication process going forward?",
+      "options": [
+        {
+          "text": "The root user must supply an email address and a time-based one-time code in addition to the account password each time they log in.",
+          "correct": false,
+          "why": "Wrong — Root login uses the email address as the username, not as a separate factor; MFA adds a TOTP code as the second factor after the password, not alongside a separately entered email."
+        },
+        {
+          "text": "The root user must provide the account password plus a time-based one-time code generated by the registered MFA device on every console login.",
+          "correct": true,
+          "why": "Correct — After MFA is enabled, AWS requires both the password (something you know) and the current TOTP code from the registered device (something you have) to authenticate to the console."
+        },
+        {
+          "text": "MFA is enforced only when the root user attempts to perform sensitive actions such as deleting the account; regular console access is unaffected.",
+          "correct": false,
+          "why": "Wrong — Once MFA is enabled on the root user, it is required for every console sign-in, not selectively for specific sensitive actions."
+        },
+        {
+          "text": "Enabling MFA on the root user automatically propagates the MFA requirement to all IAM users in the same account.",
+          "correct": false,
+          "why": "Wrong — Root MFA settings apply only to the root user; IAM user MFA must be configured separately, typically enforced via an IAM policy condition."
+        }
+      ]
+    },
+    {
+      "topic": "IAM Basics — Policy Evaluation",
+      "domain": "Secure",
+      "stem": "A developer is added to two IAM groups. Group A has a policy that allows s3:PutObject on a specific bucket. Group B has a policy that denies s3:PutObject on the same bucket. What happens when the developer tries to upload an object to that bucket?",
+      "options": [
+        {
+          "text": "The upload succeeds because the allow from Group A takes precedence over a group-level deny.",
+          "correct": false,
+          "why": "Wrong — IAM policy evaluation does not give priority to allows over denies based on group membership; an explicit deny always overrides an allow regardless of which group or policy it comes from."
+        },
+        {
+          "text": "The upload is denied because an explicit deny in any attached policy overrides any allow.",
+          "correct": true,
+          "why": "Correct — AWS IAM policy evaluation logic: start with implicit deny, evaluate all applicable policies, and an explicit Deny always wins over an explicit Allow — even when they come from different groups."
+        },
+        {
+          "text": "The upload is denied because group-level policies always take precedence over user-level policies.",
+          "correct": false,
+          "why": "Wrong — The outcome here is correct but the reasoning is wrong; the deny wins because of the explicit-deny rule, not because group policies outrank user policies."
+        },
+        {
+          "text": "The result is indeterminate; AWS will prompt the developer to resolve the policy conflict at runtime.",
+          "correct": false,
+          "why": "Wrong — AWS does not prompt users to resolve conflicts; the evaluation rules are deterministic, and an explicit deny always produces an access denied result."
+        }
+      ]
+    },
+    {
+      "topic": "IAM Basics — Users, Groups, Roles",
+      "domain": "Secure",
+      "stem": "A solutions architect is designing access for a new web application running on an EC2 instance that needs to read objects from S3. Which approach follows AWS best practices for granting this access?",
+      "options": [
+        {
+          "text": "Create an IAM user, attach an S3 read policy, generate access keys, and store them in the application's configuration file on the instance.",
+          "correct": false,
+          "why": "Wrong — Hardcoding access keys in a configuration file is a security anti-pattern; if the instance or code repo is compromised, the long-term credentials are exposed with no easy way to limit blast radius."
+        },
+        {
+          "text": "Attach an IAM role with the required S3 read permissions to the EC2 instance profile so the application can obtain temporary credentials automatically.",
+          "correct": true,
+          "why": "Correct — EC2 instance profiles deliver short-lived, automatically rotated credentials via the instance metadata service; this avoids storing long-term credentials and is the recommended practice."
+        },
+        {
+          "text": "Use the root user's access keys temporarily until a more permanent solution is designed, to unblock development quickly.",
+          "correct": false,
+          "why": "Wrong — Root access keys grant unrestricted account access; using them in any application is a critical security risk and violates fundamental AWS best practices."
+        },
+        {
+          "text": "Create an IAM group named EC2-S3-Readers, add the S3 read policy to the group, and make the EC2 instance a member of that group.",
+          "correct": false,
+          "why": "Wrong — IAM groups can only contain IAM users, not AWS services or resources such as EC2 instances; service-to-service access must use IAM roles."
+        }
+      ]
+    },
+    {
+      "topic": "IAM Basics — Roles vs Users",
+      "domain": "Secure",
+      "stem": "A company has 500 employees who all need read-only access to a specific set of S3 buckets. A junior engineer proposes creating one IAM user per employee and attaching the S3 policy to each user individually. What is the BEST counter-proposal?",
+      "options": [
+        {
+          "text": "Create a single IAM user with the S3 policy and share the credentials with all 500 employees to minimise administrative overhead.",
+          "correct": false,
+          "why": "Wrong — Sharing credentials eliminates individual accountability, makes auditing impossible, and means revoking access for one person requires resetting credentials for everyone."
+        },
+        {
+          "text": "Create one IAM group, attach the S3 read policy to the group, and add all 500 IAM users to that group.",
+          "correct": true,
+          "why": "Correct — IAM groups let you manage permissions centrally; attach the policy once to the group and changes apply immediately to all members, which is far more maintainable than per-user policy attachment."
+        },
+        {
+          "text": "Create 500 IAM roles with the S3 policy, one per employee, so that permissions can be revoked individually without affecting others.",
+          "correct": false,
+          "why": "Wrong — Roles are intended for temporary assumption by services or federated identities, not as a substitute for IAM users; creating 500 individual roles duplicates the same administrative problem the engineer raised."
+        },
+        {
+          "text": "Use AWS Organizations to create a separate account per employee and attach the S3 policy at the account level via a Service Control Policy.",
+          "correct": false,
+          "why": "Wrong — Creating individual accounts per employee is operationally unmanageable and entirely disproportionate to granting S3 read access within a single account."
+        }
+      ]
+    },
+    {
+      "topic": "IAM Access Keys",
+      "domain": "Secure",
+      "stem": "A developer accidentally commits an IAM access key and secret to a public GitHub repository. They delete the commit immediately. What is the CORRECT remediation sequence?",
+      "options": [
+        {
+          "text": "Rotate the access key by generating a new one, update all applications using the old key, and then delete the old key.",
+          "correct": false,
+          "why": "Wrong — This approach leaves the compromised key active during the rotation window; a key that has been publicly exposed should be deactivated or deleted immediately, not merely rotated out gradually."
+        },
+        {
+          "text": "Delete the exposed access key immediately, then generate a new key and update all applications that were using it.",
+          "correct": true,
+          "why": "Correct — Deleting the key right away stops any ongoing unauthorised use; only then should a replacement be issued and distributed. Deleting a commit does not remove the key from Git history or mirrors."
+        },
+        {
+          "text": "Change the IAM user's console password to invalidate any sessions that may have been started using the exposed credentials.",
+          "correct": false,
+          "why": "Wrong — Console passwords and access keys are entirely separate credential types; changing the password has no effect on the compromised access key or any API sessions already established with it."
+        },
+        {
+          "text": "Enable MFA on the IAM user account so that the exposed access key can no longer be used without a one-time code.",
+          "correct": false,
+          "why": "Wrong — Access keys are used for programmatic API calls, which are not protected by console MFA; an attacker can continue using the access key via the CLI or SDK regardless of whether MFA is enabled."
+        }
+      ]
+    },
+    {
+      "topic": "IAM Access Keys",
+      "domain": "Secure",
+      "stem": "An IAM user currently has two active access keys. A security policy requires that long-term credentials are rotated every 90 days. The engineer wants to rotate Key 1 without causing downtime. What is the correct procedure?",
+      "options": [
+        {
+          "text": "Delete Key 1, generate a new access key, update all applications immediately, then verify functionality.",
+          "correct": false,
+          "why": "Wrong — Deleting Key 1 before the replacement is deployed will cause downtime for any applications still using it; the safer approach uses both key slots to perform a zero-downtime rotation."
+        },
+        {
+          "text": "Deactivate Key 1, create Key 2, migrate applications to Key 2 and confirm success, then delete Key 1.",
+          "correct": true,
+          "why": "Correct — AWS allows two access keys per user specifically to enable zero-downtime rotation; deactivating (not deleting) Key 1 first lets you quickly reactivate it if migration fails, then delete it once Key 2 is confirmed."
+        },
+        {
+          "text": "Generate Key 2 while Key 1 is still active, migrate all applications to Key 2, then delete Key 1 once confirmed.",
+          "correct": false,
+          "why": "Wrong — This technically works but leaves Key 1 active and usable during the full migration window, which is riskier than deactivating it first; the option is also subtly inferior because it skips the safety step."
+        },
+        {
+          "text": "Request an exception to the 90-day policy because IAM does not support access key rotation without a service interruption.",
+          "correct": false,
+          "why": "Wrong — IAM explicitly supports zero-downtime key rotation by allowing two simultaneous keys per user; no interruption is necessary if the rotation process is followed correctly."
+        }
+      ]
+    },
+    {
+      "topic": "IAM Basics — Policy Types",
+      "domain": "Secure",
+      "stem": "A company wants to ensure a specific IAM user named 'deployment-bot' always has permission to call sts:AssumeRole regardless of what permission boundaries or group policies are later added. Which IAM construct directly controls what this user is allowed to do?",
+      "options": [
+        {
+          "text": "Attach an inline policy directly to the 'deployment-bot' user granting sts:AssumeRole.",
+          "correct": true,
+          "why": "Correct — An inline policy is embedded directly in the identity and moves with it; for a single user's non-reusable permission, an inline policy makes the intent explicit and ties the permission firmly to that user."
+        },
+        {
+          "text": "Add 'deployment-bot' to an IAM group that has a managed policy granting sts:AssumeRole.",
+          "correct": false,
+          "why": "Wrong — Group membership can be changed by any administrator later, meaning the permission is not firmly locked to the user; the question specifically asks about directly controlling what this user is allowed to do."
+        },
+        {
+          "text": "Create a service control policy (SCP) that allows sts:AssumeRole and attach it to the AWS account root.",
+          "correct": false,
+          "why": "Wrong — SCPs are an AWS Organizations feature that sets maximum permission boundaries for accounts; they do not grant permissions and are not appropriate for targeting a single IAM user within an account."
+        },
+        {
+          "text": "Set a permissions boundary on 'deployment-bot' that includes sts:AssumeRole as an allowed action.",
+          "correct": false,
+          "why": "Wrong — A permissions boundary restricts the maximum permissions an identity can have; it does not grant permissions on its own, so it cannot be the sole mechanism to ensure the user can call sts:AssumeRole."
+        }
+      ]
+    },
+    {
+      "topic": "AWS CLI & Access Keys",
+      "domain": "Operations/IaC",
+      "stem": "A developer configures the AWS CLI using 'aws configure' and provides an access key, secret, default region, and output format. Where does the CLI store these credentials and configuration values by default?",
+      "options": [
+        {
+          "text": "Credentials are written to ~/.aws/credentials and configuration values are written to ~/.aws/config on the local machine.",
+          "correct": true,
+          "why": "Correct — 'aws configure' stores the access key ID and secret access key in the credentials file and stores region/output preferences in the config file, both under the user's home directory."
+        },
+        {
+          "text": "Everything is stored in a single encrypted file at /etc/aws/credentials that requires root privileges to read.",
+          "correct": false,
+          "why": "Wrong — The AWS CLI stores credentials in the user's home directory (~/.aws/), not in a system-wide location like /etc; no encryption is applied by default, which is why protecting these files with OS-level permissions is important."
+        },
+        {
+          "text": "The CLI stores all values in environment variables that persist across terminal sessions until the user logs out.",
+          "correct": false,
+          "why": "Wrong — 'aws configure' writes to files, not environment variables; environment variable overrides (AWS_ACCESS_KEY_ID etc.) are a separate mechanism and do not persist across sessions unless explicitly set in a shell profile."
+        },
+        {
+          "text": "Credentials are uploaded to AWS IAM and retrieved at runtime so they never need to be stored on the local filesystem.",
+          "correct": false,
+          "why": "Wrong — The CLI reads credentials from local storage (files, environment variables, or instance metadata); it does not retrieve them from IAM at runtime in this way."
+        }
+      ]
+    },
+    {
+      "topic": "IAM Basics — Multi-answer",
+      "domain": "Secure",
+      "stem": "A security team is reviewing IAM best practices for a new AWS environment. Which TWO of the following are AWS-recommended practices for securing IAM in a new account? (Select TWO.)",
+      "options": [
+        {
+          "text": "Enable MFA on the root user account and avoid using root for everyday tasks.",
+          "correct": true,
+          "why": "Correct — Protecting root with MFA and reserving it for break-glass scenarios is one of the first and most critical recommendations AWS makes for any new account."
+        },
+        {
+          "text": "Create individual IAM users for humans and assign permissions through IAM groups rather than attaching policies directly to each user.",
+          "correct": true,
+          "why": "Correct — Using IAM groups for permission management provides scalability, consistency, and easier auditing compared to per-user policy attachment."
+        },
+        {
+          "text": "Generate an access key pair for the root user so administrators can manage the account programmatically without logging into the console.",
+          "correct": false,
+          "why": "Wrong — AWS explicitly recommends not creating root access keys; if leaked they provide unrestricted account access. Use an IAM admin user with programmatic access instead."
+        },
+        {
+          "text": "Share a single set of IAM admin credentials among the operations team to reduce the number of IAM users that need to be managed.",
+          "correct": false,
+          "why": "Wrong — Sharing credentials eliminates individual accountability and makes auditing and access revocation impossible; each person should have their own IAM identity."
+        },
+        {
+          "text": "Grant every new IAM user the AdministratorAccess managed policy by default and restrict it later once their role is confirmed.",
+          "correct": false,
+          "why": "Wrong — This violates the principle of least privilege; permissions should start minimal and be expanded only as needed, never the other way around."
+        }
+      ]
+    },
+    {
+      "topic": "IAM Access Keys — Multi-answer",
+      "domain": "Secure",
+      "stem": "A team is auditing IAM access key usage across their AWS account. They want to identify and reduce risk from long-term credentials. Which TWO actions BEST reduce the risk associated with IAM access keys? (Select TWO.)",
+      "options": [
+        {
+          "text": "Use IAM roles with temporary credentials for workloads running on AWS services like EC2 and Lambda instead of embedding access keys.",
+          "correct": true,
+          "why": "Correct — Temporary credentials issued via roles expire automatically and are not stored statically in code or config files, dramatically reducing the blast radius of a credential compromise."
+        },
+        {
+          "text": "Rotate access keys regularly and deactivate or delete keys that have not been used within the last 90 days.",
+          "correct": true,
+          "why": "Correct — Regular rotation limits how long a compromised key is valid, and removing unused keys reduces the attack surface; AWS IAM Access Advisor and credential reports help identify stale keys."
+        },
+        {
+          "text": "Store access keys in the application's source code and rely on the repository's private visibility setting to prevent unauthorised access.",
+          "correct": false,
+          "why": "Wrong — Hardcoding credentials in source code is a high-risk practice; repository visibility can change, code can be forked, and history can be scanned even after the key is removed from the latest commit."
+        },
+        {
+          "text": "Create a separate IAM user with the same permissions as root to use instead, eliminating the need for multiple access key pairs.",
+          "correct": false,
+          "why": "Wrong — An IAM user with equivalent-to-root permissions is nearly as dangerous as the root user itself and does not address the fundamental risk of long-term credentials."
+        },
+        {
+          "text": "Enable console password login for all IAM users that currently have access keys so the keys become a secondary authentication factor.",
+          "correct": false,
+          "why": "Wrong — Console passwords and access keys are independent credential types; enabling a console password does not change how access keys work or reduce their risk in any way."
+        }
+      ]
+    }
+  ]
+}

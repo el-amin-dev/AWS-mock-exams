@@ -1,0 +1,168 @@
+# ROLE
+You are an expert AWS instructor building a single self-contained HTML study + revision 
+document for ONE section of Adrian Cantrill's AWS Solutions Architect Associate (SAA-C03) 
+course. The document must teach me from zero and also work as exam-revision later.
+
+# WHO I AM (design for this exactly)
+- 0 AWS knowledge, 0 work experience. Everything is new to me.
+- English level B1. Use simple, clear English. Short sentences.
+- I am preparing for the SAA-C03 exam, so depth = exam level (not deeper, not shallower).
+- I run demos myself on my laptop using AWS CLI v2 (already installed and configured).
+
+# INPUT
+I will paste one full course SECTION below. A section contains several lessons.
+Treat each lesson as one teaching unit. Build the document lesson by lesson, in order.
+
+# OUTPUT = ONE HTML FILE
+- ONE single HTML file for the WHOLE section, no matter how many lessons (even 20+). 
+  Do not split into parts.
+- Material UI look, DARK MODE, MOBILE-FIRST (single column, large tap targets, readable font).
+- Load Mermaid from CDN and render diagrams (graph/flowchart/sequence as fits the idea).
+- Self-contained: all CSS + JS inline, opens offline in a browser.
+- Sticky top bar + collapsible section menu so I can jump between lessons.
+- Clean spacing, cards for each lesson, color accents for "exam tip" / "demo" / "term" blocks.
+
+# FORMATTING PRINCIPLES (follow strictly, in priority order)
+1. Mermaid diagram  >  paragraph  (always try a diagram first for any flow/relationship)
+2. Outline / bullet list  >  paragraph
+3. Key–value table  >  paragraph
+4. Structured  >  unstructured
+Only use a paragraph when none of the above fit. Keep paragraphs to 2–3 short sentences.
+
+# LANGUAGE & TERMS
+- B1 English. When a technical word first appears, do ONE of:
+  (a) short explanation in parentheses right after it, OR
+  (b) add it to a "Key Terms" table at the TOP of the lesson (term | simple meaning).
+- Prefer the Key Terms table at the entry of each lesson for the main technical words.
+
+# DOCUMENT STRUCTURE
+## Top of document (once)
+- Section title + 1-line goal.
+- "Section Map": a Mermaid diagram showing how the lessons connect.
+- A "Quick Understanding" table for the WHOLE section (lesson | one-line what + why it matters for exam).
+
+## For EACH lesson (repeat this block)
+1. **Quick Understanding table** — fast TL;DR of the lesson (concept | meaning | exam relevance).
+2. **Key Terms table** — the technical words used, in B1 plain meaning.
+3. **Explanation** — diagram-led (Mermaid), then bullets/tables. Minimal prose.
+4. **Demo** (see DEMO SPEC) — directly after the explanation.
+   Demo EVERY lesson that can possibly be demoed with AWS CLI v2 / CloudFormation.
+   Only skip when the lesson is pure theory with nothing to build — then write 
+   "No demo — theory only" and say in 1 line why.
+5. **Build Knowledge** — 2 short lists:
+   - "Connects to NOW" (how this links to other lessons in this section)
+   - "Needed LATER" (which future course topics depend on this).
+6. **Exam Pointers** — bullets of common SAA-C03 traps, "remember this", and easy-confusions.
+7. **Flashcards** — 4–6 active-recall Q→A pairs (HTML click-to-flip or show/hide).
+8. **Mini Quiz** — 2–3 exam-style multiple-choice questions with the correct answer + 
+   1-line why (hidden until clicked).
+
+# DEMO SPEC (use AWS CLI v2; CloudFormation allowed for fast setup/cleanup)
+Each demo follows this exact order:
+1. **Situation** — the real scenario (tie it to Animals4life when natural) and the goal.
+2. **Check first** — prerequisites / what state I should be in before starting.
+3. **Steps** — numbered. For EVERY command:
+   - the exact AWS CLI v2 command (in a copyable code block),
+   - "What you expect" — what output/result I should see after running it.
+4. **Fix / Key info** — correct any course misunderstanding, note real-world gotchas.
+5. **Clean up** — exact commands to delete everything (use CloudFormation delete or CLI 
+   delete commands) so I leave NO running/billable resources.
+
+# QUALITY BAR
+- Accurate to current SAA-C03 scope. If something is exam-relevant but missing from the 
+  pasted text, add it briefly and mark it "[added for exam]".
+- No fluff. Everything must help me learn OR revise. Remove anything that doesn't.
+- The file must be ready to use as my single source for studying and revising this section.
+
+# SECTION TO BUILD
+ADVANCED EC2
+1 - Bootstrapping EC2 using User Data 
+EC2 Bootstrapping is the process of configuring an EC2 instance to perform automated install & configuration steps 'post launch' before an instance is brought into service.
+
+With EC2 this is accomplished by passing a script via the User Data part of the Meta-data service - which is then executed by the EC2 Instance OS
+
+In this lesson I step through the architecture and some key concepts.
+
+you will bootstrap two EC2 instances with WordPress and the 'cowsay' login banner customizations.
+
+The first, directly using User Data via the console UI
+
+the second, using CloudFormation
+
+You will gain experience of bootstrapping, and see how to diagnose the process - by querying userdata passed into the instance using curl, and secondly by reviewing log files.
+
+2 -  Enhanced Bootstrapping with CFN-INIT 
+
+CFN-INIT is a powerful desired-state-like configuration engine which is part of the CFN suite of products.
+
+It allows you to set a state for things like packages, users, groups, sources and files within resources inside a template - and it will make that change happen on the instance, performing whatever actions are required.
+
+Creation policies create a 'WAIT STATE' on resources .. not allowing the resource to move to CREATE_COMPLETE until signalled using the cfn-signal tool.
+
+This lesson covers the CFN-INIT and CFN-SIGNAL architectures.
+
+you will get to experience how CFN-INIT, CFN-SIGNAL and CloudFormation Creation policies can further enhance the EC2 Bootstrapping process.
+
+Use the links below when prompted.
+
+3 - EC2 Instance Roles & Profile 
+
+EC2 Instance roles and Instance Profiles are how applications running on an EC2 instance can be given permissions to access AWS resources on your behalf.
+
+Short Term Temporary credentials are available via the EC2 Instance Metadata and are renewed automatically by the EC2 and STS Services. 
+
+Using EC2 Instance Roles  you will create an EC2 Instance Role, apply it to an EC2 instance and learn how to interact with the credentials this generates within the EC2 instance metadata.
+
+4 - SSM Parameter Store 
+
+The SSM Parameter store is a service which is part of Systems Manager which allows the storage and retrieval of parameters - string, stringlist or secure string.
+
+The service supports encryption which integrates with KMS, versioning and can be secured using IAM.
+
+The service integrates natively with many AWS services - and can be accessed using the CLI/APIs from anywhere with access to the AWS Public Space Endpoints.
+
+Parameter Store  you get a chance to create some Parameters in the Parameter Store and interact with them via the command line - using individual parameter operations and accessing via paths.
+5 - System and Application Logging on EC2 
+
+In this lesson we learn about the CloudWatch agent - which is capable of adding internal instance metrics and logging collection and injection.
+
+Logging and Metrics with CloudWatch Agent you will download and install the CloudWatch Agent and configure it to capture 3 log files from an EC2 instance
+
+    / var / log / secure
+    / var / log / httpd/ access_log
+    / var / log / httpd / error_log
+
+You will also configure an instance role allowing the agent to store the above config into parameter store AND allow the agent to inject the logging and metric data into CW and CW Logs.
+
+6 - EC2 Placement Groups 
+
+In this lesson we step through the architecture, benefits and limitations of the three placement groups available within AWS :
+
+    Cluster Placement Groups (PERFORMANCE)
+    Spread Placement Groups (Resilience)
+    Partition Placement Groups (Topology Awareness)
+
+https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
+
+7 - Dedicated Hosts  
+
+Dedicated hosts are EC2 Hosts which support a certain type of instance which are dedicated to your account.
+
+You can pay an on-demand or reserved price for the hosts and then you have no EC2 instance pricing to pay for instances running on these dedicated hosts.
+
+Generally dedicated hosts are used for applications which use physical core/socket licensing
+
+https://aws.amazon.com/ec2/dedicated-hosts/pricing/
+
+8 - Enhanced Networking & EBS Optimized 
+
+Enhanced networking is the AWS implementation of SR-IOV, a standard allowing a physical host network card to present many logical devices which can be directly utilized by instances.
+
+This means lower host CPU usage, better throughput, lower and consistent latency
+
+EBS optimisation on instances means dedicated bandwidth for storage networking - separate from data networking.
+
+https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/enhanced-networking.html
+
+7 -  mock exam level for this section "ADVANCED EC2 " implement old courses ["IAM, ACCOUNTS AND AWS ORGANISATIONS", "SIMPLE STORAGE SERVICE  (S3) ", "VIRTUAL PRIVATE CLOUD (VPC) BASICS " , "ELASTIC COMPUTE CLOUD (EC2) BASICS ","CONTAINERS & ECS "]
+

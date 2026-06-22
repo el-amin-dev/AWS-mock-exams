@@ -1,0 +1,331 @@
+# ROLE
+You are an expert AWS instructor building a single self-contained HTML study + revision 
+document for ONE section of Adrian Cantrill's AWS Solutions Architect Associate (SAA-C03) 
+course. The document must teach me from zero and also work as exam-revision later.
+
+# WHO I AM (design for this exactly)
+- 0 AWS knowledge, 0 work experience. Everything is new to me.
+- English level B1. Use simple, clear English. Short sentences.
+- I am preparing for the SAA-C03 exam, so depth = exam level (not deeper, not shallower).
+- I run demos myself on my laptop using AWS CLI v2 (already installed and configured).
+
+# INPUT
+I will paste one full course SECTION below. A section contains several lessons.
+Treat each lesson as one teaching unit. Build the document lesson by lesson, in order.
+
+# OUTPUT = ONE HTML FILE
+- ONE single HTML file for the WHOLE section, no matter how many lessons (even 20+). 
+  Do not split into parts.
+- Material UI look, DARK MODE, MOBILE-FIRST (single column, large tap targets, readable font).
+- Load Mermaid from CDN and render diagrams (graph/flowchart/sequence as fits the idea).
+- Self-contained: all CSS + JS inline, opens offline in a browser.
+- Sticky top bar + collapsible section menu so I can jump between lessons.
+- Clean spacing, cards for each lesson, color accents for "exam tip" / "demo" / "term" blocks.
+
+# FORMATTING PRINCIPLES (follow strictly, in priority order)
+1. Mermaid diagram  >  paragraph  (always try a diagram first for any flow/relationship)
+2. Outline / bullet list  >  paragraph
+3. Key–value table  >  paragraph
+4. Structured  >  unstructured
+Only use a paragraph when none of the above fit. Keep paragraphs to 2–3 short sentences.
+
+# LANGUAGE & TERMS
+- B1 English. When a technical word first appears, do ONE of:
+  (a) short explanation in parentheses right after it, OR
+  (b) add it to a "Key Terms" table at the TOP of the lesson (term | simple meaning).
+- Prefer the Key Terms table at the entry of each lesson for the main technical words.
+
+# DOCUMENT STRUCTURE
+## Top of document (once)
+- Section title + 1-line goal.
+- "Section Map": a Mermaid diagram showing how the lessons connect.
+- A "Quick Understanding" table for the WHOLE section (lesson | one-line what + why it matters for exam).
+
+## For EACH lesson (repeat this block)
+1. **Quick Understanding table** — fast TL;DR of the lesson (concept | meaning | exam relevance).
+2. **Key Terms table** — the technical words used, in B1 plain meaning.
+3. **Explanation** — diagram-led (Mermaid), then bullets/tables. Minimal prose.
+4. **Demo** (see DEMO SPEC) — directly after the explanation.
+   Demo EVERY lesson that can possibly be demoed with AWS CLI v2 / CloudFormation.
+   Only skip when the lesson is pure theory with nothing to build — then write 
+   "No demo — theory only" and say in 1 line why.
+5. **Build Knowledge** — 2 short lists:
+   - "Connects to NOW" (how this links to other lessons in this section)
+   - "Needed LATER" (which future course topics depend on this).
+6. **Exam Pointers** — bullets of common SAA-C03 traps, "remember this", and easy-confusions.
+7. **Flashcards** — 4–6 active-recall Q→A pairs (HTML click-to-flip or show/hide).
+8. **Mini Quiz** — 2–3 exam-style multiple-choice questions with the correct answer + 
+   1-line why (hidden until clicked).
+
+# DEMO SPEC (use AWS CLI v2; CloudFormation allowed for fast setup/cleanup)
+Each demo follows this exact order:
+1. **Situation** — the real scenario (tie it to Animals4life when natural) and the goal.
+2. **Check first** — prerequisites / what state I should be in before starting.
+3. **Steps** — numbered. For EVERY command:
+   - the exact AWS CLI v2 command (in a copyable code block),
+   - "What you expect" — what output/result I should see after running it.
+4. **Fix / Key info** — correct any course misunderstanding, note real-world gotchas.
+5. **Clean up** — exact commands to delete everything (use CloudFormation delete or CLI 
+   delete commands) so I leave NO running/billable resources.
+
+# QUALITY BAR
+- Accurate to current SAA-C03 scope. If something is exam-relevant but missing from the 
+  pasted text, add it briefly and mark it "[added for exam]".
+- No fluff. Everything must help me learn OR revise. Remove anything that doesn't.
+- The file must be ready to use as my single source for studying and revising this section.
+
+# SECTION TO BUILD
+ELASTIC COMPUTE CLOUD (EC2) BASICS
+1 - Virtualization 101 
+In this lesson, I discussion a few different historical methods of performing virtualisation
+
+    Emulated Virtualization
+    Paravirtualization
+    Hardware Assisted Virtualization
+    SR-IOV
+
+# Lesson Links
+
+http://www.brendangregg.com/blog/2017-11-29/aws-ec2-virtualization-2017.html
+
+2 - EC2 Architecture and Resilience 
+
+This lesson reviews the architecture of EC2
+
+Looking specifically at EC2 Hosts, how they are physically architected, why they are AZ resilient, and how the resilience of the Elastic Block Store (EBS) factors into our decisions as Solutions Architects.
+
+3 - EC2 Instance Types
+
+In this lesson I step through the considerations required when a Solutions Architect is picking EC2 instances for a given workload.
+
+I explain EC2 instance Categories, talk about how to decode the instance type names (family, generation, features & size)
+
+and I provide some hints and tips on remembering the Instance type differences.
+
+https://aws.amazon.com/ec2/instance-types/
+
+https://ec2instances.info/
+
+In this lesson I step through the considerations required when a Solutions Architect is picking EC2 instances for a given workload.
+
+I explain EC2 instance Categories, talk about how to decode the instance type names (family, generation, features & size)
+
+and I provide some hints and tips on remembering the Instance type differences.
+
+https://aws.amazon.com/ec2/instance-types/
+
+https://ec2instances.info/
+
+Amazon EC2 Instance Connect provides a simple and secure way to connect to your Linux instances using Secure Shell (SSH). With EC2 Instance Connect, you use AWS Identity and Access Management (IAM) policies and principals to control SSH access to your instances, removing the need to share and manage SSH keys.
+
+4 - Storage Refresher 
+
+In this lesson I provide a quick refresher on a few key storage related facts, including:-
+
+
+    Block storage
+    File storage
+    Object Storage
+    IO Block Size
+    IOPS
+    Throughput
+
+
+
+5 - Elastic Block Store (EBS) Service Architecture 
+
+Amazon Elastic Block Store (Amazon EBS) provides block level storage volumes for use with EC2 instances. EBS volumes behave like raw, unformatted block devices. You can mount these volumes as devices on your instances. EBS volumes that are attached to an instance are exposed as storage volumes that persist independently from the life of the instance. You can create a file system on top of these volumes, or use them in any way you would use a block device (such as a hard drive).
+
+6 - EBS Volume Types - General Purpose 
+
+EBS Provides a number of different volume types, this lesson will be covering :-
+
+General Purpose SSD — Provides a balance of price and performance. We recommend these volumes for most workloads.
+
+7 - EBS Volume Types - Provisioned IOPS 
+
+EBS Provides a number of different volume types, this lesson will be covering :-
+
+Provisioned IOPS SSD — Provides high performance for mission-critical, low-latency, or high-throughput workloads.
+
+8 - EBS Volume Types - HDD-Based 
+
+EBS Provides a number of different volume types, this lesson will be covering :-
+
+    Throughput Optimized HDD — A low-cost HDD designed for frequently accessed, throughput-intensive workloads.
+    Cold HDD — The lowest-cost HDD design for less frequently accessed workloads.
+
+9 - Instance Store Volumes - Architecture 
+
+An instance store provides temporary block-level storage for your instance. This storage is located on disks that are physically attached to the host computer. Instance store is ideal for temporary storage of information that changes frequently, such as buffers, caches, scratch data, and other temporary content, or for data that is replicated across a fleet of instances, such as a load-balanced pool of web servers.
+
+An instance store consists of one or more instance store volumes exposed as block devices. The size of an instance store as well as the number of devices available varies by instance type.
+
+The virtual devices for instance store volumes are ephemeral[0-23]. Instance types that support one instance store volume have ephemeral0. Instance types that support two instance store volumes have ephemeral0 and ephemeral1, and so on.
+
+10 - Choosing between the EC2 Instance Store and EBS 
+
+In this exam focused lesson I provide some suggestions on when to pick EBS over EC2 Instance Store and vice-versa.
+
+Exam questions regularly test the ability to pick between the two so understanding the criteria is important to do well
+
+https://aws.amazon.com/ec2/instance-types/
+
+11 - Snapshots, Restore & Fast Snapshot Restore (FSR) 
+
+EBS Snapshots are backups of data consumed within EBS Volumes - Stored on S3.
+
+Snapshots are incremental, the first being a full backup - and any future snapshots being incremental.
+
+Snapshots can be used to migrate data to different availability zones in a region, or to different regions of AWS.
+
+This lesson steps through the theory and architecture of EBS Snapshots.
+
+you get a chance to interact with EBS, Instance Store Volumes and EC2
+
+    Create an EBS Volume
+    Mount it to an EC2 instance
+    Create and Mount a file system
+    Generate a test file
+    Migrate the volume to another EC2 instance in the same AZ
+    verify the file system and file are intact
+    Create a EBS Snapshot from the volume
+    Create a new EBS Volume in AZ-B
+    Verify the filesystem and file are intact
+    Copy the snapshot to another region
+    Create an EC2 instance with instance store volumes
+    Create a filesystem and test file
+    Restart instance and verify the file system is intact
+    Stop and Start the instance
+    Verify the file system is no longer present - new EC2 Host.
+
+ you get a chance to interact with EBS, Instance Store Volumes and EC2
+
+    Create an EBS Volume
+    Mount it to an EC2 instance
+    Create and Mount a file system
+    Generate a test file
+    Migrate the volume to another EC2 instance in the same AZ
+    verify the file system and file are intact
+    Create a EBS Snapshot from the volume
+    Create a new EBS Volume in AZ-B
+    Verify the filesystem and file are intact
+    Copy the snapshot to another region
+    Create an EC2 instance with instance store volumes
+    Create a filesystem and test file
+    Restart instance and verify the file system is intact
+    Stop and Start the instance
+    Verify the file system is no longer present - new EC2 Host.
+
+you get a chance to interact with EBS, Instance Store Volumes and EC2
+
+    Create an EBS Volume
+    Mount it to an EC2 instance
+    Create and Mount a file system
+1    Generate a test file
+    Migrate the volume to another EC2 instance in the same AZ
+    verify the file system and file are intact
+    Create a EBS Snapshot from the volume
+    Create a new EBS Volume in AZ-B
+    Verify the filesystem and file are intact
+    Copy the snapshot to another region
+    Create an EC2 instance with instance store volumes
+    Create a filesystem and test file
+    Restart instance and verify the file system is intact
+    Stop and Start the instance
+    Verify the file system is no longer present - new EC2 Host.
+
+12 - EBS Encryption 
+
+In this lesson I talk about EBS Volume encryption. We look at the architecture, the flow of the encryption process and security of the data encryption keys.
+
+13 - Network Interfaces, Instance IPs and DNS 
+
+In this lesson we deep dive into the Elastic Network Interfaces (ENIs) which can be allocated to EC2 instances - and the DNS, public, private and elastic IPs which can be assigned to those ENIs.
+
+you will install wordpress on an EC2 instance.
+
+To appreciate the automation and efficiency which can be achieved within AWS you first need to experience the process manually.
+
+We will use EC2, install MariaDB, Apache & libraries and then download and install wordpress.
+
+
+you will install wordpress on an EC2 instance.
+
+To appreciate the automation and efficiency which can be achieved within AWS you first need to experience the process manually.
+
+We will use EC2, install MariaDB, Apache & libraries and then download and install wordpress.
+
+14 - Amazon Machine Images (AMI) 
+
+Amazon Machine Images (AMI) 's are the images which can create EC2 instances of a certain configuration.
+
+In addition to using AMI's to launch instances, you can customize an EC2 instance to your bespoke business requirements and then generate a template AMI which can be used to create any number of customized EC2 instances.
+
+This lesson steps through the architecture and flow of using and creating AMIs
+
+after recovering from the announcement that you will AGAIN have to install wordpress manually on EC2 .. you create a customized EC2 instance which has wordpress installed and configured right up to the 'create site' stage.
+
+Additionally you improve the EC2 login screen by replacing the usual banned, with one provided by `cowsay` (It's animal themed !!)
+
+Once the EC2 instance is ready - you will create an AMI from the customized source instance and use this to deploy a custom EC2 instance from this AMI.
+
+Its a simple example - but mirrors real world usage of AMI Baking.
+
+after recovering from the announcement that you will AGAIN have to install wordpress manually on EC2 .. you create a customized EC2 instance which has wordpress installed and configured right up to the 'create site' stage.
+
+Additionally you improve the EC2 login screen by replacing the usual banned, with one provided by cowsay (It's animal themed !!)
+
+Once the EC2 instance is ready - you will create an AMI from the customized source instance and use this to deploy a custom EC2 instance from this AMI.
+
+Its a simple example - but mirrors real world usage of AMI Baking.
+
+Copying & Sharing an AMI 
+
+This lesson steps through the main points of copying an AMI between regions, details some encryption considerations and steps through the permissions model when looking at public, private and shared AMIs
+
+https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/sharing-amis.html
+
+15 - Purchase Options
+
+lesson steps through a number of different EC2 purchase options, explaining their mechanics and the type of situations they should be used in
+
+    On-Demand
+    Spot
+    Reserved
+    Dedicated Instance
+    Dedicated host
+
+16 -  Reserved Instances - the rest 
+
+This lesson looks at Scheduled Reserved Instances, the differences between zonal and regional reservations and on-demand capacity Reservations.
+
+Each of these are essential cost control and capacity control features you need to understand at the pro level.
+
+17 - Instance Status Checks & Auto Recovery 
+With instance status monitoring, you can quickly determine whether Amazon EC2 has detected any problems that might prevent your instances from running applications. Amazon EC2 performs automated checks on every running EC2 instance to identify hardware and software issues. You can view the results of these status checks to identify specific and detectable problems.
+
+You can create an Amazon CloudWatch alarm that monitors an Amazon EC2 instance and automatically recovers the instance if it becomes impaired due to an underlying hardware failure or a problem that requires AWS involvement to repair. Terminated instances cannot be recovered. A recovered instance is identical to the original instance, including the instance ID, private IP addresses, Elastic IP addresses, and all instance metadata
+
+
+https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-recover.html
+
+Shutdown, Terminate & Termination Protection 
+Termination Protection is a feature which adds an attribute to EC2 instances meaning they cannot be terminated while the flag is enabled.
+
+It provides protection against unintended termination and also allows role separation, where junior admins can be allowed to terminate but ONLY for instances with no protection attribute set.
+
+18 - Horizontal & Vertical Scaling 
+
+Within AWS Horizontal and Vertical scaling are two ways which systems have to deal with increasing or decreasing user-side load.
+
+Each has pros and cons but handles the act of scaling radically differently.
+
+This lesson provides a high level overview of the differences, pros and cons of each.
+
+19 - Instance Metadata 
+
+Instance metadata is data about your instance that you can use to configure or manage the running instance. Instance metadata is divided into categories, for example, host name, events, and security groups.
+
+20 - mock exam level for this section "ELASTIC COMPUTE CLOUD (EC2) BASICS " implement old courses ["IAM, ACCOUNTS AND AWS ORGANISATIONS", "SIMPLE STORAGE SERVICE (S3) ", "VIRTUAL PRIVATE CLOUD (VPC) BASICS "]
+

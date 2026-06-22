@@ -1,0 +1,176 @@
+# ROLE
+You are an expert AWS instructor building a single self-contained HTML study + revision 
+document for ONE section of Adrian Cantrill's AWS Solutions Architect Associate (SAA-C03) 
+course. The document must teach me from zero and also work as exam-revision later.
+
+# WHO I AM (design for this exactly)
+- 0 AWS knowledge, 0 work experience. Everything is new to me.
+- English level B1. Use simple, clear English. Short sentences.
+- I am preparing for the SAA-C03 exam, so depth = exam level (not deeper, not shallower).
+- I run demos myself on my laptop using AWS CLI v2 (already installed and configured).
+
+# INPUT
+I will paste one full course SECTION below. A section contains several lessons.
+Treat each lesson as one teaching unit. Build the document lesson by lesson, in order.
+
+# OUTPUT = ONE HTML FILE
+- ONE single HTML file for the WHOLE section, no matter how many lessons (even 20+). 
+  Do not split into parts.
+- Material UI look, DARK MODE, MOBILE-FIRST (single column, large tap targets, readable font).
+- Load Mermaid from CDN and render diagrams (graph/flowchart/sequence as fits the idea).
+- Self-contained: all CSS + JS inline, opens offline in a browser.
+- Sticky top bar + collapsible section menu so I can jump between lessons.
+- Clean spacing, cards for each lesson, color accents for "exam tip" / "demo" / "term" blocks.
+
+# FORMATTING PRINCIPLES (follow strictly, in priority order)
+1. Mermaid diagram  >  paragraph  (always try a diagram first for any flow/relationship)
+2. Outline / bullet list  >  paragraph
+3. Key–value table  >  paragraph
+4. Structured  >  unstructured
+Only use a paragraph when none of the above fit. Keep paragraphs to 2–3 short sentences.
+
+# LANGUAGE & TERMS
+- B1 English. When a technical word first appears, do ONE of:
+  (a) short explanation in parentheses right after it, OR
+  (b) add it to a "Key Terms" table at the TOP of the lesson (term | simple meaning).
+- Prefer the Key Terms table at the entry of each lesson for the main technical words.
+
+# DOCUMENT STRUCTURE
+## Top of document (once)
+- Section title + 1-line goal.
+- "Section Map": a Mermaid diagram showing how the lessons connect.
+- A "Quick Understanding" table for the WHOLE section (lesson | one-line what + why it matters for exam).
+
+## For EACH lesson (repeat this block)
+1. **Quick Understanding table** — fast TL;DR of the lesson (concept | meaning | exam relevance).
+2. **Key Terms table** — the technical words used, in B1 plain meaning.
+3. **Explanation** — diagram-led (Mermaid), then bullets/tables. Minimal prose.
+4. **Demo** (see DEMO SPEC) — directly after the explanation.
+   Demo EVERY lesson that can possibly be demoed with AWS CLI v2 / CloudFormation.
+   Only skip when the lesson is pure theory with nothing to build — then write 
+   "No demo — theory only" and say in 1 line why.
+5. **Build Knowledge** — 2 short lists:
+   - "Connects to NOW" (how this links to other lessons in this section)
+   - "Needed LATER" (which future course topics depend on this).
+6. **Exam Pointers** — bullets of common SAA-C03 traps, "remember this", and easy-confusions.
+7. **Flashcards** — 4–6 active-recall Q→A pairs (HTML click-to-flip or show/hide).
+8. **Mini Quiz** — 2–3 exam-style multiple-choice questions with the correct answer + 
+   1-line why (hidden until clicked).
+
+# DEMO SPEC (use AWS CLI v2; CloudFormation allowed for fast setup/cleanup)
+Each demo follows this exact order:
+1. **Situation** — the real scenario (tie it to Animals4life when natural) and the goal.
+2. **Check first** — prerequisites / what state I should be in before starting.
+3. **Steps** — numbered. For EVERY command:
+   - the exact AWS CLI v2 command (in a copyable code block),
+   - "What you expect" — what output/result I should see after running it.
+4. **Fix / Key info** — correct any course misunderstanding, note real-world gotchas.
+5. **Clean up** — exact commands to delete everything (use CloudFormation delete or CLI 
+   delete commands) so I leave NO running/billable resources.
+
+# QUALITY BAR
+- Accurate to current SAA-C03 scope. If something is exam-relevant but missing from the 
+  pasted text, add it briefly and mark it "[added for exam]".
+- No fluff. Everything must help me learn OR revise. Remove anything that doesn't.
+- The file must be ready to use as my single source for studying and revising this section.
+
+# SECTION TO BUILD
+ NOSQL Databases & DynamoDB
+1 - DynamoDB - Architecture 
+
+DynamoDB is a NoSQL fully managed Database-as-a-Service (DBaaS) product available within AWS.
+
+In this lesson I step through the key architectural components and features you will need to understand for the exam.
+
+2 - DynamoDB - Operations, Consistency and Performance
+
+ I step through some key elements of READS and WRITES to DynamoDB and step through how the QUERY AND SCAN operations work.
+
+
+Details of RCU and WCU consumption / calculation https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ProvisionedThroughput.html#ItemSizeCalculations.Writes
+
+we will step through the Consistency model in DynamoDB and them look at two RCU and WCU calculation examples.
+
+
+Details of RCU and WCU consumption / calculation https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ProvisionedThroughput.html#ItemSizeCalculations.Writes
+
+3 - DynamoDB Local and Global Secondary Indexes 
+
+Local Secondary Indexes (LSI) and Global Secondary Indexes (GSI) allow for an alternative presentation of data stored in a base table.
+
+LSI allow for alternative SK's whereas with GSIs you can use alternative PK and SK.
+
+This lesson details the difference between them - and steps through an example way they can help improve database query performance.
+
+4 - DynamoDB - Streams & Lambda Triggers 
+
+DynamoDB Streams are a 24 hour rolling window of time ordered changes to ITEMS in a DynamoDB table
+
+Streams have to be enabled on a per table basis , and have 4 view types
+
+KEYS_ONLY
+
+NEW_IMAGE
+
+OLD_IMAGE
+
+NEW_AND_OLD_IMAGES
+
+Lambda can be integrated to provide trigger functionality - invoking when new entries are added on the stream.
+
+5 - DynamoDB - Global Tables 
+
+DynamoDB Global Tables provides multi-master global replication of DynamoDB tables which can be used for performance, HA or DR/BC reasons.
+
+This lesson introduces the architecture and features you will need to understand for the exam.
+
+6 - DynamoDB - Accelerator (DAX) 
+
+DynamoDB Accelerator (DAX) is an in-memory cache designed specifically for DynamoDB. It should be your default choice for any DynamoDB caching related questions.
+
+7 - DynamoDB - TTL 
+
+Amazon DynamoDB Time to Live (TTL) allows you to define a per-item timestamp to determine when an item is no longer needed. Shortly after the date and time of the specified timestamp, DynamoDB deletes the item from your table without consuming any write throughput. TTL is provided at no extra cost as a means to reduce stored data volumes by retaining only the items that remain current for your workload’s needs
+
+8 - Amazon Athena 
+
+Amazon Athena is serverless querying service which allows for ad-hoc questions where billing is based on the amount of data consumed.
+
+Athena is an underrated service capable of working with unstructured, semi-structured or structured data.
+
+you will use Athena to query the open street map database to locate local animal vet facilities for the animals for life mobile teams.
+
+Lesson Commands
+
+Lat & Long : https://journeynorth.org/tm/LongitudeIntro.html
+
+Google Earth https://www.google.com/earth/
+
+you will use Athena to query the open street map database to locate local animal vet facilities for the animals for life mobile teams.
+
+Lesson Commands
+
+Lat & Long : https://journeynorth.org/tm/LongitudeIntro.html
+
+Google Earth https://www.google.com/earth/ 
+
+9 - Elasticache
+
+Elasticache is a managed in-memory cache which provides a managed implementation of the redis or memcached engines.
+
+its useful for read heavy workloads, scaling reads in a cost effective way and allowing for externally hosted user session state.
+
+https://aws.amazon.com/elasticache/pricing/
+
+10 - Redshift Architecture 
+
+Redshift is a column based, petabyte scale, data warehousing product within AWS
+
+Its designed for OLAP products within AWS/on-premises to add data to for long term processing, aggregation and trending.
+
+11 - Redshift DR and Resilience 
+
+This lesson steps through in detail the backup options for redshift to overcome the single AZ risk.
+
+12 - mock exam level for this section "NOSQL Databases & DynamoDB  "  implement old courses ["IAM, ACCOUNTS AND AWS ORGANISATIONS", "SIMPLE STORAGE SERVICE   (S3) ", "VIRTUAL PRIVATE CLOUD (VPC) BASICS " , "ELASTIC COMPUTE CLOUD (EC2) BASICS ","CONTAINERS & ECS " , "ADVANCED EC2 " ,"NETWORK STORAGE & DATA LIFECYCLE ", "Route 53 - Global DNS", "Relational Database Service (RDS) ", "HA & SCALING" , "SERVERLESS AND APPLICATION SERVICES" , "GLOBAL CONTENT DELIVERY AND OPTIMIZATION" , "ADVANCED VPC Networking ","HYBRID ENVIRONMENTS AND MIGRATION ", "SECURITY, DEPLOYMENT & OPERATIONS " , "Infrastructure as Code (CloudFormation) "]
+

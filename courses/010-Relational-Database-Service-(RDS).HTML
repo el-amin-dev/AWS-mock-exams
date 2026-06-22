@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03 · 010 · RDS</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+:root{
+  --bg:#101418;--bg2:#161b21;--surface:#1b2128;--surface2:#212934;
+  --line:#2c3540;--line2:#3a4654;--text:#e7edf3;--muted:#9fb0c0;
+  --primary:#2dd4bf;--primary-d:#0f3b39;--exam:#fbbf24;--exam-d:#3a2f0c;
+  --demo:#60a5fa;--demo-d:#0e2647;--term:#c084fc;--term-d:#2a1640;
+  --warn:#fb7185;--warn-d:#3a151c;--ok:#34d399;
+  --radius:16px;--shadow:0 6px 22px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.25;margin:0}
+a{color:var(--primary);text-decoration:none}
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(16,20,24,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .badge{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--bg);background:var(--primary);padding:4px 9px;border-radius:8px}
+.topbar .ttl{font-family:'Sora';font-weight:600;font-size:15px}
+.topbar .ttl small{display:block;color:var(--muted);font-weight:500;font-size:11.5px;font-family:'Manrope'}
+.menu-btn{margin-left:auto;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+.menu-btn:active{transform:scale(.97)}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
+.drawer-bg.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(86vw,340px);background:var(--bg2);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .28s ease;z-index:80;overflow-y:auto;padding:18px 16px 40px}
+.drawer.open{transform:translateX(0)}
+.drawer h3{font-size:11.5px;color:var(--muted);margin:14px 4px 8px;text-transform:uppercase;letter-spacing:1px}
+.drawer a{display:block;color:var(--text);padding:9px 12px;border-radius:10px;font-weight:500;font-size:13.5px;border:1px solid transparent}
+.drawer a:active{background:var(--surface)}
+.drawer a .n{color:var(--primary);font-family:'Sora';font-weight:700;margin-right:8px}
+.drawer .close{width:100%;margin-top:18px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 90px}
+.hero{background:radial-gradient(120% 90% at 100% 0%, rgba(45,212,191,.16), transparent 55%),radial-gradient(120% 90% at 0% 100%, rgba(96,165,250,.12), transparent 55%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+.hero .eyebrow{color:var(--primary);font-weight:700;font-size:12.5px;letter-spacing:1.5px;font-family:'Sora'}
+.hero h1{font-size:25px;margin:6px 0 8px}
+.hero p{color:var(--muted);margin:0;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;margin-top:18px;box-shadow:var(--shadow)}
+.lesson-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.lesson-head .num{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:'Sora';font-weight:700;background:var(--primary);color:var(--bg);font-size:15px}
+.lesson-head h2{font-size:19px}
+.lesson-head .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+h3.block{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+h3.block::before{content:"";width:14px;height:3px;border-radius:3px;background:var(--primary)}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:360px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface2);color:var(--text);font-family:'Sora';font-weight:600;font-size:12.5px;letter-spacing:.3px}
+tr:last-child td{border-bottom:none}
+td b{color:var(--primary)}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{position:relative;padding:6px 0 6px 22px;font-size:15px;border-bottom:1px dashed var(--line)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"▸";position:absolute;left:2px;top:6px;color:var(--primary)}
+.two-col{display:grid;gap:12px}
+@media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+.box{border-radius:12px;padding:13px 14px;margin:12px 0;border:1px solid;font-size:14.5px}
+.box .tag{font-family:'Sora';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
+.box.exam{background:var(--exam-d);border-color:#6b551a}.box.exam .tag{color:var(--exam)}
+.box.term{background:var(--term-d);border-color:#4a2d6b}.box.term .tag{color:var(--term)}
+.box.warn{background:var(--warn-d);border-color:#6b2630}.box.warn .tag{color:var(--warn)}
+.box.demo{background:var(--demo-d);border-color:#1d4a82}.box.demo .tag{color:var(--demo)}
+.box ul{margin:4px 0 0;padding-left:18px}.box li{margin:3px 0}
+.mer{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;overflow-x:auto}
+.mermaid{display:flex;justify-content:center;min-width:fit-content}
+.code{position:relative;background:#0c1117;border:1px solid var(--line2);border-radius:10px;margin:10px 0}
+.code pre{margin:0;padding:13px 14px;overflow-x:auto;font-size:13px;line-height:1.55}
+.code code{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;color:#cfe9e6;white-space:pre}
+.code .cp{position:absolute;top:7px;right:7px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:7px;font-size:11px;padding:4px 9px;cursor:pointer;font-weight:600}
+.code .cp:active{color:var(--primary)}
+.expect{font-size:13px;color:var(--ok);background:rgba(52,211,153,.08);border-left:3px solid var(--ok);padding:7px 11px;margin:0 0 12px;border-radius:0 8px 8px 0}
+.expect b{color:var(--ok)}
+.step{counter-increment:st;margin:14px 0}
+.step .sh{display:flex;align-items:center;gap:9px;font-family:'Sora';font-weight:600;font-size:14.5px;margin-bottom:4px}
+.step .sh::before{content:counter(st);background:var(--demo);color:var(--bg);width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12.5px;flex:0 0 auto}
+.demo-wrap{counter-reset:st}
+.fc-grid{display:grid;gap:10px}
+.fc{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:13px 14px;cursor:pointer;transition:border-color .2s;user-select:none}
+.fc:active{border-color:var(--primary)}
+.fc .q{font-weight:600;font-size:14.5px;display:flex;gap:8px;align-items:flex-start}
+.fc .q::before{content:"Q";font-family:'Sora';color:var(--primary);font-weight:700;flex:0 0 auto}
+.fc .a{display:none;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);color:var(--muted);font-size:14px}
+.fc .a::before{content:"A ";color:var(--ok);font-weight:700;font-family:'Sora'}
+.fc.show .a{display:block}
+.fc .hint{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600}
+.quiz{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:14px;margin:10px 0}
+.quiz .qq{font-weight:600;font-size:15px;margin-bottom:8px}
+.quiz .opt{display:block;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin:6px 0;font-size:14px;cursor:pointer}
+.quiz .opt:active{border-color:var(--primary)}
+.quiz .reveal{margin-top:6px;background:var(--surface);color:var(--primary);border:1px solid var(--line2);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px;width:100%}
+.quiz .ans{display:none;margin-top:10px;border-left:3px solid var(--ok);background:rgba(52,211,153,.08);padding:9px 12px;border-radius:0 8px 8px 0;font-size:14px}
+.quiz .ans b{color:var(--ok)}
+.quiz.show .ans{display:block}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;line-height:1.7}
+.pill{display:inline-block;background:var(--surface2);border:1px solid var(--line2);color:var(--muted);font-size:11px;padding:2px 8px;border-radius:20px;margin:2px}
+.toTop{position:fixed;right:14px;bottom:16px;z-index:50;background:var(--primary);color:var(--bg);border:none;width:46px;height:46px;border-radius:50%;font-size:20px;box-shadow:var(--shadow);cursor:pointer;display:none}
+.toTop.show{display:block}
+kbd{background:var(--surface2);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-size:12px;font-family:monospace}
+.examcard{border-color:#6b551a;background:linear-gradient(180deg,var(--exam-d),var(--surface))}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="badge">SAA-C03</span>
+  <div class="ttl">Section 010<small>Relational Database Service (RDS)</small></div>
+  <button class="menu-btn" onclick="openDrawer()">☰ Lessons</button>
+</header>
+
+<div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer">
+  <h3>Foundations</h3>
+  <a href="#l1" onclick="closeDrawer()"><span class="n">1</span>DB Refresher & Models</a>
+  <a href="#l2" onclick="closeDrawer()"><span class="n">2</span>ACID vs BASE + CAP</a>
+  <a href="#l3" onclick="closeDrawer()"><span class="n">3</span>Databases on EC2</a>
+  <h3>RDS core</h3>
+  <a href="#l4" onclick="closeDrawer()"><span class="n">4</span>RDS Architecture</a>
+  <a href="#l5" onclick="closeDrawer()"><span class="n">5</span>Multi-AZ (Instance & Cluster)</a>
+  <a href="#l6" onclick="closeDrawer()"><span class="n">6</span>Backups, Snapshots, Restore</a>
+  <a href="#l7" onclick="closeDrawer()"><span class="n">7</span>Read Replicas</a>
+  <a href="#l8" onclick="closeDrawer()"><span class="n">8</span>Data Security</a>
+  <a href="#l9" onclick="closeDrawer()"><span class="n">9</span>RDS Custom</a>
+  <h3>Aurora</h3>
+  <a href="#l10" onclick="closeDrawer()"><span class="n">10</span>Aurora Architecture</a>
+  <a href="#l11" onclick="closeDrawer()"><span class="n">11</span>Aurora Serverless</a>
+  <a href="#l12" onclick="closeDrawer()"><span class="n">12</span>Aurora Global DB</a>
+  <a href="#l13" onclick="closeDrawer()"><span class="n">13</span>Multi-master Writes</a>
+  <h3>Scale & migrate</h3>
+  <a href="#l14" onclick="closeDrawer()"><span class="n">14</span>RDS Proxy</a>
+  <a href="#l15" onclick="closeDrawer()"><span class="n">15</span>DMS</a>
+  <h3>Revision</h3>
+  <a href="#mock" onclick="closeDrawer()"><span class="n">★</span>Mock Exam</a>
+  <button class="close" onclick="closeDrawer()">Close</button>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">SECTION GOAL</div>
+    <h1>Managed relational databases: RDS, Aurora, backups, scaling and migration.</h1>
+    <p>Databases are heavily tested. Learn DB models, ACID/BASE, RDS architecture, Multi-AZ vs read replicas, backups, encryption, the Aurora family, RDS Proxy and DMS.</p>
+  </section>
+
+  <div class="card">
+    <h3 class="block">Section Map · how the lessons connect</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  MODELS[1-2. Models + ACID/BASE] --> EC2[3. DB on EC2]
+  EC2 --> RDS[4. RDS Architecture]
+  RDS --> HA[5. Multi-AZ]
+  RDS --> BK[6. Backups]
+  RDS --> RR[7. Read Replicas]
+  RDS --> SEC[8. Data Security]
+  RDS --> CUST[9. RDS Custom]
+  RDS --> AUR[10. Aurora]
+  AUR --> SL[11. Serverless]
+  AUR --> GL[12. Global DB]
+  AUR --> MM[13. Multi-master]
+  RDS --> PX[14. RDS Proxy]
+  RDS --> DMS[15. DMS]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class MODELS,EC2,RDS,HA,BK,RR,SEC,CUST a;
+  class AUR,SL,GL,MM,PX,DMS b;
+    </pre></div>
+  </div>
+
+  <div class="card">
+    <h3 class="block">Quick Understanding · whole section</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Lesson</th><th>What + why it matters for the exam</th></tr>
+      <tr><td>1 Models</td><td>Relational + NoSQL families; match model to scenario.</td></tr>
+      <tr><td>2 ACID vs BASE</td><td>Transactions + CAP theorem; SQL vs NoSQL trade-offs.</td></tr>
+      <tr><td>3 DB on EC2</td><td>Full control but you manage everything; usually avoid.</td></tr>
+      <tr><td>4 RDS Architecture</td><td>Managed DB; engines, VPC, endpoint, no OS access.</td></tr>
+      <tr><td>5 Multi-AZ</td><td>Instance (standby, no reads) vs Cluster (readers usable).</td></tr>
+      <tr><td>6 Backups</td><td>Automatic (PITR, 0–35d) vs manual snapshots (persist).</td></tr>
+      <tr><td>7 Read Replicas</td><td>Read scaling + DR; async; don't fix corruption.</td></tr>
+      <tr><td>8 Data Security</td><td>KMS at-rest (set at create), SSL, IAM auth.</td></tr>
+      <tr><td>9 RDS Custom</td><td>Managed + OS/DB access for legacy apps.</td></tr>
+      <tr><td>10 Aurora</td><td>Shared 6-copy storage; up to 15 replicas; endpoints.</td></tr>
+      <tr><td>11 Serverless</td><td>Auto-scaling capacity for variable workloads.</td></tr>
+      <tr><td>12 Global DB</td><td>Cross-region replication for DR + global reads.</td></tr>
+      <tr><td>13 Multi-master</td><td>Multiple writers (niche); vs single-master.</td></tr>
+      <tr><td>14 RDS Proxy</td><td>Connection pooling; resilience; great for Lambda.</td></tr>
+      <tr><td>15 DMS</td><td>Low/zero-downtime migration; CDC; SCT for heterogeneous.</td></tr>
+      <tr><td>★ Mock Exam</td><td>RDS + all prior sections.</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ===== LESSON 1 ===== -->
+  <article class="card" id="l1">
+    <div class="lesson-head"><div class="num">1</div><div><h2>Database Refresher & Models</h2><div class="sub">Relational + the main NoSQL families.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Model</th><th>Meaning</th><th>AWS example</th></tr>
+      <tr><td>Relational (SQL)</td><td>Fixed schema, tables, relationships.</td><td>RDS, Aurora.</td></tr>
+      <tr><td>Key-Value</td><td>Simple key → value; very fast/scalable.</td><td>DynamoDB.</td></tr>
+      <tr><td>Document</td><td>JSON-like documents.</td><td>DocumentDB.</td></tr>
+      <tr><td>Column (analytics)</td><td>Stored by column for aggregation.</td><td>Redshift.</td></tr>
+      <tr><td>Graph</td><td>Nodes + relationships.</td><td>Neptune.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Schema</td><td>The fixed structure (columns/types) of a table.</td></tr>
+      <tr><td>Key</td><td>A value used to find/link rows (primary/foreign key).</td></tr>
+      <tr><td>Wide column</td><td>Rows with flexible sets of columns (e.g. Cassandra).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  SCEN{What does the data look like?} --> REL[Structured + relationships → Relational SQL]
+  SCEN --> KV[Simple lookups, huge scale → Key-Value]
+  SCEN --> DOC[Flexible JSON docs → Document]
+  SCEN --> COL[Analytics/aggregation → Columnar]
+  SCEN --> GR[Relationships/networks → Graph]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class SCEN a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Relational</b> uses fixed <b>schemas</b>, tables and <b>relationships</b> (keys). Strong for structured, related data.</li>
+      <li><b>NoSQL families</b> trade fixed schema for scale/flexibility: <b>key-value</b>, <b>document</b>, <b>wide column</b>, <b>columnar (analytics)</b>, <b>graph</b>.</li>
+      <li>Match the <b>scenario</b> to the model — the exam tests this directly.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Concepts/definitions; hands-on starts when we run a DB on EC2 (L3) and RDS (L4).</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Relational model underpins RDS/Aurora (rest of section).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>DynamoDB, Redshift, Neptune sections.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Map scenarios: <b>relationships→relational</b>, <b>key lookups at scale→DynamoDB</b>, <b>analytics→Redshift</b>, <b>networks→Neptune</b>.</li>
+      <li>Relational needs a <b>schema defined up front</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">AWS graph database?<span class="hint">tap</span></div><div class="a">Neptune.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Best model for analytics/aggregation?<span class="hint">tap</span></div><div class="a">Columnar (e.g. Redshift).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does relational require up front?<span class="hint">tap</span></div><div class="a">A defined schema.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A social network needs to store and query relationships between people. Best model?</div>
+      <span class="opt">A) Relational</span><span class="opt">B) Graph</span><span class="opt">C) Columnar</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Graph databases (Neptune) model nodes and relationships directly.</div></div>
+  </article>
+
+  <!-- ===== LESSON 2 ===== -->
+  <article class="card" id="l2">
+    <div class="lesson-head"><div class="num">2</div><div><h2>ACID vs BASE (+ CAP)</h2><div class="sub">Two transaction philosophies.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>ACID</td><td>Strong, consistent transactions.</td><td>Relational/RDS.</td></tr>
+      <tr><td>BASE</td><td>Available + eventually consistent.</td><td>NoSQL/scale.</td></tr>
+      <tr><td>CAP theorem</td><td>Consistency, Availability, Partition — pick 2.</td><td>Trade-off framing.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>ACID</td><td>Atomic, Consistent, Isolated, Durable.</td></tr>
+      <tr><td>BASE</td><td>Basically Available, Soft state, Eventually consistent.</td></tr>
+      <tr><td>Eventual consistency</td><td>All copies agree after a short delay.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  ACID[ACID: strong consistency + transactions] --> REL[Relational / RDS]
+  BASE[BASE: availability + eventual consistency] --> NOSQL[NoSQL / huge scale]
+  CAP[CAP: in a network partition, choose Consistency OR Availability]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class ACID a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>ACID</b> guarantees reliable, consistent transactions — typical of <b>relational</b> databases; harder to scale massively.</li>
+      <li><b>BASE</b> favours <b>availability + eventual consistency</b> — typical of <b>NoSQL</b> for huge scale.</li>
+      <li><b>CAP theorem</b>: in a network <b>partition</b> you can keep either <b>Consistency</b> or <b>Availability</b>, not both.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Conceptual framing for choosing databases; nothing to build.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Why RDS (ACID) suits transactional apps.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>DynamoDB consistency modes.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>ACID</b> = relational/transactional; <b>BASE</b> = NoSQL/eventual consistency.</li>
+      <li>CAP: partition tolerance is a must in distributed systems → choose <b>C or A</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does ACID stand for?<span class="hint">tap</span></div><div class="a">Atomic, Consistent, Isolated, Durable.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which model favours eventual consistency?<span class="hint">tap</span></div><div class="a">BASE (NoSQL).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">CAP: pick how many of the three?<span class="hint">tap</span></div><div class="a">Two (and partition tolerance is required in distributed systems).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A banking ledger needs guaranteed, consistent transactions. Which model?</div>
+      <span class="opt">A) BASE</span><span class="opt">B) ACID</span><span class="opt">C) Neither</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> ACID guarantees reliable transactions — ideal for financial data.</div></div>
+  </article>
+
+  <!-- ===== LESSON 3 ===== -->
+  <article class="card" id="l3">
+    <div class="lesson-head"><div class="num">3</div><div><h2>Databases on EC2</h2><div class="sub">You can — but should you?</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Self-managed DB</td><td>Install/run a DB yourself on EC2.</td><td>Max control.</td></tr>
+      <tr><td>You manage all</td><td>Patching, backups, HA, scaling, replication.</td><td>Big overhead.</td></tr>
+      <tr><td>When to choose</td><td>Special needs RDS can't meet.</td><td>Rare; usually avoid.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>DBMS</td><td>Database Management System (MySQL, Postgres, etc.).</td></tr>
+      <tr><td>Monolith</td><td>One server doing everything (app + DB together).</td></tr>
+      <tr><td>Admin overhead</td><td>The ongoing manual work to keep a DB healthy.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Reasons FOR</span><ul>
+        <li>Full <b>OS + DB access</b> and version control.</li>
+        <li>A feature/engine <b>RDS doesn't offer</b>.</li>
+        <li>Specific config/legacy requirement.</li>
+      </ul></div>
+      <div class="box warn"><span class="tag">Reasons AGAINST</span><ul>
+        <li>You handle <b>patching, backups, HA, scaling, replication</b>.</li>
+        <li>Must run <b>24/7</b>; an AZ failure can take it down.</li>
+        <li>High <b>admin overhead</b>; no managed features.</li>
+      </ul></div>
+    </div>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · on an EC2 instance</span><b>Situation:</b> split the WordPress monolith — run MariaDB on EC2 and create the DB. <b>Check first:</b> a running instance (free-tier) you can SSH into.</div>
+      <div class="step"><div class="sh">Install + start MariaDB</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>sudo dnf install -y mariadb105-server
+sudo systemctl enable --now mariadb</code></pre></div>
+      <div class="expect"><b>Expect:</b> MariaDB installed and running.</div>
+      <div class="step"><div class="sh">Create a database + user for WordPress</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>sudo mysql -e "CREATE DATABASE a4lwordpress;
+CREATE USER 'a4l'@'%' IDENTIFIED BY 'Password1234!';
+GRANT ALL ON a4lwordpress.* TO 'a4l'@'%';
+FLUSH PRIVILEGES;"</code></pre></div>
+      <div class="expect"><b>Expect:</b> no errors — a database + user now exist for the app.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>This works, but now <b>you</b> own backups, patching and HA. That's exactly the pain RDS removes (L4). To move existing data you'd <code>mysqldump</code> from the old DB and import here.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>sudo mysql -e "DROP DATABASE a4lwordpress; DROP USER 'a4l'@'%';"
+sudo systemctl disable --now mariadb
+# terminate the EC2 instance when finished</code></pre></div>
+      <div class="expect"><b>Expect:</b> database + user removed; stop the instance to avoid charges.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Motivates RDS (L4) and migration (DMS, L15).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Choosing managed vs self-managed in designs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>DB on EC2 = <b>full control</b> but <b>you manage everything</b> (high overhead).</li>
+      <li>Choose it only for needs RDS can't meet (OS access, unsupported engine/feature).</li>
+      <li>Default to <b>RDS</b> for managed reliability.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Main downside of DB on EC2?<span class="hint">tap</span></div><div class="a">You manage patching, backups, HA, scaling — high admin overhead.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">A valid reason to run DB on EC2?<span class="hint">tap</span></div><div class="a">You need OS access or an engine/feature RDS doesn't support.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A team wants a managed MySQL with automated backups + patching and minimal admin. EC2 or RDS?</div>
+      <span class="opt">A) DB on EC2</span><span class="opt">B) RDS</span><span class="opt">C) Instance store</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> RDS handles backups, patching and HA — far less overhead than EC2.</div></div>
+  </article>
+
+  <!-- ===== LESSON 4 ===== -->
+  <article class="card" id="l4">
+    <div class="lesson-head"><div class="num">4</div><div><h2>RDS Architecture</h2><div class="sub">Managed database server as a service.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Managed</td><td>AWS runs patching, backups, HA options.</td><td>Less overhead.</td></tr>
+      <tr><td>Engines</td><td>MySQL, MariaDB, PostgreSQL, Oracle, SQL Server (+ Aurora).</td><td>Know the list.</td></tr>
+      <tr><td>In a VPC</td><td>Runs in subnets via a DB subnet group; has an endpoint.</td><td>Network detail.</td></tr>
+      <tr><td>No OS access</td><td>You don't get the server (except RDS Custom).</td><td>Key limit.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>DB instance</td><td>A managed database server you provision.</td></tr>
+      <tr><td>Endpoint</td><td>The DNS name apps connect to.</td></tr>
+      <tr><td>DB subnet group</td><td>The set of subnets RDS can place the DB in.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  APP[App] -->|endpoint DNS| RDS[RDS DB instance in VPC subnets]
+  RDS --> STORE[EBS-backed storage]
+  AWS[AWS manages: patching, backups, HA] --> RDS
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class RDS a;
+    </pre></div>
+    <ul class="clean">
+      <li>RDS is a <b>managed</b> relational DB: AWS handles patching, backups and HA options; you <b>don't get OS access</b> (except RDS Custom, L9).</li>
+      <li>Engines: <b>MySQL, MariaDB, PostgreSQL, Oracle, SQL Server</b>, plus <b>Aurora</b>.</li>
+      <li>It runs inside a <b>VPC</b> using a <b>DB subnet group</b> and is reached via an <b>endpoint</b> (DNS).</li>
+      <li>Apps should connect via the <b>endpoint name</b>, not an IP (it can change on failover).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box warn"><span class="tag">Time + cost</span>Creating an RDS instance takes ~10–15 min. <code>db.t3.micro</code> is free-tier eligible for 12 months; otherwise it bills hourly. Delete when finished.</div>
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> create a MySQL RDS instance for WordPress. <b>Check first:</b> default VPC (has a default DB subnet group).</div>
+      <div class="step"><div class="sh">Create the instance</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>RDSID=a4l-rds
+aws rds create-db-instance --db-instance-identifier $RDSID \
+  --db-instance-class db.t3.micro --engine mysql \
+  --master-username admin --master-user-password 'Password1234!' \
+  --allocated-storage 20 --backup-retention-period 7 \
+  --no-multi-az --no-publicly-accessible
+aws rds wait db-instance-available --db-instance-identifier $RDSID</code></pre></div>
+      <div class="expect"><b>Expect:</b> the wait completes (~10–15 min) when the DB is <code>available</code>. Use a current engine version (e.g. MySQL 8.4.x) if asked.</div>
+      <div class="step"><div class="sh">Get the connection endpoint</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws rds describe-db-instances --db-instance-identifier $RDSID \
+  --query "DBInstances[0].Endpoint.Address" --output text</code></pre></div>
+      <div class="expect"><b>Expect:</b> a DNS endpoint like <code>a4l-rds.xxxx.us-east-1.rds.amazonaws.com</code>. WordPress would point at this and you'd <code>mysqldump</code> → import the data.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Keep <code>$RDSID</code> — Lessons 5–8 modify this instance. Apps use the <b>endpoint</b>, never a fixed IP.</div>
+      <div class="box term"><span class="tag">Clean up (after L5–L8)</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws rds delete-db-instance --db-instance-identifier $RDSID \
+  --skip-final-snapshot --delete-automated-backups</code></pre></div>
+      <div class="expect"><b>Expect:</b> instance deleting — stops the charges.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>The base for Multi-AZ (L5), backups (L6), replicas (L7), security (L8).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Aurora, RDS Proxy, DMS targets.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>RDS engines: <b>MySQL, MariaDB, PostgreSQL, Oracle, SQL Server (+ Aurora)</b>.</li>
+      <li><b>No OS access</b> (except RDS Custom); connect via the <b>endpoint</b>.</li>
+      <li>RDS itself is <b>not serverless</b> — you pick an instance (Aurora Serverless is the exception).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Do you get OS access on standard RDS?<span class="hint">tap</span></div><div class="a">No (only RDS Custom gives OS access).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How should apps connect to RDS?<span class="hint">tap</span></div><div class="a">Via the endpoint DNS name, not a fixed IP.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Name three RDS engines.<span class="hint">tap</span></div><div class="a">Any of MySQL, MariaDB, PostgreSQL, Oracle, SQL Server (+ Aurora).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An app connects to RDS by a hard-coded IP and breaks after a failover. Fix?</div>
+      <span class="opt">A) Use the RDS endpoint DNS name</span><span class="opt">B) Bigger instance</span><span class="opt">C) Disable backups</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> The endpoint follows failovers; an IP can change.</div></div>
+  </article>
+
+  <!-- ===== LESSON 5 ===== -->
+  <article class="card" id="l5">
+    <div class="lesson-head"><div class="num">5</div><div><h2>Multi-AZ — Instance & Cluster</h2><div class="sub">High availability (and a little read scaling).</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Mode</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Multi-AZ Instance</td><td>1 synchronous standby; NOT used for reads.</td><td>Availability only.</td></tr>
+      <tr><td>Multi-AZ Cluster</td><td>1 writer + 2 readers; readers usable.</td><td>Some read scaling.</td></tr>
+      <tr><td>Same endpoint</td><td>Failover flips DNS to the standby.</td><td>App keeps the name.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Synchronous</td><td>Standby is kept exactly in step with the primary.</td></tr>
+      <tr><td>Standby</td><td>A backup copy ready to take over.</td></tr>
+      <tr><td>Failover</td><td>Switching to the standby when the primary fails.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  PRI[Primary AZ-a] -->|synchronous| STBY[Standby AZ-b - idle, no reads]
+  PRI -->|fail| FO[Failover: DNS endpoint flips to standby]
+  CL[Cluster mode: writer + 2 readers] --> RD[Readers CAN serve reads]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class PRI a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Multi-AZ Instance</b>: one <b>synchronous standby</b> in another AZ. The standby is <b>idle</b> — it can't serve reads; it's purely for <b>availability</b>. Failover flips the same <b>endpoint</b> to the standby (~60–120s).</li>
+      <li><b>Multi-AZ Cluster</b>: a <b>writer + two readers</b> across 3 AZs (synchronous). The <b>readers can serve reads</b> → limited <b>read scaling</b>, and faster failover.</li>
+      <li>Backups, patching and reboots use the standby/readers to <b>reduce disruption</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box warn"><span class="tag">Cost</span>Multi-AZ adds a standby → roughly <b>doubles</b> instance cost. Turn it back off after testing.</div>
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> turn Multi-AZ on, then off. <b>Check first:</b> the <code>$RDSID</code> instance from L4.</div>
+      <div class="step"><div class="sh">Enable Multi-AZ</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws rds modify-db-instance --db-instance-identifier $RDSID \
+  --multi-az --apply-immediately
+aws rds wait db-instance-available --db-instance-identifier $RDSID
+aws rds describe-db-instances --db-instance-identifier $RDSID \
+  --query "DBInstances[0].MultiAZ"</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>true</code> — a standby now exists in another AZ.</div>
+      <div class="step"><div class="sh">Turn it back off (to stop the extra cost)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws rds modify-db-instance --db-instance-identifier $RDSID \
+  --no-multi-az --apply-immediately</code></pre></div>
+      <div class="expect"><b>Expect:</b> Multi-AZ disabled again.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Multi-AZ <b>Instance</b> standby is NOT readable — don't use it for read scaling (that's <b>read replicas</b>, L7, or Multi-AZ <b>Cluster</b> readers).</div>
+      <div class="box term"><span class="tag">Clean up</span>Left Multi-AZ off above; instance itself is cleaned up in L4's cleanup.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Contrast with read replicas (L7) for scaling.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>HA architectures, DR planning.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Multi-AZ <b>Instance</b> standby = <b>availability only</b>, NOT readable.</li>
+      <li>Multi-AZ <b>Cluster</b> = writer + 2 readers; readers <b>can</b> serve reads.</li>
+      <li>Failover keeps the <b>same endpoint</b> (DNS flips).</li>
+      <li>Need read scaling → <b>read replicas</b>, not Multi-AZ Instance.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can a Multi-AZ Instance standby serve reads?<span class="hint">tap</span></div><div class="a">No — it's for availability only.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which Multi-AZ mode allows reads on replicas?<span class="hint">tap</span></div><div class="a">Multi-AZ Cluster (writer + 2 readers).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What happens to the endpoint on failover?<span class="hint">tap</span></div><div class="a">It stays the same; DNS flips to the standby.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You need automatic failover for availability, but reads don't need scaling. Use?</div>
+      <span class="opt">A) Read replica</span><span class="opt">B) Multi-AZ Instance</span><span class="opt">C) Instance store</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Multi-AZ Instance gives synchronous standby + automatic failover (no read scaling).</div></div>
+    <div class="quiz"><div class="qq">Someone says "use the Multi-AZ standby to offload reads." Correct?</div>
+      <span class="opt">A) Yes</span><span class="opt">B) No — the standby can't serve reads</span><span class="opt">C) Only cross-region</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> A Multi-AZ Instance standby is idle; use read replicas for read scaling.</div></div>
+  </article>
+
+  <!-- ===== LESSON 6 ===== -->
+  <article class="card" id="l6">
+    <div class="lesson-head"><div class="num">6</div><div><h2>Backups, Snapshots & Restore</h2><div class="sub">Automatic PITR vs manual snapshots.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Automatic backups</td><td>Daily + 5-min transaction logs; retention 0–35 days.</td><td>Point-in-time recovery.</td></tr>
+      <tr><td>Manual snapshots</td><td>You take them; they persist past instance deletion.</td><td>Long-term keep.</td></tr>
+      <tr><td>Restore = new instance</td><td>Restoring always creates a NEW DB.</td><td>New endpoint.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>PITR</td><td>Point-in-time recovery — restore to a chosen moment.</td></tr>
+      <tr><td>Retention</td><td>How many days automatic backups are kept (0–35).</td></tr>
+      <tr><td>Final snapshot</td><td>An optional snapshot taken when you delete a DB.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  AUTO[Automatic backups: daily + 5-min logs to S3] --> PITR[Point-in-time recovery 0-35 days]
+  MAN[Manual snapshot] --> KEEP[Persists until you delete it]
+  PITR --> NEW[Restore = NEW instance + new endpoint]
+  MAN --> NEW
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class AUTO a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Automatic backups</b>: a daily backup plus <b>transaction logs every 5 minutes</b> to S3 → <b>point-in-time recovery</b>. Retention <b>0 (off) to 35 days</b>; deleted with the instance unless you take a final snapshot.</li>
+      <li><b>Manual snapshots</b>: taken by you; they <b>live past instance deletion</b> until you remove them.</li>
+      <li><b>Restoring</b> (from snapshot or PITR) always creates a <b>new instance</b> with a <b>new endpoint</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> take a manual snapshot and see restore. <b>Check first:</b> the <code>$RDSID</code> instance from L4 (available).</div>
+      <div class="step"><div class="sh">Create a manual snapshot</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws rds create-db-snapshot --db-instance-identifier $RDSID \
+  --db-snapshot-identifier a4lwordpress-with-cat-post-mysql-8-4
+aws rds wait db-snapshot-available \
+  --db-snapshot-identifier a4lwordpress-with-cat-post-mysql-8-4</code></pre></div>
+      <div class="expect"><b>Expect:</b> the wait completes when the snapshot is <code>available</code>.</div>
+      <div class="step"><div class="sh">Restore it to a NEW instance</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws rds restore-db-instance-from-db-snapshot \
+  --db-instance-identifier a4l-rds-restored \
+  --db-snapshot-identifier a4lwordpress-with-cat-post-mysql-8-4 \
+  --db-instance-class db.t3.micro
+aws rds wait db-instance-available --db-instance-identifier a4l-rds-restored</code></pre></div>
+      <div class="expect"><b>Expect:</b> a brand-new instance <code>a4l-rds-restored</code> with its <b>own endpoint</b> (the original is untouched).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Restore never overwrites — it builds a new DB. For PITR you'd use <code>restore-db-instance-to-point-in-time</code> within the retention window.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws rds delete-db-instance --db-instance-identifier a4l-rds-restored \
+  --skip-final-snapshot --delete-automated-backups
+aws rds delete-db-snapshot \
+  --db-snapshot-identifier a4lwordpress-with-cat-post-mysql-8-4</code></pre></div>
+      <div class="expect"><b>Expect:</b> restored instance + manual snapshot deleted.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Snapshots stored in S3 (S3 section); same idea as EBS snapshots.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>DR, cross-region snapshot copy, migration.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Automatic backups: retention <b>0–35 days</b>; <b>5-minute</b> logs enable <b>PITR</b>; deleted with the instance (unless final snapshot).</li>
+      <li>Manual snapshots <b>persist</b> past deletion.</li>
+      <li><b>Restore = new instance + new endpoint</b> (never in-place).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Max automatic backup retention?<span class="hint">tap</span></div><div class="a">35 days (0 disables it).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What enables point-in-time recovery?<span class="hint">tap</span></div><div class="a">Transaction logs to S3 every 5 minutes.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Does restoring overwrite the existing DB?<span class="hint">tap</span></div><div class="a">No — it creates a new instance with a new endpoint.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must recover a DB to its exact state 12 minutes ago. Which feature?</div>
+      <span class="opt">A) Manual snapshot</span><span class="opt">B) Point-in-time recovery (automatic backups)</span><span class="opt">C) Read replica</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> PITR uses 5-minute logs to restore to a chosen moment within retention.</div></div>
+    <div class="quiz"><div class="qq">You delete an RDS instance but must keep its data long-term. What do you take first?</div>
+      <span class="opt">A) A manual/final snapshot</span><span class="opt">B) A read replica</span><span class="opt">C) Nothing</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Manual/final snapshots persist after the instance is gone.</div></div>
+  </article>
+
+  <!-- ===== LESSON 7 ===== -->
+  <article class="card" id="l7">
+    <div class="lesson-head"><div class="num">7</div><div><h2>Read Replicas</h2><div class="sub">Scale reads and improve recovery.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Read replica</td><td>Async read-only copy; up to 5 per primary.</td><td>Read scaling.</td></tr>
+      <tr><td>Same/cross region</td><td>Can live in another region.</td><td>Global reads + DR.</td></tr>
+      <tr><td>Low RTO</td><td>Can be promoted on failure.</td><td>Recovery aid.</td></tr>
+      <tr><td>Not for corruption</td><td>Corruption replicates too.</td><td>Common trap.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Asynchronous</td><td>Replica lags the primary by a little.</td></tr>
+      <tr><td>Promote</td><td>Turn a replica into a standalone writable DB.</td></tr>
+      <tr><td>RTO</td><td>Recovery Time Objective — how fast you recover.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  PRI[Primary - writes] -->|async| RR1[Read replica 1 - reads]
+  PRI -->|async| RR2[Read replica - other region]
+  RR1 -->|promote on failure| WRITE[Becomes standalone writer]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class PRI a;
+    </pre></div>
+    <ul class="clean">
+      <li>Read replicas are <b>asynchronous, read-only</b> copies — up to <b>5</b> per primary — with their <b>own endpoints</b>.</li>
+      <li>They give <b>read scaling</b> (offload read traffic) and can be in the <b>same or another region</b> (global reads + DR).</li>
+      <li>They support <b>low-RTO recovery</b> (promote a replica to a standalone DB).</li>
+      <li>They do <b>not</b> protect against <b>data corruption</b> — bad data replicates to them too.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box warn"><span class="tag">Cost</span>A read replica is another running instance (extra cost). Delete it after.</div>
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> add a read replica. <b>Check first:</b> <code>$RDSID</code> available with backups enabled (retention &gt; 0).</div>
+      <div class="step"><div class="sh">Create the read replica</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws rds create-db-instance-read-replica \
+  --db-instance-identifier a4l-rds-rr \
+  --source-db-instance-identifier $RDSID \
+  --db-instance-class db.t3.micro
+aws rds wait db-instance-available --db-instance-identifier a4l-rds-rr</code></pre></div>
+      <div class="expect"><b>Expect:</b> a new read-only instance <code>a4l-rds-rr</code> with its own endpoint, replicating from the primary.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Point read-heavy queries at the replica's endpoint. Remember: replicas <b>don't fix corruption</b> and are <b>async</b> (may lag slightly).</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws rds delete-db-instance --db-instance-identifier a4l-rds-rr \
+  --skip-final-snapshot</code></pre></div>
+      <div class="expect"><b>Expect:</b> replica deleted (stops the extra charge).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Read scaling that Multi-AZ Instance (L5) doesn't provide.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Global apps, DR, Aurora replicas.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Read replicas = <b>async, read scaling</b>, up to <b>5</b>, same/cross-region, can be <b>promoted</b>.</li>
+      <li>They <b>don't help with data corruption</b> (it replicates).</li>
+      <li><b>Multi-AZ = availability</b>; <b>read replicas = read scaling</b> — don't confuse them.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How many read replicas per primary?<span class="hint">tap</span></div><div class="a">Up to 5 (direct).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Do read replicas fix data corruption?<span class="hint">tap</span></div><div class="a">No — corruption replicates to them.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Multi-AZ vs read replica purpose?<span class="hint">tap</span></div><div class="a">Multi-AZ = availability; read replicas = read scaling (+ some DR).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A reporting workload is overloading the primary DB with reads. Best fix?</div>
+      <span class="opt">A) Multi-AZ Instance</span><span class="opt">B) Read replica</span><span class="opt">C) Bigger backup retention</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Read replicas offload read traffic; Multi-AZ standby can't serve reads.</div></div>
+  </article>
+
+  <!-- ===== LESSON 8 ===== -->
+  <article class="card" id="l8">
+    <div class="lesson-head"><div class="num">8</div><div><h2>RDS Data Security</h2><div class="sub">Encryption + IAM authentication.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Encryption at rest</td><td>KMS-based; set at creation.</td><td>Can't add later directly.</td></tr>
+      <tr><td>In transit</td><td>SSL/TLS to the DB.</td><td>Protect connections.</td></tr>
+      <tr><td>IAM auth</td><td>Log in with IAM tokens, not a DB password.</td><td>No stored DB creds.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>At rest</td><td>Data stored on disk is encrypted.</td></tr>
+      <tr><td>IAM database authentication</td><td>Use a short-lived IAM token to connect.</td></tr>
+      <tr><td>Token</td><td>A temporary password generated from IAM (~15 min).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  KMS[KMS key] --> ENC[Encryption at rest - set at CREATE]
+  ENC --> ALL[Covers storage, logs, snapshots, replicas]
+  IAM[IAM auth] --> TOKEN[Short-lived token instead of DB password]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class KMS a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Encryption at rest</b> uses <b>KMS</b> and must be chosen <b>at creation</b>. It can't be turned on directly later — snapshot, copy the snapshot <b>with encryption</b>, then restore.</li>
+      <li>Encryption covers <b>storage, logs, snapshots and replicas</b>.</li>
+      <li><b>In transit</b> uses <b>SSL/TLS</b>.</li>
+      <li><b>IAM database authentication</b> lets users connect with a short-lived <b>IAM token</b> instead of a stored DB password.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> create an encrypted instance + enable IAM auth. <b>Check first:</b> CLI configured. <b>Note:</b> another db.t3.micro — delete after (or reuse free tier).</div>
+      <div class="step"><div class="sh">Create an ENCRYPTED instance (encryption is set at create)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws rds create-db-instance --db-instance-identifier a4l-rds-enc \
+  --db-instance-class db.t3.micro --engine mysql \
+  --master-username admin --master-user-password 'Password1234!' \
+  --allocated-storage 20 --storage-encrypted \
+  --enable-iam-database-authentication \
+  --no-multi-az --no-publicly-accessible
+aws rds wait db-instance-available --db-instance-identifier a4l-rds-enc</code></pre></div>
+      <div class="expect"><b>Expect:</b> the wait completes; the instance is encrypted and IAM auth is on.</div>
+      <div class="step"><div class="sh">Confirm encryption + IAM auth</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws rds describe-db-instances --db-instance-identifier a4l-rds-enc \
+  --query "DBInstances[0].{Enc:StorageEncrypted,IAM:IAMDatabaseAuthenticationEnabled}"</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>Enc: true</code> and <code>IAM: true</code>.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>You <b>can't</b> encrypt an existing unencrypted instance in place — snapshot → copy with a KMS key → restore. IAM auth issues a <b>~15-minute token</b> so apps don't store DB passwords.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws rds delete-db-instance --db-instance-identifier a4l-rds-enc \
+  --skip-final-snapshot --delete-automated-backups</code></pre></div>
+      <div class="expect"><b>Expect:</b> encrypted instance deleted.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses KMS (S3 section) + IAM (IAM section).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Compliance designs, RDS Proxy IAM auth.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Encryption at rest is <b>set at creation</b> (KMS); to encrypt an existing DB → <b>snapshot → copy with encryption → restore</b>.</li>
+      <li>Encryption flows to <b>snapshots + replicas</b>.</li>
+      <li><b>IAM auth</b> = short-lived token instead of a DB password.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">When must RDS encryption be enabled?<span class="hint">tap</span></div><div class="a">At creation (can't add directly later).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How to encrypt an existing unencrypted RDS DB?<span class="hint">tap</span></div><div class="a">Snapshot it, copy the snapshot with encryption, restore.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does IAM database authentication use?<span class="hint">tap</span></div><div class="a">A short-lived IAM token instead of a DB password.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An existing unencrypted RDS DB must become encrypted. Steps?</div>
+      <span class="opt">A) Toggle encryption on the instance</span><span class="opt">B) Snapshot → copy with encryption → restore</span><span class="opt">C) Add a read replica</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> You can't enable at-rest encryption in place; go via an encrypted snapshot copy.</div></div>
+  </article>
+
+  <!-- ===== LESSON 9 ===== -->
+  <article class="card" id="l9">
+    <div class="lesson-head"><div class="num">9</div><div><h2>RDS Custom</h2><div class="sub">Managed RDS, but with OS/DB access.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>RDS Custom</td><td>Between full RDS and self-managed EC2.</td><td>OS + DB access.</td></tr>
+      <tr><td>Engines</td><td>Oracle and SQL Server.</td><td>Legacy/packaged apps.</td></tr>
+      <tr><td>Shared responsibility</td><td>You take on more than standard RDS.</td><td>Trade-off.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Packaged app</td><td>Vendor software needing specific OS/DB tweaks.</td></tr>
+      <tr><td>Customization</td><td>Changing the OS/DB beyond what standard RDS allows.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  EC2[Self-managed on EC2 - all you] --> CUSTOM[RDS Custom - managed + OS/DB access]
+  CUSTOM --> RDS[Standard RDS - fully managed, no OS access]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class CUSTOM a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>RDS Custom</b> sits <b>between</b> standard RDS and self-managed EC2: you keep most RDS automation but gain <b>OS + database access</b>.</li>
+      <li>Supports <b>Oracle and SQL Server</b>, for <b>legacy/packaged</b> apps needing customization.</li>
+      <li>You take on <b>more responsibility</b> than standard RDS in exchange for that access.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>RDS Custom needs specific setup (custom AMIs, Oracle/SQL Server) and bills more; the exam only needs the "managed + OS access for legacy apps" idea.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>The middle ground between L3 (EC2) and L4 (RDS).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Migrating legacy Oracle/SQL Server workloads.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Need <b>OS/DB access</b> but still want RDS automation, for <b>Oracle/SQL Server</b> legacy apps → <b>RDS Custom</b>.</li>
+      <li>Standard RDS = <b>no</b> OS access; RDS Custom = <b>some</b> access.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does RDS Custom add over standard RDS?<span class="hint">tap</span></div><div class="a">OS and database access (for customization).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which engines does RDS Custom support?<span class="hint">tap</span></div><div class="a">Oracle and SQL Server.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A legacy Oracle app needs OS-level tweaks but you still want managed automation. Best?</div>
+      <span class="opt">A) Standard RDS</span><span class="opt">B) RDS Custom</span><span class="opt">C) DynamoDB</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> RDS Custom gives OS/DB access plus RDS automation for legacy apps.</div></div>
+  </article>
+
+  <!-- ===== LESSON 10 ===== -->
+  <article class="card" id="l10">
+    <div class="lesson-head"><div class="num">10</div><div><h2>Aurora Architecture</h2><div class="sub">AWS's re-engineered RDS engine.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Shared storage</td><td>One cluster volume, 6 copies across 3 AZs.</td><td>Self-healing, resilient.</td></tr>
+      <tr><td>Compute</td><td>1 writer + up to 15 replicas sharing storage.</td><td>Read scaling + failover.</td></tr>
+      <tr><td>Endpoints</td><td>Cluster (writer), reader, custom.</td><td>Connect correctly.</td></tr>
+      <tr><td>Billing</td><td>No free tier; storage grows automatically.</td><td>Cost awareness.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Cluster volume</td><td>The shared, replicated storage all instances use.</td></tr>
+      <tr><td>Aurora replica</td><td>A reader that also serves as a failover target.</td></tr>
+      <tr><td>Cluster endpoint</td><td>Always points to the current writer.</td></tr>
+      <tr><td>Reader endpoint</td><td>Load-balances across reader instances.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  W[Writer] --> VOL[Shared cluster volume]
+  R1[Replica 1] --> VOL
+  R2[Replica 2] --> VOL
+  VOL --> COPIES[6 copies across 3 AZs - self-healing]
+  CE[Cluster endpoint → writer] -.-> W
+  RE[Reader endpoint → readers] -.-> R1
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class VOL a;
+    </pre></div>
+    <ul class="clean">
+      <li>Aurora separates <b>compute</b> from a <b>shared cluster storage volume</b> holding <b>6 copies across 3 AZs</b> (self-healing, auto-growing up to 128 TiB).</li>
+      <li>Compute = <b>1 writer + up to 15 replicas</b>; replicas serve <b>reads</b> and are <b>failover targets</b>.</li>
+      <li>Connect via the <b>cluster endpoint</b> (writer), <b>reader endpoint</b> (load-balances readers), or <b>custom endpoints</b>.</li>
+      <li><b>No free tier</b>; you pay compute + storage (consumed) + I/O. MySQL- and PostgreSQL-compatible.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — cost/time</span>Aurora has <b>no free tier</b> and a cluster takes time to build, so we won't create one. Focus on the architecture (shared storage, endpoints, replicas) for the exam.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Part of RDS (L4); replicas extend the read-replica idea (L7).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Serverless (L11), Global DB (L12), multi-master (L13).</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Aurora storage = <b>6 copies across 3 AZs</b>, shared, self-healing, auto-grows.</li>
+      <li>Up to <b>15 replicas</b> (read scaling + failover); use the <b>cluster</b> endpoint for writes, <b>reader</b> endpoint for reads.</li>
+      <li><b>No free tier</b>; MySQL/PostgreSQL compatible.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How many storage copies and across how many AZs?<span class="hint">tap</span></div><div class="a">6 copies across 3 AZs.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Max Aurora replicas?<span class="hint">tap</span></div><div class="a">15.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which endpoint always points to the writer?<span class="hint">tap</span></div><div class="a">The cluster endpoint.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An app must always write to the current primary even after failover. Which endpoint?</div>
+      <span class="opt">A) Reader endpoint</span><span class="opt">B) Cluster endpoint</span><span class="opt">C) Custom endpoint</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> The cluster endpoint always tracks the current writer.</div></div>
+  </article>
+
+  <!-- ===== LESSON 11 ===== -->
+  <article class="card" id="l11">
+    <div class="lesson-head"><div class="num">11</div><div><h2>Aurora Serverless</h2><div class="sub">Capacity that scales itself.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Auto-scaling capacity</td><td>Adds/removes capacity units (ACUs) on demand.</td><td>No instance sizing.</td></tr>
+      <tr><td>Pay per use</td><td>Billed by capacity used over time.</td><td>Cost for variable load.</td></tr>
+      <tr><td>Best for</td><td>Variable, unpredictable, intermittent workloads.</td><td>Scenario keyword.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>ACU</td><td>Aurora Capacity Unit — a chunk of compute+memory.</td></tr>
+      <tr><td>Provisioned</td><td>The normal mode where you choose instance sizes.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <ul class="clean">
+      <li><b>Aurora Serverless</b> automatically scales capacity (<b>ACUs</b>) up and down with load — no instance sizing to manage.</li>
+      <li>You <b>pay for capacity used</b> over time, so it suits <b>variable, unpredictable or intermittent</b> workloads (dev/test, new apps, spiky traffic).</li>
+      <li><b>Provisioned</b> Aurora is better for <b>steady, predictable</b> load.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — cost</span>Aurora Serverless bills per capacity-second with no free tier; we cover it conceptually. Remember it for "variable/unpredictable workload" questions.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>A mode of Aurora (L10).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Cost-optimised, event-driven and serverless designs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Variable / unpredictable / intermittent</b> database load" → <b>Aurora Serverless</b>.</li>
+      <li>"Steady, predictable" → <b>Provisioned</b> Aurora/RDS.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Best Aurora mode for spiky, unpredictable load?<span class="hint">tap</span></div><div class="a">Aurora Serverless.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What unit does Serverless scale in?<span class="hint">tap</span></div><div class="a">ACUs (Aurora Capacity Units).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A new app has unknown, spiky database usage and the team won't manage capacity. Best?</div>
+      <span class="opt">A) Provisioned Aurora</span><span class="opt">B) Aurora Serverless</span><span class="opt">C) DB on EC2</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Serverless auto-scales capacity and bills by use — ideal for unpredictable load.</div></div>
+  </article>
+
+  <!-- ===== LESSON 12 ===== -->
+  <article class="card" id="l12">
+    <div class="lesson-head"><div class="num">12</div><div><h2>Aurora Global Database</h2><div class="sub">Cross-region replication for DR + global reads.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>One primary region</td><td>Read/write; up to 5 secondary read-only regions.</td><td>Global reads.</td></tr>
+      <tr><td>Storage replication</td><td>~1 second between regions.</td><td>Low RPO.</td></tr>
+      <tr><td>DR</td><td>Promote a secondary region fast.</td><td>Low RTO.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>RPO</td><td>Recovery Point Objective — how much data you might lose.</td></tr>
+      <tr><td>RTO</td><td>Recovery Time Objective — how long to recover.</td></tr>
+      <tr><td>Secondary region</td><td>A read-only copy that can be promoted.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  PRI[Primary region - read/write] -->|storage replication ~1s| S1[Secondary region 1 - read only]
+  PRI -->|~1s| S2[Secondary region 2 - read only]
+  S1 -->|promote on disaster| WRITE[New primary region]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class PRI a;
+    </pre></div>
+    <ul class="clean">
+      <li>One <b>primary region</b> (read/write) replicates to up to <b>5 secondary read-only regions</b> at the <b>storage layer</b> (~1 second).</li>
+      <li>Gives <b>low RPO</b> (little data loss) and <b>low RTO</b> (fast region failover) for BC/DR.</li>
+      <li>Also improves <b>performance</b> by serving reads <b>closer to users</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — multi-region cost</span>A global database spans regions and has no free tier; we cover it conceptually. Remember it for "global reads + cross-region DR".</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Extends Aurora (L10) across regions; DR sibling of read replicas (L7).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Global, multi-region architectures.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Global DB = <b>1 primary + up to 5 read-only secondary regions</b>, ~<b>1s</b> storage replication.</li>
+      <li>Best for <b>global reads + cross-region DR</b> (low RPO/RTO).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How many secondary regions can a global DB have?<span class="hint">tap</span></div><div class="a">Up to 5 (read-only).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Typical cross-region replication lag?<span class="hint">tap</span></div><div class="a">About 1 second (storage-layer).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Main use cases?<span class="hint">tap</span></div><div class="a">Global low-latency reads and cross-region disaster recovery.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A global app needs fast reads worldwide and quick recovery if a region fails. Best?</div>
+      <span class="opt">A) Read replica in one region</span><span class="opt">B) Aurora Global Database</span><span class="opt">C) Multi-AZ Instance</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Global DB gives cross-region read-only copies + fast failover.</div></div>
+  </article>
+
+  <!-- ===== LESSON 13 ===== -->
+  <article class="card" id="l13">
+    <div class="lesson-head"><div class="num">13</div><div><h2>Multi-master Writes</h2><div class="sub">More than one writer (niche).</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Single-master</td><td>One writer; replicas read-only.</td><td>The default.</td></tr>
+      <tr><td>Multi-master</td><td>Multiple instances read AND write.</td><td>Continuous write HA.</td></tr>
+      <tr><td>Conflict resolution</td><td>Handles two writers touching the same data.</td><td>The trade-off.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Single-master</td><td>Only one node accepts writes.</td></tr>
+      <tr><td>Multi-master</td><td>Several nodes accept writes at once.</td></tr>
+      <tr><td>Write conflict</td><td>Two writers changing the same row at once.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  SM[Single-master: 1 writer + read replicas] --> SMN[Failover needed if writer dies]
+  MM[Multi-master: many writers] --> MMN[Writes continue if one writer fails]
+  MM --> CR[Conflict resolution required]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class MM a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>Single-master</b> (the norm): one <b>writer</b>; everything else is read-only, with failover if the writer dies.</li>
+      <li><b>Multi-master</b>: <b>several instances accept writes</b> at once, so writes can continue even if one writer fails (continuous write availability).</li>
+      <li>It needs <b>conflict resolution</b> when two writers change the same data — a niche, specialised mode.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — niche/cost</span>Multi-master is a specialised Aurora mode with cost and limited use; the exam only needs the single-master vs multi-master distinction.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Contrast with the single-writer Aurora model (L10).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Specialised high-write-availability designs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Single-master</b> = one writer (default). <b>Multi-master</b> = multiple writers + <b>conflict resolution</b>.</li>
+      <li>Multi-master is about <b>continuous write availability</b>, not read scaling.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Difference between single- and multi-master?<span class="hint">tap</span></div><div class="a">Single = one writer; multi = several instances can write at once.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does multi-master require?<span class="hint">tap</span></div><div class="a">Conflict resolution for simultaneous writes.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An app needs writes to continue instantly even if one writer node fails (no failover gap). Mode?</div>
+      <span class="opt">A) Single-master</span><span class="opt">B) Multi-master</span><span class="opt">C) Read replica</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Multi-master lets multiple instances write, so a writer failure doesn't stop writes.</div></div>
+  </article>
+
+  <!-- ===== LESSON 14 ===== -->
+  <article class="card" id="l14">
+    <div class="lesson-head"><div class="num">14</div><div><h2>RDS Proxy</h2><div class="sub">Pooled connections for scale + resilience.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Connection pooling</td><td>Shares + reuses DB connections.</td><td>Handles many clients.</td></tr>
+      <tr><td>Resilience</td><td>Faster failover; hides DB blips.</td><td>Availability.</td></tr>
+      <tr><td>Great for Lambda</td><td>Many short-lived connections.</td><td>Classic use case.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Connection pool</td><td>A reusable set of open DB connections.</td></tr>
+      <tr><td>Failover</td><td>Switching to a healthy DB node; proxy speeds this up.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  MANY[Many app/Lambda connections] --> PROXY[RDS Proxy - pools connections]
+  PROXY --> DB[RDS / Aurora]
+  PROXY --> FAST[Faster failover + IAM auth + Secrets Manager]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class PROXY a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>RDS Proxy</b> sits between apps and the DB and <b>pools/shares connections</b>, so a flood of clients doesn't exhaust the database.</li>
+      <li>It improves <b>resilience</b> (faster, smoother failover) and <b>security</b> (IAM auth + secrets in <b>Secrets Manager</b>).</li>
+      <li>Ideal for <b>Lambda/serverless</b> apps that open <b>many short-lived connections</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — cost</span>RDS Proxy bills per vCPU-hour of the underlying DB and needs Secrets Manager setup; we cover it conceptually. Remember it for <b>Lambda + too many DB connections</b>.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Sits in front of RDS/Aurora; uses IAM auth (L8).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Serverless app + database patterns.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Lambda</b> exhausting DB connections" / "too many connections" → <b>RDS Proxy</b>.</li>
+      <li>Benefits: <b>connection pooling, faster failover, IAM auth + Secrets Manager</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What problem does RDS Proxy solve?<span class="hint">tap</span></div><div class="a">Too many DB connections (it pools/shares them) + smoother failover.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which compute service benefits most?<span class="hint">tap</span></div><div class="a">Lambda (many short-lived connections).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A Lambda app opens thousands of DB connections and overwhelms RDS. Best fix?</div>
+      <span class="opt">A) Bigger DB</span><span class="opt">B) RDS Proxy</span><span class="opt">C) Read replica</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> RDS Proxy pools and reuses connections, protecting the database.</div></div>
+  </article>
+
+  <!-- ===== LESSON 15 ===== -->
+  <article class="card" id="l15">
+    <div class="lesson-head"><div class="num">15</div><div><h2>Database Migration Service (DMS)</h2><div class="sub">Move databases with little or no downtime.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>DMS</td><td>Managed migration between two DB endpoints.</td><td>Low/zero downtime.</td></tr>
+      <tr><td>Replication instance</td><td>Runs the migration task.</td><td>The engine.</td></tr>
+      <tr><td>CDC</td><td>Keeps copying changes during migration.</td><td>Near-zero downtime.</td></tr>
+      <tr><td>SCT</td><td>Schema Conversion Tool for different engines.</td><td>Heterogeneous moves.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Source / target endpoint</td><td>The "from" and "to" databases.</td></tr>
+      <tr><td>CDC</td><td>Change Data Capture — copies ongoing changes.</td></tr>
+      <tr><td>Homogeneous</td><td>Same engine on both sides (e.g. MySQL→MySQL).</td></tr>
+      <tr><td>Heterogeneous</td><td>Different engines (needs SCT for schema).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  SRC[Source DB endpoint] --> RI[Replication instance runs the task]
+  RI --> TGT[Target DB endpoint]
+  RI --> CDC[CDC keeps changes flowing = low/zero downtime]
+  SCT[SCT converts schema if engines differ] -.-> TGT
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class RI a;
+    </pre></div>
+    <ul class="clean">
+      <li><b>DMS</b> migrates between a <b>source</b> and <b>target</b> endpoint using a <b>replication instance</b>, with <b>low or zero downtime</b>.</li>
+      <li><b>CDC</b> (change data capture) keeps copying changes during the move, so cutover is quick.</li>
+      <li><b>Homogeneous</b> (same engine) is straightforward; <b>heterogeneous</b> (different engines) uses the <b>Schema Conversion Tool (SCT)</b>.</li>
+      <li>Moves databases <b>into, out of, or within</b> AWS (one endpoint is usually in AWS).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — cost/setup</span>DMS needs a running replication instance plus source/target endpoints (cost + setup); we cover it conceptually. Remember it for <b>low/zero-downtime migration</b>.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>The proper way to move data into RDS/Aurora (vs the manual dump in L3).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Migration projects, hybrid/cloud moves.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"<b>Migrate with little/no downtime</b>" → <b>DMS</b> (uses <b>CDC</b>).</li>
+      <li><b>Different engines</b> → also use <b>SCT</b> (Schema Conversion Tool).</li>
+      <li>DMS can move DBs <b>into, out of, or between</b> AWS.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What enables near-zero downtime in DMS?<span class="hint">tap</span></div><div class="a">CDC (change data capture) keeps copying changes.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Tool for migrating between different engines?<span class="hint">tap</span></div><div class="a">SCT (Schema Conversion Tool).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What runs the DMS migration?<span class="hint">tap</span></div><div class="a">A replication instance.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Migrate an on-prem Oracle DB to Aurora PostgreSQL with minimal downtime. Tools?</div>
+      <span class="opt">A) DMS only</span><span class="opt">B) DMS + SCT (different engines)</span><span class="opt">C) Read replica</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> DMS handles the data with CDC; SCT converts the schema between engines.</div></div>
+  </article>
+
+  <!-- ===== MOCK EXAM ===== -->
+  <article class="card examcard" id="mock">
+    <div class="lesson-head"><div class="num">★</div><div><h2>Mock Exam</h2><div class="sub">RDS + IAM/Orgs + S3 + VPC + EC2 + Containers + Advanced EC2 + Route 53.</div></div></div>
+    <div class="box exam"><span class="tag">How to use</span>Decide first, then tap <b>Show answer</b>. Pick the <b>best</b> option. 18 questions.</div>
+
+    <div class="quiz"><div class="qq">1. Reporting reads overload the primary DB. Best fix?</div>
+      <span class="opt">A) Multi-AZ Instance</span><span class="opt">B) Read replica</span><span class="opt">C) Bigger backups</span><span class="opt">D) Instance store</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Read replicas offload reads; a Multi-AZ standby can't serve reads.</div></div>
+
+    <div class="quiz"><div class="qq">2. Automatic failover for availability, no read scaling needed. Use?</div>
+      <span class="opt">A) Read replica</span><span class="opt">B) Multi-AZ Instance</span><span class="opt">C) DMS</span><span class="opt">D) RDS Proxy</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Multi-AZ Instance gives a synchronous standby + automatic failover.</div></div>
+
+    <div class="quiz"><div class="qq">3. Recover a DB to its exact state 10 minutes ago. Feature?</div>
+      <span class="opt">A) Manual snapshot</span><span class="opt">B) Point-in-time recovery</span><span class="opt">C) Read replica</span><span class="opt">D) Multi-AZ</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> PITR uses 5-minute transaction logs within the retention window.</div></div>
+
+    <div class="quiz"><div class="qq">4. Unpredictable, spiky DB load; team won't manage capacity. Best?</div>
+      <span class="opt">A) Provisioned Aurora</span><span class="opt">B) Aurora Serverless</span><span class="opt">C) DB on EC2</span><span class="opt">D) Read replica</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Aurora Serverless auto-scales capacity and bills by use.</div></div>
+
+    <div class="quiz"><div class="qq">5. Global app needs fast reads worldwide + fast cross-region DR. Best?</div>
+      <span class="opt">A) Read replica</span><span class="opt">B) Aurora Global Database</span><span class="opt">C) Multi-AZ</span><span class="opt">D) DMS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Global DB replicates to read-only regions (~1s) with fast failover.</div></div>
+
+    <div class="quiz"><div class="qq">6. Lambda opens thousands of DB connections and overwhelms RDS. Fix?</div>
+      <span class="opt">A) Bigger DB</span><span class="opt">B) RDS Proxy</span><span class="opt">C) Read replica</span><span class="opt">D) Multi-AZ</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> RDS Proxy pools and reuses connections.</div></div>
+
+    <div class="quiz"><div class="qq">7. Migrate on-prem MySQL to RDS MySQL with minimal downtime. Tool?</div>
+      <span class="opt">A) DMS (CDC)</span><span class="opt">B) Snapshot copy</span><span class="opt">C) Read replica</span><span class="opt">D) Multi-AZ</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> DMS with CDC migrates with little/no downtime (same engine = no SCT needed).</div></div>
+
+    <div class="quiz"><div class="qq">8. Migrate Oracle → Aurora PostgreSQL (different engines). Tools?</div>
+      <span class="opt">A) DMS only</span><span class="opt">B) DMS + SCT</span><span class="opt">C) Snapshot</span><span class="opt">D) Read replica</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> SCT converts the schema between different engines; DMS moves the data.</div></div>
+
+    <div class="quiz"><div class="qq">9. Existing unencrypted RDS must become encrypted. Steps?</div>
+      <span class="opt">A) Toggle encryption</span><span class="opt">B) Snapshot → copy with encryption → restore</span><span class="opt">C) Add replica</span><span class="opt">D) Enable Multi-AZ</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> At-rest encryption is set at create; migrate via an encrypted snapshot copy.</div></div>
+
+    <div class="quiz"><div class="qq">10. Legacy Oracle app needs OS access but still wants RDS automation. Use?</div>
+      <span class="opt">A) Standard RDS</span><span class="opt">B) RDS Custom</span><span class="opt">C) DynamoDB</span><span class="opt">D) Aurora Serverless</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> RDS Custom adds OS/DB access for legacy Oracle/SQL Server apps.</div></div>
+
+    <div class="quiz"><div class="qq">11. Banking ledger needs guaranteed consistent transactions. Model?</div>
+      <span class="opt">A) BASE</span><span class="opt">B) ACID</span><span class="opt">C) Eventual</span><span class="opt">D) Graph</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> ACID guarantees reliable transactions — relational/RDS.</div></div>
+
+    <div class="quiz"><div class="qq">12. (IAM) App on EC2 reads RDS credentials. Best practice for AWS access?</div>
+      <span class="opt">A) Keys in user data</span><span class="opt">B) Instance role + Secrets Manager/Parameter Store</span><span class="opt">C) Root keys</span><span class="opt">D) Public bucket</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Use an instance role to fetch DB secrets — no stored keys.</div></div>
+
+    <div class="quiz"><div class="qq">13. (VPC) RDS must be private, reachable only by app servers. Control?</div>
+      <span class="opt">A) Public + open SG</span><span class="opt">B) Private subnets + SG referencing the app SG</span><span class="opt">C) IGW route</span><span class="opt">D) NAT only</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Place RDS in private subnets and allow only the app's security group.</div></div>
+
+    <div class="quiz"><div class="qq">14. (S3) Where are RDS snapshots and transaction logs stored?</div>
+      <span class="opt">A) EBS</span><span class="opt">B) S3 (AWS-managed)</span><span class="opt">C) Instance store</span><span class="opt">D) EFS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> RDS backups/snapshots use S3 behind the scenes.</div></div>
+
+    <div class="quiz"><div class="qq">15. (Route 53) Point apex db-admin.a4l.com at an RDS-fronting ALB. Record?</div>
+      <span class="opt">A) CNAME at apex</span><span class="opt">B) Alias A record</span><span class="opt">C) MX</span><span class="opt">D) TXT</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Alias works at the apex and points to AWS resources.</div></div>
+
+    <div class="quiz"><div class="qq">16. A read replica won't protect against which problem?</div>
+      <span class="opt">A) Read overload</span><span class="opt">B) Data corruption (it replicates)</span><span class="opt">C) Region outage</span><span class="opt">D) Instance failure</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Corruption replicates to read replicas — use backups/PITR instead.</div></div>
+
+    <div class="quiz"><div class="qq">17. Aurora storage durability is achieved how?</div>
+      <span class="opt">A) 2 copies in 1 AZ</span><span class="opt">B) 6 copies across 3 AZs</span><span class="opt">C) 1 copy + snapshot</span><span class="opt">D) Instance store</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Aurora keeps 6 copies across 3 AZs (self-healing).</div></div>
+
+    <div class="quiz"><div class="qq">18. Keep an RDS database's data after deleting the instance. What first?</div>
+      <span class="opt">A) Manual/final snapshot</span><span class="opt">B) Read replica</span><span class="opt">C) Multi-AZ</span><span class="opt">D) Nothing</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Manual/final snapshots persist after the instance is deleted.</div></div>
+  </article>
+
+  <div class="foot">
+    <div>
+      <span class="pill">Endpoint, not IP</span><span class="pill">Multi-AZ = availability</span>
+      <span class="pill">Read replicas = read scaling</span><span class="pill">PITR 0–35 days</span>
+      <span class="pill">Encrypt at create</span><span class="pill">Aurora = 6 copies / 3 AZs</span>
+      <span class="pill">Serverless = variable load</span><span class="pill">RDS Proxy = Lambda connections</span>
+      <span class="pill">DMS + SCT = different engines</span>
+    </div>
+    <p>Section 010 · Relational Database Service (RDS) + Mock Exam · built for SAA-C03 self-study.<br>
+    Tap a flashcard or "Show answer" to reveal. Use ☰ Lessons to jump around.</p>
+  </div>
+</main>
+
+<button class="toTop" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawerBg').classList.add('open');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerBg').classList.remove('open');}
+function cp(btn){
+  const code=btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard?.writeText(code).then(()=>{const t=btn.innerText;btn.innerText='copied!';setTimeout(()=>btn.innerText=t,1200);})
+  .catch(()=>{btn.innerText='select & copy';});
+}
+const tt=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{tt.classList.toggle('show',window.scrollY>500);});
+window.addEventListener('load',()=>{
+  try{
+    mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{
+      fontFamily:'Manrope, sans-serif',primaryColor:'#1b2128',primaryTextColor:'#e7edf3',
+      primaryBorderColor:'#2dd4bf',lineColor:'#60a5fa',secondaryColor:'#212934',tertiaryColor:'#161b21'}});
+  }catch(e){console.warn('mermaid init',e);}
+});
+</script>
+</body>
+</html>

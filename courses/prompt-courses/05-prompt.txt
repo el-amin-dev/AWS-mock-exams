@@ -1,0 +1,447 @@
+# ROLE
+You are an expert AWS instructor building a single self-contained HTML study + revision 
+document for ONE section of Adrian Cantrill's AWS Solutions Architect Associate (SAA-C03) 
+course. The document must teach me from zero and also work as exam-revision later.
+
+# WHO I AM (design for this exactly)
+- 0 AWS knowledge, 0 work experience. Everything is new to me.
+- English level B1. Use simple, clear English. Short sentences.
+- I am preparing for the SAA-C03 exam, so depth = exam level (not deeper, not shallower).
+- I run demos myself on my laptop using AWS CLI v2 (already installed and configured).
+
+# INPUT
+I will paste one full course SECTION below. A section contains several lessons.
+Treat each lesson as one teaching unit. Build the document lesson by lesson, in order.
+
+# OUTPUT = ONE HTML FILE
+- ONE single HTML file for the WHOLE section, no matter how many lessons (even 20+). 
+  Do not split into parts.
+- Material UI look, DARK MODE, MOBILE-FIRST (single column, large tap targets, readable font).
+- Load Mermaid from CDN and render diagrams (graph/flowchart/sequence as fits the idea).
+- Self-contained: all CSS + JS inline, opens offline in a browser.
+- Sticky top bar + collapsible section menu so I can jump between lessons.
+- Clean spacing, cards for each lesson, color accents for "exam tip" / "demo" / "term" blocks.
+
+# FORMATTING PRINCIPLES (follow strictly, in priority order)
+1. Mermaid diagram  >  paragraph  (always try a diagram first for any flow/relationship)
+2. Outline / bullet list  >  paragraph
+3. Key–value table  >  paragraph
+4. Structured  >  unstructured
+Only use a paragraph when none of the above fit. Keep paragraphs to 2–3 short sentences.
+
+# LANGUAGE & TERMS
+- B1 English. When a technical word first appears, do ONE of:
+  (a) short explanation in parentheses right after it, OR
+  (b) add it to a "Key Terms" table at the TOP of the lesson (term | simple meaning).
+- Prefer the Key Terms table at the entry of each lesson for the main technical words.
+
+# DOCUMENT STRUCTURE
+## Top of document (once)
+- Section title + 1-line goal.
+- "Section Map": a Mermaid diagram showing how the lessons connect.
+- A "Quick Understanding" table for the WHOLE section (lesson | one-line what + why it matters for exam).
+
+## For EACH lesson (repeat this block)
+1. **Quick Understanding table** — fast TL;DR of the lesson (concept | meaning | exam relevance).
+2. **Key Terms table** — the technical words used, in B1 plain meaning.
+3. **Explanation** — diagram-led (Mermaid), then bullets/tables. Minimal prose.
+4. **Demo** (see DEMO SPEC) — directly after the explanation.
+   Demo EVERY lesson that can possibly be demoed with AWS CLI v2 / CloudFormation.
+   Only skip when the lesson is pure theory with nothing to build — then write 
+   "No demo — theory only" and say in 1 line why.
+5. **Build Knowledge** — 2 short lists:
+   - "Connects to NOW" (how this links to other lessons in this section)
+   - "Needed LATER" (which future course topics depend on this).
+6. **Exam Pointers** — bullets of common SAA-C03 traps, "remember this", and easy-confusions.
+7. **Flashcards** — 4–6 active-recall Q→A pairs (HTML click-to-flip or show/hide).
+8. **Mini Quiz** — 2–3 exam-style multiple-choice questions with the correct answer + 
+   1-line why (hidden until clicked).
+
+# DEMO SPEC (use AWS CLI v2; CloudFormation allowed for fast setup/cleanup)
+Each demo follows this exact order:
+1. **Situation** — the real scenario (tie it to Animals4life when natural) and the goal.
+2. **Check first** — prerequisites / what state I should be in before starting.
+3. **Steps** — numbered. For EVERY command:
+   - the exact AWS CLI v2 command (in a copyable code block),
+   - "What you expect" — what output/result I should see after running it.
+4. **Fix / Key info** — correct any course misunderstanding, note real-world gotchas.
+5. **Clean up** — exact commands to delete everything (use CloudFormation delete or CLI 
+   delete commands) so I leave NO running/billable resources.
+
+# QUALITY BAR
+- Accurate to current SAA-C03 scope. If something is exam-relevant but missing from the 
+  pasted text, add it briefly and mark it "[added for exam]".
+- No fluff. Everything must help me learn OR revise. Remove anything that doesn't.
+- The file must be ready to use as my single source for studying and revising this section.
+
+# SECTION TO BUILD
+VIRTUAL PRIVATE CLOUD (VPC) BASICS
+
+1 - VPC Sizing and Structure 
+
+This lesson steps through the design choices around VPC design and IP planning.
+
+
+Lesson Links
+
+https://aws.amazon.com/answers/networking/aws-single-vpc-design/
+
+https://cloud.google.com/vpc/docs/vpc
+
+https://github.com/acantril/aws-sa-associate-saac02/tree/master/07-VPC-Basics/01_vpc_sizing_and_structure
+
+Animals4lifeIPAddressingPlan
+10.X Network Usage Level 1
+10.1
+10.2
+10.3
+10.4 COMMON
+10.5 RANGES
+10.6 AVOID
+10.7
+10.8
+10.9
+10.10
+10.11
+10.12
+10.13
+10.14
+10.15
+10.16 ANIMALS4LIFE USREGION1 GENERAL ACC VPC1
+10.17 ANIMALS4LIFE USREGION1 GENERAL ACC VPC2
+10.18 ANIMALS4LIFE USREGION1 GENERAL ACC VPC3
+10.19 ANIMALS4LIFE USREGION1 GENERAL ACC VPC4
+10.20 ANIMALS4LIFE USREGION1 PROD ACC VPC1
+10.21 ANIMALS4LIFE USREGION1 PROD ACC VPC2
+10.22 ANIMALS4LIFE USREGION1 PROD ACC VPC3
+10.23 ANIMALS4LIFE USREGION1 PROD ACC VPC4
+10.24 ANIMALS4LIFE USREGION1 DEV ACC VPC1
+10.25 ANIMALS4LIFE USREGION1 DEV ACC VPC2
+10.26 ANIMALS4LIFE USREGION1 DEV ACC VPC3
+10.27 ANIMALS4LIFE USREGION1 DEV ACC VPC4
+10.28 ANIMALS4LIFE USREGION1 RESERVED VPC1
+10.29 ANIMALS4LIFE USREGION1 RESERVED VPC2
+10.30 ANIMALS4LIFE USREGION1 RESERVED VPC3
+10.31 ANIMALS4LIFE USREGION1 RESERVED VPC4
+10.32 ANIMALS4LIFE USREGION2 GENERAL ACC VPC1
+10.33 ANIMALS4LIFE USREGION2 GENERAL ACC VPC2
+10.34 ANIMALS4LIFE USREGION2 GENERAL ACC VPC3
+10.35 ANIMALS4LIFE USREGION2 GENERAL ACC VPC4
+10.36 ANIMALS4LIFE USREGION2 PROD ACC VPC1
+10.37 ANIMALS4LIFE USREGION2 PROD ACC VPC2
+10.38 ANIMALS4LIFE USREGION2 PROD ACC VPC3
+10.39 ANIMALS4LIFE USREGION2 PROD ACC VPC4
+10.40 ANIMALS4LIFE USREGION2 DEV ACC VPC1
+10.41 ANIMALS4LIFE USREGION2 DEV ACC VPC2
+10.42 ANIMALS4LIFE USREGION2 DEV ACC VPC3
+10.43 ANIMALS4LIFE USREGION2 DEV ACC VPC4
+10.44 ANIMALS4LIFE USREGION2 RESERVED VPC1
+10.45 ANIMALS4LIFE USREGION2 RESERVED VPC2
+10.46 ANIMALS4LIFE USREGION2 RESERVED VPC3
+10.47 ANIMALS4LIFE USREGION2 RESERVED VPC4
+10.48 ANIMALS4LIFE USREGION3 GENERAL ACC VPC1
+10.X Network
+110.49 ANIMALS4LIFE USREGION3 GENERAL ACC VPC2
+10.50 ANIMALS4LIFE USREGION3 GENERAL ACC VPC3
+10.51 ANIMALS4LIFE USREGION3 GENERAL ACC VPC4
+10.52 ANIMALS4LIFE USREGION3 PROD ACC VPC1
+10.53 ANIMALS4LIFE USREGION3 PROD ACC VPC2
+10.54 ANIMALS4LIFE USREGION3 PROD ACC VPC3
+10.55 ANIMALS4LIFE USREGION3 PROD ACC VPC4
+10.56 ANIMALS4LIFE USREGION3 DEV ACC VPC1
+10.57 ANIMALS4LIFE USREGION3 DEV ACC VPC2
+10.58 ANIMALS4LIFE USREGION3 DEV ACC VPC3
+10.59 ANIMALS4LIFE USREGION3 DEV ACC VPC4
+10.60 ANIMALS4LIFE USREGION3 RESERVED VPC1
+10.61 ANIMALS4LIFE USREGION3 RESERVED VPC2
+10.62 ANIMALS4LIFE USREGION3 RESERVED VPC3
+10.63 ANIMALS4LIFE USREGION3 RESERVED VPC4
+10.64 ANIMALS4LIFE EUROPE GENERAL ACC VPC1
+10.65 ANIMALS4LIFE EUROPE GENERAL ACC VPC2
+10.66 ANIMALS4LIFE EUROPE GENERAL ACC VPC3
+10.67 ANIMALS4LIFE EUROPE GENERAL ACC VPC4
+10.68 ANIMALS4LIFE EUROPE PROD ACC VPC1
+10.69 ANIMALS4LIFE EUROPE PROD ACC VPC2
+10.70 ANIMALS4LIFE EUROPE PROD ACC VPC3
+10.71 ANIMALS4LIFE EUROPE PROD ACC VPC4
+10.72 ANIMALS4LIFE EUROPE DEV ACC VPC1
+10.73 ANIMALS4LIFE EUROPE DEV ACC VPC2
+10.74 ANIMALS4LIFE EUROPE DEV ACC VPC3
+10.75 ANIMALS4LIFE EUROPE DEV ACC VPC4
+10.76 ANIMALS4LIFE EUROPE RESERVED VPC1
+10.77 ANIMALS4LIFE EUROPE RESERVED VPC2
+10.78 ANIMALS4LIFE EUROPE RESERVED VPC3
+10.79 ANIMALS4LIFE EUROPE RESERVED VPC4
+10.80 ANIMALS4LIFE AUSTRALIA GENERAL ACC VPC1
+10.81 ANIMALS4LIFE AUSTRALIA GENERAL ACC VPC2
+10.82 ANIMALS4LIFE AUSTRALIA GENERAL ACC VPC3
+10.83 ANIMALS4LIFE AUSTRALIA GENERAL ACC VPC4
+10.84 ANIMALS4LIFE AUSTRALIA PROD ACC VPC1
+10.85 ANIMALS4LIFE AUSTRALIA PROD ACC VPC2
+10.86 ANIMALS4LIFE AUSTRALIA PROD ACC VPC3
+10.87 ANIMALS4LIFE AUSTRALIA PROD ACC VPC4
+10.88 ANIMALS4LIFE AUSTRALIA DEV ACC VPC1
+10.89 ANIMALS4LIFE AUSTRALIA DEV ACC VPC2
+10.90 ANIMALS4LIFE AUSTRALIA DEV ACC VPC3
+10.91 ANIMALS4LIFE AUSTRALIA DEV ACC VPC4
+10.92 ANIMALS4LIFE AUSTRALIA RESERVED VPC1
+10.93 ANIMALS4LIFE AUSTRALIA RESERVED VPC2
+10.94 ANIMALS4LIFE AUSTRALIA RESERVED VPC3
+10.95 ANIMALS4LIFE AUSTRALIA RESERVED VPC4
+10.96 ANIMALS4LIFE UNUSED
+10.97 ANIMALS4LIFE UNUSED
+Usage Level 110.X Network
+210.98 ANIMALS4LIFE UNUSED
+10.99 ANIMALS4LIFE UNUSED
+10.100 ANIMALS4LIFE UNUSED
+10.101 ANIMALS4LIFE UNUSED
+10.102 ANIMALS4LIFE UNUSED
+10.103 ANIMALS4LIFE UNUSED
+10.104 ANIMALS4LIFE UNUSED
+10.105 ANIMALS4LIFE UNUSED
+10.106 ANIMALS4LIFE UNUSED
+10.107 ANIMALS4LIFE UNUSED
+10.108 ANIMALS4LIFE UNUSED
+10.109 ANIMALS4LIFE UNUSED
+10.110 ANIMALS4LIFE UNUSED
+10.111 ANIMALS4LIFE UNUSED
+10.112 ANIMALS4LIFE UNUSED
+10.113 ANIMALS4LIFE UNUSED
+10.114 ANIMALS4LIFE UNUSED
+10.115 ANIMALS4LIFE UNUSED
+10.116 ANIMALS4LIFE UNUSED
+10.117 ANIMALS4LIFE UNUSED
+10.118 ANIMALS4LIFE UNUSED
+10.119 ANIMALS4LIFE UNUSED
+10.120 ANIMALS4LIFE UNUSED
+10.121 ANIMALS4LIFE UNUSED
+10.122 ANIMALS4LIFE UNUSED
+10.123 ANIMALS4LIFE UNUSED
+10.124 ANIMALS4LIFE UNUSED
+10.125 ANIMALS4LIFE UNUSED
+10.126 ANIMALS4LIFE UNUSED
+10.127 ANIMALS4LIFE UNUSED
+10.128 GOOGLE
+10.129 GOOGLE
+10.130 GOOGLE
+10.131 GOOGLE
+10.132 GOOGLE
+10.133 GOOGLE
+10.134 GOOGLE
+10.135 GOOGLE
+10.136 GOOGLE
+10.137 GOOGLE
+10.138 GOOGLE
+10.139 GOOGLE
+10.140 GOOGLE
+10.141 GOOGLE
+10.142 GOOGLE
+10.143 GOOGLE
+10.144 GOOGLE
+10.145 GOOGLE
+10.146 GOOGLE
+Usage Level 110.X Network
+310.147 GOOGLE
+10.148 GOOGLE
+10.149 GOOGLE
+10.150 GOOGLE
+10.151 GOOGLE
+10.152 GOOGLE
+10.153 GOOGLE
+10.154 GOOGLE
+10.155 GOOGLE
+10.156 GOOGLE
+10.157 GOOGLE
+10.158 GOOGLE
+10.159 GOOGLE
+10.160 GOOGLE
+10.161 GOOGLE
+10.162 GOOGLE
+10.163 GOOGLE
+10.164 GOOGLE
+10.165 GOOGLE
+10.166 GOOGLE
+10.167 GOOGLE
+10.168 GOOGLE
+10.169 GOOGLE
+10.170 GOOGLE
+10.171 GOOGLE
+10.172 GOOGLE
+10.173 GOOGLE
+10.174 GOOGLE
+10.175 GOOGLE
+10.176 GOOGLE
+10.177 GOOGLE
+10.178 GOOGLE
+10.179 GOOGLE
+10.180 GOOGLE
+10.181 GOOGLE
+10.182 GOOGLE
+10.183 GOOGLE
+10.184 GOOGLE
+10.185 GOOGLE
+10.186 GOOGLE
+10.187 GOOGLE
+10.188 GOOGLE
+10.189 GOOGLE
+10.190 GOOGLE
+10.191 GOOGLE
+10.192 GOOGLE
+10.193 GOOGLE
+10.194 GOOGLE
+10.195 GOOGLE
+Usage Level 110.X Network
+410.196 GOOGLE
+10.197 GOOGLE
+10.198 GOOGLE
+10.199 GOOGLE
+10.200 GOOGLE
+10.201 GOOGLE
+10.202 GOOGLE
+10.203 GOOGLE
+10.204 GOOGLE
+10.205 GOOGLE
+10.206 GOOGLE
+10.207 GOOGLE
+10.208 GOOGLE
+10.209 GOOGLE
+10.210 GOOGLE
+10.211 GOOGLE
+10.212 GOOGLE
+10.213 GOOGLE
+10.214 GOOGLE
+10.215 GOOGLE
+10.216 GOOGLE
+10.217 GOOGLE
+10.218 GOOGLE
+10.219 GOOGLE
+10.220 GOOGLE
+10.221 GOOGLE
+10.222 GOOGLE
+10.223 GOOGLE
+10.224 GOOGLE
+10.225 GOOGLE
+10.226 GOOGLE
+10.227 GOOGLE
+10.228 GOOGLE
+10.229 GOOGLE
+10.230 GOOGLE
+10.231 GOOGLE
+10.232 GOOGLE
+10.233 GOOGLE
+10.234 GOOGLE
+10.235 GOOGLE
+10.236 GOOGLE
+10.237 GOOGLE
+10.238 GOOGLE
+10.239 GOOGLE
+10.240 GOOGLE
+10.241 GOOGLE
+10.242 GOOGLE
+10.243 GOOGLE
+10.244 GOOGLE
+Usage Level 110.X Network
+510.245 GOOGLE
+10.246 GOOGLE
+10.247 GOOGLE
+10.248 GOOGLE
+10.249 GOOGLE
+10.250 GOOGLE
+10.251 GOOGLE
+10.252 GOOGLE
+10.253 GOOGLE
+10.254 GOOGLE
+10.255 GOOGLE
+Usage Level 110.X Network
+
+2 - Custom VPCs
+
+This video steps through the architecture and features of Custom VPCs including the main issues which are raised in the exam.
+
+In the second half .. a [DEMO] portion - we implement the VPC shell for the Animals4life (A4L) organization in our accounts.
+
+
+Lesson Links
+
+VPC Limits https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html
+
+Architecture https://raw.githubusercontent.com/acantril/aws-sa-associate-saac03/main/0800-VIRTUAL_PRIVATE_CLOUD(VPC)/00_LEARNINGAIDS/VPCStucture-1.png
+
+This video steps through the architecture and features of Custom VPCs including the main issues which are raised in the exam.
+
+In the second half .. a [DEMO] portion - we implement the VPC shell for the Animals4life (A4L) organization in our accounts.
+
+
+Lesson Links
+
+VPC Limits https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html
+
+Architecture https://raw.githubusercontent.com/acantril/aws-sa-associate-saac03/main/0800-VIRTUAL_PRIVATE_CLOUD(VPC)/00_LEARNINGAIDS/VPCStucture-1.png
+
+3 - VPC Subnets 
+
+In this lesson I explain the architecture of VPC subnets - their features and some of the configuration options they provide.
+
+We also cover the IPs which are reserved and unavailable for use in every VPC and the IP auto assignment options configurable on a per Subnet basis.
+
+we step through how to implement the multi-tier subnet design for Animals4Life including IPv6 configuration for subnets
+
+4 - VPC Routing, Internet Gateway & Bastion Hosts 
+
+In this lesson we step through the architecture and functionality of Route Tables, Routes, Associations, the internet gateway and public IP v4 functionality within a VPC
+
+The lesson finishes by briefly discussing what a Bastion or Jumpbox does.
+
+we implement an Internet Gateway, Route Tables and Routes within the Animals4life VPC to support the WEB public subnets.
+
+Once the WEB subnets are public, we create a bastion host with public IPv4 addressing and connect to it to test.
+
+By the end of this [DEMO] you will have a fully working public capable VPC and bastion ingress point.
+
+
+** Jumpboxes are bad - but you need to understand how to spot bad things **
+
+ we implement an Internet Gateway, Route Tables and Routes within the Animals4life VPC to support the WEB public subnets.
+
+Once the WEB subnets are public, we create a bastion host with public IPv4 addressing and connect to it to test.
+
+By the end of this [DEMO] you will have a fully working public capable VPC and bastion ingress point.
+
+
+** Jumpboxes are bad - but you need to understand how to spot bad things **
+
+5 -  Stateful vs Stateless Firewalls 
+
+
+
+Firewalls can either be stateless or stateful - this lesson explains the difference between the two.
+
+Developing an understanding, is essential to be able to implement these networking security features in AWS.
+
+6 - Network Access Control Lists (NACLs) 
+
+A network access control list (ACL) is an optional layer of security for your VPC that acts as a firewall for controlling traffic in and out of one or more subnets. You might set up network ACLs with rules similar to your security groups in order to add an additional layer of security to your VPC. This lesson steps through the features of a NACL, the impact of their stateless nature and some of the key points to be aware of for the exam.
+
+7 - Security Groups (SG) 
+
+Security Groups (SGs) are another security feature of AWS VPC ... only unlike NACLs they are attached to AWS resources, not VPC subnets.
+
+SGs offer a few advantages vs NACLs in that they can recognize AWS resources and filter based on them, they can reference other SGs and also themselves.
+
+But.. SGs are not capable of explicitly blocking traffic - so often require assistance from NACLs
+
+8 - Network Address Translation (NAT) & NAT Gateway
+
+In this 2-part lesson we step through the architecture of Network Address Translation or (NAT) - what it does, and why it's required within AWS.
+
+and we look at the NAT Gateway service - AWS NAT-as-a-service Gateway Product.
+
+In this 2-part lesson we step through the architecture of Network Address Translation or (NAT) - what it does, and why it's required within AWS.
+
+and we look at the NAT Gateway service - AWS NAT-as-a-service Gateway Product.
+
+Implementing private internet access using NAT Gateways 
+
+you will implement a highly-available regionally resilient NAT Gateway solution within the Animals4life VPC. You will create three Nat Gateways, Route tables and Default Routes with the Nat Gateway as a target and finally associate those Route Tables with the Reserved, App and DB subnets in AZ A, B and C before testing the solution using the internal instance.
+
+9 - 17 - mock exam level for this section "VIRTUAL PRIVATE CLOUD (VPC) BASICS " implement old courses ["IAM, ACCOUNTS AND AWS ORGANISATIONS", "SIMPLE STORAGE SERVICE (S3) "]

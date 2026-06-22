@@ -1,0 +1,221 @@
+# ROLE
+You are an expert AWS instructor building a single self-contained HTML study + revision 
+document for ONE section of Adrian Cantrill's AWS Solutions Architect Associate (SAA-C03) 
+course. The document must teach me from zero and also work as exam-revision later.
+
+# WHO I AM (design for this exactly)
+- 0 AWS knowledge, 0 work experience. Everything is new to me.
+- English level B1. Use simple, clear English. Short sentences.
+- I am preparing for the SAA-C03 exam, so depth = exam level (not deeper, not shallower).
+- I run demos myself on my laptop using AWS CLI v2 (already installed and configured).
+
+# INPUT
+I will paste one full course SECTION below. A section contains several lessons.
+Treat each lesson as one teaching unit. Build the document lesson by lesson, in order.
+
+# OUTPUT = ONE HTML FILE
+- ONE single HTML file for the WHOLE section, no matter how many lessons (even 20+). 
+  Do not split into parts.
+- Material UI look, DARK MODE, MOBILE-FIRST (single column, large tap targets, readable font).
+- Load Mermaid from CDN and render diagrams (graph/flowchart/sequence as fits the idea).
+- Self-contained: all CSS + JS inline, opens offline in a browser.
+- Sticky top bar + collapsible section menu so I can jump between lessons.
+- Clean spacing, cards for each lesson, color accents for "exam tip" / "demo" / "term" blocks.
+
+# FORMATTING PRINCIPLES (follow strictly, in priority order)
+1. Mermaid diagram  >  paragraph  (always try a diagram first for any flow/relationship)
+2. Outline / bullet list  >  paragraph
+3. Key–value table  >  paragraph
+4. Structured  >  unstructured
+Only use a paragraph when none of the above fit. Keep paragraphs to 2–3 short sentences.
+
+# LANGUAGE & TERMS
+- B1 English. When a technical word first appears, do ONE of:
+  (a) short explanation in parentheses right after it, OR
+  (b) add it to a "Key Terms" table at the TOP of the lesson (term | simple meaning).
+- Prefer the Key Terms table at the entry of each lesson for the main technical words.
+
+# DOCUMENT STRUCTURE
+## Top of document (once)
+- Section title + 1-line goal.
+- "Section Map": a Mermaid diagram showing how the lessons connect.
+- A "Quick Understanding" table for the WHOLE section (lesson | one-line what + why it matters for exam).
+
+## For EACH lesson (repeat this block)
+1. **Quick Understanding table** — fast TL;DR of the lesson (concept | meaning | exam relevance).
+2. **Key Terms table** — the technical words used, in B1 plain meaning.
+3. **Explanation** — diagram-led (Mermaid), then bullets/tables. Minimal prose.
+4. **Demo** (see DEMO SPEC) — directly after the explanation.
+   Demo EVERY lesson that can possibly be demoed with AWS CLI v2 / CloudFormation.
+   Only skip when the lesson is pure theory with nothing to build — then write 
+   "No demo — theory only" and say in 1 line why.
+5. **Build Knowledge** — 2 short lists:
+   - "Connects to NOW" (how this links to other lessons in this section)
+   - "Needed LATER" (which future course topics depend on this).
+6. **Exam Pointers** — bullets of common SAA-C03 traps, "remember this", and easy-confusions.
+7. **Flashcards** — 4–6 active-recall Q→A pairs (HTML click-to-flip or show/hide).
+8. **Mini Quiz** — 2–3 exam-style multiple-choice questions with the correct answer + 
+   1-line why (hidden until clicked).
+
+# DEMO SPEC (use AWS CLI v2; CloudFormation allowed for fast setup/cleanup)
+Each demo follows this exact order:
+1. **Situation** — the real scenario (tie it to Animals4life when natural) and the goal.
+2. **Check first** — prerequisites / what state I should be in before starting.
+3. **Steps** — numbered. For EVERY command:
+   - the exact AWS CLI v2 command (in a copyable code block),
+   - "What you expect" — what output/result I should see after running it.
+4. **Fix / Key info** — correct any course misunderstanding, note real-world gotchas.
+5. **Clean up** — exact commands to delete everything (use CloudFormation delete or CLI 
+   delete commands) so I leave NO running/billable resources.
+
+# QUALITY BAR
+- Accurate to current SAA-C03 scope. If something is exam-relevant but missing from the 
+  pasted text, add it briefly and mark it "[added for exam]".
+- No fluff. Everything must help me learn OR revise. Remove anything that doesn't.
+- The file must be ready to use as my single source for studying and revising this section.
+
+# SECTION TO BUILD
+
+AWS Fundamentals 
+
+1 - AWS Public vs Private Services 
+
+AWS Services can be divided into public and private AWS services
+
+In this lesson I explain the difference between the two - focussing on the network zones these services are hosted in.
+
+
+https://github.com/acantril/aws-sa-associate-saac02/blob/master/04-AWS-Fundamentals/00_LearningAids/Public%26PrivateServices.pdf
+
+2 - AWS Global Infrastructure 
+
+AWS have created a global public cloud platform which consists of isolated 'regions' connected together by high speed global networking.
+
+This lesson reviews the main architectural components of AWS, Regions, Edge Locations and Availability Zones.
+
+It also discusses what it means to be Globally Resilient, Regional Resilient and AZ resilient.
+
+
+Lesson Links
+
+AWS Website used in this lesson https://www.infrastructure.aws/
+
+3 - AWS Default Virtual Private Cloud (VPC) 
+
+A default VPC is created once per region when an AWS account is first created.
+
+There can only be one default VPC per region, and they can be deleted and recreated from the console UI .
+
+They always have the same IP range and same '1 subnet per AZ' architecture.
+
+This lesson details and demos the functionality of a default VPC.
+
+4 - Elastic Compute Cloud (EC2) Basics 
+
+The Elastic Compute Cloud or EC2 is AWS's implement of IAAS - Infrastructure as a service.
+
+It allows you to provision virtual machines known as instances with resources you select and an operating system of your choosing.
+
+This lesson provides an initial overview of what an instance is, instance states, what an Amazon Machine Image does and talks about how to connect to instances.
+
+ creating and connecting to a Linux EC2 instance.
+
+It includes an overview of the key configuration elements when creating an instance in the default VPC
+
+ creating and connecting to a Linux EC2 instance.
+
+It includes an overview of the key configuration elements when creating an instance in the default VPC
+
+5 - Simple Storage Service (S3) Basics 
+
+imple Storage Service (S3) is a core AWS service.
+
+It provides a near infinitely scalable object storage platform - accessible from anywhere with a public internet connection.
+
+It tends to be the default storage location for data ingestion and output for many AWS services.
+
+This lesson introduces S3, Objects and Buckets.
+ I step through the process of creating a simple S3 bucket and uploading objects.
+
+I demonstrate the block pupublic access settings, talk about the bucket ARN and go into some detail about permissions on objects and how folders are really objects :)
+
+6 - CloudFormation (CFN) Basics 
+
+CloudFormation is an Infrastructure as Code (IaC) product in AWS which allows automation infrastructure creation, update and deletion.
+
+Templates created in YAML or JSON can be used to automate infrastructure operations
+
+Templates are used to create stacks, which are used to interact with resources in an AWS account.
+
+ we use a CloudFormation template to create and delete an EC2 instance within AWS
+
+Template: https://learn-cantrill-labs.s3.amazonaws.com/awscoursedemos/0058-aws-simplecfn/ec2instance.yaml
+
+CloudFormation Resource Reference : https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html
+
+7 - CloudWatch (CW) Basics 
+
+CloudWatch is a core supporting service within AWS which provides metric, log and event management services.
+
+It's used through other AWS services for health and performance monitoring, log management and nerveless architectures.
+
+This lesson steps through the basics.
+
+I step you through creating an EC2 instance, and configuring a Cpu Utilisation Alarm.
+Demo Steps
+
+    Create an EC2 instance
+    t2.micro
+    ensure its set to the default VPC and has a public IP
+    Optionally enable detailed monitoring
+    Connect to the instance and install Extras package and stress
+    Install stress (commands listed in code sample below)
+    Create an alarm based on the CPU Utilisation of the created instance
+    Threshold greater than 15%
+    Run stress 'stress -c 2'
+    Wait for alarm to .. alarm
+    use ctrl + c to cancel stress
+    Wait for alarm to return to ..ok
+    Delete the alarm
+    Delete the instance
+
+text
+sudo yum install stress -y
+
+8 - Shared Responsibility Model 
+
+The Shared Responsibility Model - is how AWS provide clarity around which areas of systems security are theirs, and which are owned by the customer.
+
+The model is useful as you learn about AWS and so this lesson provides a brief introduction.
+
+9 - High-Availability vs Fault-Tolerance vs Disaster Recovery 
+
+High Availability (HA), Fault-Tolerance (FT) and Disaster Recover (DR) are three essential concepts to understand for every Solutions Architect.
+
+Whats more important is understanding the differences between the three - specifically HA and FT.
+
+Most technical people don't have a correct grasp .. this lesson aims to ensure that you do, before starting the main course content.
+
+10 - Route53 (R53) Fundamentals 
+
+In this lesson I step through how r53 is architectures and some of its benefits and features.
+
+I step through the process which occurs behind the scenes when a domain is registered using a Registrar. 
+
+11 - DNS Record Types 
+
+DNS is capable of handling a number of different record types - which perform different tasks.
+
+This lesson steps through :-
+
+    A & AAAA
+    CNAME
+    TXT
+    MX
+    NS
+
+as well as introducing TTL values on records.
+
+this is also just foundatin 
+most of thing or covered in next lessons 
+

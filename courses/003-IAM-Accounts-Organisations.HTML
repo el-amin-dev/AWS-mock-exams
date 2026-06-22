@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03 · 003 · IAM, Accounts & Organisations</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+:root{
+  --bg:#101418;--bg2:#161b21;--surface:#1b2128;--surface2:#212934;
+  --line:#2c3540;--line2:#3a4654;--text:#e7edf3;--muted:#9fb0c0;
+  --primary:#2dd4bf;--primary-d:#0f3b39;--exam:#fbbf24;--exam-d:#3a2f0c;
+  --demo:#60a5fa;--demo-d:#0e2647;--term:#c084fc;--term-d:#2a1640;
+  --warn:#fb7185;--warn-d:#3a151c;--ok:#34d399;
+  --radius:16px;--shadow:0 6px 22px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.25;margin:0}
+a{color:var(--primary);text-decoration:none}
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(16,20,24,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .badge{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--bg);background:var(--primary);padding:4px 9px;border-radius:8px}
+.topbar .ttl{font-family:'Sora';font-weight:600;font-size:15px}
+.topbar .ttl small{display:block;color:var(--muted);font-weight:500;font-size:11.5px;font-family:'Manrope'}
+.menu-btn{margin-left:auto;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+.menu-btn:active{transform:scale(.97)}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
+.drawer-bg.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(86vw,340px);background:var(--bg2);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .28s ease;z-index:80;overflow-y:auto;padding:18px 16px 40px}
+.drawer.open{transform:translateX(0)}
+.drawer h3{font-size:11.5px;color:var(--muted);margin:14px 4px 8px;text-transform:uppercase;letter-spacing:1px}
+.drawer a{display:block;color:var(--text);padding:11px 12px;border-radius:10px;font-weight:500;font-size:14.5px;border:1px solid transparent}
+.drawer a:active{background:var(--surface)}
+.drawer a .n{color:var(--primary);font-family:'Sora';font-weight:700;margin-right:8px}
+.drawer .close{width:100%;margin-top:18px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 90px}
+.hero{background:radial-gradient(120% 90% at 100% 0%, rgba(45,212,191,.16), transparent 55%),radial-gradient(120% 90% at 0% 100%, rgba(96,165,250,.12), transparent 55%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+.hero .eyebrow{color:var(--primary);font-weight:700;font-size:12.5px;letter-spacing:1.5px;font-family:'Sora'}
+.hero h1{font-size:25px;margin:6px 0 8px}
+.hero p{color:var(--muted);margin:0;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;margin-top:18px;box-shadow:var(--shadow)}
+.lesson-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.lesson-head .num{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:'Sora';font-weight:700;background:var(--primary);color:var(--bg);font-size:15px}
+.lesson-head h2{font-size:19px}
+.lesson-head .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+h3.block{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+h3.block::before{content:"";width:14px;height:3px;border-radius:3px;background:var(--primary)}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:360px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface2);color:var(--text);font-family:'Sora';font-weight:600;font-size:12.5px;letter-spacing:.3px}
+tr:last-child td{border-bottom:none}
+td b{color:var(--primary)}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{position:relative;padding:6px 0 6px 22px;font-size:15px;border-bottom:1px dashed var(--line)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"▸";position:absolute;left:2px;top:6px;color:var(--primary)}
+.two-col{display:grid;gap:12px}
+@media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+.box{border-radius:12px;padding:13px 14px;margin:12px 0;border:1px solid;font-size:14.5px}
+.box .tag{font-family:'Sora';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
+.box.exam{background:var(--exam-d);border-color:#6b551a}.box.exam .tag{color:var(--exam)}
+.box.term{background:var(--term-d);border-color:#4a2d6b}.box.term .tag{color:var(--term)}
+.box.warn{background:var(--warn-d);border-color:#6b2630}.box.warn .tag{color:var(--warn)}
+.box.demo{background:var(--demo-d);border-color:#1d4a82}.box.demo .tag{color:var(--demo)}
+.box ul{margin:4px 0 0;padding-left:18px}.box li{margin:3px 0}
+.mer{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;overflow-x:auto}
+.mermaid{display:flex;justify-content:center;min-width:fit-content}
+.code{position:relative;background:#0c1117;border:1px solid var(--line2);border-radius:10px;margin:10px 0}
+.code pre{margin:0;padding:13px 14px;overflow-x:auto;font-size:13px;line-height:1.55}
+.code code{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;color:#cfe9e6;white-space:pre}
+.code .cp{position:absolute;top:7px;right:7px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:7px;font-size:11px;padding:4px 9px;cursor:pointer;font-weight:600}
+.code .cp:active{color:var(--primary)}
+.expect{font-size:13px;color:var(--ok);background:rgba(52,211,153,.08);border-left:3px solid var(--ok);padding:7px 11px;margin:0 0 12px;border-radius:0 8px 8px 0}
+.expect b{color:var(--ok)}
+.step{counter-increment:st;margin:14px 0}
+.step .sh{display:flex;align-items:center;gap:9px;font-family:'Sora';font-weight:600;font-size:14.5px;margin-bottom:4px}
+.step .sh::before{content:counter(st);background:var(--demo);color:var(--bg);width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12.5px;flex:0 0 auto}
+.demo-wrap{counter-reset:st}
+.fc-grid{display:grid;gap:10px}
+.fc{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:13px 14px;cursor:pointer;transition:border-color .2s;user-select:none}
+.fc:active{border-color:var(--primary)}
+.fc .q{font-weight:600;font-size:14.5px;display:flex;gap:8px;align-items:flex-start}
+.fc .q::before{content:"Q";font-family:'Sora';color:var(--primary);font-weight:700;flex:0 0 auto}
+.fc .a{display:none;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);color:var(--muted);font-size:14px}
+.fc .a::before{content:"A ";color:var(--ok);font-weight:700;font-family:'Sora'}
+.fc.show .a{display:block}
+.fc .hint{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600}
+.quiz{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:14px;margin:10px 0}
+.quiz .qq{font-weight:600;font-size:15px;margin-bottom:8px}
+.quiz .opt{display:block;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin:6px 0;font-size:14px;cursor:pointer}
+.quiz .opt:active{border-color:var(--primary)}
+.quiz .reveal{margin-top:6px;background:var(--surface);color:var(--primary);border:1px solid var(--line2);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px;width:100%}
+.quiz .ans{display:none;margin-top:10px;border-left:3px solid var(--ok);background:rgba(52,211,153,.08);padding:9px 12px;border-radius:0 8px 8px 0;font-size:14px}
+.quiz .ans b{color:var(--ok)}
+.quiz.show .ans{display:block}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;line-height:1.7}
+.pill{display:inline-block;background:var(--surface2);border:1px solid var(--line2);color:var(--muted);font-size:11px;padding:2px 8px;border-radius:20px;margin:2px}
+.toTop{position:fixed;right:14px;bottom:16px;z-index:50;background:var(--primary);color:var(--bg);border:none;width:46px;height:46px;border-radius:50%;font-size:20px;box-shadow:var(--shadow);cursor:pointer;display:none}
+.toTop.show{display:block}
+kbd{background:var(--surface2);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-size:12px;font-family:monospace}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="badge">SAA-C03</span>
+  <div class="ttl">Section 003<small>IAM, Accounts &amp; Organisations</small></div>
+  <button class="menu-btn" onclick="openDrawer()">☰ Lessons</button>
+</header>
+
+<div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer">
+  <h3>IAM identities &amp; permissions</h3>
+  <a href="#l1" onclick="closeDrawer()"><span class="n">1</span>IAM Identity Policies</a>
+  <a href="#l2" onclick="closeDrawer()"><span class="n">2</span>IAM Groups</a>
+  <a href="#l3" onclick="closeDrawer()"><span class="n">3</span>IAM Roles – The Tech</a>
+  <a href="#l4" onclick="closeDrawer()"><span class="n">4</span>When to use Roles</a>
+  <a href="#l5" onclick="closeDrawer()"><span class="n">5</span>Service-linked Roles & PassRole</a>
+  <h3>Multi-account</h3>
+  <a href="#l6" onclick="closeDrawer()"><span class="n">6</span>AWS Organizations</a>
+  <a href="#l7" onclick="closeDrawer()"><span class="n">7</span>Service Control Policies</a>
+  <a href="#l8" onclick="closeDrawer()"><span class="n">8</span>Using SCPs (demo)</a>
+  <h3>Logging &amp; governance</h3>
+  <a href="#l9" onclick="closeDrawer()"><span class="n">9</span>CloudWatch Logs</a>
+  <a href="#l10" onclick="closeDrawer()"><span class="n">10</span>CloudTrail</a>
+  <a href="#l11" onclick="closeDrawer()"><span class="n">11</span>Control Tower 101</a>
+  <button class="close" onclick="closeDrawer()">Close</button>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">SECTION GOAL</div>
+    <h1>Master how AWS decides "who can do what" — and how to manage many accounts.</h1>
+    <p>IAM is the most-tested area on SAA-C03. Learn policies, groups and roles first, then scale up to Organizations, SCPs and account-wide logging.</p>
+  </section>
+
+  <div class="card">
+    <h3 class="block">Section Map · how the lessons connect</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  POL[1. Identity Policies] --> GRP[2. Groups]
+  POL --> ROLE[3. Roles - tech]
+  ROLE --> WHEN[4. When to use Roles]
+  ROLE --> SLR[5. Service-linked + PassRole]
+  ORG[6. Organizations] --> SCP[7. SCPs]
+  SCP --> USE[8. Using SCPs]
+  ORG --> CT[10. CloudTrail org trail]
+  CWL[9. CloudWatch Logs] --> CT
+  ORG --> TOWER[11. Control Tower]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class POL,GRP,ROLE,WHEN,SLR a;
+  class ORG,SCP,USE,CWL,CT,TOWER b;
+    </pre></div>
+  </div>
+
+  <div class="card">
+    <h3 class="block">Quick Understanding · whole section</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Lesson</th><th>What + why it matters for the exam</th></tr>
+      <tr><td>1 Identity Policies</td><td>Allow/Deny rules + priority order. The heart of IAM. Tested heavily.</td></tr>
+      <tr><td>2 Groups</td><td>Containers for users; not real identities. Easy points.</td></tr>
+      <tr><td>3 Roles – tech</td><td>Temporary identity you assume. Trust + permissions policy. Core concept.</td></tr>
+      <tr><td>4 When to use Roles</td><td>Service access, cross-account, federation, &gt;5000 users. Scenario favourite.</td></tr>
+      <tr><td>5 Service-linked + PassRole</td><td>Roles services own; PassRole stops privilege escalation.</td></tr>
+      <tr><td>6 Organizations</td><td>Manage many accounts, one bill. Management vs member accounts, OUs.</td></tr>
+      <tr><td>7 SCPs</td><td>Guardrails on member accounts. They limit, never grant.</td></tr>
+      <tr><td>8 Using SCPs</td><td>Apply + test an SCP. Mgmt account is immune.</td></tr>
+      <tr><td>9 CloudWatch Logs</td><td>Store/monitor log data. Log group → stream → events.</td></tr>
+      <tr><td>10 CloudTrail</td><td>Logs API calls. 90-day history free; trail → S3 for more.</td></tr>
+      <tr><td>11 Control Tower</td><td>Auto multi-account setup with guardrails. Know what it orchestrates.</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ===== LESSON 1 ===== -->
+  <article class="card" id="l1">
+    <div class="lesson-head"><div class="num">1</div><div><h2>IAM Identity Policies</h2><div class="sub">Allow / Deny rules attached to users, groups and roles.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Identity policy</td><td>JSON rules attached to an identity, saying Allow or Deny.</td><td>Core of every IAM question.</td></tr>
+      <tr><td>Statement parts</td><td>Effect, Action, Resource (+ Condition).</td><td>Read policies fast.</td></tr>
+      <tr><td>Priority order</td><td>Explicit Deny &gt; Explicit Allow &gt; Default Deny.</td><td>The #1 IAM rule.</td></tr>
+      <tr><td>ARN</td><td>Unique address of a resource.</td><td>Used in Resource field.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Statement</td><td>One rule inside a policy.</td></tr>
+      <tr><td>Effect</td><td>Allow or Deny.</td></tr>
+      <tr><td>Action</td><td>What is allowed/denied, e.g. <code>s3:GetObject</code>.</td></tr>
+      <tr><td>Resource</td><td>What it applies to (an ARN), e.g. a bucket.</td></tr>
+      <tr><td>Managed policy</td><td>A reusable policy you attach to many identities.</td></tr>
+      <tr><td>Inline policy</td><td>A policy stuck to one identity only (1:1).</td></tr>
+      <tr><td>Implicit deny</td><td>If nothing allows it, it's denied by default.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  REQ[A request: can I do this?] --> D{Explicit DENY exists?}
+  D -->|Yes| NO[DENIED - deny always wins]
+  D -->|No| A{Explicit ALLOW exists?}
+  A -->|Yes| YES[ALLOWED]
+  A -->|No| DEF[DENIED - implicit/default deny]
+  classDef r fill:#3a151c,stroke:#fb7185,color:#e7edf3;
+  classDef g fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class NO,DEF r; class YES g;
+    </pre></div>
+    <ul class="clean">
+      <li>A policy has one or more <b>statements</b>: each has <b>Effect</b>, <b>Action</b>, <b>Resource</b>.</li>
+      <li>Decision order: <b>1) explicit Deny</b> → <b>2) explicit Allow</b> → <b>3) default Deny</b>.</li>
+      <li>A single <b>explicit Deny always wins</b>, even with many Allows.</li>
+      <li><b>Managed</b> policy = reusable (AWS-managed or customer-managed). <b>Inline</b> = tied to one identity.</li>
+      <li><b>ARN</b> format: <code>arn:aws:service:region:account-id:resource</code> (IAM has blank region — it's global).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> create user <b>sally</b>, give her S3 read via a managed policy, then prove an explicit <b>Deny</b> on one bucket beats the Allow. <b>Check first:</b> CLI configured as admin.</div>
+      <div class="step"><div class="sh">Create sally + access keys, save them</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws iam create-user --user-name sally
+aws iam create-access-key --user-name sally</code></pre></div>
+      <div class="expect"><b>Expect:</b> JSON with sally's <code>AccessKeyId</code> + <code>SecretAccessKey</code>. Copy both now.</div>
+      <div class="step"><div class="sh">Set up a "sally" CLI profile to test as her</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws configure --profile sally
+# paste sally's keys, region us-east-1, output json</code></pre></div>
+      <div class="expect"><b>Expect:</b> a new profile saved. Test: <code>aws sts get-caller-identity --profile sally</code> shows sally's ARN.</div>
+      <div class="step"><div class="sh">Attach AWS-managed read-only S3 policy</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws iam attach-user-policy --user-name sally \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output. Now <code>aws s3 ls --profile sally</code> works (Allow in effect).</div>
+      <div class="step"><div class="sh">Add an inline explicit DENY on one bucket</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>cat > deny.json <<'EOF'
+{ "Version":"2012-10-17",
+  "Statement":[{ "Effect":"Deny","Action":"s3:*",
+    "Resource":["arn:aws:s3:::SECRET-BUCKET","arn:aws:s3:::SECRET-BUCKET/*"] }] }
+EOF
+aws iam put-user-policy --user-name sally \
+  --policy-name deny-secret --policy-document file://deny.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output. Sally can list buckets generally, but any action on <code>SECRET-BUCKET</code> is now blocked — the explicit Deny overrides the Allow.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span><ul>
+        <li>This proves the rule: <b>explicit Deny &gt; Allow</b>.</li>
+        <li><code>put-user-policy</code> creates an <b>inline</b> policy; <code>attach-user-policy</code> uses a <b>managed</b> one.</li>
+      </ul></div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws iam delete-user-policy --user-name sally --policy-name deny-secret
+aws iam detach-user-policy --user-name sally \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+KID=$(aws iam list-access-keys --user-name sally --query "AccessKeyMetadata[0].AccessKeyId" --output text)
+aws iam delete-access-key --user-name sally --access-key-id $KID
+aws iam delete-user --user-name sally
+rm -f deny.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output from each = removed. (You can keep the sally profile in your config or remove it manually.)</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Groups (Lesson 2) hold these same policies.</li><li>Roles (Lesson 3) also use permissions policies.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>S3 bucket policies, KMS key policies, SCPs — all reuse this Allow/Deny logic.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Memorise: <b>Explicit Deny → Explicit Allow → Default (implicit) Deny.</b></li>
+      <li>Identities start with <b>no access</b> (implicit deny) until allowed.</li>
+      <li><b>Inline</b> = one identity; <b>managed</b> = reusable across many.</li>
+      <li>An <b>SCP can deny</b> something even if an identity policy allows it (Lesson 7).</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Priority order of policy evaluation?<span class="hint">tap</span></div><div class="a">Explicit Deny first, then explicit Allow, then default Deny.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Three required parts of a statement?<span class="hint">tap</span></div><div class="a">Effect, Action, Resource.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Inline vs managed policy?<span class="hint">tap</span></div><div class="a">Inline is tied to one identity; managed is reusable across many.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">If nothing allows an action, what happens?<span class="hint">tap</span></div><div class="a">It's denied by default (implicit deny).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A user has an Allow for s3:* and also an explicit Deny for one bucket. Can they use that bucket?</div>
+      <span class="opt">A) Yes, Allow wins</span><span class="opt">B) No, explicit Deny wins</span><span class="opt">C) Only reads</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> An explicit Deny always overrides any Allow.</div></div>
+    <div class="quiz"><div class="qq">You want one policy reused on 50 users. Which kind?</div>
+      <span class="opt">A) Inline</span><span class="opt">B) Managed</span><span class="opt">C) Trust</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Managed policies are reusable; inline is 1:1.</div></div>
+  </article>
+
+  <!-- ===== LESSON 2 ===== -->
+  <article class="card" id="l2">
+    <div class="lesson-head"><div class="num">2</div><div><h2>IAM Groups</h2><div class="sub">Containers for users — not real identities.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Group</td><td>A container that holds IAM users + their shared policies.</td><td>Admin convenience.</td></tr>
+      <tr><td>Not an identity</td><td>No login, no credentials, can't be a policy principal.</td><td>Common trap.</td></tr>
+      <tr><td>No nesting</td><td>Groups can't contain other groups.</td><td>Detail question.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Principal</td><td>The "who" in a resource policy (an identity that acts).</td></tr>
+      <tr><td>Resource policy</td><td>A policy attached to a resource (like an S3 bucket) naming who can use it.</td></tr>
+      <tr><td>Effective permissions</td><td>The total of all policies that apply to a user.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  G[Group: developers] --> P[Policy attached to group]
+  G --> U1[User: sally]
+  G --> U2[User: thor]
+  U1 --> EFF[Sally's permissions = her own + all her groups]
+  GX[Group cannot: log in, hold credentials,<br/>be a resource-policy principal, be nested]
+  classDef w fill:#3a151c,stroke:#fb7185,color:#e7edf3;
+  class GX w;
+    </pre></div>
+    <ul class="clean">
+      <li>Add users to a group, attach policies to the group → all members inherit them.</li>
+      <li>A user can be in <b>several groups</b>; their permissions add up.</li>
+      <li>Groups have <b>no credentials</b> and <b>cannot log in</b>.</li>
+      <li>Groups <b>cannot be named as a principal</b> in a resource policy (e.g. a bucket policy).</li>
+      <li>There is <b>no "all users" group</b> and <b>no nesting</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> move Sally's permissions from her own user into a <b>developers</b> group. <b>Check first:</b> CLI configured as admin.</div>
+      <div class="step"><div class="sh">Recreate sally + a group</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws iam create-user --user-name sally
+aws iam create-group --group-name developers</code></pre></div>
+      <div class="expect"><b>Expect:</b> JSON for the user and the group.</div>
+      <div class="step"><div class="sh">Attach the shared policy to the GROUP, not the user</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws iam attach-group-policy --group-name developers \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output.</div>
+      <div class="step"><div class="sh">Put sally in the group</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws iam add-user-to-group --group-name developers --user-name sally
+aws iam list-groups-for-user --user-name sally --query "Groups[].GroupName"</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>["developers"]</code> — sally now inherits the group's S3 read access.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Best practice: give permissions through <b>groups</b>, keep user policies empty. Easy to manage at scale.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws iam remove-user-from-group --group-name developers --user-name sally
+aws iam detach-group-policy --group-name developers \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+aws iam delete-group --group-name developers
+aws iam delete-user --user-name sally</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output = clean. Detach/remove before deleting.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Holds the identity policies from Lesson 1.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>For very large user counts, roles/federation (Lesson 4) replace per-user management.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Groups are <b>not identities</b>: no login, no credentials, <b>can't be a principal</b>.</li>
+      <li>Groups <b>can't be nested</b>; there's no built-in "all users" group.</li>
+      <li>Use groups to assign permissions <b>at scale</b>.</li>
+    </ul></div>
+    <div class="box warn"><span class="tag">Trap</span>If a bucket policy needs to name "the developers group" as principal — that's <b>impossible</b>. Use a role or list the users, or grant via the group's identity policies instead.</div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can you log in as a group?<span class="hint">tap</span></div><div class="a">No. Groups have no credentials and aren't identities.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can a group be a principal in a resource policy?<span class="hint">tap</span></div><div class="a">No. Groups can't be referenced as principals.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can groups be nested?<span class="hint">tap</span></div><div class="a">No. A group cannot contain another group.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Why can't you put an IAM group in a bucket policy's Principal?</div>
+      <span class="opt">A) Groups aren't identities/principals</span>
+      <span class="opt">B) Buckets don't support policies</span>
+      <span class="opt">C) Groups are global</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> A group is just a container, not an identity that can act.</div></div>
+  </article>
+
+  <!-- ===== LESSON 3 ===== -->
+  <article class="card" id="l3">
+    <div class="lesson-head"><div class="num">3</div><div><h2>IAM Roles – The Tech</h2><div class="sub">A temporary identity you "assume", not log in to.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Role</td><td>An identity that trusted things assume for a short time.</td><td>Very high — appears everywhere.</td></tr>
+      <tr><td>Trust policy</td><td>Says WHO is allowed to assume the role.</td><td>Half of a role.</td></tr>
+      <tr><td>Permissions policy</td><td>Says WHAT the role can do once assumed.</td><td>Other half.</td></tr>
+      <tr><td>Temporary creds</td><td>STS gives short-lived keys that expire.</td><td>No long-term keys = safer.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Assume a role</td><td>Temporarily "become" the role to get its permissions.</td></tr>
+      <tr><td>STS</td><td>Security Token Service — hands out temporary credentials.</td></tr>
+      <tr><td>Trust policy</td><td>The list of who may assume the role.</td></tr>
+      <tr><td>Temporary credentials</td><td>Short-lived keys (with a session token) that auto-expire.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+sequenceDiagram
+  participant T as Trusted thing (user/service)
+  participant R as IAM Role
+  participant STS as STS
+  T->>R: Can I assume you? (checks Trust policy)
+  R->>STS: Yes - issue temp credentials
+  STS-->>T: Temp keys + session token (expire soon)
+  T->>AWS: Use temp creds = role's permissions
+    </pre></div>
+    <ul class="clean">
+      <li>A role has <b>two</b> policies: a <b>trust policy</b> (who can assume) + a <b>permissions policy</b> (what it can do).</li>
+      <li>You don't log in to a role — you <b>assume</b> it via <b>STS</b> and get <b>temporary credentials</b>.</li>
+      <li>Those credentials <b>expire</b>, so there are no long-term keys to leak.</li>
+      <li>Roles can be assumed by AWS <b>services</b>, <b>other accounts</b>, or <b>federated users</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> create a role your own admin can assume to get temporary S3 read access. <b>Check first:</b> CLI configured as admin; know your account ID (<code>aws sts get-caller-identity</code>).</div>
+      <div class="step"><div class="sh">Write a trust policy (who can assume)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>ACC=$(aws sts get-caller-identity --query Account --output text)
+cat > trust.json <<EOF
+{ "Version":"2012-10-17",
+  "Statement":[{ "Effect":"Allow",
+    "Principal":{"AWS":"arn:aws:iam::$ACC:root"},
+    "Action":"sts:AssumeRole" }] }
+EOF</code></pre></div>
+      <div class="expect"><b>Expect:</b> a <code>trust.json</code> file allowing your account's identities to assume the role.</div>
+      <div class="step"><div class="sh">Create the role + give it permissions</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws iam create-role --role-name a4l-read \
+  --assume-role-policy-document file://trust.json
+aws iam attach-role-policy --role-name a4l-read \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess</code></pre></div>
+      <div class="expect"><b>Expect:</b> role JSON (with a role ARN), then no output for the attach.</div>
+      <div class="step"><div class="sh">Assume the role → get temporary credentials</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws sts assume-role \
+  --role-arn arn:aws:iam::$ACC:role/a4l-read \
+  --role-session-name test</code></pre></div>
+      <div class="expect"><b>Expect:</b> JSON <code>Credentials</code> with <code>AccessKeyId</code>, <code>SecretAccessKey</code>, <code>SessionToken</code> and an <b>Expiration</b> time — proof they're temporary.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>The session token is required for temporary creds. They expire (default ~1 hour), then you assume again.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws iam detach-role-policy --role-name a4l-read \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+aws iam delete-role --role-name a4l-read
+rm -f trust.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output = removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Permissions policy reuses Lesson 1 logic.</li><li>Lesson 4 explains WHEN to choose a role.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>EC2 instance roles, Lambda execution roles, cross-account access, federation.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>A role = <b>trust policy</b> (who) + <b>permissions policy</b> (what).</li>
+      <li>You <b>assume</b> a role via <b>STS</b> → get <b>temporary, expiring</b> credentials.</li>
+      <li>Roles have <b>no long-term credentials</b> of their own.</li>
+    </ul></div>
+    <div class="box warn"><span class="tag">Easy to confuse</span><b>Trust policy</b> = who may assume. <b>Permissions policy</b> = what the role can do. Both are needed.</div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What two policies does a role have?<span class="hint">tap</span></div><div class="a">A trust policy (who can assume) and a permissions policy (what it can do).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How do you "use" a role?<span class="hint">tap</span></div><div class="a">Assume it via STS to get temporary credentials.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Do role credentials expire?<span class="hint">tap</span></div><div class="a">Yes — they're temporary and auto-expire.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Which controls WHO can assume a role?</div>
+      <span class="opt">A) Permissions policy</span><span class="opt">B) Trust policy</span><span class="opt">C) Bucket policy</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> The trust policy lists who may assume the role.</div></div>
+    <div class="quiz"><div class="qq">What service issues a role's temporary credentials?</div>
+      <span class="opt">A) IAM</span><span class="opt">B) STS</span><span class="opt">C) KMS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> STS (Security Token Service) issues temporary credentials.</div></div>
+  </article>
+
+  <!-- ===== LESSON 4 ===== -->
+  <article class="card" id="l4">
+    <div class="lesson-head"><div class="num">4</div><div><h2>When to use IAM Roles</h2><div class="sub">The situations where a role is the right answer.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Service access</td><td>An AWS service needs permissions (EC2, Lambda).</td><td>Use a role, not stored keys.</td></tr>
+      <tr><td>Cross-account</td><td>Let another account's users act in yours.</td><td>Role assumed across accounts.</td></tr>
+      <tr><td>Federation</td><td>External/corporate users get AWS access.</td><td>Roles + SAML / web identity.</td></tr>
+      <tr><td>Many users</td><td>More than the IAM user limit (5000).</td><td>Use roles/federation.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Federation</td><td>Trusting an outside identity system (e.g. company login, Google).</td></tr>
+      <tr><td>SAML 2.0</td><td>A standard used to connect corporate logins to AWS.</td></tr>
+      <tr><td>Web identity</td><td>Login with Google/Facebook/Cognito for app users.</td></tr>
+      <tr><td>Instance role</td><td>A role attached to an EC2 instance so apps on it get permissions.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  Q{Need AWS permissions for...?} --> S[An AWS service<br/>EC2 / Lambda] --> R1[Use a ROLE]
+  Q --> X[Users in another account] --> R2[Use a cross-account ROLE]
+  Q --> F[Corporate / web users] --> R3[Use federation + ROLE]
+  Q --> M[More than 5000 users] --> R4[Use federation + ROLE]
+  Q --> P[One person, daily admin] --> U[An IAM USER may be fine]
+  classDef g fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class R1,R2,R3,R4 g;
+    </pre></div>
+    <ul class="clean">
+      <li><b>AWS service needs access</b> (EC2 app → S3, Lambda → DynamoDB) → use a <b>role</b>, never long-term keys.</li>
+      <li><b>Cross-account</b>: people in account A assume a role in account B.</li>
+      <li><b>Federation</b>: corporate (SAML) or web/social (Cognito) users assume roles — no IAM user each.</li>
+      <li>IAM users are limited to <b>5000 per account</b> → big user bases need <b>federation + roles</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>This lesson is decision-making (when to pick a role). The role mechanics were already demoed in Lesson 3.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Builds on role tech (Lesson 3) and group limits (Lesson 2).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>EC2 instance roles, Lambda roles, Cognito, AWS IAM Identity Center (SSO).</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"App on EC2/Lambda needs AWS access" → <b>role</b> (don't store access keys on the instance).</li>
+      <li>"Millions of app users" or "&gt;5000 users" → <b>federation + roles</b>, not IAM users.</li>
+      <li>"Let another AWS account access ours" → <b>cross-account role</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">EC2 app needs to read S3 — keys or role?<span class="hint">tap</span></div><div class="a">A role attached to the instance (never stored keys).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">IAM user limit per account?<span class="hint">tap</span></div><div class="a">5000 — beyond that use federation + roles.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Giving company staff AWS access without IAM users?<span class="hint">tap</span></div><div class="a">Federation (SAML) with roles.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A mobile app with 2 million users needs limited AWS access. Best design?</div>
+      <span class="opt">A) Create an IAM user per app user</span>
+      <span class="opt">B) Web identity federation (e.g. Cognito) + a role</span>
+      <span class="opt">C) Share one access key</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> IAM users cap at 5000; federation + roles scales to millions safely.</div></div>
+  </article>
+
+  <!-- ===== LESSON 5 ===== -->
+  <article class="card" id="l5">
+    <div class="lesson-head"><div class="num">5</div><div><h2>Service-linked Roles & PassRole</h2><div class="sub">Roles a service owns, and how roles are handed out safely.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Service-linked role (SLR)</td><td>A special role pre-defined by, and tied to, one AWS service.</td><td>"Who creates this role?" type Q.</td></tr>
+      <tr><td>Managed by the service</td><td>The service decides how it's created/deleted; you can't fully edit it.</td><td>Differs from normal role.</td></tr>
+      <tr><td>iam:PassRole</td><td>Permission to GIVE a role to a service.</td><td>Stops privilege escalation.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Service-linked role</td><td>A role a service uses to act on your behalf, predefined by that service.</td></tr>
+      <tr><td>PassRole</td><td>The right to attach an existing role to a resource/service.</td></tr>
+      <tr><td>Privilege escalation</td><td>Getting more power than you should by misusing permissions.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  SVC[An AWS service] --> SLR[Service-linked role<br/>predefined + owned by the service]
+  SLR --> ACT[Lets the service call other services for you]
+  USER[A user] -->|needs iam:PassRole| GIVE[Give a role to EC2/Lambda]
+  GIVE --> CHECK[PassRole limits which roles<br/>a user can hand out]
+  classDef g fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class SLR g;
+    </pre></div>
+    <ul class="clean">
+      <li>A <b>service-linked role</b> is created/controlled by the service, with exactly the permissions it needs.</li>
+      <li>You usually <b>can't delete</b> an SLR until the related resources are gone.</li>
+      <li><b>iam:PassRole</b> = the permission a user needs to <b>assign a role to a service</b> (e.g. attach a role to EC2).</li>
+      <li>PassRole stops a low-power user from handing themselves a powerful role (privilege escalation).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> create and then remove a service-linked role to see how they work. <b>Check first:</b> CLI configured as admin.</div>
+      <div class="step"><div class="sh">Create a service-linked role (example: AWS Support)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws iam create-service-linked-role \
+  --aws-service-name autoscaling.amazonaws.com</code></pre></div>
+      <div class="expect"><b>Expect:</b> JSON for a role named like <code>AWSServiceRoleForAutoScaling</code> — created with fixed permissions you didn't choose.</div>
+      <div class="step"><div class="sh">Look at it</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws iam list-roles \
+  --query "Roles[?contains(RoleName,'AutoScaling')].RoleName"</code></pre></div>
+      <div class="expect"><b>Expect:</b> the service-linked role name in the list (path contains <code>aws-service-role</code>).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>You can't attach random policies to an SLR; the service defines them. Deletion may be blocked while the service still uses it.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws iam delete-service-linked-role \
+  --role-name AWSServiceRoleForAutoScaling</code></pre></div>
+      <div class="expect"><b>Expect:</b> a <code>DeletionTaskId</code> (deletion is async). If it fails, the service still needs it — that's expected behaviour.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Extends roles (Lesson 3) to service-owned cases.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Auto Scaling, ELB, and many services auto-create SLRs; EC2 instance profiles use PassRole.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>SLRs are <b>predefined and owned by the service</b> — you can't freely edit them.</li>
+      <li><b>iam:PassRole</b> is needed to give a role to a service (e.g. EC2). It prevents privilege escalation.</li>
+      <li>If a user "can't launch an instance with a role", they likely lack <b>PassRole</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Who defines a service-linked role's permissions?<span class="hint">tap</span></div><div class="a">The AWS service it's linked to (predefined).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does iam:PassRole allow?<span class="hint">tap</span></div><div class="a">Giving (passing) an existing role to a service/resource.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Why does PassRole exist?<span class="hint">tap</span></div><div class="a">To stop privilege escalation by limiting which roles a user can hand out.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A developer can't attach an IAM role to a new EC2 instance. Most likely missing permission?</div>
+      <span class="opt">A) iam:CreateUser</span><span class="opt">B) iam:PassRole</span><span class="opt">C) s3:PutObject</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Passing a role to EC2 requires iam:PassRole.</div></div>
+  </article>
+
+  <!-- ===== LESSON 6 ===== -->
+  <article class="card" id="l6">
+    <div class="lesson-head"><div class="num">6</div><div><h2>AWS Organizations</h2><div class="sub">Manage many AWS accounts together, with one bill.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Organization</td><td>A group of AWS accounts managed as one.</td><td>Multi-account design.</td></tr>
+      <tr><td>Management account</td><td>The one that creates the org and pays the bill.</td><td>Special, immune to SCPs.</td></tr>
+      <tr><td>Member account</td><td>Accounts invited or created inside the org.</td><td>Controlled by SCPs.</td></tr>
+      <tr><td>OU</td><td>Organizational Unit — a folder for accounts.</td><td>Where SCPs attach.</td></tr>
+      <tr><td>Consolidated billing</td><td>One combined bill + volume discounts.</td><td>Cost benefit.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Management (master/payer) account</td><td>The account at the top that owns the org and pays.</td></tr>
+      <tr><td>Member account</td><td>Any other account inside the org.</td></tr>
+      <tr><td>Root (of org)</td><td>The top container that holds all OUs and accounts.</td></tr>
+      <tr><td>OrganizationAccountAccessRole</td><td>A role used to switch from the management account into a member account.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  ROOT[Org Root] --> MGMT[Management account - pays bill]
+  ROOT --> OU1[OU: Prod]
+  ROOT --> OU2[OU: Dev]
+  OU1 --> P[Production account]
+  OU2 --> D[Development account]
+  MGMT -. switch via OrganizationAccountAccessRole .-> P
+  classDef m fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class MGMT m;
+    </pre></div>
+    <ul class="clean">
+      <li>One <b>management account</b> creates the org; others join as <b>member accounts</b>.</li>
+      <li><b>OUs</b> group accounts (e.g. Prod, Dev) so policies apply to many at once.</li>
+      <li><b>Consolidated billing</b>: one bill, plus volume discounts and shared Reserved Instances / Savings Plans.</li>
+      <li>Switch into a member account using the <b>OrganizationAccountAccessRole</b> (auto-made for created accounts; you add it for invited ones).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> turn your current account into the management account of a new org (free), inspect it, then remove it. <b>Check first:</b> CLI configured as admin. <b>Note:</b> we will <b>not</b> invite/create real accounts here — that's heavier and best done as the course shows with your 3 accounts.</div>
+      <div class="step"><div class="sh">Create the organization</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws organizations create-organization --feature-set ALL</code></pre></div>
+      <div class="expect"><b>Expect:</b> JSON describing the org; your account becomes the <b>management account</b>. (Free.)</div>
+      <div class="step"><div class="sh">View the org + its root</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws organizations describe-organization
+aws organizations list-roots --query "Roots[].{Id:Id,Name:Name}" --output table</code></pre></div>
+      <div class="expect"><b>Expect:</b> org details and one root (id starts with <code>r-</code>). SCPs attach to this root/OUs/accounts later.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span><ul>
+        <li>"Master account" is the old name; AWS now says <b>management account</b>.</li>
+        <li><code>--feature-set ALL</code> enables SCPs etc. (vs <code>CONSOLIDATED_BILLING</code> only).</li>
+      </ul></div>
+      <div class="box term"><span class="tag">Clean up</span>You can delete the org only if it has no member accounts (here it has none):</div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws organizations delete-organization</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output = org removed; your account is standalone again.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Uses cross-account roles (Lesson 4) to switch accounts.</li><li>SCPs (Lesson 7) attach to its root/OUs/accounts.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Organizational CloudTrail (Lesson 10), Control Tower (Lesson 11), centralised everything.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>One <b>management account</b> pays; it is <b>not</b> limited by SCPs.</li>
+      <li><b>Consolidated billing</b> gives volume discounts + shared RIs/Savings Plans.</li>
+      <li>Group accounts in <b>OUs</b> to apply policies broadly.</li>
+      <li>Switch into member accounts with the <b>OrganizationAccountAccessRole</b>.</li>
+    </ul></div>
+    <div class="box warn"><span class="tag">Easy to confuse</span>The <b>management account</b> is special: SCPs do <b>not</b> restrict it, even if one is attached. Keep workloads out of it.</div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is an OU?<span class="hint">tap</span></div><div class="a">Organizational Unit — a folder grouping accounts for policy.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which account pays the bill?<span class="hint">tap</span></div><div class="a">The management (master/payer) account.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">A billing benefit of Organizations?<span class="hint">tap</span></div><div class="a">Consolidated billing: one bill, volume discounts, shared RIs/Savings Plans.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Role to switch into member accounts?<span class="hint">tap</span></div><div class="a">OrganizationAccountAccessRole.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A company wants one bill and volume discounts across 20 accounts. What gives this?</div>
+      <span class="opt">A) IAM groups</span><span class="opt">B) AWS Organizations consolidated billing</span><span class="opt">C) CloudTrail</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Organizations consolidates billing and unlocks volume discounts.</div></div>
+  </article>
+
+  <!-- ===== LESSON 7 ===== -->
+  <article class="card" id="l7">
+    <div class="lesson-head"><div class="num">7</div><div><h2>Service Control Policies (SCPs)</h2><div class="sub">Guardrails that limit what member accounts can do.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>SCP</td><td>A boundary on what an account is allowed to grant.</td><td>Very common question.</td></tr>
+      <tr><td>Never grants</td><td>SCPs only set limits; they don't give permissions.</td><td>The key trap.</td></tr>
+      <tr><td>Where applied</td><td>Org root, an OU, or a single account.</td><td>Scope matters.</td></tr>
+      <tr><td>Mgmt account immune</td><td>SCPs don't affect the management account.</td><td>Remember this.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Guardrail / boundary</td><td>A limit on the maximum permissions possible.</td></tr>
+      <tr><td>Allow list</td><td>Deny everything, then allow only chosen services.</td></tr>
+      <tr><td>Deny list</td><td>Allow all (default), then deny chosen services. (Default style.)</td></tr>
+      <tr><td>FullAWSAccess</td><td>The default SCP that allows everything (deny-list start point).</td></tr>
+      <tr><td>Effective permissions</td><td>What an identity can actually do = SCP boundary ∩ identity policy.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  SCP[SCP boundary - what account CAN allow] --> AND{Both must allow}
+  IDP[Identity policy - what user is allowed] --> AND
+  AND -->|Yes in both| OK[Action allowed]
+  AND -->|Blocked by either| NO[Action denied]
+  classDef r fill:#3a151c,stroke:#fb7185,color:#e7edf3;
+  classDef g fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class NO r; class OK g;
+    </pre></div>
+    <ul class="clean">
+      <li>An SCP is a <b>boundary</b>: it sets the <b>maximum</b> an account can grant — it never grants by itself.</li>
+      <li>A user can do something only if <b>both</b> the SCP <b>and</b> the identity policy allow it.</li>
+      <li>Apply SCPs to the <b>org root</b>, an <b>OU</b>, or a <b>single account</b>.</li>
+      <li><b>Member accounts</b> are affected; the <b>management account is not</b>.</li>
+      <li>Two styles: <b>deny list</b> (default FullAWSAccess + deny some) or <b>allow list</b> (deny all + allow some).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">Demo combined with Lesson 8</span>Applying and testing an SCP needs the organization and a member account — so the hands-on lives in Lesson 8 to avoid repeating setup.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Adds a boundary on top of identity policies (Lesson 1) inside Organizations (Lesson 6).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Control Tower guardrails (Lesson 11) are built from SCPs + Config rules.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>SCPs <b>limit, never grant</b>. You still need an identity policy to allow.</li>
+      <li>The <b>management account is immune</b> to SCPs.</li>
+      <li>Effective access = <b>SCP ∩ identity policy</b> (allowed in both).</li>
+      <li>Restrict a whole account/OU to certain regions or services → use an <b>SCP</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Do SCPs grant permissions?<span class="hint">tap</span></div><div class="a">No. They only set the maximum boundary; identity policies still grant.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which account ignores SCPs?<span class="hint">tap</span></div><div class="a">The management account.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Where can SCPs be attached?<span class="hint">tap</span></div><div class="a">Org root, an OU, or an individual account.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Deny list vs allow list?<span class="hint">tap</span></div><div class="a">Deny list = allow all then deny some (default). Allow list = deny all then allow some.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An SCP allows s3:* but the user has no identity policy. Can they use S3?</div>
+      <span class="opt">A) Yes, the SCP grants it</span>
+      <span class="opt">B) No, an SCP never grants — they still need an identity Allow</span>
+      <span class="opt">C) Only read</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> SCPs only bound permissions; you still need an identity policy that allows.</div></div>
+    <div class="quiz"><div class="qq">You must stop all member accounts from using a banned service. Best tool?</div>
+      <span class="opt">A) IAM group</span><span class="opt">B) SCP at the org root/OU</span><span class="opt">C) Bucket policy</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> An SCP sets an org-wide boundary across member accounts.</div></div>
+  </article>
+
+  <!-- ===== LESSON 8 ===== -->
+  <article class="card" id="l8">
+    <div class="lesson-head"><div class="num">8</div><div><h2>Using Service Control Policies</h2><div class="sub">Create, apply and test an SCP.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Enable SCPs</td><td>SCP policy type must be turned on in the org first.</td><td>Pre-step often forgotten.</td></tr>
+      <tr><td>Create + attach</td><td>Make a policy, attach to root/OU/account.</td><td>The workflow.</td></tr>
+      <tr><td>Test effect</td><td>The blocked action fails in the member account.</td><td>See the boundary work.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Policy type</td><td>A category of org policy, e.g. SERVICE_CONTROL_POLICY.</td></tr>
+      <tr><td>Target</td><td>What the SCP is attached to (root, OU or account ID).</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  E[1. Enable SCP type] --> C[2. Create SCP]
+  C --> A[3. Attach to account/OU/root]
+  A --> T[4. Test - blocked action fails]
+  T --> R[5. Detach + delete to clean up]
+  classDef k fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class C k;
+    </pre></div>
+    <ul class="clean">
+      <li>First <b>enable</b> the SCP policy type on the org root.</li>
+      <li><b>Create</b> the SCP, then <b>attach</b> it to a target.</li>
+      <li>The boundary takes effect on <b>member</b> accounts (not the management account).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> create a "deny S3" SCP and attach it to your org root, then remove it. <b>Check first:</b> an organization exists (from Lesson 6); run as the management account.</div>
+      <div class="step"><div class="sh">Find the root ID + enable SCPs</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>ROOT=$(aws organizations list-roots --query "Roots[0].Id" --output text)
+aws organizations enable-policy-type \
+  --root-id $ROOT --policy-type SERVICE_CONTROL_POLICY</code></pre></div>
+      <div class="expect"><b>Expect:</b> JSON showing the SCP type now ENABLED on the root.</div>
+      <div class="step"><div class="sh">Create a deny-S3 SCP</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>cat > scp.json <<'EOF'
+{ "Version":"2012-10-17",
+  "Statement":[{ "Effect":"Deny","Action":"s3:*","Resource":"*" }] }
+EOF
+POL=$(aws organizations create-policy --name deny-s3 \
+  --type SERVICE_CONTROL_POLICY --description "block S3" \
+  --content file://scp.json --query "Policy.PolicySummary.Id" --output text)
+echo $POL</code></pre></div>
+      <div class="expect"><b>Expect:</b> a policy ID like <code>p-xxxx</code> in <code>$POL</code>.</div>
+      <div class="step"><div class="sh">Attach it (here: to the root)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws organizations attach-policy --policy-id $POL --target-id $ROOT</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output. In a <b>member</b> account, any S3 action now fails — even with an S3 Allow. (Your management account is unaffected.)</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Attaching "deny S3" to the root would hit all member accounts. In real life, attach to a specific OU/account to limit blast radius.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws organizations detach-policy --policy-id $POL --target-id $ROOT
+aws organizations delete-policy --policy-id $POL
+rm -f scp.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output = removed. (You can leave the SCP type enabled; it has no effect without attached policies.)</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Applies the SCP theory (Lesson 7) inside the org (Lesson 6).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Control Tower automates these guardrails for you (Lesson 11).</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>You must <b>enable the SCP policy type</b> before using SCPs.</li>
+      <li>Attaching to the <b>root</b> hits every member account; attach to an <b>OU/account</b> for narrower scope.</li>
+      <li>Even with the SCP attached, the <b>management account is not restricted</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">First step before creating SCPs?<span class="hint">tap</span></div><div class="a">Enable the SERVICE_CONTROL_POLICY type on the org.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Attach an SCP to the root — who is affected?<span class="hint">tap</span></div><div class="a">All member accounts (not the management account).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Does attaching a "deny" SCP need an identity policy too?<span class="hint">tap</span></div><div class="a">The deny applies regardless; but to allow anything you still need identity policies.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">After attaching a deny-S3 SCP to the root, your management account can still use S3. Why?</div>
+      <span class="opt">A) Bug</span><span class="opt">B) The management account is immune to SCPs</span><span class="opt">C) S3 is global</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> SCPs never restrict the management account.</div></div>
+  </article>
+
+  <!-- ===== LESSON 9 ===== -->
+  <article class="card" id="l9">
+    <div class="lesson-head"><div class="num">9</div><div><h2>CloudWatch Logs</h2><div class="sub">Collect, store and monitor log data.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>CloudWatch Logs</td><td>A place to send and keep log data, then search/alarm on it.</td><td>Common log target.</td></tr>
+      <tr><td>Public + regional</td><td>Reachable over the internet; data sits in a region.</td><td>Works from on-prem too.</td></tr>
+      <tr><td>Structure</td><td>Log group → log stream → log events.</td><td>Know the hierarchy.</td></tr>
+      <tr><td>Metric filter</td><td>Turn matching log lines into a metric → alarm.</td><td>Useful pattern.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Log group</td><td>A container for related logs (e.g. one app).</td></tr>
+      <tr><td>Log stream</td><td>A sequence of log lines from one source (e.g. one instance).</td></tr>
+      <tr><td>Log event</td><td>One log line with a timestamp.</td></tr>
+      <tr><td>Metric filter</td><td>A rule that counts/extracts values from logs into a CloudWatch metric.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  SRC[Sources: EC2 agent, Lambda, VPC Flow Logs, CloudTrail, on-prem] --> LG[Log Group]
+  LG --> LS1[Log Stream - instance 1]
+  LG --> LS2[Log Stream - instance 2]
+  LS1 --> EV[Log Events]
+  LG --> MF[Metric Filter] --> AL[CloudWatch Alarm]
+  classDef k fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class LG k;
+    </pre></div>
+    <ul class="clean">
+      <li>Hierarchy: <b>log group</b> → <b>log streams</b> → <b>log events</b>.</li>
+      <li>It's a <b>public, regional</b> service — usable from EC2 (via agent), Lambda, VPC Flow Logs, even on-prem.</li>
+      <li><b>Metric filters</b> turn log patterns into metrics you can <b>alarm</b> on.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> create a log group, push a log line, read it back, then delete. <b>Check first:</b> CLI configured; pick a region (us-east-1).</div>
+      <div class="step"><div class="sh">Create a log group + stream</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws logs create-log-group --log-group-name a4l-demo
+aws logs create-log-stream --log-group-name a4l-demo --log-stream-name s1</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output = created.</div>
+      <div class="step"><div class="sh">Put a log event</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws logs put-log-events --log-group-name a4l-demo --log-stream-name s1 \
+  --log-events timestamp=$(($(date +%s)*1000)),message="hello cats"</code></pre></div>
+      <div class="expect"><b>Expect:</b> JSON with a <code>nextSequenceToken</code> = the event was stored.</div>
+      <div class="step"><div class="sh">Read it back</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws logs get-log-events --log-group-name a4l-demo --log-stream-name s1 \
+  --query "events[].message"</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>["hello cats"]</code>.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>By default logs are kept forever (you pay for storage). Set <b>retention</b> to auto-delete: <code>aws logs put-retention-policy --log-group-name a4l-demo --retention-in-days 7</code>.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws logs delete-log-group --log-group-name a4l-demo</code></pre></div>
+      <div class="expect"><b>Expect:</b> no output = group and its streams deleted. No more storage cost.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>CloudTrail (Lesson 10) can send its logs here.</li><li>Metric filters reuse CloudWatch alarms (Section 002).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>VPC Flow Logs, Lambda logs, the CloudWatch Agent, subscription filters.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Hierarchy: <b>group → stream → event</b>.</li>
+      <li>EC2 needs the <b>CloudWatch Agent</b> to send OS logs (not automatic).</li>
+      <li>Use a <b>metric filter</b> to alarm on a pattern in logs (e.g. "ERROR" count).</li>
+      <li>Set <b>retention</b> or logs are kept (and billed) forever.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">CloudWatch Logs hierarchy?<span class="hint">tap</span></div><div class="a">Log group → log stream → log events.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How to alarm on a log pattern?<span class="hint">tap</span></div><div class="a">Create a metric filter → it makes a metric → set a CloudWatch alarm.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Default log retention?<span class="hint">tap</span></div><div class="a">Forever (never expire) until you set a retention policy.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You want an alarm when "ERROR" appears 5+ times in app logs. What do you use?</div>
+      <span class="opt">A) A metric filter + alarm</span>
+      <span class="opt">B) A bucket policy</span>
+      <span class="opt">C) An SCP</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Metric filters turn log patterns into metrics you can alarm on.</div></div>
+  </article>
+
+  <!-- ===== LESSON 10 ===== -->
+  <article class="card" id="l10">
+    <div class="lesson-head"><div class="num">10</div><div><h2>CloudTrail</h2><div class="sub">Records who did what (API calls and account events).</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>CloudTrail</td><td>Logs API calls + account activity for audit.</td><td>"Who deleted X?" → CloudTrail.</td></tr>
+      <tr><td>Event history</td><td>Last 90 days of management events, free, always on.</td><td>Free vs trail trap.</td></tr>
+      <tr><td>Trail</td><td>Stores events long-term to S3 (and/or CloudWatch Logs).</td><td>For &gt;90 days.</td></tr>
+      <tr><td>Event types</td><td>Management (default) vs Data (off by default, costs).</td><td>Common detail.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Management event</td><td>Control actions (create/delete a resource). Logged by default.</td></tr>
+      <tr><td>Data event</td><td>Object-level actions (S3 GetObject, Lambda invoke). Off by default, billed.</td></tr>
+      <tr><td>Trail</td><td>A configuration that saves events to S3 / CloudWatch Logs.</td></tr>
+      <tr><td>Organizational trail</td><td>One trail logging every account in the org.</td></tr>
+      <tr><td>Global service events</td><td>IAM/STS/CloudFront events, logged in us-east-1.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  API[Any API call / account event] --> CT[CloudTrail]
+  CT --> HIST[90-day Event History<br/>free, mgmt events only]
+  CT --> TRAIL[Trail]
+  TRAIL --> S3[S3 - long-term store]
+  TRAIL --> CWL[CloudWatch Logs - search/alarm]
+  classDef k fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class CT k;
+    </pre></div>
+    <ul class="clean">
+      <li>Free <b>90-day Event History</b> is always on (management events only).</li>
+      <li>For longer storage or data events, create a <b>trail</b> → sends to <b>S3</b> (and optionally CloudWatch Logs).</li>
+      <li><b>Management events</b> log by default; <b>data events</b> are off by default and cost extra.</li>
+      <li><b>Global service events</b> (IAM/STS/CloudFront) appear in <b>us-east-1</b>.</li>
+      <li>An <b>organizational trail</b> captures all accounts in the org at once.</li>
+      <li>CloudTrail is <b>not real-time</b> (events arrive within ~15 minutes).</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2</span><b>Situation:</b> create a trail that logs to S3 for Animals4life, then remove it. <b>Check first:</b> CLI configured. <b>Cost note:</b> a trail to S3 is cheap but not zero (~$0.01 per 2000 requests; CloudTrail is noisy) — delete it after.</div>
+      <div class="step"><div class="sh">Create an S3 bucket + give CloudTrail permission</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>ACC=$(aws sts get-caller-identity --query Account --output text)
+BUCKET=a4l-trail-$RANDOM$RANDOM
+aws s3 mb s3://$BUCKET --region us-east-1
+cat > bp.json <<EOF
+{ "Version":"2012-10-17","Statement":[
+ {"Effect":"Allow","Principal":{"Service":"cloudtrail.amazonaws.com"},
+  "Action":"s3:GetBucketAcl","Resource":"arn:aws:s3:::$BUCKET"},
+ {"Effect":"Allow","Principal":{"Service":"cloudtrail.amazonaws.com"},
+  "Action":"s3:PutObject","Resource":"arn:aws:s3:::$BUCKET/AWSLogs/$ACC/*",
+  "Condition":{"StringEquals":{"s3:x-amz-acl":"bucket-owner-full-control"}}}
+]}
+EOF
+aws s3api put-bucket-policy --bucket $BUCKET --policy file://bp.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> bucket created and policy set (no output from put-bucket-policy).</div>
+      <div class="step"><div class="sh">Create + start the trail (all regions, global events)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws cloudtrail create-trail --name a4l-trail \
+  --s3-bucket-name $BUCKET \
+  --is-multi-region-trail --include-global-service-events
+aws cloudtrail start-logging --name a4l-trail</code></pre></div>
+      <div class="expect"><b>Expect:</b> trail JSON (with its ARN); start-logging gives no output. Logs appear in S3 within ~15 min.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span><ul>
+        <li><b>Multi-region trail</b> = captures every region in one trail (recommended).</li>
+        <li>Data events (e.g. S3 object reads) are <b>not</b> included unless you add them — and they cost more.</li>
+      </ul></div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws cloudtrail stop-logging --name a4l-trail
+aws cloudtrail delete-trail --name a4l-trail
+aws s3 rm s3://$BUCKET --recursive
+aws s3 rb s3://$BUCKET
+rm -f bp.json</code></pre></div>
+      <div class="expect"><b>Expect:</b> trail deleted, bucket emptied + removed. No ongoing cost.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Can deliver to CloudWatch Logs (Lesson 9) for searching/alarming.</li><li>Organizational trail uses Organizations (Lesson 6).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Security services (GuardDuty, Athena queries on CloudTrail) read these logs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Free <b>90-day event history</b> = management events only. Longer / data events need a <b>trail</b>.</li>
+      <li><b>Data events are OFF by default</b> and cost extra.</li>
+      <li><b>Global service events</b> (IAM, STS, CloudFront) → logged in <b>us-east-1</b>.</li>
+      <li>CloudTrail is for <b>audit ("who did what")</b>, not real-time monitoring.</li>
+    </ul></div>
+    <div class="box warn"><span class="tag">Easy to confuse</span><b>CloudTrail</b> = API/audit logs ("who did what"). <b>CloudWatch</b> = performance metrics/alarms. <b>CloudWatch Logs</b> = app/OS log storage.</div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How far back is the free event history?<span class="hint">tap</span></div><div class="a">90 days (management events only).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Are S3 object-level (data) events logged by default?<span class="hint">tap</span></div><div class="a">No. Data events are off by default and cost extra.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Where are global service events logged?<span class="hint">tap</span></div><div class="a">In us-east-1.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">CloudTrail vs CloudWatch?<span class="hint">tap</span></div><div class="a">CloudTrail = audit of API calls; CloudWatch = metrics/alarms.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">Someone deleted a security group last week. How do you find who did it?</div>
+      <span class="opt">A) CloudWatch metric</span><span class="opt">B) CloudTrail event history</span><span class="opt">C) An SCP</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> CloudTrail logs API calls — it shows who made the change.</div></div>
+    <div class="quiz"><div class="qq">You must keep audit logs for 2 years across all regions. What do you set up?</div>
+      <span class="opt">A) Rely on 90-day history</span>
+      <span class="opt">B) A multi-region trail delivering to S3</span>
+      <span class="opt">C) CloudWatch alarm</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> The free history is only 90 days; a trail to S3 keeps logs long-term.</div></div>
+  </article>
+
+  <!-- ===== LESSON 11 ===== -->
+  <article class="card" id="l11">
+    <div class="lesson-head"><div class="num">11</div><div><h2>AWS Control Tower 101</h2><div class="sub">Automated, governed multi-account setup.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Control Tower</td><td>Sets up + governs a best-practice multi-account environment fast.</td><td>Know what it does.</td></tr>
+      <tr><td>Landing zone</td><td>The ready-made, secure multi-account starting setup.</td><td>Key term.</td></tr>
+      <tr><td>Guardrails</td><td>Rules: preventive (SCPs) + detective (Config).</td><td>How it enforces.</td></tr>
+      <tr><td>Account Factory</td><td>Self-service way to create new compliant accounts.</td><td>Provisioning.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Orchestrate</td><td>Coordinate several services to work together.</td></tr>
+      <tr><td>Guardrail</td><td>A governance rule that keeps accounts within best practice.</td></tr>
+      <tr><td>Drift</td><td>When settings move away from the approved best practice.</td></tr>
+      <tr><td>IAM Identity Center</td><td>AWS single sign-on (was AWS SSO).</td></tr>
+      <tr><td>Service Catalog</td><td>A library of approved products/templates to deploy.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  CT[AWS Control Tower] --> ORG[AWS Organizations]
+  CT --> SC[Service Catalog - Account Factory]
+  CT --> SSO[IAM Identity Center - SSO]
+  CT --> GR[Guardrails]
+  GR --> PREV[Preventive = SCPs]
+  GR --> DET[Detective = AWS Config rules]
+  CT --> LZ[Builds a Landing Zone in under an hour]
+  classDef k fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class CT k;
+    </pre></div>
+    <ul class="clean">
+      <li>Control Tower <b>orchestrates</b> Organizations + Service Catalog + IAM Identity Center.</li>
+      <li>It builds a <b>landing zone</b> (a secure multi-account baseline) quickly.</li>
+      <li><b>Guardrails</b>: <b>preventive</b> (SCPs stop actions) and <b>detective</b> (Config flags drift).</li>
+      <li><b>Account Factory</b> creates new, already-compliant accounts on demand.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="box demo"><span class="tag">No demo — theory only</span>Control Tower is set up via a console wizard and creates many resources (and can incur cost). It's not a CLI quick-demo; just understand what it orchestrates.</div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Built on Organizations (Lesson 6) and SCPs (Lessons 7–8).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>AWS Config (detective guardrails) appears in the security section.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>"Quickly set up a secure, governed <b>multi-account</b> environment with best practices" → <b>Control Tower</b>.</li>
+      <li>It <b>orchestrates Organizations + Service Catalog + IAM Identity Center</b>.</li>
+      <li><b>Preventive</b> guardrail = SCP; <b>detective</b> guardrail = Config rule.</li>
+      <li>The secure baseline it creates is the <b>landing zone</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What does Control Tower orchestrate?<span class="hint">tap</span></div><div class="a">AWS Organizations, Service Catalog, and IAM Identity Center.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Preventive vs detective guardrail?<span class="hint">tap</span></div><div class="a">Preventive = SCP (blocks); detective = AWS Config (detects drift).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is a landing zone?<span class="hint">tap</span></div><div class="a">The secure, best-practice multi-account baseline Control Tower builds.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What creates new compliant accounts?<span class="hint">tap</span></div><div class="a">Account Factory (via Service Catalog).</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A company wants a fast, best-practice multi-account setup with built-in guardrails. Which service?</div>
+      <span class="opt">A) IAM</span><span class="opt">B) AWS Control Tower</span><span class="opt">C) CloudTrail</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Control Tower builds a governed landing zone quickly with guardrails.</div></div>
+    <div class="quiz"><div class="qq">A detective guardrail in Control Tower is built from which service?</div>
+      <span class="opt">A) SCPs</span><span class="opt">B) AWS Config</span><span class="opt">C) S3</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Detective guardrails use AWS Config; preventive ones use SCPs.</div></div>
+  </article>
+
+  <div class="foot">
+    <div>
+      <span class="pill">Deny &gt; Allow &gt; default Deny</span><span class="pill">Roles = trust + permissions</span>
+      <span class="pill">SCP limits, never grants</span><span class="pill">Mgmt account immune to SCP</span>
+      <span class="pill">CloudTrail = who did what</span><span class="pill">90-day free history</span>
+    </div>
+    <p>Section 003 · IAM, Accounts &amp; Organisations · built for SAA-C03 self-study.<br>
+    Tap a flashcard or "Show answer" to reveal. Use ☰ Lessons to jump around.</p>
+  </div>
+</main>
+
+<button class="toTop" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawerBg').classList.add('open');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerBg').classList.remove('open');}
+function cp(btn){
+  const code=btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard?.writeText(code).then(()=>{const t=btn.innerText;btn.innerText='copied!';setTimeout(()=>btn.innerText=t,1200);})
+  .catch(()=>{btn.innerText='select & copy';});
+}
+const tt=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{tt.classList.toggle('show',window.scrollY>500);});
+window.addEventListener('load',()=>{
+  try{
+    mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{
+      fontFamily:'Manrope, sans-serif',primaryColor:'#1b2128',primaryTextColor:'#e7edf3',
+      primaryBorderColor:'#2dd4bf',lineColor:'#60a5fa',secondaryColor:'#212934',tertiaryColor:'#161b21'}});
+  }catch(e){console.warn('mermaid init',e);}
+});
+</script>
+</body>
+</html>

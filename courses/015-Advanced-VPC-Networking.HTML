@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03 · 015 · Advanced VPC Networking</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+:root{
+  --bg:#101418;--bg2:#161b21;--surface:#1b2128;--surface2:#212934;
+  --line:#2c3540;--line2:#3a4654;--text:#e7edf3;--muted:#9fb0c0;
+  --primary:#2dd4bf;--primary-d:#0f3b39;--exam:#fbbf24;--exam-d:#3a2f0c;
+  --demo:#60a5fa;--demo-d:#0e2647;--term:#c084fc;--term-d:#2a1640;
+  --warn:#fb7185;--warn-d:#3a151c;--ok:#34d399;
+  --radius:16px;--shadow:0 6px 22px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.25;margin:0}
+a{color:var(--primary);text-decoration:none}
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(16,20,24,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .badge{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--bg);background:var(--primary);padding:4px 9px;border-radius:8px}
+.topbar .ttl{font-family:'Sora';font-weight:600;font-size:15px}
+.topbar .ttl small{display:block;color:var(--muted);font-weight:500;font-size:11.5px;font-family:'Manrope'}
+.menu-btn{margin-left:auto;background:var(--surface2);color:var(--text);border:1px solid var(--line2);border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+.menu-btn:active{transform:scale(.97)}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:70}
+.drawer-bg.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(86vw,340px);background:var(--bg2);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .28s ease;z-index:80;overflow-y:auto;padding:18px 16px 40px}
+.drawer.open{transform:translateX(0)}
+.drawer h3{font-size:11.5px;color:var(--muted);margin:14px 4px 8px;text-transform:uppercase;letter-spacing:1px}
+.drawer a{display:block;color:var(--text);padding:9px 12px;border-radius:10px;font-weight:500;font-size:13.5px;border:1px solid transparent}
+.drawer a:active{background:var(--surface)}
+.drawer a .n{color:var(--primary);font-family:'Sora';font-weight:700;margin-right:8px}
+.drawer .close{width:100%;margin-top:18px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:10px;padding:10px;cursor:pointer;font-weight:600}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 90px}
+.hero{background:radial-gradient(120% 90% at 100% 0%, rgba(45,212,191,.16), transparent 55%),radial-gradient(120% 90% at 0% 100%, rgba(96,165,250,.12), transparent 55%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow)}
+.hero .eyebrow{color:var(--primary);font-weight:700;font-size:12.5px;letter-spacing:1.5px;font-family:'Sora'}
+.hero h1{font-size:25px;margin:6px 0 8px}
+.hero p{color:var(--muted);margin:0;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;margin-top:18px;box-shadow:var(--shadow)}
+.lesson-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.lesson-head .num{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:'Sora';font-weight:700;background:var(--primary);color:var(--bg);font-size:15px}
+.lesson-head h2{font-size:19px}
+.lesson-head .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+h3.block{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;display:flex;align-items:center;gap:8px;font-family:'Sora'}
+h3.block::before{content:"";width:14px;height:3px;border-radius:3px;background:var(--primary)}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:360px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface2);color:var(--text);font-family:'Sora';font-weight:600;font-size:12.5px;letter-spacing:.3px}
+tr:last-child td{border-bottom:none}
+td b{color:var(--primary)}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{position:relative;padding:6px 0 6px 22px;font-size:15px;border-bottom:1px dashed var(--line)}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{content:"▸";position:absolute;left:2px;top:6px;color:var(--primary)}
+.two-col{display:grid;gap:12px}
+@media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+.box{border-radius:12px;padding:13px 14px;margin:12px 0;border:1px solid;font-size:14.5px}
+.box .tag{font-family:'Sora';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
+.box.exam{background:var(--exam-d);border-color:#6b551a}.box.exam .tag{color:var(--exam)}
+.box.term{background:var(--term-d);border-color:#4a2d6b}.box.term .tag{color:var(--term)}
+.box.warn{background:var(--warn-d);border-color:#6b2630}.box.warn .tag{color:var(--warn)}
+.box.demo{background:var(--demo-d);border-color:#1d4a82}.box.demo .tag{color:var(--demo)}
+.box ul{margin:4px 0 0;padding-left:18px}.box li{margin:3px 0}
+.mer{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;overflow-x:auto}
+.mermaid{display:flex;justify-content:center;min-width:fit-content}
+.code{position:relative;background:#0c1117;border:1px solid var(--line2);border-radius:10px;margin:10px 0}
+.code pre{margin:0;padding:13px 14px;overflow-x:auto;font-size:13px;line-height:1.55}
+.code code{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;color:#cfe9e6;white-space:pre}
+.code .cp{position:absolute;top:7px;right:7px;background:var(--surface2);color:var(--muted);border:1px solid var(--line2);border-radius:7px;font-size:11px;padding:4px 9px;cursor:pointer;font-weight:600}
+.code .cp:active{color:var(--primary)}
+.expect{font-size:13px;color:var(--ok);background:rgba(52,211,153,.08);border-left:3px solid var(--ok);padding:7px 11px;margin:0 0 12px;border-radius:0 8px 8px 0}
+.expect b{color:var(--ok)}
+.step{counter-increment:st;margin:14px 0}
+.step .sh{display:flex;align-items:center;gap:9px;font-family:'Sora';font-weight:600;font-size:14.5px;margin-bottom:4px}
+.step .sh::before{content:counter(st);background:var(--demo);color:var(--bg);width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12.5px;flex:0 0 auto}
+.demo-wrap{counter-reset:st}
+.fc-grid{display:grid;gap:10px}
+.fc{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:13px 14px;cursor:pointer;transition:border-color .2s;user-select:none}
+.fc:active{border-color:var(--primary)}
+.fc .q{font-weight:600;font-size:14.5px;display:flex;gap:8px;align-items:flex-start}
+.fc .q::before{content:"Q";font-family:'Sora';color:var(--primary);font-weight:700;flex:0 0 auto}
+.fc .a{display:none;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);color:var(--muted);font-size:14px}
+.fc .a::before{content:"A ";color:var(--ok);font-weight:700;font-family:'Sora'}
+.fc.show .a{display:block}
+.fc .hint{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600}
+.quiz{background:var(--surface2);border:1px solid var(--line2);border-radius:12px;padding:14px;margin:10px 0}
+.quiz .qq{font-weight:600;font-size:15px;margin-bottom:8px}
+.quiz .opt{display:block;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin:6px 0;font-size:14px;cursor:pointer}
+.quiz .opt:active{border-color:var(--primary)}
+.quiz .reveal{margin-top:6px;background:var(--surface);color:var(--primary);border:1px solid var(--line2);border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px;width:100%}
+.quiz .ans{display:none;margin-top:10px;border-left:3px solid var(--ok);background:rgba(52,211,153,.08);padding:9px 12px;border-radius:0 8px 8px 0;font-size:14px}
+.quiz .ans b{color:var(--ok)}
+.quiz.show .ans{display:block}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;line-height:1.7}
+.pill{display:inline-block;background:var(--surface2);border:1px solid var(--line2);color:var(--muted);font-size:11px;padding:2px 8px;border-radius:20px;margin:2px}
+.toTop{position:fixed;right:14px;bottom:16px;z-index:50;background:var(--primary);color:var(--bg);border:none;width:46px;height:46px;border-radius:50%;font-size:20px;box-shadow:var(--shadow);cursor:pointer;display:none}
+.toTop.show{display:block}
+kbd{background:var(--surface2);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-size:12px;font-family:monospace}
+.examcard{border-color:#6b551a;background:linear-gradient(180deg,var(--exam-d),var(--surface))}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="badge">SAA-C03</span>
+  <div class="ttl">Section 015<small>Advanced VPC Networking</small></div>
+  <button class="menu-btn" onclick="openDrawer()">☰ Lessons</button>
+</header>
+
+<div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer">
+  <h3>Monitoring & egress</h3>
+  <a href="#l1" onclick="closeDrawer()"><span class="n">1</span>VPC Flow Logs</a>
+  <a href="#l2" onclick="closeDrawer()"><span class="n">2</span>Egress-Only Internet Gateway</a>
+  <h3>Private service access</h3>
+  <a href="#l3" onclick="closeDrawer()"><span class="n">3</span>VPC Endpoints (Gateway)</a>
+  <a href="#l4" onclick="closeDrawer()"><span class="n">4</span>VPC Endpoints (Interface)</a>
+  <h3>Connecting VPCs</h3>
+  <a href="#l5" onclick="closeDrawer()"><span class="n">5</span>VPC Peering</a>
+  <h3>Revision</h3>
+  <a href="#mock" onclick="closeDrawer()"><span class="n">★</span>Mock Exam</a>
+  <button class="close" onclick="closeDrawer()">Close</button>
+</nav>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">SECTION GOAL</div>
+    <h1>Monitor, secure, and privately connect your VPCs.</h1>
+    <p>Learn Flow Logs for traffic visibility, egress-only gateways for IPv6, gateway vs interface endpoints for private service access, and VPC peering to link networks.</p>
+  </section>
+
+  <div class="card">
+    <h3 class="block">Section Map · how the lessons connect</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  FL[1. Flow Logs - visibility] --> VPC[Your VPC]
+  EIGW[2. Egress-Only IGW - IPv6 out] --> VPC
+  GW[3. Gateway endpoint - S3/DynamoDB] --> PRIV[Private access, no internet]
+  IF[4. Interface endpoint - other services] --> PRIV
+  PEER[5. VPC Peering - link 2 VPCs] --> VPC
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  classDef b fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class FL,EIGW a; class GW,IF,PEER b;
+    </pre></div>
+  </div>
+
+  <div class="card">
+    <h3 class="block">Quick Understanding · whole section</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Lesson</th><th>What + why it matters for the exam</th></tr>
+      <tr><td>1 Flow Logs</td><td>Capture traffic metadata (not contents) to S3/CW Logs.</td></tr>
+      <tr><td>2 Egress-Only IGW</td><td>IPv6 outbound-only (IPv6 has no NAT).</td></tr>
+      <tr><td>3 Gateway endpoint</td><td>Private S3/DynamoDB via route table; free.</td></tr>
+      <tr><td>4 Interface endpoint</td><td>Private access to other services (PrivateLink/ENI).</td></tr>
+      <tr><td>5 VPC Peering</td><td>Link 2 VPCs; not transitive; no overlapping CIDRs.</td></tr>
+      <tr><td>★ Mock Exam</td><td>Advanced VPC + all prior sections.</td></tr>
+    </table></div>
+  </div>
+
+  <!-- ===== LESSON 1 ===== -->
+  <article class="card" id="l1">
+    <div class="lesson-head"><div class="num">1</div><div><h2>VPC Flow Logs</h2><div class="sub">See who talks to whom (metadata only).</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Metadata only</td><td>Captures src/dst, ports, ACCEPT/REJECT.</td><td>Not packet contents.</td></tr>
+      <tr><td>3 levels</td><td>VPC, Subnet, or Network Interface.</td><td>Where you attach it.</td></tr>
+      <tr><td>Destinations</td><td>S3 or CloudWatch Logs.</td><td>Where logs go.</td></tr>
+      <tr><td>Not real-time</td><td>Aggregated (1 or 10 min).</td><td>Slight delay.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>ENI</td><td>Elastic Network Interface — a virtual network card.</td></tr>
+      <tr><td>Packet sniffer</td><td>A tool that reads the actual data inside packets.</td></tr>
+      <tr><td>ACCEPT / REJECT</td><td>Whether security rules allowed or blocked the traffic.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  LVL{Attach at} --> V[VPC: all ENIs]
+  LVL --> S[Subnet: ENIs in subnet]
+  LVL --> E[ENI: one interface]
+  V --> DEST[Capture metadata]
+  S --> DEST
+  E --> DEST
+  DEST --> S3[S3]
+  DEST --> CW[CloudWatch Logs]
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class DEST a;
+    </pre></div>
+    <ul class="clean">
+      <li>Flow Logs capture <b>metadata</b> about IP traffic (source/destination IP, ports, protocol, bytes, <b>ACCEPT/REJECT</b>) — <b>not</b> the packet <b>contents</b> (that needs a packet sniffer / Traffic Mirroring).</li>
+      <li>Attach at <b>VPC</b>, <b>Subnet</b>, or <b>ENI</b> level; filter <b>ACCEPT</b>, <b>REJECT</b>, or <b>ALL</b>.</li>
+      <li>Send logs to <b>S3</b> or <b>CloudWatch Logs</b>. It's <b>not real-time</b> (aggregated, 1 or 10 min).</li>
+      <li>Some traffic is <b>not captured</b>: Amazon DNS, instance metadata (169.254.169.254), DHCP, Windows licence. <span class="pill">[added for exam]</span></li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (logs are tiny; CW storage only)</span><b>Situation:</b> log all traffic in the default VPC to CloudWatch. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Create a log group + a flow-logs role</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>VPC=$(aws ec2 describe-vpcs --filters Name=isDefault,Values=true \
+  --query "Vpcs[0].VpcId" --output text)
+aws logs create-log-group --log-group-name a4l-flowlogs
+ROLE=$(aws iam create-role --role-name a4l-flowlogs-role \
+  --assume-role-policy-document '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"vpc-flow-logs.amazonaws.com"},"Action":"sts:AssumeRole"}]}' \
+  --query Role.Arn --output text)
+aws iam put-role-policy --role-name a4l-flowlogs-role --policy-name cwlogs \
+  --policy-document '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["logs:CreateLogStream","logs:PutLogEvents","logs:DescribeLogStreams"],"Resource":"*"}]}'
+sleep 10</code></pre></div>
+      <div class="expect"><b>Expect:</b> a role ARN; wait ~10s for IAM to propagate.</div>
+      <div class="step"><div class="sh">Create the flow log (capture ALL)</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 create-flow-logs --resource-type VPC --resource-ids $VPC \
+  --traffic-type ALL --log-group-name a4l-flowlogs \
+  --deliver-logs-permission-arn $ROLE</code></pre></div>
+      <div class="expect"><b>Expect:</b> a FlowLogId. Records appear in the log group after a few minutes (showing ACCEPT/REJECT lines).</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Flow Logs show <b>metadata only</b>. To see packet <b>contents</b> you need <b>Traffic Mirroring</b> / a packet sniffer.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>FL=$(aws ec2 describe-flow-logs --filter Name=resource-id,Values=$VPC \
+  --query "FlowLogs[0].FlowLogId" --output text)
+aws ec2 delete-flow-logs --flow-log-ids $FL
+aws iam delete-role-policy --role-name a4l-flowlogs-role --policy-name cwlogs
+aws iam delete-role --role-name a4l-flowlogs-role
+aws logs delete-log-group --log-group-name a4l-flowlogs</code></pre></div>
+      <div class="expect"><b>Expect:</b> flow log, role + log group removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Helps debug endpoints (L3/L4) + peering (L5) traffic.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Security analysis, troubleshooting, compliance.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Flow Logs = <b>metadata only</b>; packet contents need a <b>packet sniffer / Traffic Mirroring</b>.</li>
+      <li>Levels: <b>VPC / Subnet / ENI</b>; destinations: <b>S3 / CloudWatch Logs</b>.</li>
+      <li>"See blocked traffic" → filter <b>REJECT</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Do Flow Logs capture packet contents?<span class="hint">tap</span></div><div class="a">No — metadata only (need a packet sniffer for contents).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Three attach levels?<span class="hint">tap</span></div><div class="a">VPC, Subnet, ENI.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Two log destinations?<span class="hint">tap</span></div><div class="a">S3 and CloudWatch Logs.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">You must see which connections are being blocked by security rules. Use?</div>
+      <span class="opt">A) Flow Logs filtered to REJECT</span><span class="opt">B) A packet sniffer</span><span class="opt">C) CloudFront logs</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Flow Logs record ACCEPT/REJECT metadata; filter REJECT to see blocks.</div></div>
+    <div class="quiz"><div class="qq">You need to inspect the actual data inside packets. Flow Logs enough?</div>
+      <span class="opt">A) Yes</span><span class="opt">B) No — use Traffic Mirroring / sniffer</span><span class="opt">C) Only on S3</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Flow Logs are metadata only; contents need packet capture.</div></div>
+  </article>
+
+  <!-- ===== LESSON 2 ===== -->
+  <article class="card" id="l2">
+    <div class="lesson-head"><div class="num">2</div><div><h2>Egress-Only Internet Gateway</h2><div class="sub">Outbound-only internet for IPv6.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>IPv6 only</td><td>For IPv6-enabled instances.</td><td>Not for IPv4.</td></tr>
+      <tr><td>Outbound + return</td><td>Allows out (and replies), blocks inbound-initiated.</td><td>Stateful.</td></tr>
+      <tr><td>Why needed</td><td>IPv6 has no NAT (all IPv6 is public).</td><td>Key reasoning.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Egress</td><td>Outbound (leaving the VPC).</td></tr>
+      <tr><td>NAT Gateway</td><td>Outbound-only internet for private IPv4.</td></tr>
+      <tr><td>Stateful</td><td>Return traffic is automatically allowed.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  V4[Private IPv4 instance] -->|outbound only| NAT[NAT Gateway]
+  V6[IPv6 instance] -->|outbound only| EIGW[Egress-Only IGW]
+  NAT --> NET[Internet]
+  EIGW --> NET
+  classDef a fill:#0f3b39,stroke:#2dd4bf,color:#e7edf3;
+  class EIGW a;
+    </pre></div>
+    <ul class="clean">
+      <li>IPv6 addresses are <b>all public/globally routable</b>, so there is <b>no NAT</b> for IPv6.</li>
+      <li>An <b>Egress-Only Internet Gateway</b> gives IPv6 instances <b>outbound-only</b> internet (and allows <b>return</b> traffic) while blocking <b>inbound-initiated</b> connections.</li>
+      <li>Compare: <b>IPv4</b> private → <b>NAT Gateway</b>; <b>IPv6</b> → <b>Egress-Only IGW</b>.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (free to create)</span><b>Situation:</b> create an egress-only IGW for IPv6. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Create the egress-only IGW</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>VPC=$(aws ec2 describe-vpcs --filters Name=isDefault,Values=true \
+  --query "Vpcs[0].VpcId" --output text)
+EIGW=$(aws ec2 create-egress-only-internet-gateway --vpc-id $VPC \
+  --query "EgressOnlyInternetGateway.EgressOnlyInternetGatewayId" --output text)
+echo $EIGW</code></pre></div>
+      <div class="expect"><b>Expect:</b> an ID like <code>eigw-0...</code>. In a real IPv6 setup you'd add a route <code>::/0 → eigw</code> in the subnet's route table.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>It only works for <b>IPv6</b>. For private <b>IPv4</b> outbound you still use a <b>NAT Gateway</b>.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 delete-egress-only-internet-gateway \
+  --egress-only-internet-gateway-id $EIGW</code></pre></div>
+      <div class="expect"><b>Expect:</b> egress-only IGW removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>IPv6 sibling of the NAT Gateway (VPC basics).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>IPv6 network designs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>IPv6 outbound-only</b> → <b>Egress-Only IGW</b> (there's no IPv6 NAT).</li>
+      <li><b>IPv4 private outbound-only</b> → <b>NAT Gateway</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">What is an egress-only IGW for?<span class="hint">tap</span></div><div class="a">Outbound-only internet for IPv6 instances.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Why no NAT for IPv6?<span class="hint">tap</span></div><div class="a">All IPv6 addresses are public/globally routable.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">IPv4 equivalent?<span class="hint">tap</span></div><div class="a">NAT Gateway.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">An IPv6-only instance needs to download updates but must not accept inbound connections. Use?</div>
+      <span class="opt">A) NAT Gateway</span><span class="opt">B) Egress-Only IGW</span><span class="opt">C) Internet Gateway</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Egress-only IGW gives IPv6 outbound-only access (NAT is IPv4-only).</div></div>
+  </article>
+
+  <!-- ===== LESSON 3 ===== -->
+  <article class="card" id="l3">
+    <div class="lesson-head"><div class="num">3</div><div><h2>VPC Endpoints (Gateway)</h2><div class="sub">Private S3 & DynamoDB, no internet.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>S3 & DynamoDB only</td><td>Gateway endpoints serve just these two.</td><td>Remember the pair.</td></tr>
+      <tr><td>Route table entry</td><td>Adds a prefix list; router sends traffic privately.</td><td>How it works.</td></tr>
+      <tr><td>Free + HA</td><td>No cost; resilient across AZs.</td><td>Cheap private access.</td></tr>
+      <tr><td>Regional only</td><td>Can't be used cross-region or from outside.</td><td>Limitation.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Prefix list</td><td>A named set of IP ranges for a service.</td></tr>
+      <tr><td>Endpoint policy</td><td>Controls what the endpoint may access.</td></tr>
+      <tr><td>Private subnet</td><td>A subnet with no internet route.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  EC2[Private EC2] --> RT[Route table - prefix list to S3]
+  RT --> GWEP[Gateway endpoint]
+  GWEP --> S3[S3 / DynamoDB - private, no internet]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class GWEP a;
+    </pre></div>
+    <ul class="clean">
+      <li>Gateway endpoints give <b>private</b> access to <b>S3 and DynamoDB only</b> — no internet gateway or NAT needed.</li>
+      <li>They add a <b>prefix list</b> to the <b>route table</b>, so the VPC router sends that traffic to the endpoint.</li>
+      <li>They are <b>free</b>, <b>highly available</b> (route-table target, not an ENI), and <b>regional</b> (no cross-region or external access).</li>
+      <li>An <b>endpoint policy</b> can restrict which buckets/tables are reachable.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (free)</span><b>Situation:</b> let a private subnet reach S3 privately. <b>Check first:</b> CLI configured.</div>
+      <div class="step"><div class="sh">Create an S3 gateway endpoint</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>VPC=$(aws ec2 describe-vpcs --filters Name=isDefault,Values=true \
+  --query "Vpcs[0].VpcId" --output text)
+RT=$(aws ec2 describe-route-tables --filters Name=vpc-id,Values=$VPC \
+  --query "RouteTables[0].RouteTableId" --output text)
+REGION=$(aws configure get region)
+EP=$(aws ec2 create-vpc-endpoint --vpc-id $VPC --vpc-endpoint-type Gateway \
+  --service-name com.amazonaws.$REGION.s3 --route-table-ids $RT \
+  --query "VpcEndpoint.VpcEndpointId" --output text)
+echo $EP</code></pre></div>
+      <div class="expect"><b>Expect:</b> an endpoint ID + a new prefix-list route in the route table. S3 traffic now stays private.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Only <b>S3 + DynamoDB</b> use <b>gateway</b> endpoints. Everything else uses <b>interface</b> endpoints (L4).</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 delete-vpc-endpoints --vpc-endpoint-ids $EP</code></pre></div>
+      <div class="expect"><b>Expect:</b> endpoint removed + route cleaned up.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Contrast with interface endpoints (L4); private S3 from VPC.</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Private data-lake access, no-NAT designs.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Gateway endpoint = S3 + DynamoDB only</b>, <b>free</b>, route-table based, <b>HA</b>.</li>
+      <li>Can't be reached from <b>on-prem / other VPC / other region</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Which services use gateway endpoints?<span class="hint">tap</span></div><div class="a">S3 and DynamoDB only.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">How does a gateway endpoint route traffic?<span class="hint">tap</span></div><div class="a">It adds a prefix list to the route table.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Cost + HA of gateway endpoints?<span class="hint">tap</span></div><div class="a">Free and highly available by default.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A private subnet (no NAT) must read from S3 cheaply and privately. Use?</div>
+      <span class="opt">A) Gateway endpoint</span><span class="opt">B) Interface endpoint</span><span class="opt">C) NAT Gateway</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> S3 uses a free gateway endpoint via the route table.</div></div>
+  </article>
+
+  <!-- ===== LESSON 4 ===== -->
+  <article class="card" id="l4">
+    <div class="lesson-head"><div class="num">4</div><div><h2>VPC Endpoints (Interface)</h2><div class="sub">Private access to most other services.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>Other services</td><td>Everything except S3/DynamoDB gateway.</td><td>Uses PrivateLink.</td></tr>
+      <tr><td>It's an ENI</td><td>A private IP network card in a subnet.</td><td>SG controls it.</td></tr>
+      <tr><td>Not HA by default</td><td>One ENI per AZ for HA.</td><td>Common trap.</td></tr>
+      <tr><td>DNS-driven</td><td>Private DNS resolves service name to the ENI.</td><td>How apps use it.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>PrivateLink</td><td>The tech behind interface endpoints (private service access).</td></tr>
+      <tr><td>Private DNS</td><td>Makes the normal service URL resolve to the private ENI.</td></tr>
+      <tr><td>Security group</td><td>Firewall controlling access to the endpoint ENI.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph TD
+  EC2[Private EC2] --> ENI[Interface endpoint ENI - private IP, SG]
+  ENI -->|PrivateLink| SVC[AWS service e.g. EC2/SSM/SNS]
+  ENI --> DNS[Private DNS resolves service name]
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class ENI a;
+    </pre></div>
+    <ul class="clean">
+      <li>Interface endpoints give <b>private</b> access to <b>most other AWS services</b> (not the S3/DynamoDB gateway pair) using <b>PrivateLink</b>.</li>
+      <li>An interface endpoint is an <b>ENI</b> (private IP) in a subnet, controlled by a <b>security group</b>.</li>
+      <li>It is <b>not HA by default</b> — it's a single ENI; place <b>one per AZ</b> for full HA.</li>
+      <li>Apps reach it via the endpoint's DNS name, or enable <b>private DNS</b> so the normal service URL resolves to the ENI.</li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (small hourly cost — delete promptly)</span><b>Situation:</b> create an interface endpoint for the EC2 API. <b>Check first:</b> a subnet ID + a security group ID in the default VPC.</div>
+      <div class="step"><div class="sh">Create an interface endpoint</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>VPC=$(aws ec2 describe-vpcs --filters Name=isDefault,Values=true \
+  --query "Vpcs[0].VpcId" --output text)
+SUBNET=$(aws ec2 describe-subnets --filters Name=vpc-id,Values=$VPC \
+  --query "Subnets[0].SubnetId" --output text)
+SG=$(aws ec2 describe-security-groups --filters Name=vpc-id,Values=$VPC \
+  --query "SecurityGroups[0].GroupId" --output text)
+REGION=$(aws configure get region)
+EP=$(aws ec2 create-vpc-endpoint --vpc-id $VPC --vpc-endpoint-type Interface \
+  --service-name com.amazonaws.$REGION.ec2 \
+  --subnet-ids $SUBNET --security-group-ids $SG \
+  --query "VpcEndpoint.VpcEndpointId" --output text)
+echo $EP</code></pre></div>
+      <div class="expect"><b>Expect:</b> an endpoint ID + an ENI with a private IP. Enable private DNS so <code>ec2.&lt;region&gt;.amazonaws.com</code> resolves privately.</div>
+      <div class="box warn"><span class="tag">Cost warning</span>Interface endpoints bill <b>per hour + per GB</b>. Delete it right after testing.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 delete-vpc-endpoints --vpc-endpoint-ids $EP</code></pre></div>
+      <div class="expect"><b>Expect:</b> endpoint + its ENI removed (stops billing).</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>The non-S3/DynamoDB counterpart to gateway endpoints (L3).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Private service access, hybrid networking, PrivateLink.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li><b>Interface endpoint = other services</b> (PrivateLink/ENI), <b>costs money</b>, <b>SG-controlled</b>.</li>
+      <li><b>Not HA by default</b> → add <b>one per AZ</b>.</li>
+      <li>S3/DynamoDB → <b>gateway</b>; everything else → <b>interface</b>.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Interface endpoint underlying tech?<span class="hint">tap</span></div><div class="a">PrivateLink (it's an ENI with a private IP).</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Are interface endpoints HA by default?<span class="hint">tap</span></div><div class="a">No — add one per AZ.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Gateway vs interface for S3?<span class="hint">tap</span></div><div class="a">S3 (and DynamoDB) use gateway endpoints; others use interface.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">A private instance must call the SSM/EC2 APIs without internet, with HA. Use?</div>
+      <span class="opt">A) One interface endpoint</span><span class="opt">B) Interface endpoints, one per AZ</span><span class="opt">C) Gateway endpoint</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Interface endpoints aren't HA by default; deploy one ENI per AZ.</div></div>
+    <div class="quiz"><div class="qq">Which needs a gateway endpoint, not interface?</div>
+      <span class="opt">A) SNS</span><span class="opt">B) DynamoDB</span><span class="opt">C) Kinesis</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> DynamoDB (and S3) use gateway endpoints; the rest use interface.</div></div>
+  </article>
+
+  <!-- ===== LESSON 5 ===== -->
+  <article class="card" id="l5">
+    <div class="lesson-head"><div class="num">5</div><div><h2>VPC Peering</h2><div class="sub">Link two VPCs privately.</div></div></div>
+
+    <h3 class="block">Quick Understanding</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Concept</th><th>Meaning</th><th>Exam relevance</th></tr>
+      <tr><td>1:1 link</td><td>Connect exactly two VPCs.</td><td>Same/diff account/region.</td></tr>
+      <tr><td>Not transitive</td><td>A–B + B–C does NOT give A–C.</td><td>Classic trap.</td></tr>
+      <tr><td>No overlap</td><td>CIDRs must not overlap.</td><td>Hard requirement.</td></tr>
+      <tr><td>Needs routes</td><td>Add routes both sides; SG refs same-region only.</td><td>Setup detail.</td></tr>
+    </table></div>
+
+    <h3 class="block">Key Terms</h3>
+    <div class="tbl-scroll"><table>
+      <tr><th>Term</th><th>Simple meaning</th></tr>
+      <tr><td>Peering connection</td><td>The logical link between two VPCs.</td></tr>
+      <tr><td>Transitive</td><td>"Friend of a friend" routing (peering is NOT this).</td></tr>
+      <tr><td>CIDR</td><td>The VPC's IP address range.</td></tr>
+    </table></div>
+
+    <h3 class="block">Explanation</h3>
+    <div class="mer"><pre class="mermaid">
+graph LR
+  A[VPC A] --- B[VPC B]
+  B --- C[VPC C]
+  A -. no direct path .- C
+  classDef a fill:#0e2647,stroke:#60a5fa,color:#e7edf3;
+  class B a;
+    </pre></div>
+    <ul class="clean">
+      <li>VPC peering is a <b>logical 1:1</b> private link between two VPCs — <b>same or different account/region</b>; cross-region traffic uses the <b>AWS network</b> (encrypted).</li>
+      <li>It is <b>NOT transitive</b>: if A↔B and B↔C, A still <b>cannot</b> reach C — you need a direct A↔C peer.</li>
+      <li><b>CIDRs must not overlap</b>. You must add <b>route table</b> entries on <b>both</b> sides; you can reference a peer's <b>security group by ID only in the same region</b>.</li>
+      <li>For many VPCs at scale, use <b>Transit Gateway</b> instead. <span class="pill">[added for exam]</span></li>
+    </ul>
+
+    <h3 class="block">Demo</h3>
+    <div class="demo-wrap">
+      <div class="box demo"><span class="tag">Demo · CLI v2 (peering is free)</span><b>Situation:</b> peer the default VPC with a new test VPC. <b>Check first:</b> CLI configured. Use a non-overlapping CIDR.</div>
+      <div class="step"><div class="sh">Make a second VPC + request peering</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>VPC1=$(aws ec2 describe-vpcs --filters Name=isDefault,Values=true \
+  --query "Vpcs[0].VpcId" --output text)
+VPC2=$(aws ec2 create-vpc --cidr-block 10.99.0.0/16 \
+  --query "Vpc.VpcId" --output text)
+PCX=$(aws ec2 create-vpc-peering-connection --vpc-id $VPC1 \
+  --peer-vpc-id $VPC2 \
+  --query "VpcPeeringConnection.VpcPeeringConnectionId" --output text)
+echo $PCX</code></pre></div>
+      <div class="expect"><b>Expect:</b> a peering ID in <code>pending-acceptance</code>.</div>
+      <div class="step"><div class="sh">Accept the peering</div></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 accept-vpc-peering-connection --vpc-peering-connection-id $PCX \
+  --query "VpcPeeringConnection.Status.Code"</code></pre></div>
+      <div class="expect"><b>Expect:</b> <code>active</code>. To actually route, add routes on <b>both</b> VPCs pointing the other's CIDR at <code>$PCX</code>.</div>
+      <div class="box demo"><span class="tag">Fix / Key info</span>Peering needs <b>routes on both sides</b> and <b>non-overlapping CIDRs</b>; it is <b>not transitive</b>.</div>
+      <div class="box term"><span class="tag">Clean up</span></div>
+      <div class="code"><button class="cp" onclick="cp(this)">copy</button><pre><code>aws ec2 delete-vpc-peering-connection --vpc-peering-connection-id $PCX
+aws ec2 delete-vpc --vpc-id $VPC2</code></pre></div>
+      <div class="expect"><b>Expect:</b> peering + test VPC removed.</div>
+    </div>
+
+    <h3 class="block">Build Knowledge</h3>
+    <div class="two-col">
+      <div class="box term"><span class="tag">Connects to NOW</span><ul><li>Builds on VPC basics; debug with Flow Logs (L1).</li></ul></div>
+      <div class="box term"><span class="tag">Needed LATER</span><ul><li>Multi-VPC designs, Transit Gateway, hybrid networks.</li></ul></div>
+    </div>
+
+    <h3 class="block">Exam Pointers</h3>
+    <div class="box exam"><span class="tag">Exam Tip</span><ul>
+      <li>Peering is <b>NOT transitive</b> and <b>CIDRs must not overlap</b>.</li>
+      <li>Works <b>cross-account + cross-region</b>; add routes <b>both sides</b>.</li>
+      <li>Many VPCs → use <b>Transit Gateway</b>, not a mesh of peers.</li>
+    </ul></div>
+
+    <h3 class="block">Flashcards</h3>
+    <div class="fc-grid">
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Is VPC peering transitive?<span class="hint">tap</span></div><div class="a">No — each pair needs a direct peering connection.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">CIDR rule for peering?<span class="hint">tap</span></div><div class="a">The two VPCs' CIDRs must not overlap.</div></div>
+      <div class="fc" onclick="this.classList.toggle('show')"><div class="q">Can you peer across regions/accounts?<span class="hint">tap</span></div><div class="a">Yes — same or different account and region.</div></div>
+    </div>
+
+    <h3 class="block">Mini Quiz</h3>
+    <div class="quiz"><div class="qq">VPC A peers B, and B peers C. A can't reach C. Why?</div>
+      <span class="opt">A) Peering isn't transitive</span><span class="opt">B) Wrong region</span><span class="opt">C) No IGW</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Peering is non-transitive; A needs its own peer to C (or use Transit Gateway).</div></div>
+    <div class="quiz"><div class="qq">Two VPCs both use 10.0.0.0/16 and won't peer. Fix?</div>
+      <span class="opt">A) Use non-overlapping CIDRs</span><span class="opt">B) Add a NAT</span><span class="opt">C) Same region</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Peered VPCs cannot have overlapping CIDR ranges.</div></div>
+  </article>
+
+  <!-- ===== MOCK EXAM ===== -->
+  <article class="card examcard" id="mock">
+    <div class="lesson-head"><div class="num">★</div><div><h2>Mock Exam</h2><div class="sub">Advanced VPC + IAM/Orgs + S3 + VPC + EC2 + Containers + Advanced EC2 + Network Storage + Route 53 + RDS + HA/Scaling + Serverless + CDN.</div></div></div>
+    <div class="box exam"><span class="tag">How to use</span>Decide first, then tap <b>Show answer</b>. Pick the <b>best</b> option. 16 questions.</div>
+
+    <div class="quiz"><div class="qq">1. See which connections security rules are blocking. Use?</div>
+      <span class="opt">A) Flow Logs (REJECT)</span><span class="opt">B) Packet sniffer</span><span class="opt">C) CloudTrail</span><span class="opt">D) Config</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Flow Logs record ACCEPT/REJECT metadata.</div></div>
+
+    <div class="quiz"><div class="qq">2. Inspect the actual data inside packets. Flow Logs enough?</div>
+      <span class="opt">A) Yes</span><span class="opt">B) No — Traffic Mirroring/sniffer</span><span class="opt">C) Only via S3</span><span class="opt">D) Only via CW</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Flow Logs are metadata only.</div></div>
+
+    <div class="quiz"><div class="qq">3. IPv6 instance needs outbound-only internet. Use?</div>
+      <span class="opt">A) NAT Gateway</span><span class="opt">B) Egress-Only IGW</span><span class="opt">C) IGW</span><span class="opt">D) Endpoint</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> IPv6 has no NAT; use an egress-only IGW.</div></div>
+
+    <div class="quiz"><div class="qq">4. Private IPv4 instance needs outbound-only internet. Use?</div>
+      <span class="opt">A) NAT Gateway</span><span class="opt">B) Egress-Only IGW</span><span class="opt">C) Gateway endpoint</span><span class="opt">D) Peering</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> NAT Gateway gives private IPv4 outbound access.</div></div>
+
+    <div class="quiz"><div class="qq">5. Private subnet (no NAT) must read S3 cheaply + privately. Use?</div>
+      <span class="opt">A) Gateway endpoint</span><span class="opt">B) Interface endpoint</span><span class="opt">C) NAT</span><span class="opt">D) IGW</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> S3 uses a free gateway endpoint.</div></div>
+
+    <div class="quiz"><div class="qq">6. Private access to the SNS API with HA, no internet. Use?</div>
+      <span class="opt">A) Gateway endpoint</span><span class="opt">B) Interface endpoints (one per AZ)</span><span class="opt">C) NAT</span><span class="opt">D) Peering</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>B.</b> Non-S3/DynamoDB services use interface endpoints; add one per AZ for HA.</div></div>
+
+    <div class="quiz"><div class="qq">7. Which two services use gateway endpoints?</div>
+      <span class="opt">A) S3 + DynamoDB</span><span class="opt">B) SNS + SQS</span><span class="opt">C) EC2 + SSM</span><span class="opt">D) RDS + EFS</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Only S3 and DynamoDB use gateway endpoints.</div></div>
+
+    <div class="quiz"><div class="qq">8. A peers B, B peers C, A can't reach C. Why?</div>
+      <span class="opt">A) Peering isn't transitive</span><span class="opt">B) Overlapping CIDR</span><span class="opt">C) No IGW</span><span class="opt">D) Cross-region</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Peering is non-transitive; A needs a direct peer to C.</div></div>
+
+    <div class="quiz"><div class="qq">9. Two VPCs both 10.0.0.0/16 won't peer. Fix?</div>
+      <span class="opt">A) Non-overlapping CIDRs</span><span class="opt">B) Add NAT</span><span class="opt">C) Same account</span><span class="opt">D) Add IGW</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Peered VPCs can't have overlapping ranges.</div></div>
+
+    <div class="quiz"><div class="qq">10. Connect 20 VPCs without a messy peering mesh. Use?</div>
+      <span class="opt">A) Transit Gateway</span><span class="opt">B) More peers</span><span class="opt">C) NAT</span><span class="opt">D) IGW</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Transit Gateway is the hub for many-VPC connectivity.</div></div>
+
+    <div class="quiz"><div class="qq">11. (HA) Interface endpoint in one AZ fails. Cause + fix?</div>
+      <span class="opt">A) Not HA by default — add one per AZ</span><span class="opt">B) Wrong SG</span><span class="opt">C) Gateway needed</span><span class="opt">D) Overlap</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Interface endpoints are single ENIs; deploy one per AZ.</div></div>
+
+    <div class="quiz"><div class="qq">12. (Serverless) A VPC Lambda needs to call DynamoDB privately + free. Use?</div>
+      <span class="opt">A) Gateway endpoint</span><span class="opt">B) Interface endpoint</span><span class="opt">C) NAT</span><span class="opt">D) IGW</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> DynamoDB uses a free gateway endpoint.</div></div>
+
+    <div class="quiz"><div class="qq">13. (S3) Restrict a gateway endpoint to only one bucket. Use?</div>
+      <span class="opt">A) Endpoint policy</span><span class="opt">B) Security group</span><span class="opt">C) NACL</span><span class="opt">D) Route table</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> An endpoint policy controls what the endpoint can access.</div></div>
+
+    <div class="quiz"><div class="qq">14. (CDN) An EC2 custom origin must accept only CloudFront. Use?</div>
+      <span class="opt">A) Secret custom header + IP allow-list</span><span class="opt">B) OAI</span><span class="opt">C) Gateway endpoint</span><span class="opt">D) Peering</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Custom origins use a secret header + CloudFront IP allow-list (OAI is S3-only).</div></div>
+
+    <div class="quiz"><div class="qq">15. (RDS) An app VPC must reach a DB in another team's VPC privately. Use?</div>
+      <span class="opt">A) VPC peering (non-overlapping CIDRs)</span><span class="opt">B) Public RDS</span><span class="opt">C) NAT</span><span class="opt">D) IGW</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Peer the VPCs (or use Transit Gateway/PrivateLink) for private access.</div></div>
+
+    <div class="quiz"><div class="qq">16. (IAM) Flow Logs to CloudWatch fail to deliver. Likely cause?</div>
+      <span class="opt">A) Missing IAM role for VPC Flow Logs</span><span class="opt">B) Wrong CIDR</span><span class="opt">C) No IGW</span><span class="opt">D) No peering</span>
+      <button class="reveal" onclick="this.parentElement.classList.toggle('show')">Show answer</button>
+      <div class="ans"><b>A.</b> Delivery to CloudWatch Logs needs a role the flow-logs service can assume.</div></div>
+  </article>
+
+  <div class="foot">
+    <div>
+      <span class="pill">Flow Logs = metadata only</span><span class="pill">Egress-only IGW = IPv6 out</span>
+      <span class="pill">Gateway EP = S3+DynamoDB, free</span><span class="pill">Interface EP = others, costs</span>
+      <span class="pill">Interface EP not HA → 1/AZ</span><span class="pill">Peering not transitive</span>
+      <span class="pill">No overlapping CIDRs</span><span class="pill">Many VPCs → Transit Gateway</span>
+    </div>
+    <p>Section 015 · Advanced VPC Networking + Mock Exam · built for SAA-C03 self-study.<br>
+    Tap a flashcard or "Show answer" to reveal. Use ☰ Lessons to jump around.</p>
+  </div>
+</main>
+
+<button class="toTop" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawerBg').classList.add('open');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerBg').classList.remove('open');}
+function cp(btn){
+  const code=btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard?.writeText(code).then(()=>{const t=btn.innerText;btn.innerText='copied!';setTimeout(()=>btn.innerText=t,1200);})
+  .catch(()=>{btn.innerText='select & copy';});
+}
+const tt=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{tt.classList.toggle('show',window.scrollY>500);});
+window.addEventListener('load',()=>{
+  try{
+    mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{
+      fontFamily:'Manrope, sans-serif',primaryColor:'#1b2128',primaryTextColor:'#e7edf3',
+      primaryBorderColor:'#2dd4bf',lineColor:'#60a5fa',secondaryColor:'#212934',tertiaryColor:'#161b21'}});
+  }catch(e){console.warn('mermaid init',e);}
+});
+</script>
+</body>
+</html>

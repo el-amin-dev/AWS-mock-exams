@@ -1,0 +1,179 @@
+# ROLE
+You are an expert AWS instructor building a single self-contained HTML study + revision 
+document for ONE section of Adrian Cantrill's AWS Solutions Architect Associate (SAA-C03) 
+course. The document must teach me from zero and also work as exam-revision later.
+
+# WHO I AM (design for this exactly)
+- 0 AWS knowledge, 0 work experience. Everything is new to me.
+- English level B1. Use simple, clear English. Short sentences.
+- I am preparing for the SAA-C03 exam, so depth = exam level (not deeper, not shallower).
+- I run demos myself on my laptop using AWS CLI v2 (already installed and configured).
+
+# INPUT
+I will paste one full course SECTION below. A section contains several lessons.
+Treat each lesson as one teaching unit. Build the document lesson by lesson, in order.
+
+# OUTPUT = ONE HTML FILE
+- ONE single HTML file for the WHOLE section, no matter how many lessons (even 20+). 
+  Do not split into parts.
+- Material UI look, DARK MODE, MOBILE-FIRST (single column, large tap targets, readable font).
+- Load Mermaid from CDN and render diagrams (graph/flowchart/sequence as fits the idea).
+- Self-contained: all CSS + JS inline, opens offline in a browser.
+- Sticky top bar + collapsible section menu so I can jump between lessons.
+- Clean spacing, cards for each lesson, color accents for "exam tip" / "demo" / "term" blocks.
+
+# FORMATTING PRINCIPLES (follow strictly, in priority order)
+1. Mermaid diagram  >  paragraph  (always try a diagram first for any flow/relationship)
+2. Outline / bullet list  >  paragraph
+3. Key–value table  >  paragraph
+4. Structured  >  unstructured
+Only use a paragraph when none of the above fit. Keep paragraphs to 2–3 short sentences.
+
+# LANGUAGE & TERMS
+- B1 English. When a technical word first appears, do ONE of:
+  (a) short explanation in parentheses right after it, OR
+  (b) add it to a "Key Terms" table at the TOP of the lesson (term | simple meaning).
+- Prefer the Key Terms table at the entry of each lesson for the main technical words.
+
+# DOCUMENT STRUCTURE
+## Top of document (once)
+- Section title + 1-line goal.
+- "Section Map": a Mermaid diagram showing how the lessons connect.
+- A "Quick Understanding" table for the WHOLE section (lesson | one-line what + why it matters for exam).
+
+## For EACH lesson (repeat this block)
+1. **Quick Understanding table** — fast TL;DR of the lesson (concept | meaning | exam relevance).
+2. **Key Terms table** — the technical words used, in B1 plain meaning.
+3. **Explanation** — diagram-led (Mermaid), then bullets/tables. Minimal prose.
+4. **Demo** (see DEMO SPEC) — directly after the explanation.
+   Demo EVERY lesson that can possibly be demoed with AWS CLI v2 / CloudFormation.
+   Only skip when the lesson is pure theory with nothing to build — then write 
+   "No demo — theory only" and say in 1 line why.
+5. **Build Knowledge** — 2 short lists:
+   - "Connects to NOW" (how this links to other lessons in this section)
+   - "Needed LATER" (which future course topics depend on this).
+6. **Exam Pointers** — bullets of common SAA-C03 traps, "remember this", and easy-confusions.
+7. **Flashcards** — 4–6 active-recall Q→A pairs (HTML click-to-flip or show/hide).
+8. **Mini Quiz** — 2–3 exam-style multiple-choice questions with the correct answer + 
+   1-line why (hidden until clicked).
+
+# DEMO SPEC (use AWS CLI v2; CloudFormation allowed for fast setup/cleanup)
+Each demo follows this exact order:
+1. **Situation** — the real scenario (tie it to Animals4life when natural) and the goal.
+2. **Check first** — prerequisites / what state I should be in before starting.
+3. **Steps** — numbered. For EVERY command:
+   - the exact AWS CLI v2 command (in a copyable code block),
+   - "What you expect" — what output/result I should see after running it.
+4. **Fix / Key info** — correct any course misunderstanding, note real-world gotchas.
+5. **Clean up** — exact commands to delete everything (use CloudFormation delete or CLI 
+   delete commands) so I leave NO running/billable resources.
+
+# QUALITY BAR
+- Accurate to current SAA-C03 scope. If something is exam-relevant but missing from the 
+  pasted text, add it briefly and mark it "[added for exam]".
+- No fluff. Everything must help me learn OR revise. Remove anything that doesn't.
+- The file must be ready to use as my single source for studying and revising this section.
+
+# SECTION TO BUILD
+Other Services & Features & Exam 
+1 -  AWS Local Zones 
+AWS Local Zones are a type of infrastructure deployment that places compute, storage, database, and other select AWS services close to large population and industry centers.
+
+https://aws.amazon.com/about-aws/global-infrastructure/localzones/features/
+
+2 - General AWS Exam Technique - 3 Phase Approach 
+
+In this lesson I step through my experiences and suggestions for handling the exam in a structured and efficient way.
+
+We focus on the exam itself in this lesson, and the questions specifically in the following lesson.
+
+3 - General AWS Question Technique -
+
+In this 2-part video, I step through how to answer questions in the AWS exam.
+
+If you follow a set, logical process of identifying the key elements of questions, removing word fluff (duplicated irrelevant wording) and identifying any self-eliminating answers you can reduce your cognitive load in the exam, and improve your accurate questions per minute rate.
+
+
+I step through how to answer questions in the AWS exam.
+
+If you follow a set, logical process of identifying the key elements of questions, removing word fluff (duplicated irrelevant wording) and identifying any self-eliminating answers you can reduce your cognitive load in the exam, and improve your accurate questions per minute rate.
+
+ Thanks! and a favour 
+ 
+ Thanks !!! this is the end of the course and I'm so grateful for your support.
+
+I'm a solo creator and you choosing to support me means everything.
+
+I hope you have enjoyed the course and I hope it's been helpful.
+
+If you did enjoy it, there is one thing you can do with would really help me grow, reach more people and continue doing this full time.
+
+There are a few places you can post about your experience .. (as you post about your awesome pass result !!!!)
+
+    https://www.reddit.com/r/awscertifications
+    LinkedIn (you should always post that you pass exams, it raises your profile) - it would help a lot to @Adrian Cantrill tag me, and include the https://learn.cantrill.io link
+    Twitter
+    Facebook
+
+Thanks again, it means a lot you are willing to support me and my course making business!!!
+
+COURSE UPGRADES - SAVE $ WHEN ADDING MORE COURSES
+
+Expand your Course Collection
+.. while saving money
+
+
+Are you considering expanding your course library? Here's some good news! You can often upgrade to a larger content bundle by paying the difference rather than purchasing each course separately. Here's how it works:
+
+
+In summary, instead of adding individual courses, you can upgrade to a bundle that contains one or more courses you have and the courses you want and only pay the price difference; this can be significantly cheaper. Note: you can't "upgrade" to a bundle that doesn't contain any of your current courses and there are no custom bundles available.
+
+Some Recent Examples:
+
+
+Example 1: Alice Decided to go "pro"
+
+    She passed Solutions Architect Associate using my $40 course.
+    She wants to grow her skills by achieving solutions architect professional (usually $80)
+    Upgrade Option: She can move to the solutions architect bundle (usually $100) for $60 after subtracting her $40 previous payment
+
+Example 2: Bob decides to specialize.
+
+    He passed SA Associate and Pro using my Solutions Architect Bundle (which costs $100)
+    His next move is to specialize and add the Security ($80) and Networking Specialty ($80) Courses to his collection ($160 total).
+    Bob has three upgrade options:
+
+        Security Architect Bundle: +$20 (vs. usual $80 price)
+        Network Architect Bundle: +$70 (vs. usual $80 price)
+        Network Security Architect Bundle: +$90 (vs. usual $160 price for both courses).
+
+Example 3: Tim wants to expand his knowledge
+
+    Tim has studied and passed the Sysops Associate exam
+    He wants to expand his architecture and development tooling knowledge and wants to reduce the $40 + $40 cost.
+    The associate bundle, which usually costs $100 includes the extra courses he wants.
+    He pays $60 (after accounting for his previous $40 payment).
+
+Example 4: Janice has long-term learning plans
+
+    Janice has passed all three associate exams using my content
+    She wants to expand her knowledge and own my current and future content.
+    She likes the look of the "ALL THE THINGS" bundle, which usually costs $400
+    She can pay $300 by deducting her $100 spent on the associate bundle.
+
+Example 5: Jess's Multi-Platform Aspirations
+
+    Jess already owns the "ALL THE THINGS" bundle, and has used many of my courses.
+    She wants more content spanning various cloud platforms and tech stacks and has noticed the "ALL THE THINGS PLUS" bundle, which usually costs $600
+    She only pays $200 since she already invested in the "ALL THE THINGS" bundle (which cost $400).
+
+
+How to Upgrade:
+
+    Choose a bundle that contains the courses you already own and the new ones you want.
+    Or let us know the courses you want, and we can help you with the most cost-effective method of upgrading.
+    Log a ticket (HERE) and let us know what you would like 
+    We'll respond with an upgrade payment link OR further questions if needed. Note: Upgrade links last two weeks. If unused, you'll need to request a new one.
+    For "ALL THE THINGS" or "ALL THE THINGS PLUS", you can pay in full or in instalments. We will assume a one-time payment if you don't inform us otherwise. Note: Installments come with a minimal admin fee, increasing with the number of months you want to split the cost.
+    
+  mock exam level for this section "last section"  implement old courses ["*"]
