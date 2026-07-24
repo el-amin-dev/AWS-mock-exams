@@ -296,7 +296,7 @@ const LETTERS=['A','B','C','D','E','F','G','H'];
 const DEFAULTS={count:10,multiCount:2,difficulty:'exam',passPct:70,spq:120,reviewWeak:true};
 const DOMAIN_WEIGHTS={Secure:30,Resilient:26,"High-Performing":24,"Cost-Optimized":20,"Operations/IaC":0};
 
-/* ===== Cantrill SAA-C03 course map (fair-game ordering for the prompt) ===== */
+/* ===== SAA-C03 course map (fair-game ordering for the prompt) ===== */
 const COURSE_SECTIONS = [
   "Introduction & Scenario",
   "Course Fundamentals and AWS Accounts (AWS accounts, MFA, IAM basics, access keys, CLI)",
@@ -336,7 +336,7 @@ function buildPrompt(report, opts){
   const reviewWeak = !!(report && opts.reviewWeak);
   const schema =
 `{
-  "exam_id": "cantrill-saa-c03-mock",
+  "exam_id": "saa-c03-mock",
   "date": "<YYYY-MM-DD>",
   "title": "SAA-C03 Mock",
   "subtitle": "<today's topic names>",
@@ -366,7 +366,7 @@ function buildPrompt(report, opts){
 `SAA-C03 MOCK — GENERATE A mock.json
 
 CONTEXT (carry forward; reuse this chat):
-- I'm studying Adrian Cantrill's "AWS Certified Solutions Architect – Associate (SAA-C03)" course and sitting the SAA-C03 exam.
+- I'm studying an "AWS Certified Solutions Architect – Associate (SAA-C03)" course and sitting the SAA-C03 exam.
 - I take mock exams scoped ONLY to the lessons I've watched, at real-exam difficulty.
 - A fixed HTML engine renders a mock.json. You ONLY produce a new mock.json; never change the template.
 
@@ -429,7 +429,7 @@ function controlPanelHTML(prefix, opts, withReport){
       <button onclick="rebuildPrompt('${prefix}')">Rebuild prompt ↓</button>
     </div>
     <div class="jsonwrap">
-      <h3>🤖 Prompt — paste this to Claude to get your mock.json</h3>
+      <h3>🤖 Prompt — paste this to your assistant to get your mock.json</h3>
       <textarea id="${prefix}PromptOut" readonly></textarea>
       <div class="vbtns" style="margin-top:8px">
         <button class="primary" onclick="copyText('${prefix}PromptOut','${prefix}Copied')">Copy prompt</button>
@@ -815,7 +815,7 @@ function buildReport(correctCount){
     score:{correct:correctCount,total:Q.length,percent:Math.round(correctCount/Q.length*100)},
     time:{allotted_seconds:totalTime,used_seconds:totalTime-Math.max(0,timeLeft)},
     by_topic:byTopic, weak_topics:weak, questions:perQ,
-    note_to_claude:"Use weak_topics + wrong/blank questions to weight the next NEW exam (scoped to the next lessons) and to randomly mix in 2-3 review questions on these weak concepts. Reproduce by editing only mock.json; keep the template unchanged."
+    note_to_generator:"Use weak_topics + wrong/blank questions to weight the next NEW exam (scoped to the next lessons) and to randomly mix in 2-3 review questions on these weak concepts. Reproduce by editing only mock.json; keep the template unchanged."
   };
 }
 function submitExam(){
@@ -878,7 +878,7 @@ function submitExam(){
     <p class="sub" style="text-align:center;margin-top:12px">Click <b>Review My Answers</b> (below) to step through every question with the correct choice and per-option explanations.</p>
 
     <div class="jsonwrap">
-      <h3>📋 JSON report — paste to Claude</h3>
+      <h3>📋 JSON report — paste to your assistant</h3>
       <p>Score, per-question time, and weak topics so the next mock can be tuned and old weak spots retested.</p>
       <textarea id="jsonOut" readonly>${json.replace(/</g,'&lt;')}</textarea>
       <div class="vbtns" style="margin-top:8px">
