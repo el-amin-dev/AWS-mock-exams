@@ -1,0 +1,9 @@
+.svelte-kit/
+build/
+coverage/
+node_modules/
+package-lock.json
+LICENSE
+
+# Superseded single-file engine; removed once the rewrite reaches parity.
+SAA-c03.html
