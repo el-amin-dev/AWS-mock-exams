@@ -20,6 +20,17 @@ export const FULL_EXAM_UNSCORED_COUNT = 15;
  */
 export const UNSCORED_RATIO = FULL_EXAM_UNSCORED_COUNT / FULL_EXAM_QUESTION_COUNT;
 
+/**
+ * Multi-answer questions in a full-length exam.
+ *
+ * The exam guide does not publish this figure, so it is an observed approximation: roughly a
+ * fifth of questions are multiple-response. It is a default, not a rule.
+ */
+export const FULL_EXAM_MULTI_ANSWER_COUNT = 13;
+
+/** Share of a mock that should be multi-answer, applied proportionally to shorter mocks. */
+export const MULTI_ANSWER_RATIO = FULL_EXAM_MULTI_ANSWER_COUNT / FULL_EXAM_QUESTION_COUNT;
+
 /** Time budget per question, giving 130 minutes across a full-length exam. */
 export const SECONDS_PER_QUESTION = 120;
 

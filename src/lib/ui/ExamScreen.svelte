@@ -101,6 +101,7 @@
 			struck={session.currentStruck}
 			required={session.requiredSelections}
 			revealed={session.isRevealed}
+			tipsAvailable={session.mode === 'practice'}
 			onselect={(index) => session.select(index)}
 			onstrike={(index) => session.strike(index)}
 		/>
