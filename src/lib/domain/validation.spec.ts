@@ -110,13 +110,27 @@ describe('validateMock — quality warnings', () => {
 
 	/** "Select THREE" is legitimate on the real exam and must not be rejected. */
 	it('supports three correct options', () => {
-		const result = validateMock(makeMock([{ correct: [0, 1, 2], optionCount: 5 }]), config);
+		const result = validateMock(makeMock([{ correct: [0, 1, 2], optionCount: 6 }]), config);
 		expect(result.valid).toBe(true);
 		expect(messages(result.warnings)).not.toContain('verify this is intended');
 	});
 
+	/**
+	 * The number of distractors stays constant as the number of correct answers rises, which
+	 * is how the real exam is built: Select TWO of five and Select THREE of six both leave
+	 * three wrong options.
+	 */
+	it('expects one more option per additional correct answer', () => {
+		expect(
+			messages(validateMock(makeMock([{ correct: [0, 1], optionCount: 5 }]), config).warnings)
+		).not.toContain('expected');
+		expect(
+			messages(validateMock(makeMock([{ correct: [0, 1, 2], optionCount: 5 }]), config).warnings)
+		).toContain('select-3 question has 5 options; 6 expected');
+	});
+
 	it('warns when the correct-option count looks like a mistake', () => {
-		const result = validateMock(makeMock([{ correct: [0, 1, 2, 3], optionCount: 5 }]), config);
+		const result = validateMock(makeMock([{ correct: [0, 1, 2, 3], optionCount: 7 }]), config);
 		expect(messages(result.warnings)).toContain('verify this is intended');
 	});
 

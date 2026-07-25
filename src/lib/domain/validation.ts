@@ -141,10 +141,16 @@ function validateQuestion(
 
 	// Option counts are a house style, not a correctness property: a five-option
 	// single-answer question grades perfectly well. Warn, never block.
+	//
+	// Multi-answer questions keep a constant number of distractors as the number of correct
+	// answers rises, which is how the real exam is built: "Select TWO" of five options and
+	// "Select THREE" of six both leave three wrong options to choose between.
 	const expected =
-		correctCount === 1 ? config.singleAnswerOptionCount : config.multiAnswerOptionCount;
+		correctCount === 1
+			? config.singleAnswerOptionCount
+			: config.multiAnswerOptionCount + (correctCount - 2);
 	if (sound.length !== expected) {
-		const kind = correctCount === 1 ? 'single-answer' : 'multi-answer';
+		const kind = correctCount === 1 ? 'single-answer' : `select-${correctCount}`;
 		log.warn(path, `${kind} question has ${sound.length} options; ${expected} expected.`);
 	}
 	if (correctCount > MAXIMUM_SENSIBLE_CORRECT) {
@@ -157,6 +163,7 @@ function validateQuestion(
 		topic: isNonEmptyString(raw.topic) ? raw.topic : 'General',
 		...(isNonEmptyString(raw.domain) ? { domain: raw.domain } : {}),
 		stem: raw.stem,
+		...(isNonEmptyString(raw.hint) ? { hint: raw.hint } : {}),
 		options: sound
 	};
 }

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tipsFor } from '$lib/domain/tips';
 	import { OPTION_LABELS } from '$lib/domain/validation';
 	import type { Question } from '$lib/domain/types';
 
@@ -13,12 +14,32 @@
 		required: number;
 		/** Whether the answer has been graded and revealed. */
 		revealed: boolean;
+		/** Whether study aids are offered. Practice mode only; the real exam has none. */
+		tipsAvailable?: boolean;
 		onselect: (optionIndex: number) => void;
 		onstrike: (optionIndex: number) => void;
 	}
 
-	const { question, index, selected, struck, required, revealed, onselect, onstrike }: Props =
-		$props();
+	const {
+		question,
+		index,
+		selected,
+		struck,
+		required,
+		revealed,
+		tipsAvailable = false,
+		onselect,
+		onstrike
+	}: Props = $props();
+
+	let tipsOpen = $state(false);
+	const tips = $derived(tipsFor(question, required));
+
+	// Collapse the panel when moving to another question, so help is always asked for.
+	$effect(() => {
+		void index;
+		tipsOpen = false;
+	});
 
 	const NUMBER_WORDS: Record<number, string> = { 1: 'ONE', 2: 'TWO', 3: 'THREE', 4: 'FOUR' };
 
@@ -46,7 +67,34 @@
 	{/if}
 
 	<p class="question-stem">{question.stem}</p>
-	<p class="question-instruction">{instruction}</p>
+
+	<div class="instruction-row">
+		<p class="question-instruction">{instruction}</p>
+		{#if tipsAvailable && !revealed}
+			<button
+				type="button"
+				class="tips-button"
+				aria-expanded={tipsOpen}
+				aria-controls="tips-{index}"
+				onclick={() => (tipsOpen = !tipsOpen)}
+			>
+				<span class="tips-icon" aria-hidden="true">i</span>
+				{tipsOpen ? 'Hide help' : 'Stuck?'}
+			</button>
+		{/if}
+	</div>
+
+	{#if tipsAvailable && tipsOpen && !revealed}
+		<div class="tips" id="tips-{index}">
+			{#each tips as tip (tip.label)}
+				<p><b>{tip.label}.</b> {tip.body}</p>
+			{/each}
+			<p class="tips-note">
+				None of this is available in exam mode — this is here so being stuck teaches you something
+				rather than costing you a guess.
+			</p>
+		</div>
+	{/if}
 
 	<div class="option-list">
 		{#each question.options as option, optionIndex (optionIndex)}
@@ -108,6 +156,62 @@
 		gap: 12px;
 		flex: 1;
 		cursor: pointer;
+	}
+
+	.instruction-row {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 12px;
+	}
+
+	.tips-button {
+		flex: none;
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		font-size: 12px !important;
+		padding: 4px 10px !important;
+		border-color: var(--line) !important;
+		color: var(--blue-dark) !important;
+	}
+
+	.tips-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 15px;
+		height: 15px;
+		border-radius: 50%;
+		background: var(--blue);
+		color: #fff;
+		font-style: italic;
+		font-size: 11px;
+		font-weight: bold;
+	}
+
+	.tips {
+		border: 1px solid #bcd4ee;
+		background: #eef5fc;
+		border-radius: 6px;
+		padding: 12px 15px;
+		margin-bottom: 14px;
+		font-size: 13px;
+	}
+
+	.tips p {
+		margin: 4px 0;
+	}
+
+	.tips b {
+		color: var(--blue-dark);
+	}
+
+	.tips-note {
+		color: var(--muted);
+		font-size: 12px;
+		font-style: italic;
+		margin-top: 10px !important;
 	}
 
 	.visually-hidden {

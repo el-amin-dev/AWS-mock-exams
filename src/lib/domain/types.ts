@@ -28,6 +28,13 @@ export interface Question {
 	readonly domain?: string;
 	/** Self-contained scenario. Must be answerable without seeing `topic` or `domain`. */
 	readonly stem: string;
+	/**
+	 * Optional nudge shown on request in practice mode.
+	 *
+	 * Points at the concept that decides the question without naming the answer. Absent from
+	 * exam mode entirely — the real exam offers no hints.
+	 */
+	readonly hint?: string;
 	readonly options: readonly Option[];
 }
 

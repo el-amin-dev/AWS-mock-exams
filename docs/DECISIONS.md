@@ -14,6 +14,42 @@ Entry format (use exactly this shape):
 - consequences: <trade-offs accepted>
 -->
 
+## ADR-006 — Practice mode offers graduated help; exam mode offers none (2026-07-25)
+
+- status: accepted
+- context: Practice mode exists to teach, so being stuck should produce learning rather than a
+  coin flip. But any help at all would make an exam-mode score meaningless.
+- decision: An **(i)** control in practice mode only, revealing help in increasing specificity:
+  transferable technique for that question shape, then the topic and domain being tested, then
+  a one-sentence `hint` the generator supplied. `Question.hint` is optional, and the prompt
+  explicitly forbids a hint that names or describes the correct option.
+- alternatives: Show the explanation early — rejected, it is the answer. Show nothing —
+  rejected, it leaves practice mode no better than exam mode for learning. Always show the
+  topic — rejected, a question only answerable once you know its topic is a broken question,
+  and hiding it by default is what surfaces that.
+- consequences: `hint` is one more thing a generator can get wrong, so it is optional and the
+  panel degrades to technique plus area without it. Exam mode is untouched.
+
+## ADR-005 — The prompt is composed from independently testable sections (2026-07-25)
+
+- status: accepted
+- context: The previous prompt was a single template literal. It could not be tested, and
+  there was no way to tell which instruction was doing any work. Loosely prompted generators
+  produce questions answerable without knowing the subject — padded correct options, absurd
+  distractors, answers leaking through grammar — which inflates practice scores and teaches
+  nothing.
+- decision: One function per section under `src/lib/prompt/`, composed in a fixed order: role,
+  audience, scope, composition, difficulty, item-writing rules, distractor taxonomy, banned
+  patterns, a worked bad-and-repaired example, a self-audit checklist, and the output
+  contract last. Each is snapshot-tested independently. Every wrong option must be typed
+  against a four-way distractor taxonomy and name its type in its explanation, and option
+  length carries a numeric budget rather than a vague instruction.
+- alternatives: Keep one template — rejected as untestable. Fine-tune or few-shot from a large
+  question bank — rejected, no bank exists and it would mean shipping exam content.
+- consequences: The prompt is long. That is the point: the failure being prevented is a
+  generator with too much latitude. Section order is load-bearing — rules precede the example
+  so it reads as demonstration, and the schema sits last so it is freshest in context.
+
 ## ADR-004 — Validation splits hard errors from quality warnings (2026-07-25)
 
 - status: accepted
