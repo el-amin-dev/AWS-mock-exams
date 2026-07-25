@@ -1,0 +1,66 @@
+{
+  "exam_id": "saa-c03-mock",
+  "date": "2026-07-25",
+  "title": "SAA-C03 Mock",
+  "subtitle": "Day 4 — VPC, EC2 storage, IAM",
+  "topics_covered": ["VPC routing", "EBS volume types", "IAM roles"],
+  "config": { "seconds_per_question": 120, "pass_percent": 72 },
+  "questions": [
+    {
+      "topic": "VPC routing",
+      "domain": "Resilient",
+      "stem": "A subnet's route table has a default route pointing at a NAT gateway that sits in the same subnet. Instances in the subnet cannot reach the internet. What explains this?",
+      "options": [
+        { "text": "The NAT gateway must sit in a subnet whose default route targets an internet gateway", "correct": true, "why": "Correct — a NAT gateway needs its own path out, so it belongs in a public subnet." },
+        { "text": "NAT gateways only forward traffic once a secondary elastic IP is attached", "correct": false, "why": "Wrong — a NAT gateway takes exactly one elastic IP at creation." },
+        { "text": "The route table is missing an explicit rule for the VPC CIDR range", "correct": false, "why": "Wrong — the local route is created automatically and cannot be removed." },
+        { "text": "Security groups block outbound traffic until a rule is added", "correct": false, "why": "Wrong — security groups allow all outbound traffic by default." }
+      ]
+    },
+    {
+      "topic": "EBS volume types",
+      "domain": "High-Performing",
+      "stem": "A database needs sustained 40,000 IOPS on a single 400 GiB volume with consistent sub-millisecond latency. Which volume type fits?",
+      "options": [
+        { "text": "io2 Block Express", "correct": true, "why": "Correct — it sustains this IOPS level at the required latency." },
+        { "text": "gp3", "correct": false, "why": "Wrong — gp3 tops out at 16,000 IOPS per volume." },
+        { "text": "st1", "correct": false, "why": "Wrong — st1 is throughput-optimised HDD, unsuited to random IO." },
+        { "text": "sc1", "correct": false, "why": "Wrong — sc1 is cold HDD, the lowest-performance option." }
+      ]
+    },
+    {
+      "topic": "IAM roles",
+      "domain": "Secure",
+      "stem": "An application on EC2 must read from an S3 bucket in the same account. Which two steps grant access without long-lived credentials? (Select TWO.)",
+      "options": [
+        { "text": "Create a role with a trust policy allowing the EC2 service to assume it", "correct": true, "why": "Correct — the trust policy is what lets EC2 assume the role." },
+        { "text": "Attach the role to the instance through an instance profile", "correct": true, "why": "Correct — the instance profile is how a role reaches an instance." },
+        { "text": "Store an access key pair in the instance user data script", "correct": false, "why": "Wrong — this is a long-lived credential, which the question rules out." },
+        { "text": "Add the instance's private IP to the bucket policy", "correct": false, "why": "Wrong — bucket policies match principals, not private addresses." },
+        { "text": "Enable an S3 gateway endpoint on the subnet's route table", "correct": false, "why": "Wrong — an endpoint changes the network path but grants no permission." }
+      ]
+    },
+    {
+      "topic": "VPC routing",
+      "domain": "Secure",
+      "stem": "Which statement about network ACLs and security groups is accurate for a subnet hosting web servers?",
+      "options": [
+        { "text": "Network ACLs are stateless, so return traffic needs an explicit outbound rule", "correct": true, "why": "Correct — statelessness is the defining difference from security groups." },
+        { "text": "Security groups evaluate rules in numbered order and stop at the first match", "correct": false, "why": "Wrong — that describes network ACLs; security groups evaluate all rules." },
+        { "text": "Network ACLs can reference a security group as a rule source", "correct": false, "why": "Wrong — only security groups can reference other security groups." },
+        { "text": "Security groups apply at the subnet boundary rather than the interface", "correct": false, "why": "Wrong — they attach to elastic network interfaces." }
+      ]
+    },
+    {
+      "topic": "EBS volume types",
+      "domain": "Cost-Optimized",
+      "stem": "An archive volume is read once a quarter and holds 12 TiB. Throughput matters more than latency and cost must be lowest. Which volume type?",
+      "options": [
+        { "text": "sc1", "correct": true, "why": "Correct — cold HDD is the cheapest option for infrequent large scans." },
+        { "text": "st1", "correct": false, "why": "Wrong — st1 costs more and targets frequently accessed throughput workloads." },
+        { "text": "gp3", "correct": false, "why": "Wrong — SSD pricing is unjustified for quarterly access." },
+        { "text": "io1", "correct": false, "why": "Wrong — provisioned IOPS is the most expensive choice available." }
+      ]
+    }
+  ]
+}
