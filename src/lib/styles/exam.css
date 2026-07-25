@@ -1,0 +1,583 @@
+/*
+ * The exam surface.
+ *
+ * Exam mode is a simulation, not a themed page: the point is that sitting a mock feels like
+ * sitting the real thing, so the palette, proportions and control styling below are fixed
+ * and deliberately do not follow the system colour scheme. Every measurement is carried over
+ * from the previous engine's stylesheet, which had already been tuned against the real
+ * client, and tightened where it had drifted.
+ *
+ * Screens that are not part of the simulation — the home screen and the results report —
+ * are free to follow `prefers-color-scheme`, and do so in their own components.
+ */
+
+.exam-surface {
+	--navy: #23303f;
+	--blue: #2f6db5;
+	--blue-dark: #235691;
+	--bar: #eef1f4;
+	--line: #c9d1da;
+	--text: #1f2730;
+	--muted: #5b6772;
+	--flag: #d9534f;
+	--flag-bg: #fff4f3;
+	--ok: #2e7d32;
+	--ok-bg: #edf7ee;
+	--bad: #c62828;
+	--bad-bg: #fdeeee;
+	--warn: #b35c00;
+	--warn-bg: #fff7ec;
+
+	--focus: #0b63ce;
+
+	/* The simulation is light, so form controls must be too. Without this the browser
+	   renders radios, checkboxes and selects using the operating system's dark theme,
+	   which puts black-filled controls on a white page. */
+	color-scheme: light;
+
+	font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+	font-size: 15px;
+	line-height: 1.5;
+	color: var(--text);
+	background: #fff;
+
+	width: 100%;
+	max-width: 980px;
+	height: 100vh;
+	max-height: 820px;
+	margin: auto;
+	display: flex;
+	flex-direction: column;
+	border: 1px solid #000;
+	box-shadow: 0 10px 40px rgb(0 0 0 / 45%);
+	overflow: hidden;
+}
+
+@media (max-width: 600px) {
+	.exam-surface {
+		max-height: none;
+		height: 100dvh;
+		border: none;
+		box-shadow: none;
+	}
+}
+
+/* Visible focus is required everywhere; the real client's controls are keyboard-reachable
+   and so are these. */
+.exam-surface :focus-visible {
+	outline: 3px solid var(--focus);
+	outline-offset: 2px;
+}
+
+/* ---------- chrome ---------- */
+
+.exam-topbar {
+	background: var(--navy);
+	color: #fff;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem;
+	padding: 7px 16px;
+	font-size: 13px;
+	border-bottom: 2px solid #000;
+	flex: none;
+}
+
+.exam-topbar .name {
+	font-weight: bold;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.exam-topbar .candidate {
+	opacity: 0.8;
+	font-size: 12px;
+	flex: none;
+}
+
+.exam-statusbar {
+	background: var(--bar);
+	border-bottom: 1px solid var(--line);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 8px 16px;
+	font-size: 13px;
+	flex: none;
+}
+
+.exam-statusbar .count {
+	font-weight: bold;
+	color: var(--navy);
+}
+
+.exam-statusbar .right {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+}
+
+.exam-body {
+	flex: 1;
+	overflow-y: auto;
+	padding: 22px 26px;
+}
+
+.exam-footer {
+	background: var(--bar);
+	border-top: 1px solid var(--line);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 16px;
+	flex: none;
+}
+
+.exam-footer .group {
+	display: flex;
+	gap: 10px;
+}
+
+/* ---------- controls ---------- */
+
+.exam-surface button {
+	font-family: inherit;
+	font-size: 13px;
+	font-weight: bold;
+	cursor: pointer;
+	border: 1px solid var(--navy);
+	background: #fff;
+	color: var(--navy);
+	padding: 8px 18px;
+	border-radius: 3px;
+}
+
+.exam-surface button:hover:not(:disabled) {
+	background: #e7ecf1;
+}
+
+.exam-surface button.primary {
+	background: var(--blue);
+	border-color: var(--blue-dark);
+	color: #fff;
+}
+
+.exam-surface button.primary:hover:not(:disabled) {
+	background: var(--blue-dark);
+}
+
+.exam-surface button:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+.flag-toggle {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	color: var(--muted);
+	background: none;
+	border: none;
+	padding: 3px 8px;
+	border-radius: 3px;
+	font-size: 13px;
+	font-weight: normal;
+}
+
+.flag-toggle:hover {
+	background: #e2e7ec;
+}
+
+.flag-toggle[aria-pressed='true'] {
+	color: var(--flag);
+	font-weight: bold;
+}
+
+.flag-icon {
+	width: 14px;
+	height: 16px;
+	position: relative;
+	flex: none;
+}
+
+.flag-icon::before {
+	content: '';
+	position: absolute;
+	inset: 0 auto 0 0;
+	width: 2px;
+	background: #8a96a2;
+}
+
+.flag-icon::after {
+	content: '';
+	position: absolute;
+	left: 2px;
+	top: 1px;
+	width: 9px;
+	height: 7px;
+	background: #b9c2cc;
+	clip-path: polygon(0 0, 100% 0, 75% 50%, 100% 100%, 0 100%);
+}
+
+.flag-toggle[aria-pressed='true'] .flag-icon::before,
+.flag-toggle[aria-pressed='true'] .flag-icon::after {
+	background: var(--flag);
+}
+
+.exam-timer {
+	font-variant-numeric: tabular-nums;
+	font-weight: bold;
+	color: var(--navy);
+	background: #fff;
+	border: 1px solid var(--line);
+	padding: 3px 10px;
+	border-radius: 3px;
+}
+
+.exam-timer.low {
+	color: var(--flag);
+	border-color: var(--flag);
+}
+
+/* ---------- question ---------- */
+
+.question-meta {
+	font-size: 11.5px;
+	color: var(--muted);
+	margin-bottom: 14px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.question-fieldset {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	min-inline-size: 0;
+}
+
+.question-stem {
+	font-size: 15.5px;
+	margin-bottom: 6px;
+}
+
+.question-instruction {
+	font-size: 12.5px;
+	color: var(--muted);
+	font-style: italic;
+	margin-bottom: 16px;
+}
+
+.option-list {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin-top: 6px;
+}
+
+.option {
+	display: flex;
+	gap: 12px;
+	align-items: flex-start;
+	border: 1px solid var(--line);
+	border-radius: 4px;
+	padding: 11px 14px;
+	background: #fff;
+	position: relative;
+	cursor: pointer;
+	transition:
+		background 0.08s,
+		border-color 0.08s;
+}
+
+.option:hover {
+	background: #f5f8fb;
+	border-color: #aebccb;
+}
+
+.option:has(input:checked) {
+	background: #eaf2fb;
+	border-color: var(--blue);
+}
+
+.option:has(input:focus-visible) {
+	outline: 3px solid var(--focus);
+	outline-offset: 2px;
+}
+
+.option input {
+	margin-top: 3px;
+	width: 16px;
+	height: 16px;
+	flex: none;
+	accent-color: var(--blue);
+}
+
+.option .letter {
+	flex: none;
+	font-weight: bold;
+	color: var(--muted);
+}
+
+.option:has(input:checked) .letter {
+	color: var(--blue-dark);
+}
+
+.option .body {
+	flex: 1;
+}
+
+.option.struck {
+	opacity: 0.55;
+}
+
+.option.struck .body {
+	text-decoration: line-through;
+	text-decoration-color: var(--flag);
+	color: var(--muted);
+}
+
+.strike-button {
+	flex: none;
+	align-self: center;
+	font-size: 11px !important;
+	padding: 3px 9px !important;
+	border-color: var(--line) !important;
+	color: var(--muted) !important;
+	opacity: 0;
+	transition: opacity 0.1s;
+}
+
+.option:hover .strike-button,
+.strike-button:focus-visible {
+	opacity: 1;
+}
+
+.option.correct {
+	border-color: var(--ok);
+	background: var(--ok-bg);
+}
+
+.option.incorrect {
+	border-color: var(--bad);
+	background: var(--bad-bg);
+}
+
+.tag {
+	font-size: 11px;
+	font-weight: bold;
+	padding: 1px 7px;
+	border-radius: 3px;
+	margin-left: 8px;
+	vertical-align: middle;
+}
+
+.tag.ok {
+	background: var(--ok);
+	color: #fff;
+}
+
+.tag.bad {
+	background: var(--bad);
+	color: #fff;
+}
+
+/* ---------- feedback ---------- */
+
+.explanation {
+	margin-top: 14px;
+	padding: 13px 15px;
+	border-radius: 5px;
+	font-size: 13.5px;
+	border: 1px solid var(--line);
+	background: #fafbfc;
+}
+
+.explanation h3 {
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	margin-bottom: 6px;
+	color: var(--muted);
+	font-weight: bold;
+}
+
+.explanation p {
+	font-size: 13px;
+	margin: 3px 0;
+	padding-left: 4px;
+}
+
+.explanation b {
+	color: var(--navy);
+}
+
+.callout {
+	border-radius: 6px;
+	padding: 12px 15px;
+	font-size: 13px;
+	margin: 14px 0;
+}
+
+.callout.warn {
+	background: var(--warn-bg);
+	border: 1px solid #e6c89a;
+	color: var(--warn);
+}
+
+.callout.info {
+	background: #eef5fc;
+	border: 1px solid #bcd4ee;
+	color: var(--blue-dark);
+}
+
+.callout.ok {
+	background: var(--ok-bg);
+	border: 1px solid #bcd9bc;
+	color: var(--ok);
+}
+
+.callout.bad {
+	background: var(--bad-bg);
+	border: 1px solid #e6b3b1;
+	color: var(--bad);
+}
+
+/* ---------- panels ---------- */
+
+.exam-panel {
+	flex: 1;
+	overflow-y: auto;
+	padding: 26px 30px;
+}
+
+.exam-panel h1 {
+	font-size: 19px;
+	color: var(--navy);
+	margin-bottom: 6px;
+}
+
+.exam-panel .lead {
+	color: var(--muted);
+	font-size: 13.5px;
+	margin-bottom: 18px;
+}
+
+.review-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+	gap: 8px;
+	margin-bottom: 22px;
+	padding: 0;
+	list-style: none;
+}
+
+.review-cell {
+	width: 100%;
+	border: 1px solid var(--line);
+	border-radius: 4px;
+	text-align: center;
+	padding: 9px 4px;
+	font-size: 13px;
+	font-weight: bold;
+	background: #fff;
+	color: var(--text);
+	position: relative;
+	overflow: hidden;
+}
+
+.review-cell:hover {
+	border-color: var(--blue);
+}
+
+/* Answer state fills the cell. Flagging is drawn on top as a corner marker, so the two
+   are readable at once instead of one hiding the other. */
+.review-cell.answered {
+	background: #eef6ee;
+	border-color: #bcd9bc;
+}
+
+.review-cell.partial {
+	background: var(--warn-bg);
+	border-color: #e6c89a;
+}
+
+.review-cell.correct {
+	background: var(--ok-bg);
+	border-color: var(--ok);
+}
+
+.review-cell.wrong {
+	background: var(--bad-bg);
+	border-color: var(--bad);
+}
+
+.review-cell.flagged {
+	border-color: var(--flag);
+}
+
+.review-cell .state {
+	display: block;
+	font-size: 10px;
+	font-weight: normal;
+	color: var(--muted);
+	margin-top: 2px;
+}
+
+.legend {
+	display: flex;
+	gap: 20px;
+	font-size: 12.5px;
+	color: var(--muted);
+	margin-bottom: 20px;
+	flex-wrap: wrap;
+	padding: 0;
+	list-style: none;
+}
+
+.legend li {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.swatch {
+	width: 14px;
+	height: 14px;
+	border-radius: 3px;
+	border: 1px solid var(--line);
+	display: inline-block;
+}
+
+.stat-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	gap: 12px;
+	margin: 8px 0 20px;
+}
+
+.stat {
+	border: 1px solid var(--line);
+	border-radius: 8px;
+	padding: 14px 16px;
+	background: #fafbfc;
+}
+
+.stat .label {
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.4px;
+	color: var(--muted);
+}
+
+.stat .value {
+	font-size: 22px;
+	font-weight: bold;
+	color: var(--navy);
+	margin-top: 4px;
+	line-height: 1.1;
+}
