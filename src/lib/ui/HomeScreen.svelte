@@ -1,7 +1,18 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+
 	import { validateMock, type ValidationResult } from '$lib/domain/validation';
 	import type { ExamMode, Mock } from '$lib/domain/types';
 	import type { ExamSession } from '$lib/state/session.svelte';
+	import {
+		createHandleStore,
+		defaultIdbFactory,
+		defaultPickerBackend,
+		grantMocksDirectory,
+		pickMockFile,
+		type HandleStore,
+		type PickerBackend
+	} from '$lib/session/file-picker';
 
 	const { session }: { session: ExamSession } = $props();
 
@@ -10,6 +21,22 @@
 	let parseError = $state('');
 	let mode = $state<ExamMode>('exam');
 	let dragging = $state(false);
+
+	/**
+	 * The File System Access picker, where the browser has one. It opens in the granted mocks
+	 * folder rather than wherever the browser last happened to be. Everything outside Chromium
+	 * gets `null` and keeps using the hidden file input below, which is never removed.
+	 */
+	let picker: PickerBackend | null = null;
+	let handles: HandleStore | null = null;
+	let canChooseFolder = $state(false);
+	let folderNotice = $state('');
+
+	onMount(() => {
+		picker = defaultPickerBackend();
+		handles = createHandleStore(defaultIdbFactory());
+		canChooseFolder = picker !== null && handles !== null;
+	});
 
 	const readyMock = $derived<Mock | null>(validation?.valid ? validation.mock : null);
 
@@ -40,6 +67,39 @@
 		event.preventDefault();
 		dragging = false;
 		void readFile(event.dataTransfer?.files?.[0]);
+	}
+
+	/** The plain input, which remains the only route on browsers without the picker. */
+	function openFileInput() {
+		document.getElementById('mock-file')?.click();
+	}
+
+	/**
+	 * Opens the chooser in the mocks folder, or in Downloads where that is unavailable or empty.
+	 * A cancelled chooser is silent; a failed one falls back to the plain input.
+	 */
+	async function chooseFile() {
+		if (!picker) {
+			openFileInput();
+			return;
+		}
+		try {
+			const file = await pickMockFile({ backend: picker, store: handles });
+			if (file) await readFile(file);
+		} catch {
+			openFileInput();
+		}
+	}
+
+	/** Asks for the mocks folder once, so later choosers can open there. */
+	async function chooseMocksFolder() {
+		if (!picker) return;
+		try {
+			const granted = await grantMocksDirectory({ backend: picker, store: handles });
+			if (granted) folderNotice = `The chooser will now open in “${granted.name}”.`;
+		} catch {
+			folderNotice = 'That folder could not be remembered — the chooser will open in Downloads.';
+		}
 	}
 
 	function startSitting() {
@@ -103,11 +163,11 @@
 		}}
 		ondragleave={() => (dragging = false)}
 		ondrop={onDrop}
-		onclick={() => document.getElementById('mock-file')?.click()}
+		onclick={() => void chooseFile()}
 		onkeydown={(event) => {
 			if (event.key === 'Enter' || event.key === ' ') {
 				event.preventDefault();
-				document.getElementById('mock-file')?.click();
+				void chooseFile();
 			}
 		}}
 	>
@@ -121,6 +181,16 @@
 			onchange={(event) => void readFile(event.currentTarget.files?.[0])}
 		/>
 	</div>
+
+	{#if canChooseFolder}
+		<p class="folder-hint">
+			<button type="button" class="linkish" onclick={() => void chooseMocksFolder()}>
+				Choose your mocks folder
+			</button>
+			— grant it once and the chooser opens there instead of Downloads.
+			{#if folderNotice}<span class="folder-notice">{folderNotice}</span>{/if}
+		</p>
+	{/if}
 
 	<details>
 		<summary>Or paste the JSON</summary>
@@ -252,6 +322,29 @@
 
 	.dropzone .icon {
 		font-size: 32px;
+	}
+
+	.folder-hint {
+		margin: 8px 2px 0;
+		font-size: 12px;
+		color: var(--muted);
+	}
+
+	.linkish {
+		background: none;
+		border: 0;
+		padding: 0;
+		font: inherit;
+		color: var(--blue-dark);
+		font-weight: bold;
+		cursor: pointer;
+		text-decoration: underline;
+	}
+
+	.folder-notice {
+		display: block;
+		margin-top: 3px;
+		color: var(--navy);
 	}
 
 	details {

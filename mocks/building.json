@@ -1400,8 +1400,8 @@
     {
       "topic": "Auto Scaling to match a daily demand pattern",
       "domain": "Cost-Optimized",
-      "stem": "A retailer runs its web tier on a fixed fleet of 20 EC2 instances behind an Application Load Balancer. Traffic follows a clear daily pattern, heavy from 09:00 to 18:00 on weekdays and very light overnight and at weekends, with the occasional unplanned surge. The fleet is sized for the busiest hour, so most instances sit idle for two-thirds of every day. Which two changes reduce cost while keeping the site responsive? (Select TWO.)",
-      "hint": "Consider how capacity can shrink on a pattern you already know and still react to something you did not plan for.",
+      "stem": "A retailer runs its web tier on a fixed fleet of 20 EC2 instances behind an Application Load Balancer. Traffic follows a clear daily pattern, heavy from 09:00 to 18:00 on weekdays and very light overnight and at weekends, with the occasional unplanned surge. The fleet is sized for the busiest hour, so most instances sit idle for two-thirds of every day. Which three changes reduce cost while keeping the site responsive? (Select THREE.)",
+      "hint": "Consider how capacity can shrink on a pattern you already know, still react to something you did not plan for, and how the hours that remain are paid for.",
       "options": [
         {
           "text": "Buy three-year Reserved Instances covering all 20 fleet instances.",
@@ -1422,6 +1422,11 @@
           "text": "Add a scheduled scaling action that lowers the minimum size each evening.",
           "correct": true,
           "why": "Correct — the daily pattern is known in advance, so scheduled scaling shrinks the fleet before the quiet period rather than waiting for metrics to react."
+        },
+        {
+          "text": "Cover the remaining round-the-clock baseline with a Compute Savings Plan.",
+          "correct": true,
+          "why": "Correct — a Savings Plan trades a one or three year hourly spend commitment for a lower rate, so the few instances that never switch off are discounted while the peak stays on demand."
         },
         {
           "text": "Move the 20 instances to larger types so fewer of them are needed overnight.",
@@ -1705,8 +1710,8 @@
     {
       "topic": "Kinesis Data Streams throughput",
       "domain": "High-Performing",
-      "stem": "A clickstream pipeline sends events to a Kinesis data stream with four shards. Producers now generate far more than 4 MB per second, write calls are throttled, and metrics show one shard receiving most records because the partition key is the country code. Which two changes raise ingest throughput? (Select TWO.)",
-      "hint": "Stream capacity is per shard, so consider both how many shards exist and how evenly records land on them.",
+      "stem": "A clickstream pipeline sends events to a Kinesis data stream with four shards. Producers now generate far more than 4 MB per second, write calls are throttled, and metrics show one shard receiving most records because the partition key is the country code. Which three changes raise ingest throughput? (Select THREE.)",
+      "hint": "Stream capacity is per shard, so consider how many shards exist, how evenly records land on them, and who decides that shard count.",
       "options": [
         {
           "text": "Increase the shard count on the stream so total write capacity grows with it",
@@ -1727,6 +1732,11 @@
           "text": "Replace the stream with an SQS FIFO queue so that events are processed in strict order",
           "correct": false,
           "why": "Wrong — right-service-wrong-feature: SQS FIFO guarantees ordering and exactly-once handling, not high-volume parallel ingest with multiple independent stream readers."
+        },
+        {
+          "text": "Switch the stream to on-demand capacity mode so it scales shards for you",
+          "correct": true,
+          "why": "Correct — on-demand mode splits shards as the observed write rate climbs, so the ceiling tracks the producers instead of a shard count someone fixed in advance."
         },
         {
           "text": "Register an enhanced fan-out consumer so each consumer gets its own read throughput",

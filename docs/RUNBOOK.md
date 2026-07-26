@@ -69,15 +69,18 @@ grading and the result screen in one pass:
 
 ```bash
 npm run dev
-# 1. open http://localhost:5173/mocks/foundations.json
-#    the raw JSON must load — a 404 means the file is missing from static/mocks/
-# 2. open http://localhost:5173, go to ② Load a mock & sit it, select
-#    static/mocks/foundations.json — it must validate with no blocking problems
+# 1. open http://localhost:5173 and go to ② Load a mock & sit it
+# 2. select mocks/sample.json with the file picker, or drag it in
+#    it must validate with no blocking problems
 # 3. start it, answer a question, submit
 #    the result screen must report a score, the unscored range and per-domain figures
 ```
 
-Swap `foundations` for `core-architecture` or `advanced` to check the other two.
+The `mocks/` directory is not under `static/`, so it is not served by the dev or preview
+server — there is no URL to open, and the file picker is the only way to load one.
+
+Swap `sample` for `building`, `topics-foundations`, `topics-core-architecture` or
+`topics-advanced` to check the others; `building.json` is the full-length 65-question one.
 
 ## Services / Ports
 

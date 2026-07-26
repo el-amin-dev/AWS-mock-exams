@@ -64,22 +64,31 @@ npm ci
 npm run dev        # http://localhost:5173
 ```
 
-`static/sample-mock.json` is a five-question example — the quickest smoke test, and enough to
-see the whole flow before generating anything.
+Five mocks ship in the repo's top-level `mocks/` directory, so there is something worth sitting
+before you have generated any of your own, and a yardstick to judge the ones you generate
+against. Load one from the **② Load a mock & sit it** tab, by selecting the file or dragging it
+in. `mocks/` is not part of the built site, so the files are never served over HTTP — the file
+picker is the only way in.
 
-Three fuller mocks ship with the repo as well, each 20 questions (16 single-answer and 4
-multi-answer), so there is something worth sitting before you have generated any of your own,
-and a yardstick to judge the ones you generate against:
+`mocks/building.json` is the headline one: a full-length model exam, 65 questions in 130
+minutes, spanning the whole syllabus and weighted as the real exam is — 20 Secure, 17
+Resilient, 15 High-Performing, 13 Cost-Optimized, of which 52 are single-answer and 13
+multi-answer. It is the closest thing here to a real sitting, so sit it under real conditions.
 
-| File                                  | Difficulty                           | Focus                                                                         |
-| ------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------- |
-| `static/mocks/foundations.json`       | Building — slightly below exam level | IAM, S3, EC2 and VPC fundamentals                                             |
-| `static/mocks/core-architecture.json` | Exam level                           | VPC, RDS, load balancing and Auto Scaling, S3 advanced, CloudFront, Route 53  |
-| `static/mocks/advanced.json`          | Brutal — above exam level            | Serverless, DynamoDB, hybrid networking, security services, cost optimisation |
+The rest are shorter and topic-scoped, for when you want to drill one area rather than commit
+to two hours:
 
-Load one from the **② Load a mock & sit it** tab by selecting the file. With the dev or preview
-server running they are also served over HTTP at `/mocks/<name>.json` — for example
-`/mocks/advanced.json` — so you can open or fetch one without going through the file picker.
+| File                                  | Questions | Difficulty                           | Focus                                                                         |
+| ------------------------------------- | --------- | ------------------------------------ | ----------------------------------------------------------------------------- |
+| `mocks/topics-foundations.json`       | 20        | Building — slightly below exam level | IAM, S3, EC2 and VPC fundamentals                                             |
+| `mocks/topics-core-architecture.json` | 20        | Exam level                           | VPC, RDS, load balancing, S3 advanced, CloudFront                             |
+| `mocks/topics-advanced.json`          | 20        | Brutal — above exam level            | Serverless, DynamoDB, hybrid networking, security services, cost optimisation |
+| `mocks/sample.json`                   | 5         | Mixed                                | The quickest smoke test — enough to see the whole flow                        |
+
+Every shipped mock is guarded by `tests/mocks.spec.ts`, which runs each one through the
+engine's own validator and requires zero errors _and_ zero quality warnings — a stricter bar
+than an uploaded file has to clear, so a mock that regresses fails CI rather than surprising
+you mid-exam.
 
 They are original practice items written for self-study; sitting them tells you where your
 understanding is thin, not what the real exam asks.
