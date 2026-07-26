@@ -1,0 +1,615 @@
+{
+  "exam_id": "saa-c03-mock",
+  "title": "SAA-C03 Mock",
+  "subtitle": "Advanced — serverless, DynamoDB, hybrid networking and security",
+  "topics_covered": [
+    "Lambda concurrency and cold starts",
+    "API Gateway integration types",
+    "Step Functions",
+    "EventBridge vs SNS vs SQS",
+    "SQS FIFO vs standard",
+    "DynamoDB partition key design",
+    "LSI vs GSI",
+    "DynamoDB consistency and DAX",
+    "DynamoDB Streams and TTL",
+    "DynamoDB capacity modes",
+    "Direct Connect and Site-to-Site VPN",
+    "Transit Gateway",
+    "Storage Gateway variants",
+    "DataSync vs Snowball",
+    "KMS key policies vs IAM policies",
+    "Secrets Manager vs Parameter Store",
+    "WAF and Shield",
+    "GuardDuty and Macie",
+    "Savings Plans vs Reserved Instances vs Spot",
+    "S3 storage classes and small objects"
+  ],
+  "config": {
+    "seconds_per_question": 120,
+    "pass_percent": 72,
+    "randomize_questions": true,
+    "randomize_options": true
+  },
+  "questions": [
+    {
+      "topic": "Lambda concurrency and cold starts",
+      "domain": "High-Performing",
+      "stem": "A Lambda function behind an internal API must answer within 200 ms at p99. Every weekday at 09:00 traffic climbs from near zero to about 3,000 concurrent invocations inside a minute. The function loads a large dependency graph that adds roughly 1.5 seconds to an initialisation, and p99 latency currently spikes for the first few minutes of the burst. Other functions in the account must keep their access to concurrency. Which change best protects the p99 target during the burst?",
+      "hint": "Separate the options that change how much concurrency you are permitted to use from the one that changes what has already happened before a request arrives.",
+      "options": [
+        {
+          "text": "Enable provisioned concurrency on the published alias and raise it on a schedule before the burst",
+          "correct": true,
+          "why": "Correct — provisioned concurrency keeps execution environments initialised and warm, so the 1.5-second init is paid before traffic arrives rather than inside the request. Application Auto Scaling can schedule the increase for 08:55 and drop it afterwards, and provisioned units are drawn from the account pool without starving other functions the way a hard reservation can."
+        },
+        {
+          "text": "Set reserved concurrency on the function so it always holds a guaranteed slice of the account quota",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: reserved concurrency partitions the account's concurrency pool, guaranteeing this function a ceiling and floor of invocations. It never pre-initialises an environment, so every one of those 3,000 new environments still pays the full 1.5-second cold start."
+        },
+        {
+          "text": "Raise the memory setting so the function is given proportionally more CPU while it initialises",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: Lambda allocates CPU in proportion to memory, so a bigger memory setting genuinely shortens initialisation. It shortens it, it does not remove it, and with thousands of simultaneously created environments a shortened cold start still breaches a 200 ms p99."
+        },
+        {
+          "text": "Request a higher account concurrency quota so that the morning burst is never throttled at that level",
+          "correct": false,
+          "why": "Wrong — common-misconception: quota increases cure throttling errors, not latency. Nothing in the stem reports throttles; it reports slow first responses, which come from environment initialisation and are unaffected by how high the ceiling is set."
+        }
+      ]
+    },
+    {
+      "topic": "API Gateway integration types",
+      "domain": "Cost-Optimized",
+      "stem": "A REST API in API Gateway fronts an existing internal service that returns XML and is reachable only through a VPC link. Clients require JSON. The team must not introduce another compute component to maintain, and wants API Gateway itself to perform the conversion. Which integration configuration meets this with the least operational overhead?",
+      "hint": "Ask which integration type is allowed to touch the payload at all, and which one is defined by passing it through untouched.",
+      "options": [
+        {
+          "text": "Use a non-proxy HTTP integration over the VPC link with an integration response mapping template",
+          "correct": true,
+          "why": "Correct — a non-proxy (custom) HTTP integration is the only one that runs Velocity mapping templates on the integration response, and API Gateway can parse an XML body in a template and emit JSON. No extra component is deployed, so the operational overhead constraint is met."
+        },
+        {
+          "text": "Use an HTTP_PROXY integration over the VPC link and attach a JSON model to the method response body",
+          "correct": false,
+          "why": "Wrong — common-misconception: a proxy integration is defined by handing the backend response straight to the client with no mapping applied, and models describe a payload's schema for validation and SDK generation. Neither one transforms anything."
+        },
+        {
+          "text": "Use a Lambda proxy integration that calls the internal service and returns the converted payload",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: this genuinely produces JSON, and for complex transformations it is often the better engineering choice. It is ruled out here because the stem forbids adding a compute component, which is exactly what a function is."
+        },
+        {
+          "text": "Use a non-proxy HTTP integration over the VPC link with request validation against a JSON schema model",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: request validation is the correct service and even the correct integration type, but it only rejects malformed inbound requests before they reach the backend. It never inspects or rewrites the response the backend sends."
+        }
+      ]
+    },
+    {
+      "topic": "Step Functions",
+      "domain": "Resilient",
+      "stem": "An order pipeline has seven sequential steps. Step four calls a third-party API that intermittently returns HTTP 503 and, when healthy, can take up to 20 minutes to reply. Today one Lambda function chains all seven steps and sleeps while waiting. The business needs the workflow to survive the long waits, retry only the failing step with backoff, and incur as little charge as possible during the wait. Which redesign meets this?",
+      "hint": "Compare the maximum execution duration each option can survive against the 20 minutes the stem names.",
+      "options": [
+        {
+          "text": "Move the pipeline to a Standard workflow with a Retry policy and a timeout set on step four",
+          "correct": true,
+          "why": "Correct — Standard workflows run for up to a year, are billed per state transition rather than per second of wait, and give per-state Retry blocks with configurable backoff and a per-task TimeoutSeconds. Only step four is retried, and waiting costs nothing beyond the transitions already counted."
+        },
+        {
+          "text": "Move the pipeline to an Express workflow with the same retry policy applied to step four",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: Express workflows are the correct service but the wrong flavour. They are capped at five minutes of total execution and are billed by duration and memory, so a 20-minute third-party call cannot complete and the wait would be charged."
+        },
+        {
+          "text": "Place an SQS queue between each step with a long visibility timeout and a redrive policy",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: queues do decouple the steps and a redrive policy does isolate poison messages, so this would work. It rebuilds sequencing, per-step retry counts and error branching by hand, which the stem's operational framing and a managed orchestrator both argue against."
+        },
+        {
+          "text": "Keep the single Lambda chain, raise the function timeout, and add exponential backoff inside the code",
+          "correct": false,
+          "why": "Wrong — common-misconception: a Lambda function's maximum timeout is 15 minutes, which is shorter than the 20-minute worst case, and Lambda bills for wall-clock duration, so every second spent sleeping on the third party is paid for."
+        }
+      ]
+    },
+    {
+      "topic": "EventBridge vs SNS vs SQS",
+      "domain": "Resilient",
+      "stem": "A payments service publishes JSON events. Several teams consume different subsets, and new consumers must be onboarded without any change to the producer. After a consumer bug corrupted a downstream store, architecture has mandated that the last 30 days of events can be re-delivered to one chosen consumer on demand, without disturbing the others. Which messaging design satisfies both requirements?",
+      "hint": "Every option can fan out; ask which of them retains a queryable history you can send again to one target.",
+      "options": [
+        {
+          "text": "Publish to an EventBridge bus with a rule per consumer, and enable an archive with replay",
+          "correct": true,
+          "why": "Correct — an EventBridge archive stores matched events for a configurable retention, and a replay re-emits them to a chosen rule or target for a selected time window. Adding a consumer is a new rule on the same bus, so the producer is untouched."
+        },
+        {
+          "text": "Publish to an SNS topic with a subscription filter policy per consumer and delivery status logging",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: SNS does fan out and its filter policies can match on the message body, so the routing half is fine. SNS keeps no retrievable store of delivered messages, and delivery status logging records outcomes rather than payloads, so nothing can be replayed."
+        },
+        {
+          "text": "Publish to one SQS queue per consumer through a fan-out function, with retention set to its maximum",
+          "correct": false,
+          "why": "Wrong — common-misconception: SQS message retention tops out at 14 days, short of the 30 required, and a consumed message is deleted rather than kept for a second pass. The fan-out function also becomes producer-side code that changes whenever a consumer is added."
+        },
+        {
+          "text": "Publish to a Kinesis data stream with extended retention and one consumer application per team",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: Kinesis can retain records for up to 365 days and each consumer keeps its own iterator, so re-reading is genuinely possible. Every consumer must build a stream-processing application and do its own filtering, and the producer has to switch from publishing events to writing records."
+        }
+      ]
+    },
+    {
+      "topic": "SQS FIFO vs standard",
+      "domain": "High-Performing",
+      "stem": "A ticketing platform processes seat reservations. Processing the same reservation twice double-books a seat, and reservations for one event must be handled in the order they were received, while reservations for different events are entirely independent. Peak load is about 2,000 reservations per second spread across several thousand concurrently selling events. Which TWO configuration choices meet the ordering, deduplication and throughput requirements? (Select TWO.)",
+      "hint": "Ordering in this service is scoped to something you choose; decide what that scope should be, then check the default throughput ceiling against the peak.",
+      "options": [
+        {
+          "text": "Use a FIFO queue and set the message group ID to the event identifier on every reservation",
+          "correct": true,
+          "why": "Correct — FIFO queues guarantee ordering and exactly-once processing within a message group. Using the event as the group preserves order per event while letting thousands of events be processed in parallel, which is exactly the independence the stem describes."
+        },
+        {
+          "text": "Enable high throughput mode on the FIFO queue so per-message-group parallelism is unlocked",
+          "correct": true,
+          "why": "Correct — a FIFO queue without high throughput mode is limited to 300 messages per second per action, or 3,000 with batching, which cannot carry 2,000 reservations per second reliably. High throughput mode raises the ceiling by an order of magnitude when load is spread across many message groups, as it is here."
+        },
+        {
+          "text": "Use a standard queue and deduplicate each reservation with a conditional write in DynamoDB",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: a conditional write on the reservation identifier really does make processing idempotent, and standard queues have no throughput ceiling to worry about. Standard queues make no ordering guarantee at all, so reservations for one event can still be processed out of sequence."
+        },
+        {
+          "text": "Set the FIFO deduplication interval to 24 hours so a retried reservation is never processed twice",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: FIFO deduplication is real but its window is fixed at five minutes and cannot be configured. The tunable settings are content-based deduplication and the deduplication ID you supply per message."
+        },
+        {
+          "text": "Use a FIFO queue and set the message group ID to the reservation identifier for each message",
+          "correct": false,
+          "why": "Wrong — common-misconception: a unique group per message means every message is in a group of one, so there is no relative ordering left to guarantee. Ordering only exists between messages that share a group, which is why the group must be the event."
+        }
+      ]
+    },
+    {
+      "topic": "DynamoDB partition key design",
+      "domain": "High-Performing",
+      "stem": "A telemetry table uses device_id as the partition key and timestamp as the sort key, holding data for 5,000 devices. During a firmware test one device produces about 60 percent of all writes and its writes are throttled, while the table's consumed provisioned capacity sits near 30 percent of what is allocated. Reads always fetch a time range for a single device. Which change resolves the throttling with the least disruption to that read pattern?",
+      "hint": "The table has spare capacity but one key does not; work out what limit is being hit and whether any capacity setting can move it.",
+      "options": [
+        {
+          "text": "Append a calculated shard suffix to the partition key and query each shard on read",
+          "correct": true,
+          "why": "Correct — the throttle is per partition, not per table, so the only fix is to spread one logical key across several physical ones. A bounded suffix such as device_id#0 to device_id#9 turns one hot key into ten, and the reader issues ten parallel queries and merges by timestamp, which preserves the existing time-range access pattern."
+        },
+        {
+          "text": "Switch the table to on-demand capacity so that throughput follows the hot device automatically",
+          "correct": false,
+          "why": "Wrong — common-misconception: capacity mode changes how you are billed and how the table's total throughput adapts. The per-partition limit of roughly 1,000 write units and 3,000 read units per second applies in both modes, so a single hot key throttles just the same."
+        },
+        {
+          "text": "Raise the table's provisioned write capacity and set auto scaling to a lower target utilisation",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: more capacity is the standard answer when a table as a whole is saturated, and it would help if it were. Here 70 percent of the allocation is already idle, so buying more of it adds cost while the single partition carrying the hot device stays exactly as constrained."
+        },
+        {
+          "text": "Create a global secondary index keyed on device_id so that the write load is spread across it",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: a GSI is a genuine tool for new access patterns, but it copies writes rather than diverting them, so the base table's hot partition is unchanged and the index inherits the same skew under the same key."
+        }
+      ]
+    },
+    {
+      "topic": "LSI vs GSI",
+      "domain": "High-Performing",
+      "stem": "A live orders table with partition key customer_id and sort key order_date holds 400 GB. A new feature must list one customer's orders sorted by order_total, and a regulator requires that this listing reflect every committed write immediately, with no stale reads under any circumstance. Downtime for a migration is acceptable. What should the team do?",
+      "hint": "Only one class of secondary index can be read with strong consistency, and there is exactly one moment in a table's life when that class can be added.",
+      "options": [
+        {
+          "text": "Create a new table defined with the required local secondary index and migrate the data into it",
+          "correct": true,
+          "why": "Correct — local secondary indexes share the base table's partition key and its underlying partitions, which is why they alone can be read with strong consistency. They can only be declared when the table is created, so a new table plus a migration is the only path, and the stem explicitly allows the downtime."
+        },
+        {
+          "text": "Add a global secondary index using customer_id as the partition key and order_total as its sort key",
+          "correct": false,
+          "why": "Wrong — common-misconception: a GSI has the right shape for this query and can be added to a live table, which makes it very tempting. GSIs are maintained asynchronously and support eventually consistent reads only, so a read can miss a just-committed order."
+        },
+        {
+          "text": "Add a local secondary index to the existing table and backfill it from the table's stream",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: the index type is the correct one, but LSIs cannot be added, removed or altered after the table exists. There is no backfill path because the API call itself is unavailable on a created table."
+        },
+        {
+          "text": "Query on customer_id with strong consistency and sort the results by order_total in the service",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: this returns correct, strongly consistent results and needs no schema change at all. It reads the customer's entire item collection on every request, so read cost and latency grow with order history instead of with the page being displayed."
+        }
+      ]
+    },
+    {
+      "topic": "DynamoDB consistency and DAX",
+      "domain": "High-Performing",
+      "stem": "A leaderboard service reads a DynamoDB table far more than it writes, and 95 percent of reads hit the same 200 items. The team must bring p99 read latency below one millisecond. One flow is exempt: immediately after a player submits a score, that player's own read must reflect the write. The service already uses the DynamoDB API and the team wants the smallest code change. Which approach fits?",
+      "hint": "Work out what a request marked strongly consistent does when it meets a cache, and which option keeps the existing API calls intact.",
+      "options": [
+        {
+          "text": "Route reads through a DAX cluster, letting strongly consistent requests pass through to the table",
+          "correct": true,
+          "why": "Correct — DAX is API-compatible with DynamoDB, so switching the client is close to a one-line change, and it serves cached items in microseconds rather than the single-digit milliseconds a table read costs. Requests flagged strongly consistent bypass the item cache and go to the table, which is precisely the exemption the stem describes."
+        },
+        {
+          "text": "Add an ElastiCache for Redis cluster and hold the 200 hottest items in it from the application code",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: Redis reaches sub-millisecond reads and would satisfy the latency target. It needs cache-aside logic, serialisation and invalidation written and maintained in the service, which loses against the stem's smallest-code-change constraint."
+        },
+        {
+          "text": "Put a DAX cluster in front of the table and mark every read as strongly consistent for safety",
+          "correct": false,
+          "why": "Wrong — common-misconception: strongly consistent reads are never served from the DAX item cache; they are forwarded to the table. Marking all reads that way turns the cluster into an expensive pass-through and leaves latency where it started."
+        },
+        {
+          "text": "Increase the table's provisioned read capacity and enable auto scaling on the read dimension",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: capacity is the correct lever for throttling, and auto scaling is the correct way to manage it. Neither one lowers the latency floor of a table read, which stays in single-digit milliseconds however much capacity is provisioned."
+        }
+      ]
+    },
+    {
+      "topic": "DynamoDB Streams and TTL",
+      "domain": "Resilient",
+      "stem": "A session table must have items removed 30 days after creation, and each removal must be archived to S3. The team sets a TTL attribute and consumes the table's stream with a function that writes the archive. In testing, items whose TTL timestamp has passed keep appearing in query results for several hours, and the operations team reports this as a data-retention breach. What explains the behaviour and resolves the complaint?",
+      "hint": "Expiry and deletion are two different events here; ask which one the timestamp actually schedules and what the reader should do in the gap.",
+      "options": [
+        {
+          "text": "TTL deletion is asynchronous, so filter expired items out of queries and keep the stream archive",
+          "correct": true,
+          "why": "Correct — TTL marks an item as expired at the timestamp and a background process deletes it afterwards, typically within a couple of days. AWS's documented pattern is to exclude expired items with a filter expression on the client side so reads behave as if the delete were instant, while the stream still fires on the eventual removal."
+        },
+        {
+          "text": "TTL only flags items, so schedule a scan-and-delete job that removes flagged items every hour",
+          "correct": false,
+          "why": "Wrong — common-misconception: TTL genuinely deletes the items, it simply does not promise to do so at the timestamp. A scan-and-delete job repeats work the service already performs and consumes read and write capacity that TTL deletions do not."
+        },
+        {
+          "text": "The stream view type must be set to NEW_AND_OLD_IMAGES for TTL removals to be emitted on time",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: the view type decides what each stream record contains, and OLD_IMAGE or NEW_AND_OLD_IMAGES is indeed needed to archive the item's final contents. It has no influence whatsoever on when the deletion happens."
+        },
+        {
+          "text": "Create a global secondary index on the TTL attribute and query only the unexpired items through it",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: an index on expiry time would let readers avoid expired items and is a defensible design. It duplicates every item, charges write units for each index update and adds a schema change, where a filter expression on the existing query costs nothing to build."
+        }
+      ]
+    },
+    {
+      "topic": "DynamoDB capacity modes",
+      "domain": "Cost-Optimized",
+      "stem": "A table has carried a steady 800 write units per second for 22 hours a day plus a 6,000 write unit batch for two hours every night, unchanged for a year, and forecasting says next year will look the same. Finance wants the lowest monthly bill, and the batch team will not accept throttling in the batch's opening minutes. Which capacity configuration should be chosen?",
+      "hint": "The load is predictable in both size and clock time; ask which mechanism acts on a schedule and which only reacts after metrics arrive.",
+      "options": [
+        {
+          "text": "Use provisioned capacity with a scheduled scaling action that raises the ceiling before the batch",
+          "correct": true,
+          "why": "Correct — provisioned capacity is far cheaper per write than on-demand when demand is steady and known, and Application Auto Scaling supports scheduled actions alongside target tracking. Scheduling the increase a few minutes ahead of the batch means the capacity is already in place when the first writes land."
+        },
+        {
+          "text": "Use on-demand capacity so that the nightly batch is absorbed without any scaling configuration at all",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: on-demand does absorb the spike instantly and removes all scaling configuration, which is the right answer for spiky or unknown traffic. Per request it costs several times provisioned capacity, so a year of predictable baseline load makes it the expensive choice."
+        },
+        {
+          "text": "Use provisioned capacity with target-tracking auto scaling left to react to the batch as it starts",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: target tracking is the correct mechanism for gradual trends, but it acts on CloudWatch alarms that need several minutes of breaching datapoints. Burst capacity covers only a short spike, so the batch's opening minutes throttle."
+        },
+        {
+          "text": "Use provisioned capacity fixed at the batch peak all day and buy reserved capacity to cover it",
+          "correct": false,
+          "why": "Wrong — common-misconception: reserved capacity discounts throughput you commit to, it does not make unused throughput free. Holding 6,000 write units for 22 idle hours pays a discounted rate on roughly seven times the capacity actually needed."
+        }
+      ]
+    },
+    {
+      "topic": "Direct Connect and Site-to-Site VPN",
+      "domain": "Resilient",
+      "stem": "A company reaches a VPC over a single 10 Gbps dedicated Direct Connect connection that lands at one Direct Connect location and terminates on one customer router. The design must now survive the loss of that customer router and the loss of the entire Direct Connect location, and throughput must stay the same during any single failure. Which TWO steps deliver that? (Select TWO.)",
+      "hint": "List the two single points of failure named in the stem, then check which options actually remove a different one of them without lowering bandwidth.",
+      "options": [
+        {
+          "text": "Order a second dedicated connection at a different Direct Connect location on a separate router",
+          "correct": true,
+          "why": "Correct — this is the only option that removes both named single points of failure at once, because a second location on a second customer device shares no facility, cross-connect or hardware with the first. Matching it at 10 Gbps also keeps throughput constant when either side fails."
+        },
+        {
+          "text": "Advertise the same on-premises prefixes over both connections using BGP so failover is automatic",
+          "correct": true,
+          "why": "Correct — redundant circuits only help if routing moves without human action. Advertising identical prefixes from both connections lets BGP withdraw the failed path within seconds and, with equal AS path length and equal local preference, both paths carry traffic while healthy."
+        },
+        {
+          "text": "Add a Site-to-Site VPN over the public internet as the standby path for the same prefixes",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: a VPN backup is the standard low-cost pattern and it does fail over cleanly using BGP. Each IPsec tunnel is limited to roughly 1.25 Gbps, so a failover would cut throughput by around eightfold, which the stem's constant-throughput requirement forbids."
+        },
+        {
+          "text": "Create a second private virtual interface on the connection to a second virtual private gateway",
+          "correct": false,
+          "why": "Wrong — common-misconception: virtual interfaces are logical VLANs riding the same physical port at the same location. A second one adds no physical diversity, so both the router failure and the location failure still take everything down."
+        },
+        {
+          "text": "Combine both dedicated connections into a link aggregation group so that failover is handled by LACP",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: a LAG is real and useful, but all its member connections must terminate on the same AWS device at the same Direct Connect location. Building one therefore rules out the location diversity this design exists to gain."
+        }
+      ]
+    },
+    {
+      "topic": "Transit Gateway",
+      "domain": "Secure",
+      "stem": "Sixty VPCs in one region are joined by a peering mesh and must all reach an on-premises data centre and a shared services VPC. Security now requires that the twenty development VPCs cannot reach each other, while every other path stays open. The networking team maintains the routing by hand today and wants the number of route tables they edit to stay small as VPCs are added. Which design meets this?",
+      "hint": "Ask where the isolation decision can be made once for a whole group, rather than repeated in every VPC or every subnet.",
+      "options": [
+        {
+          "text": "Attach all VPCs to a transit gateway and give each group its own transit gateway route table",
+          "correct": true,
+          "why": "Correct — a transit gateway route table is associated with attachments and decides what those attachments can reach. Associating the development attachments with a table that propagates only the shared services and VPN attachments isolates them from one another, and adding a VPC is one association rather than a new set of routes everywhere."
+        },
+        {
+          "text": "Attach all VPCs to a transit gateway and block the development ranges with network ACLs per subnet",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: network ACLs can certainly deny those CIDRs and would enforce the rule. They are stateless and per subnet, so every new development subnet needs matching inbound and outbound entries, which is the manual growth the stem is trying to avoid."
+        },
+        {
+          "text": "Keep the peering mesh and delete the peering connections between the development VPCs",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: peering is non-transitive, so removing those connections really does isolate the development VPCs from each other. It leaves a mesh of roughly 1,770 connections to maintain and gives no path to on-premises, which peering cannot provide."
+        },
+        {
+          "text": "Attach all VPCs to a transit gateway with one route table holding blackhole routes per development CIDR",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: blackhole routes exist and do drop traffic, but a single shared route table applies to every association. Blackholing a development CIDR there would also cut it off from shared services and on-premises, which must stay reachable."
+        }
+      ]
+    },
+    {
+      "topic": "Storage Gateway variants",
+      "domain": "Resilient",
+      "stem": "An on-premises application writes about 2 TB of files a day to an SMB share and cannot be modified. Those files must land in S3 as individual objects so an analytics job can read them there, and staff on site must keep reading the most recent week of files at local network speed. The team wants to stop expanding the on-premises filer. Which option meets all of this?",
+      "hint": "Two things must be true at once: the protocol the application already speaks, and what the data looks like once it reaches AWS.",
+      "options": [
+        {
+          "text": "Deploy an S3 File Gateway exposing an SMB share backed by a bucket, with a local cache",
+          "correct": true,
+          "why": "Correct — S3 File Gateway presents NFS or SMB on premises and stores each file as a single S3 object that analytics can read directly, so the application keeps writing to a share it already understands. The local cache holds recently accessed data at LAN speed while the bucket becomes the system of record."
+        },
+        {
+          "text": "Deploy an FSx File Gateway providing a cached mount of an Amazon FSx for Windows file share",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: it speaks SMB and caches locally, so the application and the on-site staff would both be satisfied. The data lands in an FSx file system rather than in S3, so the analytics job has no bucket of objects to read."
+        },
+        {
+          "text": "Deploy a Volume Gateway in stored mode presenting iSCSI volumes with hourly EBS snapshots",
+          "correct": false,
+          "why": "Wrong — common-misconception: stored mode keeps the primary copy on premises, which is the opposite of the stem's goal, and it presents block volumes rather than SMB. Its snapshots are block-level images, not individual objects an analytics job can open."
+        },
+        {
+          "text": "Deploy a DataSync agent that copies the existing SMB share into a bucket on an hourly schedule",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: DataSync moves files into S3 as objects efficiently and would keep the bucket current. It copies from a file server rather than presenting one, so the on-premises filer still has to hold and grow with the full dataset."
+        }
+      ]
+    },
+    {
+      "topic": "DataSync vs Snowball",
+      "domain": "Cost-Optimized",
+      "stem": "A company must move 300 TB from an on-premises NFS server into S3 and switch over within 30 days. The site has a 500 Mbps internet link shared with production traffic, and no more can be bought. After cutover, a 2 TB daily delta must keep replicating to the bucket indefinitely with checksum verification. Which migration plan meets the deadline and the ongoing requirement?",
+      "hint": "Do the arithmetic on 300 TB across the stated link before choosing, and note that the question asks about two phases, not one.",
+      "options": [
+        {
+          "text": "Move the bulk on Snowball Edge devices, then run scheduled DataSync tasks for the daily delta",
+          "correct": true,
+          "why": "Correct — 300 TB over 500 Mbps needs roughly two months of exclusive use, so the bulk has to travel physically to hit a 30-day cutover. A 2 TB daily delta needs about nine hours on the same link, which fits a nightly window, and DataSync verifies with checksums and transfers only changes."
+        },
+        {
+          "text": "Run DataSync continuously with a bandwidth limit and let it complete the bulk copy before cutover",
+          "correct": false,
+          "why": "Wrong — common-misconception: DataSync is the right ongoing tool and its bandwidth throttle protects production, which makes this feel safe. The link cannot carry 300 TB in 30 days even at full rate, and throttling it makes the shortfall worse."
+        },
+        {
+          "text": "Ship every transfer on Snowball devices, ordering a fresh device for each day's changed data",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: devices genuinely move the bulk inside the deadline and would also carry the deltas. A device round trip takes days, so a daily delta would arrive perpetually stale, and the ordering and handling effort recurs forever."
+        },
+        {
+          "text": "Enable S3 Transfer Acceleration and upload the dataset with multipart uploads from the file server",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: acceleration does speed long-distance uploads by entering the AWS backbone at a nearby edge location, and multipart uploads do parallelise large files. Neither widens the 500 Mbps local link, which is the actual constraint."
+        }
+      ]
+    },
+    {
+      "topic": "KMS key policies vs IAM policies",
+      "domain": "Secure",
+      "stem": "Account A owns a bucket whose default encryption uses a customer managed KMS key in account A, which an audit obligation requires. A role in account B must read objects. The bucket policy already permits that role, and the role's identity policy already permits s3:GetObject on the bucket, yet every read fails with an AccessDenied naming the decrypt operation. Which TWO changes are required? (Select TWO.)",
+      "hint": "Cross-account access to a resource is granted twice, in two different places; work out which two documents those are for this resource type.",
+      "options": [
+        {
+          "text": "Add a statement to the KMS key policy allowing kms:Decrypt for the role in account B",
+          "correct": true,
+          "why": "Correct — a KMS key policy is the authoritative document for its key, and unlike most resource policies it is not optional. Without an explicit allow naming the external principal, no policy in account B can grant access to the key."
+        },
+        {
+          "text": "Attach an IAM policy in account B allowing kms:Decrypt on that key's ARN to the role",
+          "correct": true,
+          "why": "Correct — cross-account access requires an allow on both sides. The key policy permits account B to be granted access, and the identity policy in account B is what actually delegates it to the role, so a missing statement in either place produces the AccessDenied seen here."
+        },
+        {
+          "text": "Enable S3 Bucket Keys on the bucket so that far fewer KMS requests are made per object read",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: bucket keys really do cut KMS request volume and cost substantially, and are worth enabling on a busy bucket. They change how often the key is called, never who is permitted to call it."
+        },
+        {
+          "text": "Add a statement to the bucket policy allowing kms:Decrypt on the key for the role in account B",
+          "correct": false,
+          "why": "Wrong — common-misconception: a bucket policy only governs the bucket and its objects. KMS actions are evaluated against the key's own resource policy, so a kms:Decrypt statement placed in a bucket policy has no effect on the key at all."
+        },
+        {
+          "text": "Add the account B principal to the key's list of key administrators in the key policy",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: the key administrators section grants management actions such as scheduling deletion or editing the policy. Cryptographic use is granted separately through the key users statements, so an administrator still cannot decrypt anything."
+        }
+      ]
+    },
+    {
+      "topic": "Secrets Manager vs Parameter Store",
+      "domain": "Secure",
+      "stem": "A platform holds about 4,000 configuration values that are read by Lambda functions at initialisation. Almost all are non-sensitive strings, but three are database passwords that a compliance rule says must be replaced every 30 days by an automated process, with each replacement recorded. The team is under a cost reduction target and wants to write as little rotation code as possible. Which approach fits?",
+      "hint": "Price and rotation pull in opposite directions here; consider whether one store has to hold everything.",
+      "options": [
+        {
+          "text": "Keep the configuration in Parameter Store standard parameters and the passwords in Secrets Manager",
+          "correct": true,
+          "why": "Correct — standard parameters carry no per-parameter charge and comfortably hold 4,000 values, while Secrets Manager provides scheduled rotation with a supplied Lambda for common database engines. Paying the per-secret fee on three entries rather than 4,003 satisfies both the compliance rule and the cost target."
+        },
+        {
+          "text": "Keep every value in Secrets Manager and use its built-in rotation, versioning and audit trail support",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: functionally this works and gives a single consistent store, which has real operational appeal. Secrets Manager bills per secret per month plus API calls, so 4,000 non-sensitive strings that never rotate become a recurring charge for nothing."
+        },
+        {
+          "text": "Keep everything in Parameter Store SecureString parameters and switch on automatic rotation",
+          "correct": false,
+          "why": "Wrong — common-misconception: SecureString parameters are encrypted with KMS and are the right home for the cheap configuration, but Parameter Store has no built-in rotation feature to switch on. Any rotation there must be built and scheduled by the team."
+        },
+        {
+          "text": "Keep the values in Lambda environment variables encrypted with a customer managed KMS key",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: environment variables are encrypted at rest and can use a customer managed key, so the confidentiality claim holds. Changing a value means updating and redeploying every function that carries it, which is not the automated 30-day rotation the rule demands."
+        }
+      ]
+    },
+    {
+      "topic": "WAF and Shield",
+      "domain": "Secure",
+      "stem": "A login endpoint sits behind CloudFront in front of an Application Load Balancer. A botnet of several thousand addresses is sending well-formed HTTP POST requests to /login at about 40 requests per second per address, and the backend is saturating. Legitimate sign-ins must keep working, mitigation must be in place within minutes, and the business will not enter a subscription with a minimum term. Which action fits?",
+      "hint": "Classify the traffic by layer first, then check which options carry a commitment the stem has already excluded.",
+      "options": [
+        {
+          "text": "Attach a rate-based AWS WAF rule scoped to the /login path, blocking above a per-address threshold",
+          "correct": true,
+          "why": "Correct — a rate-based rule counts requests per source address over a five-minute sliding window and blocks only those above the threshold, so ordinary users signing in once are untouched. Scoping it to the /login URI leaves the rest of the site unaffected, and a web ACL takes minutes to attach with no term commitment."
+        },
+        {
+          "text": "Subscribe to Shield Advanced and let the response team apply custom mitigations while the attack runs",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: Shield Advanced does cover application layer attacks and the response team is genuinely useful during a sustained campaign. It carries a one-year subscription commitment, which the stem rules out explicitly."
+        },
+        {
+          "text": "Rely on Shield Standard, which is applied to every CloudFront distribution at no extra charge",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: Shield Standard is indeed automatic and free on CloudFront, and it absorbs large network and transport layer floods. These are valid HTTP requests, which it is not designed to distinguish from real users."
+        },
+        {
+          "text": "Add deny entries to the network ACL on the load balancer subnets for the attacking addresses",
+          "correct": false,
+          "why": "Wrong — common-misconception: with CloudFront in front, the load balancer's subnets see CloudFront's addresses rather than the clients', so those deny entries would block everybody or nobody. Network ACLs are also limited to a small number of rules, far fewer than the botnet has addresses."
+        }
+      ]
+    },
+    {
+      "topic": "GuardDuty and Macie",
+      "domain": "Secure",
+      "stem": "After a data leak, security must be able to learn when any S3 bucket in the account holds objects containing customer national identity numbers, and be alerted when credentials issued to an EC2 instance role are used from an address outside AWS. Neither capability may require an agent on the instances or any change to application code. Which TWO services deliver these outcomes? (Select TWO.)",
+      "hint": "One requirement is about what is inside the objects and the other is about how a credential is being used; match each to the service whose data source already sees that.",
+      "options": [
+        {
+          "text": "Run Amazon Macie sensitive data discovery jobs across the account's buckets",
+          "correct": true,
+          "why": "Correct — Macie samples and classifies object contents against managed identifiers for personal data such as national identity numbers, then reports which buckets and objects hold them. It reads objects through the S3 API, so nothing is installed and no application changes."
+        },
+        {
+          "text": "Enable Amazon GuardDuty and act on its instance credential exfiltration findings",
+          "correct": true,
+          "why": "Correct — GuardDuty consumes CloudTrail, VPC flow logs and DNS logs, and raises an InstanceCredentialExfiltration finding when temporary credentials issued to an instance role are used from an address outside AWS. It is agentless and enabled per account."
+        },
+        {
+          "text": "Enable AWS Config rules that check every bucket for public read access and encryption",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: those rules are worth having and evaluate continuously without agents. Config assesses resource configuration, so it can tell you a bucket is exposed but never what the objects inside it contain, nor how a credential is being used."
+        },
+        {
+          "text": "Turn on S3 server access logging and search the logs for unusual requester patterns",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: with enough query effort these logs do reveal odd access, and they are cheap to keep. They record requests rather than payloads, so nothing in them identifies sensitive content, and building the detection is exactly the work a managed service removes."
+        },
+        {
+          "text": "Deploy Amazon Inspector to scan the instances for software vulnerabilities and network exposure",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: Inspector is a genuine agentless-capable security service, but it assesses unpatched packages and reachable ports. It says nothing about object contents or about where a set of credentials is being replayed from."
+        }
+      ]
+    },
+    {
+      "topic": "Savings Plans vs Reserved Instances vs Spot",
+      "domain": "Cost-Optimized",
+      "stem": "A team runs 40 instances of one family continuously and expects to for at least three years, plus a nightly batch on about 200 instances that can be interrupted and restarted at any point. Within the next year part of the steady fleet will be re-platformed onto Fargate, and the family may change. Finance wants the lowest cost while minimising the chance of paying for commitment that later goes unused. Which purchasing plan fits?",
+      "hint": "Ask which commitment survives a change of instance family and a move to a different compute service, and which workload should carry no commitment at all.",
+      "options": [
+        {
+          "text": "Buy a Compute Savings Plan sized to the steady fleet and run the nightly batch on Spot capacity",
+          "correct": true,
+          "why": "Correct — a Compute Savings Plan commits to an hourly spend rather than to a family, region or service, so it keeps applying when the family changes and when workloads move to Fargate or Lambda. The batch tolerates interruption, so Spot gives the deepest discount with no commitment to strand."
+        },
+        {
+          "text": "Buy Standard Reserved Instances for the steady fleet and run the nightly batch on Spot capacity",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: standard RIs offer the largest per-hour discount available and the Spot half of this answer is exactly right. Standard RIs cannot be exchanged for a different family and apply only to EC2, so the Fargate move and the family change would leave the commitment unused."
+        },
+        {
+          "text": "Buy an EC2 Instance Savings Plan for the steady fleet and run the nightly batch on On-Demand",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: it is the correct product family but the wrong variant, since an EC2 Instance Savings Plan is locked to one instance family in one region and never covers Fargate. Paying On-Demand for an interruption-tolerant batch also forfeits the largest saving on offer."
+        },
+        {
+          "text": "Buy Convertible Reserved Instances that cover both the steady fleet and the entire nightly batch peak",
+          "correct": false,
+          "why": "Wrong — common-misconception: convertible RIs can be exchanged for another family, which sounds like it answers the flexibility point, but they still apply only to EC2 and not to Fargate. Committing to the batch peak also pays for 200 instances during the 22 hours they do not run."
+        }
+      ]
+    },
+    {
+      "topic": "S3 storage classes and small objects",
+      "domain": "Cost-Optimized",
+      "stem": "A data lake bucket holds about 800 million log objects averaging 40 KB each. Access is unpredictable: a few are read every day and most are never read again, and analytics jobs read a whole prefix at a time. The team wants the lowest storage cost, will run a one-off reprocessing job to get there, but refuses to accept per-gigabyte retrieval charges on reads it cannot predict. Which approach delivers the saving?",
+      "hint": "Check the object size against the thresholds the cheaper storage classes use before assuming any of them will help.",
+      "options": [
+        {
+          "text": "Compact the logs into larger objects per prefix, then place the bucket in S3 Intelligent-Tiering",
+          "correct": true,
+          "why": "Correct — Intelligent-Tiering does not monitor or transition objects smaller than 128 KB, so at 40 KB nothing would ever move to a cheaper tier. Compacting first pushes objects past that threshold, after which tiering happens automatically with no retrieval charge, which suits both the unpredictable reads and the whole-prefix scans."
+        },
+        {
+          "text": "Place the bucket in S3 Intelligent-Tiering exactly as it stands and let it move the cold objects down",
+          "correct": false,
+          "why": "Wrong — common-misconception: Intelligent-Tiering is the textbook answer for unpredictable access and charges no retrieval fee, so it looks decisive. Objects under 128 KB are left in the frequent access tier permanently, so a bucket of 40 KB objects saves nothing."
+        },
+        {
+          "text": "Add a lifecycle rule transitioning objects to S3 Standard-IA once they are 30 days old",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: lifecycle transitions are the correct mechanism but Standard-IA bills a minimum of 128 KB per object, so a 40 KB object is charged as though it were three times its size. It also adds a per-gigabyte retrieval charge the stem refuses."
+        },
+        {
+          "text": "Add a lifecycle rule transitioning objects to S3 Glacier Instant Retrieval after 90 days",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: Glacier Instant Retrieval offers a genuinely lower per-gigabyte rate with millisecond access, so for large rarely read objects it would be a strong choice. It applies the same 128 KB minimum billable size and charges per gigabyte retrieved, which this access pattern cannot predict."
+        }
+      ]
+    }
+  ]
+}

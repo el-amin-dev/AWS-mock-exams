@@ -31,9 +31,10 @@ function backendWith(value: unknown) {
 	return makeBackend({ [PREFERENCES_KEY]: JSON.stringify(value) });
 }
 
+/** Every field differs from its default, so a dropped field fails the round-trip. */
 const CUSTOM: Preferences = {
 	mode: 'practice',
-	unscoredStrategy: 'worst',
+	unscoredStrategy: 'best',
 	passPercent: 80,
 	secondsPerQuestion: 90
 };

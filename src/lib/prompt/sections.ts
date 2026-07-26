@@ -250,7 +250,6 @@ apply it.
 export function outputContractSection(options: PromptOptions): string {
 	const schema = `{
   "exam_id": "saa-c03-mock",
-  "date": "<YYYY-MM-DD>",
   "title": "SAA-C03 Mock",
   "subtitle": "<short description of what this mock covers>",
   "topics_covered": ["<topic>", "..."],

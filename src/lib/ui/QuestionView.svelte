@@ -2,6 +2,7 @@
 	import { tipsFor } from '$lib/domain/tips';
 	import { OPTION_LABELS } from '$lib/domain/validation';
 	import type { Question } from '$lib/domain/types';
+	import TipTicker from './TipTicker.svelte';
 
 	interface Props {
 		question: Question;
@@ -16,6 +17,8 @@
 		revealed: boolean;
 		/** Whether study aids are offered. Practice mode only; the real exam has none. */
 		tipsAvailable?: boolean;
+		/** Attempt seed, so the general advice rotates in a reproducible order. */
+		tipSeed?: number;
 		onselect: (optionIndex: number) => void;
 		onstrike: (optionIndex: number) => void;
 	}
@@ -28,6 +31,7 @@
 		required,
 		revealed,
 		tipsAvailable = false,
+		tipSeed = 0,
 		onselect,
 		onstrike
 	}: Props = $props();
@@ -93,6 +97,8 @@
 				None of this is available in exam mode — this is here so being stuck teaches you something
 				rather than costing you a guess.
 			</p>
+			<hr class="tips-divider" />
+			<TipTicker seed={tipSeed + index} />
 		</div>
 	{/if}
 
@@ -212,6 +218,12 @@
 		font-size: 12px;
 		font-style: italic;
 		margin-top: 10px !important;
+	}
+
+	.tips-divider {
+		border: 0;
+		border-top: 1px solid #bcd4ee;
+		margin: 11px 0;
 	}
 
 	.visually-hidden {

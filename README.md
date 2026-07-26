@@ -6,8 +6,9 @@ your assistant generates, grades it the way the real exam does, and feeds your w
 into the next prompt.
 
 > ⚠️ **Unofficial personal study project.** Not affiliated with, endorsed by, or sponsored by
-> Amazon Web Services or any course provider. It ships with **no exam content** — every
-> question you sit is one you generated yourself. These are not real exam questions or "dumps".
+> Amazon Web Services or any course provider. It ships with **no exam content** — the bundled
+> practice mocks were written from scratch for self-study, and every other question you sit is
+> one you generated yourself. These are not real exam questions or "dumps".
 
 ## The loop
 
@@ -63,8 +64,25 @@ npm ci
 npm run dev        # http://localhost:5173
 ```
 
-`static/sample-mock.json` is a five-question example — load it to see the whole flow before
-generating anything.
+`static/sample-mock.json` is a five-question example — the quickest smoke test, and enough to
+see the whole flow before generating anything.
+
+Three fuller mocks ship with the repo as well, each 20 questions (16 single-answer and 4
+multi-answer), so there is something worth sitting before you have generated any of your own,
+and a yardstick to judge the ones you generate against:
+
+| File                                  | Difficulty                           | Focus                                                                         |
+| ------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------- |
+| `static/mocks/foundations.json`       | Building — slightly below exam level | IAM, S3, EC2 and VPC fundamentals                                             |
+| `static/mocks/core-architecture.json` | Exam level                           | VPC, RDS, load balancing and Auto Scaling, S3 advanced, CloudFront, Route 53  |
+| `static/mocks/advanced.json`          | Brutal — above exam level            | Serverless, DynamoDB, hybrid networking, security services, cost optimisation |
+
+Load one from the **② Load a mock & sit it** tab by selecting the file. With the dev or preview
+server running they are also served over HTTP at `/mocks/<name>.json` — for example
+`/mocks/advanced.json` — so you can open or fetch one without going through the file picker.
+
+They are original practice items written for self-study; sitting them tells you where your
+understanding is thin, not what the real exam asks.
 
 > The app uses ES modules and **cannot be opened directly from the filesystem**. Use the dev
 > server, `npm run preview`, or the deployed site. See `docs/RUNBOOK.md` for every command.

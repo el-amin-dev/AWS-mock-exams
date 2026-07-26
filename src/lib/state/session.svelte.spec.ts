@@ -420,10 +420,12 @@ describe('remembered preferences', () => {
 		next.dispose();
 	});
 
+	// Deliberately not the worst case: that is the default, so remembering it would prove
+	// nothing about whether the choice actually round-trips.
 	it('remembers the unscored strategy', () => {
-		session.setStrategy('worst');
+		session.setStrategy('best');
 		const next = new ExamSession(backend);
-		expect(next.unscoredStrategy).toBe('worst');
+		expect(next.unscoredStrategy).toBe('best');
 		next.dispose();
 	});
 
@@ -431,6 +433,8 @@ describe('remembered preferences', () => {
 		const fresh = new ExamSession(makeBackend());
 		expect(fresh.mode).toBe('exam');
 		expect(fresh.config.passPercent).toBe(72);
+		// The verdict is pessimistic until the candidate says otherwise.
+		expect(fresh.unscoredStrategy).toBe('worst');
 		fresh.dispose();
 	});
 

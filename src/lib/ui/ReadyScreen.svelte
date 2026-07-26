@@ -2,6 +2,7 @@
 	import { unscoredCount } from '$lib/domain/scoring';
 	import { formatDuration } from '$lib/domain/timer';
 	import type { ExamSession } from '$lib/state/session.svelte';
+	import TipTicker from './TipTicker.svelte';
 
 	const { session }: { session: ExamSession } = $props();
 
@@ -60,6 +61,12 @@
 			{/each}
 		</ul>
 	{/if}
+
+	<!-- Nothing has started yet, so there is time to read. Once the clock runs this only
+	     reappears in practice mode, behind the help panel. -->
+	<div class="ticker-slot">
+		<TipTicker seed={session.attempt?.seed ?? 0} />
+	</div>
 </div>
 
 <div class="exam-footer">
@@ -81,5 +88,9 @@
 
 	.topics li {
 		margin: 3px 0;
+	}
+
+	.ticker-slot {
+		margin-top: 22px;
 	}
 </style>

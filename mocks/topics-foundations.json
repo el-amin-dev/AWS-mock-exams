@@ -1,0 +1,612 @@
+{
+  "exam_id": "saa-c03-mock",
+  "title": "SAA-C03 Mock",
+  "subtitle": "Foundations — IAM, S3, EC2 and VPC basics",
+  "topics_covered": [
+    "IAM users, groups and policies",
+    "IAM roles",
+    "Root user and MFA",
+    "S3 storage classes",
+    "S3 versioning",
+    "S3 bucket policies",
+    "EC2 purchase options",
+    "EC2 instance types",
+    "EBS volume types",
+    "AMIs",
+    "VPC subnets and routing",
+    "NAT and internet gateways",
+    "Security groups and NACLs",
+    "CloudWatch",
+    "CloudTrail",
+    "Shared responsibility model",
+    "Regions and Availability Zones"
+  ],
+  "config": {
+    "seconds_per_question": 120,
+    "pass_percent": 72,
+    "randomize_questions": true,
+    "randomize_options": true
+  },
+  "questions": [
+    {
+      "topic": "IAM roles",
+      "domain": "Secure",
+      "stem": "An application running on an EC2 instance must read objects from an S3 bucket in the same account. The security team requires that no long-lived credentials are written to the instance disk, its user data, or the application code. What should the architect do?",
+      "hint": "Ask which of these actually grants a permission, and which only changes the network path or a storage setting.",
+      "options": [
+        {
+          "text": "Create an S3 gateway VPC endpoint so the instance reaches the bucket privately",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: a gateway endpoint keeps the traffic off the public internet, but it authorises nothing, so the request still fails without credentials."
+        },
+        {
+          "text": "Attach an IAM role to the instance through an instance profile",
+          "correct": true,
+          "why": "Correct — the instance profile delivers short-lived credentials from the role through the instance metadata service, so nothing long-lived is ever stored."
+        },
+        {
+          "text": "Store an IAM user's access key and secret key in an environment variable",
+          "correct": false,
+          "why": "Wrong — common-misconception: an access key pair is exactly the long-lived credential the stem forbids, and an environment variable does not make it temporary."
+        },
+        {
+          "text": "Enable default encryption on the bucket so the instance can read objects",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: default encryption controls how objects are stored at rest; it never decides who is allowed to call GetObject."
+        }
+      ]
+    },
+    {
+      "topic": "IAM users, groups and policies",
+      "domain": "Secure",
+      "stem": "A company has 40 developers who all need an identical set of permissions, and two or three new developers join every month. Administrators today paste the same inline policy onto each user one at a time, which is slow and error-prone. What most reduces this administrative overhead?",
+      "hint": "Check which of these can grant permissions at all, and which only sets an upper bound on them.",
+      "options": [
+        {
+          "text": "Copy the same inline policy to each new user as an onboarding step",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: this does grant the right access, but it is the exact per-user work the stem asks you to remove, and a typo affects one user silently."
+        },
+        {
+          "text": "Move the developers into an organizational unit and attach an SCP to it",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: a service control policy sets the maximum permissions an account may use; it never grants a permission to anyone."
+        },
+        {
+          "text": "Place the developers in an IAM group and attach one managed policy",
+          "correct": true,
+          "why": "Correct — a group is a container for users, so a single policy edit reaches all 40, and onboarding becomes a membership change rather than a policy change."
+        },
+        {
+          "text": "Attach the policy to the account root user so all identities inherit it",
+          "correct": false,
+          "why": "Wrong — common-misconception: IAM has no permission inheritance from the root user, and identity policies cannot be attached to the root user at all."
+        }
+      ]
+    },
+    {
+      "topic": "Root user and MFA",
+      "domain": "Secure",
+      "stem": "A company has just opened a new AWS account and only the root user exists. Before any workload is deployed, the security team wants to cut the chance that this single credential is used to take over the account. Which TWO actions should be taken first? (Select TWO.)",
+      "hint": "Some of the choices describe things AWS simply does not permit you to do to the root user.",
+      "options": [
+        {
+          "text": "Enable multi-factor authentication on root user sign-in",
+          "correct": true,
+          "why": "Correct — a second factor means a stolen or guessed root password on its own is not enough to sign in, which is the highest-value control on a new account."
+        },
+        {
+          "text": "Delete the root user as soon as an administrative IAM user exists",
+          "correct": false,
+          "why": "Wrong — common-misconception: the root user is part of the account itself and cannot be deleted; it can only be secured and left unused."
+        },
+        {
+          "text": "Create an administrative IAM user for daily work instead of root",
+          "correct": true,
+          "why": "Correct — day-to-day work through a separate IAM identity means the root credential is almost never used, so it is rarely exposed to phishing or a shared browser."
+        },
+        {
+          "text": "Attach an IAM policy to the root user that denies the riskiest calls",
+          "correct": false,
+          "why": "Wrong — common-misconception: the root user has full unrestricted access and no IAM identity policy can be attached to it to trim that down."
+        },
+        {
+          "text": "Enable a CloudTrail trail so every root sign-in is recorded",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: recording sign-ins is worth doing, but it is a detective control that tells you after the fact, not one that prevents the takeover."
+        }
+      ]
+    },
+    {
+      "topic": "S3 storage classes",
+      "domain": "Cost-Optimized",
+      "stem": "A company keeps 20 TB of finished project files in Amazon S3. A file is opened only a few times a year, but when someone asks for one it must come back in milliseconds with no restore step. Storage cost should be as low as that requirement allows.",
+      "hint": "Weigh how quickly each class can hand back an object against what it charges to keep it sitting there.",
+      "options": [
+        {
+          "text": "Store the files in S3 Glacier Deep Archive and restore on request",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: this is the cheapest storage per GB, but a Deep Archive object needs a restore that takes hours, which the stem rules out."
+        },
+        {
+          "text": "Store the files in S3 Standard, the default class for frequent access",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: S3 Standard meets the latency requirement but charges the highest per-GB rate for data touched only a few times a year."
+        },
+        {
+          "text": "Store the files in S3 Standard-Infrequent Access for instant reads",
+          "correct": true,
+          "why": "Correct — Standard-IA returns objects in milliseconds like S3 Standard but at a lower per-GB rate, trading a retrieval fee that rare access barely triggers."
+        },
+        {
+          "text": "Store the files in S3 Express One Zone for the lowest read latency",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: Express One Zone targets very high request rates on hot data and costs more per GB, so rare access cannot repay it."
+        }
+      ]
+    },
+    {
+      "topic": "S3 storage classes",
+      "domain": "Cost-Optimized",
+      "stem": "A regulator requires a company to keep application audit logs for seven years. The logs are expected to be read at most once, during an audit, and the business has confirmed that waiting up to 12 hours for a file is acceptable. Storage cost must be as low as possible.",
+      "hint": "One line in the stem widens the field a long way: how long the business is willing to wait for a file.",
+      "options": [
+        {
+          "text": "Use a lifecycle rule to transition the logs to S3 Glacier Deep Archive",
+          "correct": true,
+          "why": "Correct — Deep Archive is the lowest-cost S3 class, and its standard retrieval time of around 12 hours fits inside the window the business accepted."
+        },
+        {
+          "text": "Use a lifecycle rule to transition the logs to Glacier Instant Retrieval",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: it does hold the logs for seven years, but you pay a higher per-GB rate for millisecond access nobody in this scenario needs."
+        },
+        {
+          "text": "Use S3 Versioning so each log file is kept for the retention period",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: versioning protects against overwrite and deletion; it changes neither the storage class nor the per-GB price."
+        },
+        {
+          "text": "Use a lifecycle rule to move the logs to S3 One Zone-Infrequent Access",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: One Zone-IA is cheaper than Standard-IA but still far above archive pricing, and it keeps only one Availability Zone copy."
+        }
+      ]
+    },
+    {
+      "topic": "IAM users, groups and policies",
+      "domain": "Secure",
+      "stem": "A user belongs to a group whose attached policy allows all Amazon S3 actions. A second policy attached directly to that same user explicitly denies s3:DeleteObject. The user calls DeleteObject on a bucket in the same account that has no bucket policy. What happens, and why?",
+      "hint": "Recall the order in which IAM weighs allow and deny statements gathered from every policy that applies.",
+      "options": [
+        {
+          "text": "The request succeeds, because a group policy takes precedence over a user policy",
+          "correct": false,
+          "why": "Wrong — common-misconception: IAM does not rank policies by where they are attached; every applicable policy is merged before the decision is made."
+        },
+        {
+          "text": "The request is denied, because an explicit deny overrides every allow",
+          "correct": true,
+          "why": "Correct — IAM collects all applicable policies, and a single explicit deny statement wins over any number of allow statements from anywhere."
+        },
+        {
+          "text": "The request succeeds, because the policy attached most recently wins",
+          "correct": false,
+          "why": "Wrong — common-misconception: policies carry no ordering or timestamp precedence; evaluation is the same whichever order they were attached in."
+        },
+        {
+          "text": "The request is denied, because Block Public Access stops object removal",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: S3 Block Public Access only blocks grants that open a bucket to anonymous or public principals; it never filters authenticated deletes."
+        }
+      ]
+    },
+    {
+      "topic": "S3 versioning",
+      "domain": "Resilient",
+      "stem": "A team overwrote several objects in an S3 bucket with corrupted copies, and the originals are gone. The company wants any future overwrite or delete in that bucket to be recoverable from S3 itself, without standing up a separate backup system.",
+      "hint": "The requirement here is recovery after the fact, not prevention of exposure or protection of data in transit.",
+      "options": [
+        {
+          "text": "Enable server-side encryption with AWS KMS keys on every object stored",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: encryption protects the confidentiality of an object at rest, but an authorised overwrite of an encrypted object is still an overwrite."
+        },
+        {
+          "text": "Enable Block Public Access on the bucket and on the whole account",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: this is sound hygiene and stops accidental exposure, but the corruption came from an authorised caller inside the account."
+        },
+        {
+          "text": "Enable versioning so earlier versions of each object are retained",
+          "correct": true,
+          "why": "Correct — with versioning on, an overwrite creates a new version and a delete writes a delete marker, so the previous object is still there to be restored."
+        },
+        {
+          "text": "Enable replication to copy the bucket into a second AWS Region",
+          "correct": false,
+          "why": "Wrong — common-misconception: replication copies the corrupted object across as well, and it cannot even be configured until versioning is switched on first."
+        }
+      ]
+    },
+    {
+      "topic": "S3 bucket policies",
+      "domain": "Secure",
+      "stem": "A partner company's AWS account must be able to read objects from a bucket your account owns. Your security team wants the grant written on the resource so all external access can be reviewed in one document, and no new identities may be created in your account.",
+      "hint": "Note where the stem insists the permission must live, and what it forbids you from creating to get there.",
+      "options": [
+        {
+          "text": "Create an IAM user here and share its long-lived access keys with the partner",
+          "correct": false,
+          "why": "Wrong — common-misconception: this creates the new identity the stem forbids, and shared access keys cannot be traced back to an individual partner engineer."
+        },
+        {
+          "text": "Attach an identity-based policy here that grants the partner read access",
+          "correct": false,
+          "why": "Wrong — common-misconception: identity policies can only be attached to principals in your own account, so there is nothing in your account to attach this to."
+        },
+        {
+          "text": "Enable an S3 access point restricted to a network origin in your VPC",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: a VPC-restricted access point is a real control, but it narrows the network path rather than granting the partner anything."
+        },
+        {
+          "text": "Add a bucket policy allowing the partner account to call s3:GetObject",
+          "correct": true,
+          "why": "Correct — a bucket policy is resource-based, so the cross-account grant lives on the bucket where it can be reviewed alongside every other external grant."
+        }
+      ]
+    },
+    {
+      "topic": "Shared responsibility model",
+      "domain": "Secure",
+      "stem": "During an audit of a new application hosted on EC2 instances inside a VPC, the auditor asks the company to name the security controls it operates itself rather than inheriting from AWS. Under the AWS shared responsibility model, which TWO tasks belong to the company? (Select TWO.)",
+      "hint": "Draw the line at the hypervisor boundary and ask which side of it each task sits on.",
+      "options": [
+        {
+          "text": "Applying operating system security patches to the running instances",
+          "correct": true,
+          "why": "Correct — for EC2 the guest operating system sits above the hypervisor boundary, so patching, hardening and account management inside it are the customer's job."
+        },
+        {
+          "text": "Obtaining the third-party audit reports covering AWS data centre controls",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: downloading those reports is something the company does, but the controls they describe are operated by AWS, not by the company."
+        },
+        {
+          "text": "Configuring the security group rules that limit inbound traffic",
+          "correct": true,
+          "why": "Correct — security groups are customer-configured resources, and AWS never decides which ports an application should expose or to which source ranges."
+        },
+        {
+          "text": "Patching the hypervisor that the EC2 instances are scheduled onto",
+          "correct": false,
+          "why": "Wrong — common-misconception: the virtualisation layer is part of the security of the cloud, which AWS owns; customers have no access to patch it."
+        },
+        {
+          "text": "Controlling physical access to the facilities where the hardware runs",
+          "correct": false,
+          "why": "Wrong — common-misconception: data centre physical security is entirely AWS's responsibility and is one of the controls covered by its audit reports."
+        }
+      ]
+    },
+    {
+      "topic": "EC2 purchase options",
+      "domain": "Cost-Optimized",
+      "stem": "A fleet of EC2 instances has run at a steady size for two years and finance has confirmed it will keep running around the clock for at least three more. The workload cannot tolerate being interrupted. The company wants the largest available discount against On-Demand rates.",
+      "hint": "Match the length of the commitment and the payment choice to how long the workload is guaranteed to run.",
+      "options": [
+        {
+          "text": "Keep the fleet On-Demand and use Auto Scaling to release idle capacity",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: scaling helps a variable fleet, but this one is steady and always on, so there is no idle capacity for it to remove."
+        },
+        {
+          "text": "Buy a three-year Compute Savings Plan paid all upfront",
+          "correct": true,
+          "why": "Correct — the deepest discounts come from the longest term and the largest upfront payment, and a three-year commitment matches the confirmed runtime."
+        },
+        {
+          "text": "Run the fleet on Spot Instances with the On-Demand price as the cap",
+          "correct": false,
+          "why": "Wrong — common-misconception: a high price cap does not stop reclamation; Spot capacity can be taken back with a two-minute notice regardless of the bid."
+        },
+        {
+          "text": "Buy a one-year Compute Savings Plan with no upfront payment",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: this does cut the bill, but a shorter term with nothing upfront earns the smallest discount of the commitment options."
+        }
+      ]
+    },
+    {
+      "topic": "EBS volume types",
+      "domain": "High-Performing",
+      "stem": "A 200 GiB gp2 volume backs a web application that measures 5,000 IOPS at peak. The volume exhausts its burst balance during busy hours. The team must guarantee 5,000 IOPS at all times, must not increase the volume's size, and wants the cheapest option that does so.",
+      "hint": "Consider which choices change the size of the volume and which change only what you pay for its performance.",
+      "options": [
+        {
+          "text": "Migrate the volume to io2 and provision 5,000 IOPS for single-digit latency",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: io2 certainly delivers 5,000 IOPS, but it carries a premium per-GB and per-IOPS price that this workload does not need."
+        },
+        {
+          "text": "Grow the gp2 volume to 1,700 GiB so its baseline reaches the peak",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: gp2 gives 3 IOPS per GiB, so the arithmetic works, but the stem forbids increasing size and you pay for 1.5 TiB you never use."
+        },
+        {
+          "text": "Migrate the volume to gp3 and provision 5,000 IOPS for its size",
+          "correct": true,
+          "why": "Correct — gp3 decouples IOPS from capacity, starting at 3,000 IOPS baseline and allowing more to be provisioned without adding a single GiB."
+        },
+        {
+          "text": "Migrate the volume to st1 and size it for the throughput needed",
+          "correct": false,
+          "why": "Wrong — common-misconception: st1 is throughput-optimised HDD built for large sequential reads, and it performs poorly on the small random IO a web app issues."
+        }
+      ]
+    },
+    {
+      "topic": "EC2 purchase options",
+      "domain": "Cost-Optimized",
+      "stem": "A nightly batch job renders video frames. Each frame takes about four minutes, progress is checkpointed to S3, and any frame whose worker disappears is simply re-queued and rendered again. The job must finish by morning and the company wants the lowest compute cost.",
+      "hint": "The stem tells you exactly what happens when a worker is stopped part-way through; let that drive the pricing model.",
+      "options": [
+        {
+          "text": "Run the job on Dedicated Hosts to keep the rendering workload isolated",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: dedicated hardware does give tenancy isolation and licence portability, but nothing in the stem asks for either, and it is the priciest option."
+        },
+        {
+          "text": "Run the job on Reserved Instances bought on a one-year term",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: a reservation is billed for every hour of the year, so a job that runs only overnight wastes most of what it commits to."
+        },
+        {
+          "text": "Run the job on Spot Instances and let interrupted frames re-queue",
+          "correct": true,
+          "why": "Correct — Spot offers the steepest discount off On-Demand precisely because capacity can be reclaimed, and checkpointed, re-queueable frames absorb that."
+        },
+        {
+          "text": "Run the job on On-Demand Instances so no frame is ever interrupted",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: On-Demand certainly finishes the job, but it is the highest per-hour rate and buys resilience the workload already has."
+        }
+      ]
+    },
+    {
+      "topic": "AMIs",
+      "domain": "Resilient",
+      "stem": "A company has one hardened, fully configured EC2 instance running in eu-west-1 and wants to be able to launch byte-identical instances in us-east-1 for a disaster recovery site. The team wants the least manual rebuild work when the DR site is stood up.",
+      "hint": "Ask which AWS objects are scoped to a single Region, and what it takes to get one into another Region.",
+      "options": [
+        {
+          "text": "Copy the instance's root volume snapshot and attach it to a us-east-1 host",
+          "correct": false,
+          "why": "Wrong — common-misconception: a snapshot lives in one Region and an EBS volume can only attach to an instance in its own Availability Zone, never across Regions."
+        },
+        {
+          "text": "Create an AMI from the instance and copy the AMI to us-east-1",
+          "correct": true,
+          "why": "Correct — an AMI captures the configured root volume plus its launch metadata, and CopyImage puts an independent copy in the destination Region to launch from."
+        },
+        {
+          "text": "Rebuild the instance in us-east-1 from a base image and reapply changes",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: this does produce a working instance, but it repeats every hardening step by hand and will drift from the original over time."
+        },
+        {
+          "text": "Put the instance behind a load balancer that spans both Regions",
+          "correct": false,
+          "why": "Wrong — common-misconception: an Application or Network Load Balancer is a Regional resource whose targets must sit in the same VPC and Region."
+        }
+      ]
+    },
+    {
+      "topic": "Security groups and NACLs",
+      "domain": "Secure",
+      "stem": "Web servers sit in a public subnet. Inbound TCP 443 is allowed by both the instance security group and the subnet's network ACL, and the security group has its default allow-all outbound rule. The network ACL's outbound rules permit only TCP 443. Clients connect but never receive a response. What explains this?",
+      "hint": "One of these two controls tracks the state of a connection and the other inspects every packet on its own.",
+      "options": [
+        {
+          "text": "The security group must reference the network ACL identifier for replies",
+          "correct": false,
+          "why": "Wrong — common-misconception: the two controls are independent layers; a security group can reference another security group, but never a network ACL."
+        },
+        {
+          "text": "The network ACL is stateless, so replies use ephemeral ports it blocks",
+          "correct": true,
+          "why": "Correct — a reply leaves from port 443 to the client's ephemeral source port, and a stateless ACL needs an outbound rule covering 1024-65535 to let it out."
+        },
+        {
+          "text": "The network ACL evaluates rules in order and stops at the first match",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: numbered, first-match evaluation is genuinely how ACLs work, but no rule here matches the reply traffic in any order."
+        },
+        {
+          "text": "The security group is stateless, so it needs a matching outbound rule",
+          "correct": false,
+          "why": "Wrong — common-misconception: security groups are stateful, so a reply to an allowed inbound connection is permitted out regardless of the outbound rules."
+        }
+      ]
+    },
+    {
+      "topic": "VPC subnets and routing",
+      "domain": "Resilient",
+      "stem": "EC2 instances launched into a brand-new subnet were assigned public IPv4 addresses, yet they can neither reach the internet nor be reached from it. The VPC has no gateways attached, and the subnet's route table contains only the local route. Which TWO changes are required? (Select TWO.)",
+      "hint": "Check the default state of each control named here — some are already permissive, and others do not exist yet.",
+      "options": [
+        {
+          "text": "Add an inbound rule to the subnet's network ACL allowing all traffic from 0.0.0.0/0",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: the default network ACL already allows all inbound and outbound traffic, so this changes nothing about the broken path."
+        },
+        {
+          "text": "Attach an internet gateway to the VPC containing the subnet",
+          "correct": true,
+          "why": "Correct — the internet gateway is the VPC-level device that performs the one-to-one NAT between a public IPv4 address and the instance's private address."
+        },
+        {
+          "text": "Assign an Elastic IP address to every instance in the subnet",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: the instances already hold public IPv4 addresses, and a static address behaves no differently without a route out."
+        },
+        {
+          "text": "Add a 0.0.0.0/0 route to the internet gateway in the subnet's route table",
+          "correct": true,
+          "why": "Correct — a subnet is only public when its route table sends non-local traffic at an internet gateway; the local route alone keeps traffic inside the VPC."
+        },
+        {
+          "text": "Create a NAT gateway in the subnet and route 0.0.0.0/0 through it",
+          "correct": false,
+          "why": "Wrong — common-misconception: a NAT gateway only carries outbound-initiated traffic and itself depends on an internet gateway, so inbound access still fails."
+        }
+      ]
+    },
+    {
+      "topic": "NAT and internet gateways",
+      "domain": "Resilient",
+      "stem": "Instances in a private subnet must download operating system patches from public IPv4 repositories on the internet. Nothing on the internet may be able to open a connection to them. The team wants a managed option with no server of its own to patch or scale.",
+      "hint": "Ask where each device has to sit to work at all, and which IP version it was built to serve.",
+      "options": [
+        {
+          "text": "An egress-only internet gateway attached to the VPC, with the private route table pointing at it",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: an egress-only internet gateway does exactly this job, but only for IPv6 traffic, and the repositories here are IPv4."
+        },
+        {
+          "text": "A NAT gateway in a public subnet, with the private subnet's default route pointing at it",
+          "correct": true,
+          "why": "Correct — a NAT gateway is a managed service that translates outbound IPv4 traffic only, so patches download while inbound connections have nowhere to land."
+        },
+        {
+          "text": "An internet gateway attached to the VPC, with the private route table pointing at it",
+          "correct": false,
+          "why": "Wrong — common-misconception: routing a subnet at an internet gateway makes it a public subnet, which allows inbound connections the stem forbids."
+        },
+        {
+          "text": "A NAT gateway in the same private subnet, with a default route to the internet gateway",
+          "correct": false,
+          "why": "Wrong — common-misconception: a NAT gateway needs its own path out, so it must live in a subnet whose route table already targets an internet gateway."
+        }
+      ]
+    },
+    {
+      "topic": "CloudTrail",
+      "domain": "Secure",
+      "stem": "An auditor asks which identity deleted a particular security group and at exactly what time. The AWS account is running on default settings with no extra logging configured, and the deletion happened three weeks ago. Where should the team look for that answer?",
+      "hint": "Separate records of what was measured, what traffic flowed, and what was actually requested of the AWS APIs.",
+      "options": [
+        {
+          "text": "Amazon CloudWatch, which stores metrics published by AWS services",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: CloudWatch holds numeric time series such as CPU or network bytes; it does not record who called an API or when."
+        },
+        {
+          "text": "AWS CloudTrail, which records the API calls made in the account",
+          "correct": true,
+          "why": "Correct — CloudTrail Event history is on by default and keeps 90 days of management events, including the caller identity and timestamp of the delete."
+        },
+        {
+          "text": "AWS Config, which records the configuration state of each resource",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: Config does build a change timeline, but it is not enabled by default, so no history exists for three weeks ago."
+        },
+        {
+          "text": "Amazon VPC Flow Logs, which record accepted and rejected traffic",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: flow logs show which packets a security group allowed or dropped, not the control-plane call that removed the group."
+        }
+      ]
+    },
+    {
+      "topic": "CloudWatch",
+      "domain": "High-Performing",
+      "stem": "An operations team wants an alarm to fire when the operating-system memory utilisation on an EC2 instance rises above 80%. Browsing the AWS/EC2 namespace, they find CPU, disk and network metrics but no memory metric at all. What is the minimum change that makes the alarm possible?",
+      "hint": "Ask what the hypervisor can observe about an instance from outside, and what only software running inside it can see.",
+      "options": [
+        {
+          "text": "Create a CloudWatch alarm on the existing MemoryUtilization metric",
+          "correct": false,
+          "why": "Wrong — common-misconception: no MemoryUtilization metric exists in the AWS/EC2 namespace, so the alarm would have nothing to evaluate against."
+        },
+        {
+          "text": "Install the CloudWatch agent to publish a memory metric",
+          "correct": true,
+          "why": "Correct — memory use is only visible inside the guest, so the agent reads it from the operating system and publishes it as a custom metric to alarm on."
+        },
+        {
+          "text": "Enable detailed monitoring so metrics arrive every minute",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: detailed monitoring raises the resolution of the existing metrics from five minutes to one; it adds no new metric."
+        },
+        {
+          "text": "Enable VPC Flow Logs and build a metric filter over the stream",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: metric filters really can turn log lines into metrics, but flow logs describe network traffic, never memory pressure."
+        }
+      ]
+    },
+    {
+      "topic": "EC2 instance types",
+      "domain": "High-Performing",
+      "stem": "An analytics process on a single EC2 instance reads very large files from one attached gp2 volume. Monitoring shows the volume pinned at its baseline IOPS and the instance's EBS bandwidth fully consumed at the same time. Sustained throughput on this one instance must rise. Which TWO changes achieve that? (Select TWO.)",
+      "hint": "Ask which of these raises a ceiling on this one instance, and which only observes the workload or duplicates it.",
+      "options": [
+        {
+          "text": "Enable detailed CloudWatch monitoring so volume metrics arrive every minute",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: finer-grained metrics sharpen the diagnosis, but measurement never changes the throughput limit that is already being hit."
+        },
+        {
+          "text": "Change the volume type to gp3 and provision throughput above baseline",
+          "correct": true,
+          "why": "Correct — gp3 lets throughput and IOPS be provisioned independently of capacity, up to 1,000 MiB/s, lifting the cap the saturated gp2 volume is stuck at."
+        },
+        {
+          "text": "Put the instance in an Auto Scaling group with a minimum size of two",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: more instances would raise fleet-wide capacity, but the stem is explicit that throughput on this single instance must rise."
+        },
+        {
+          "text": "Move the workload to an EBS-optimized type with higher EBS bandwidth",
+          "correct": true,
+          "why": "Correct — every instance type has a maximum EBS bandwidth, so a faster volume alone changes nothing until the instance-level ceiling is raised as well."
+        },
+        {
+          "text": "Take a snapshot of the volume and restore it into a second Availability Zone",
+          "correct": false,
+          "why": "Wrong — common-misconception: a restored copy in another Availability Zone is a separate volume, and reading it needs a separate instance to attach it to."
+        }
+      ]
+    },
+    {
+      "topic": "Regions and Availability Zones",
+      "domain": "Resilient",
+      "stem": "A web tier runs on two EC2 instances placed in a single Availability Zone behind a load balancer. The business needs the tier to keep serving traffic through the loss of one data centre, while all requests stay inside one AWS Region because of a latency budget.",
+      "hint": "Note the two constraints stated here: what the tier has to survive, and where its traffic is required to stay.",
+      "options": [
+        {
+          "text": "Resize both instances to a larger type so each absorbs the other's load",
+          "correct": false,
+          "why": "Wrong — common-misconception: capacity headroom does nothing for availability when both instances share the one Availability Zone that goes offline."
+        },
+        {
+          "text": "Spread the instances across two Availability Zones in the Region",
+          "correct": true,
+          "why": "Correct — Availability Zones are physically separate facilities linked by low-latency connections, so this survives one site while staying in the Region."
+        },
+        {
+          "text": "Spread the instances across two Regions and route traffic between them",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: two Regions do survive a data centre loss, but cross-Region round trips break the latency budget the stem sets."
+        },
+        {
+          "text": "Move both instances into a cluster placement group in one subnet",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: a cluster placement group packs instances close together for network performance, concentrating rather than spreading risk."
+        }
+      ]
+    }
+  ]
+}

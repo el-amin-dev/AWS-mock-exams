@@ -1,0 +1,615 @@
+{
+  "exam_id": "saa-c03-mock",
+  "title": "SAA-C03 Mock",
+  "subtitle": "Core architecture — VPC, RDS, load balancing, S3 and CloudFront",
+  "topics_covered": [
+    "VPC peering and transit gateway",
+    "VPC endpoints",
+    "VPC flow logs",
+    "NAT gateway",
+    "RDS Multi-AZ and read replicas",
+    "Aurora global database",
+    "RDS backups and point-in-time recovery",
+    "Load balancer selection",
+    "Gateway Load Balancer",
+    "Target groups and health checks",
+    "Auto Scaling lifecycle hooks",
+    "Auto Scaling launch templates",
+    "S3 lifecycle policies",
+    "S3 presigned URLs",
+    "S3 encryption",
+    "S3 Object Lock",
+    "CloudFront origin access control",
+    "CloudFront caching and invalidation",
+    "Route 53 routing policies",
+    "EFS, EBS and instance store"
+  ],
+  "config": {
+    "seconds_per_question": 120,
+    "pass_percent": 72,
+    "randomize_questions": true,
+    "randomize_options": true
+  },
+  "questions": [
+    {
+      "topic": "VPC peering and transit gateway",
+      "domain": "Resilient",
+      "stem": "Three VPCs in the same Region and the same account are connected as follows: VPC A is peered with VPC B, and VPC B is peered with VPC C. Both peering connections are active and every route table already lists the peer CIDR ranges. Instances in VPC A still cannot reach instances in VPC C. Traffic must stay on the AWS network, and the team expects to add several more VPCs while keeping ongoing administration to a minimum. What should the architect do?",
+      "hint": "Consider what a peering connection will not do for traffic that is not addressed to the peer itself.",
+      "options": [
+        {
+          "text": "Add routes in VPC B so that it forwards traffic between VPC A and VPC C",
+          "correct": false,
+          "why": "Wrong — common-misconception: VPC peering is not transitive, and a middle VPC cannot route or forward packets between two of its own peers no matter what its route tables say."
+        },
+        {
+          "text": "Deploy a NAT gateway in VPC B and send traffic from VPC A to VPC C through it",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: a NAT gateway translates addresses for internet-bound traffic and cannot be used to reach resources across a peering connection."
+        },
+        {
+          "text": "Attach all three VPCs to a transit gateway and route between them through it",
+          "correct": true,
+          "why": "Correct — a transit gateway is a Regional hub that routes between every attached VPC, so adding the next VPC is one attachment rather than a new connection to every existing peer."
+        },
+        {
+          "text": "Create a peering connection between VPC A and VPC C, and one for each new pair",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: a full mesh does restore connectivity, but the number of connections grows with the square of the VPC count, which is the administration the stem rules out."
+        }
+      ]
+    },
+    {
+      "topic": "VPC flow logs",
+      "domain": "Secure",
+      "stem": "A security team must find out which source addresses are being denied by the network ACLs protecting a payment subnet, and must keep those records for seven years to satisfy an auditor. The analysis is ad hoc and runs only a few times a year, so storage cost matters far more than query speed. Which approach fits best?",
+      "hint": "Weigh where the records are stored against how often anyone actually reads them.",
+      "options": [
+        {
+          "text": "Publish VPC flow logs to Amazon S3 and query the rejected records with Athena",
+          "correct": true,
+          "why": "Correct — flow logs record the accept or reject decision per flow, S3 gives the cheapest seven-year home for them, and Athena charges only for the data each rare query scans."
+        },
+        {
+          "text": "Publish VPC flow logs to CloudWatch Logs and search them with Logs Insights",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: this captures the same data and queries it faster, but CloudWatch Logs ingestion and storage cost far more than S3 over a seven-year retention."
+        },
+        {
+          "text": "Enable AWS CloudTrail data events on the subnet and query the denials in Athena",
+          "correct": false,
+          "why": "Wrong — common-misconception: CloudTrail records API calls made to AWS services; it has no visibility of packets a network ACL dropped inside the subnet."
+        },
+        {
+          "text": "Enable VPC Traffic Mirroring on the interfaces and keep the packets for review",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: traffic mirroring copies full packet payloads to a monitoring appliance for deep inspection, storing far more data at far higher cost than the reject metadata needed."
+        }
+      ]
+    },
+    {
+      "topic": "NAT gateway",
+      "domain": "Resilient",
+      "stem": "Instances in private subnets spread across three Availability Zones download operating system patches from the internet. All three subnets currently route their default traffic to a single t3.medium NAT instance in one Availability Zone, and a recent impairment in that zone stopped patching for the entire fleet. The team has no capacity to administer more servers. What should the architect implement?",
+      "hint": "Ask where the failure domain of the outbound path sits today, and who is left operating it.",
+      "options": [
+        {
+          "text": "Attach an internet gateway route to each private subnet for direct outbound access",
+          "correct": false,
+          "why": "Wrong — common-misconception: a subnet with an internet gateway route is a public subnet, and instances holding only private addresses still cannot reach the internet through it."
+        },
+        {
+          "text": "Deploy a NAT gateway in every Availability Zone and route each subnet to its own",
+          "correct": true,
+          "why": "Correct — a NAT gateway is a managed, zone-scoped resource, so one per zone removes both the server administration and the cross-zone dependency that caused the outage."
+        },
+        {
+          "text": "Deploy a second NAT instance in another zone and fail over between them by script",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: this does remove the single point of failure, but it leaves the team patching, sizing and scripting failover for servers it has no capacity to run."
+        },
+        {
+          "text": "Deploy a single NAT gateway and point all three private subnets' default routes at it",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: it ends the server administration, but the whole fleet's outbound path still lives in one Availability Zone and fails with it."
+        }
+      ]
+    },
+    {
+      "topic": "VPC endpoints",
+      "domain": "Cost-Optimized",
+      "stem": "An application in private subnets writes about 40 TB a month to an Amazon S3 bucket in the same Region and also calls AWS Secrets Manager on every request. All of that traffic leaves through a NAT gateway, whose data processing charges now dominate the monthly bill. The team must take both flows off the NAT path at the lowest ongoing cost, without changing application code. Which TWO steps should they take? (Select TWO.)",
+      "hint": "Note that only a small set of services can be reached one way, and everything else the other.",
+      "options": [
+        {
+          "text": "Create a gateway VPC endpoint for S3 and add its route to the private route tables",
+          "correct": true,
+          "why": "Correct — gateway endpoints carry no hourly or per-gigabyte charge, and adding the prefix list route keeps the 40 TB off the NAT gateway entirely."
+        },
+        {
+          "text": "Create an interface VPC endpoint for Secrets Manager in each Availability Zone",
+          "correct": true,
+          "why": "Correct — Secrets Manager has no gateway endpoint, so an interface endpoint backed by PrivateLink is the only way to reach it privately, and its per-request volume is small."
+        },
+        {
+          "text": "Create a gateway VPC endpoint for Secrets Manager in the same route tables",
+          "correct": false,
+          "why": "Wrong — common-misconception: gateway endpoints exist only for Amazon S3 and DynamoDB; every other service is reached through an interface endpoint."
+        },
+        {
+          "text": "Create an interface VPC endpoint for S3 and send the bucket traffic through it",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: an interface endpoint for S3 does work, but it bills per hour and per gigabyte processed, so 40 TB a month costs far more than the gateway endpoint."
+        },
+        {
+          "text": "Route the private subnets through a NAT instance sized for the monthly volume",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: it avoids the NAT gateway's processing charge but reintroduces servers to patch and size, and instance bandwidth becomes the new ceiling."
+        }
+      ]
+    },
+    {
+      "topic": "RDS Multi-AZ and read replicas",
+      "domain": "High-Performing",
+      "stem": "A reporting dashboard runs long analytical SELECT statements against an Amazon RDS for PostgreSQL instance, and those queries are now slowing down order processing on the same database. The business accepts that reports may show data that is a few seconds stale. All writes must continue to go to a single endpoint. What is the best change?",
+      "hint": "Note precisely what the business is willing to give up, and which feature trades on exactly that.",
+      "options": [
+        {
+          "text": "Enable Performance Insights and tune the slowest reporting queries it identifies",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: Performance Insights will show which statements are expensive, but reports and orders still contend for the same instance afterwards."
+        },
+        {
+          "text": "Convert the instance to a Multi-AZ deployment and send the reports to the standby",
+          "correct": false,
+          "why": "Wrong — common-misconception: the standby in a Multi-AZ instance deployment serves no client traffic at all; it exists for failover, not for read scaling."
+        },
+        {
+          "text": "Create a read replica and point the reporting dashboard at the replica endpoint",
+          "correct": true,
+          "why": "Correct — a read replica takes the analytical load onto its own instance using asynchronous replication, whose lag matches the few seconds of staleness the business accepts."
+        },
+        {
+          "text": "Increase the instance class and provision more IOPS on the underlying storage",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: more capacity buys headroom, but the two workloads still share one buffer cache and one CPU, so a heavy report can starve orders again."
+        }
+      ]
+    },
+    {
+      "topic": "Aurora global database",
+      "domain": "Resilient",
+      "stem": "A retail platform runs on an Amazon Aurora MySQL cluster in eu-west-1. After a risk review the business requires that the loss of the entire Region be survivable with a recovery point objective of roughly one second and a recovery time objective under five minutes. It also wants low-latency reads for customers in Asia. Which design meets this?",
+      "hint": "Ask which option replicates the storage layer across Regions rather than the instances above it.",
+      "options": [
+        {
+          "text": "Add Aurora Replicas in three Availability Zones inside the eu-west-1 cluster",
+          "correct": false,
+          "why": "Wrong — common-misconception: spreading replicas across zones protects against the loss of one zone, but every copy still sits in the Region the stem says may fail."
+        },
+        {
+          "text": "Create an Aurora global database with a secondary cluster in an Asian Region",
+          "correct": true,
+          "why": "Correct — a global database replicates at the storage layer with typical lag under a second and serves local reads, and a secondary can be promoted within about a minute."
+        },
+        {
+          "text": "Copy automated cluster snapshots to an Asian Region on an hourly schedule",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: hourly copies leave up to an hour of writes unrecoverable and a restore takes far longer than the five-minute recovery time objective."
+        },
+        {
+          "text": "Create a cross-Region Aurora read replica and promote it manually if needed",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: binlog-based cross-Region replication works, but its lag is typically far higher than a second and promotion is slower and manual."
+        }
+      ]
+    },
+    {
+      "topic": "RDS backups and point-in-time recovery",
+      "domain": "Resilient",
+      "stem": "An Amazon RDS for PostgreSQL instance has automated backups enabled with a seven-day retention period. At 14:10 a faulty deployment corrupted a table, and the team must get the database back to exactly the state it held at 14:05 with the least data loss. The nightly snapshot ran at 02:00. What should the team do?",
+      "hint": "Consider what the backup feature captures continuously, on top of the once-a-day copy.",
+      "options": [
+        {
+          "text": "Take a manual snapshot now and restore it into a new database instance",
+          "correct": false,
+          "why": "Wrong — common-misconception: a snapshot captures the database as it is at the moment it runs, so this one would faithfully preserve the corruption."
+        },
+        {
+          "text": "Restore the 02:00 automated snapshot into a new database instance",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: this recovers a clean copy but discards every write between 02:00 and 14:05, which is far more data loss than necessary."
+        },
+        {
+          "text": "Promote an existing read replica to a standalone database instance",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: a read replica tracks its source continuously, so it applied the corrupting change moments after the primary did."
+        },
+        {
+          "text": "Restore to a new instance using point-in-time recovery at 14:05",
+          "correct": true,
+          "why": "Correct — automated backups also ship transaction logs, letting a restore land on any second inside the retention window, and the restore always creates a new instance."
+        }
+      ]
+    },
+    {
+      "topic": "Load balancer selection",
+      "domain": "High-Performing",
+      "stem": "A trading platform exposes a custom TCP protocol on port 9000. It must sustain millions of requests per second at the lowest possible latency, must present a fixed IP address per Availability Zone so partner firewalls can allow-list it, and must pass the client's TLS session through to the backend untouched. Which load balancer should the architect choose?",
+      "hint": "Match the layer the traffic must be handled at against what each balancer can expose as an address.",
+      "options": [
+        {
+          "text": "An Application Load Balancer with an HTTPS listener and a certificate",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: an Application Load Balancer works at layer 7, terminates TLS rather than passing it through, and is reachable only by DNS name."
+        },
+        {
+          "text": "A Network Load Balancer with a TCP listener on port 9000",
+          "correct": true,
+          "why": "Correct — a Network Load Balancer operates at layer 4, so a TCP listener forwards the encrypted stream untouched, and it takes a static IP address in each subnet."
+        },
+        {
+          "text": "A Gateway Load Balancer fronting a target group of appliances",
+          "correct": false,
+          "why": "Wrong — common-misconception: a Gateway Load Balancer distributes traffic to third-party inspection appliances over GENEVE; it is not a front door for an application."
+        },
+        {
+          "text": "A Classic Load Balancer with a TCP listener and cross-zone balancing",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: it can carry TCP, but it is the previous generation, offers no static addresses and does not reach the throughput described."
+        }
+      ]
+    },
+    {
+      "topic": "Gateway Load Balancer",
+      "domain": "Secure",
+      "stem": "A company must send all traffic entering and leaving its VPCs through a fleet of third-party virtual firewall appliances for deep packet inspection. The appliances' rules match on the original source and destination addresses, so those must arrive unchanged. The fleet must scale horizontally and unhealthy appliances must be taken out of service automatically. Which design meets this?",
+      "hint": "Ask which option can hand an appliance the original packet rather than a rewritten one.",
+      "options": [
+        {
+          "text": "Place the appliances behind an Application Load Balancer with a passthrough rule",
+          "correct": false,
+          "why": "Wrong — common-misconception: an Application Load Balancer only understands HTTP and HTTPS and always terminates the connection, so there is no passthrough of raw packets."
+        },
+        {
+          "text": "Place the appliances behind a Network Load Balancer and route traffic to its listener",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: a Network Load Balancer proxies connections to targets and does not encapsulate and return the original packet for transparent inspection."
+        },
+        {
+          "text": "Place the appliances behind a Gateway Load Balancer and route to its endpoints",
+          "correct": true,
+          "why": "Correct — a Gateway Load Balancer encapsulates the untouched packet in GENEVE on port 6081, scales and health-checks the appliance fleet, and is inserted by route table entry."
+        },
+        {
+          "text": "Route each subnet's traffic to a single appliance's elastic network interface",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: the packet does arrive intact, but one interface gives no horizontal scaling and no way to withdraw a failed appliance automatically."
+        }
+      ]
+    },
+    {
+      "topic": "Target groups and health checks",
+      "domain": "Resilient",
+      "stem": "During a rolling deployment behind an Application Load Balancer, instances that are still warming up return HTTP 500, and the load balancer keeps sending them requests for about a minute. The team wants a failing target taken out of rotation within roughly 15 seconds, and wants requests already in flight to a target being removed to finish rather than be cut off. Which TWO changes achieve this? (Select TWO.)",
+      "hint": "Separate how quickly a target is judged unhealthy from what happens to work already running on it.",
+      "options": [
+        {
+          "text": "Shorten the target group's health check interval and unhealthy threshold",
+          "correct": true,
+          "why": "Correct — the load balancer removes a target only after the threshold count of consecutive failures, so a 5-second interval with a threshold of 2 or 3 lands inside 15 seconds."
+        },
+        {
+          "text": "Set the target group's deregistration delay to the longest expected request",
+          "correct": true,
+          "why": "Correct — the deregistration delay is the draining window: existing connections are allowed to complete while no new requests are sent to the target being removed."
+        },
+        {
+          "text": "Turn on target group stickiness so each client returns to the same target",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: stickiness pins a client to one target, which extends rather than shortens the time a user spends on a failing instance."
+        },
+        {
+          "text": "Move the listener to HTTPS and terminate the certificate at the load balancer",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: terminating TLS changes how the traffic is protected in transit and has no bearing on how fast an unhealthy target is withdrawn."
+        },
+        {
+          "text": "Raise the Auto Scaling group's health check grace period to five minutes",
+          "correct": false,
+          "why": "Wrong — common-misconception: the grace period only delays when the Auto Scaling group starts acting on health status, so a longer one keeps bad instances in service."
+        }
+      ]
+    },
+    {
+      "topic": "Auto Scaling lifecycle hooks",
+      "domain": "Resilient",
+      "stem": "When an Auto Scaling group scales in, application log files written to the instance's local disk are lost before they can be uploaded. The team needs each instance to remain running for up to ten minutes after termination begins so that a script can copy the files to Amazon S3, and terminations must never be blocked indefinitely if that script fails. What should the architect configure?",
+      "hint": "Consider which part of the scaling process can be paused, and what happens when the pause expires.",
+      "options": [
+        {
+          "text": "Add a terminating lifecycle hook with a ten-minute heartbeat timeout",
+          "correct": true,
+          "why": "Correct — the hook holds the instance in Terminating:Wait while the script runs, and the heartbeat timeout releases it with the default action so termination cannot stall forever."
+        },
+        {
+          "text": "Enable instance scale-in protection on the members of the Auto Scaling group",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: scale-in protection excludes an instance from termination altogether rather than granting it a bounded window before shutdown."
+        },
+        {
+          "text": "Set the group's default cooldown period to six hundred seconds",
+          "correct": false,
+          "why": "Wrong — common-misconception: a cooldown spaces out successive scaling activities for the group; it does not delay the shutdown of an individual instance."
+        },
+        {
+          "text": "Stream the log files to CloudWatch Logs with the unified agent",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: continuous shipping is a durable pattern, but it still loses whatever the agent has buffered at shutdown and gives no ten-minute window."
+        }
+      ]
+    },
+    {
+      "topic": "S3 lifecycle policies",
+      "domain": "Cost-Optimized",
+      "stem": "A bucket holds 300 TB of medical images that cannot be recreated. They are read heavily for 30 days, occasionally for the following 11 months, and then must be kept for six more years to satisfy regulation while remaining retrievable within 12 hours. The access pattern is well understood and will not change. Which lifecycle configuration is the most cost-effective?",
+      "hint": "Match each retrieval expectation stated in the stem to the cheapest class that still satisfies it.",
+      "options": [
+        {
+          "text": "Move to One Zone-IA at 30 days, then to Glacier Deep Archive at one year",
+          "correct": false,
+          "why": "Wrong — common-misconception: One Zone-IA is cheaper per gigabyte but stores one copy in a single Availability Zone, so losing that zone destroys records that cannot be recreated."
+        },
+        {
+          "text": "Move to Standard-IA at 30 days, then to Glacier Deep Archive at one year",
+          "correct": true,
+          "why": "Correct — Standard-IA suits occasional reads with multi-zone durability, and Deep Archive is the cheapest class whose standard retrieval completes within about 12 hours."
+        },
+        {
+          "text": "Move to Standard-IA at 30 days, then to Glacier Flexible Retrieval at one year",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: Flexible Retrieval meets the 12-hour window comfortably, but it costs several times more per gigabyte over the six-year retention."
+        },
+        {
+          "text": "Move to Intelligent-Tiering at 30 days and let it place the objects automatically",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: Intelligent-Tiering earns its per-object monitoring charge when access is unpredictable, and the stem says the pattern is known and fixed."
+        }
+      ]
+    },
+    {
+      "topic": "S3 encryption",
+      "domain": "Secure",
+      "stem": "Objects in an S3 bucket must be encrypted so that the security team can revoke access to the plaintext for everyone at once, and so that AWS CloudTrail records every use of the key that protects an object. The bucket receives millions of small objects a day, and the resulting key-service request charges must be kept as low as possible. Which TWO steps meet these requirements? (Select TWO.)",
+      "hint": "Ask which key type is auditable and revocable, then how the number of calls to it can be cut.",
+      "options": [
+        {
+          "text": "Encrypt the objects with SSE-KMS using a customer managed key in this account",
+          "correct": true,
+          "why": "Correct — a customer managed key logs every Encrypt and Decrypt call to CloudTrail and can be disabled or have its policy revoked, which locks everyone out immediately."
+        },
+        {
+          "text": "Turn on S3 Bucket Keys so that far fewer requests reach the key service",
+          "correct": true,
+          "why": "Correct — a bucket-level data key is reused for many objects, cutting KMS request traffic and its charges sharply for workloads made of millions of small objects."
+        },
+        {
+          "text": "Encrypt the objects with SSE-S3 so that Amazon S3 owns and manages the keys",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: SSE-S3 does encrypt at rest, but its keys are invisible in CloudTrail and the team cannot disable them to revoke access."
+        },
+        {
+          "text": "Enable automatic yearly rotation on the customer managed key in AWS KMS",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: rotation adds new backing key material while old material is retained for decryption, so nothing is revoked and no charges fall."
+        },
+        {
+          "text": "Add a bucket policy that denies any upload which omits an encryption header",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: this enforces that objects arrive encrypted, but it neither produces an audit trail of key use nor reduces key-service requests."
+        }
+      ]
+    },
+    {
+      "topic": "S3 presigned URLs",
+      "domain": "Secure",
+      "stem": "A mobile application must let signed-in users upload a profile photo directly into a private S3 bucket. The bucket must remain private with public access blocked, no AWS credentials may be shipped inside the application, and each individual upload permission must stop working after 15 minutes. What should the architecture do?",
+      "hint": "Consider who can grant a narrow, time-limited permission that the caller never has to hold itself.",
+      "options": [
+        {
+          "text": "Have the app assume a role through a Cognito identity pool and call PutObject",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: this avoids embedded keys, but it hands the device credentials for the whole permitted prefix rather than one upload that expires in 15 minutes."
+        },
+        {
+          "text": "Have a backend API return a presigned S3 URL with a 15-minute expiry",
+          "correct": true,
+          "why": "Correct — the backend signs a single PutObject request with its own role, so the device holds no credentials and the signature stops being accepted once the expiry passes."
+        },
+        {
+          "text": "Add a bucket policy that allows PutObject from the mobile network's addresses",
+          "correct": false,
+          "why": "Wrong — common-misconception: this makes the bucket writable by anyone on those networks, and mobile clients have no stable address range to match on."
+        },
+        {
+          "text": "Enable S3 Transfer Acceleration and upload through the accelerated endpoint",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: acceleration changes the network path over which bytes travel; the request still has to be authorised, so it is rejected as before."
+        }
+      ]
+    },
+    {
+      "topic": "S3 Object Lock",
+      "domain": "Secure",
+      "stem": "A regulator requires that trade confirmation files be immutable for exactly five years, and states that no identity in the account, including the root user, may delete or overwrite them before that period ends. The files arrive from an existing pipeline that cannot be modified, and they are written into a new S3 bucket. What should the architect configure?",
+      "hint": "Note exactly which principal the regulator says must also be unable to shorten the retention.",
+      "options": [
+        {
+          "text": "Enable versioning and expire noncurrent versions after five years",
+          "correct": false,
+          "why": "Wrong — common-misconception: versioning preserves earlier copies of an overwritten object, but any principal with delete permission can still remove those versions."
+        },
+        {
+          "text": "Enable S3 Object Lock in governance mode with five-year default retention",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: governance mode can be overridden by a principal holding s3:BypassGovernanceRetention, so the root user could still delete early."
+        },
+        {
+          "text": "Enable S3 Object Lock in compliance mode with five-year default retention",
+          "correct": true,
+          "why": "Correct — compliance mode cannot be shortened or bypassed by any user including the root user, and a bucket default applies the period without the pipeline changing."
+        },
+        {
+          "text": "Attach a bucket policy denying s3:DeleteObject to every principal in the account",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: it blocks deletes while it is in place, but an administrator or the root user can edit or remove the policy, so nothing is truly immutable."
+        }
+      ]
+    },
+    {
+      "topic": "CloudFront origin access control",
+      "domain": "Secure",
+      "stem": "Static assets are served through Amazon CloudFront from an S3 origin, and the objects are encrypted with SSE-KMS. Users have discovered they can bypass the distribution and fetch objects straight from the bucket's REST endpoint, which skips the AWS WAF rules attached to the distribution. The bucket must accept requests only from this distribution. What should the architect configure?",
+      "hint": "Ask how the bucket can be made to trust exactly one caller, given how the objects are encrypted.",
+      "options": [
+        {
+          "text": "Attach an origin access control and restrict the bucket policy to it",
+          "correct": true,
+          "why": "Correct — origin access control signs origin requests with SigV4, which is what allows SSE-KMS objects to be read, and the bucket policy then admits only that distribution."
+        },
+        {
+          "text": "Attach an origin access identity and restrict the bucket policy to it",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: the legacy origin access identity does lock the bucket down, but it cannot fetch objects encrypted with SSE-KMS, so the assets would fail."
+        },
+        {
+          "text": "Enable S3 Block Public Access and keep the current origin settings",
+          "correct": false,
+          "why": "Wrong — common-misconception: the public policy being blocked is the same one CloudFront relies on today, so this breaks the distribution as well as direct access."
+        },
+        {
+          "text": "Send a secret custom header from the distribution and require it in the bucket policy",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: custom origin headers work for custom origins such as a load balancer, but an S3 bucket policy cannot match on an arbitrary header."
+        }
+      ]
+    },
+    {
+      "topic": "CloudFront caching and invalidation",
+      "domain": "Cost-Optimized",
+      "stem": "A news site serves a JavaScript bundle through CloudFront with a 24-hour cache TTL. The team deploys up to 30 times a day, and after each release readers report stale scripts until an invalidation completes. Invalidation paths beyond the free monthly allowance are now a visible line on the bill. Every release must be picked up immediately at the lowest ongoing cost. What should the team do?",
+      "hint": "Think about what would make the edge treat a release as something it has never seen before.",
+      "options": [
+        {
+          "text": "Submit an invalidation for the bundle path at the end of each deployment",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: this is correct behaviour, but paths past the free monthly allowance are charged and each invalidation takes time to reach every edge."
+        },
+        {
+          "text": "Reduce the cache behaviour's default TTL to sixty seconds for that path",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: it shrinks the stale window to a minute rather than removing it, and it multiplies the number of requests forwarded to the origin."
+        },
+        {
+          "text": "Give the bundle a versioned file name and reference the new name",
+          "correct": true,
+          "why": "Correct — a new file name is a new object at the edge, so it is fetched on first request while the long TTL still applies, and no invalidation is ever submitted."
+        },
+        {
+          "text": "Return a Cache-Control no-store header so viewers always reach the origin",
+          "correct": false,
+          "why": "Wrong — common-misconception: switching caching off does end staleness, but it also ends the offload the distribution exists to provide and raises origin cost."
+        }
+      ]
+    },
+    {
+      "topic": "Auto Scaling launch templates",
+      "domain": "Cost-Optimized",
+      "stem": "A stateless web tier must always keep at least four instances serving traffic and must survive the sudden reclamation of any single Spot capacity pool, while cutting compute cost as far as that allows. The team must also be able to roll a new AMI into the existing Auto Scaling group without recreating it, and to roll back to the previous image. Which TWO choices meet this? (Select TWO.)",
+      "hint": "Separate what makes the fleet's capacity resilient from what makes its configuration revisable.",
+      "options": [
+        {
+          "text": "Define the instances in a launch template and publish a new version per AMI",
+          "correct": true,
+          "why": "Correct — launch templates are versioned, so the group can be pointed at a new version and moved back to the previous one without being rebuilt."
+        },
+        {
+          "text": "Use a mixed instances policy across several types with an On-Demand base",
+          "correct": true,
+          "why": "Correct — spreading Spot requests over several instance types and pools limits the impact of any one being reclaimed, and the On-Demand base keeps four instances running."
+        },
+        {
+          "text": "Define the instances in a launch configuration and edit its AMI when required",
+          "correct": false,
+          "why": "Wrong — common-misconception: a launch configuration is immutable, so changing an AMI means creating a replacement, and it cannot express a mixed instances policy at all."
+        },
+        {
+          "text": "Buy a Compute Savings Plan that covers four instances of the chosen type",
+          "correct": false,
+          "why": "Wrong — true-but-doesn't-answer-it: a Savings Plan lowers the rate paid for steady usage, but it changes nothing about Spot pool diversity or how an AMI is rolled out."
+        },
+        {
+          "text": "Request Spot Instances of one instance type in a single Availability Zone",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: this reaches the lowest hourly price but concentrates the fleet in exactly the one capacity pool the stem says must not be a single risk."
+        }
+      ]
+    },
+    {
+      "topic": "Route 53 routing policies",
+      "domain": "High-Performing",
+      "stem": "An application runs identical stacks in three Regions behind three separate load balancers. Users must be sent to whichever stack responds fastest from their own network location, and any Region that starts failing its health check must stop receiving traffic within a couple of minutes. Which Amazon Route 53 configuration meets this?",
+      "hint": "Distinguish where a user physically is from how quickly a given Region actually answers them.",
+      "options": [
+        {
+          "text": "Geolocation records mapping each continent to a Region, with health checks",
+          "correct": false,
+          "why": "Wrong — common-misconception: geolocation answers on where the query appears to come from, which frequently is not the Region with the lowest network latency for that user."
+        },
+        {
+          "text": "Weighted records split evenly across the three Regions, with health checks",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: weights are useful for gradual shifts and testing, but they distribute users without regard to how fast each Region answers them."
+        },
+        {
+          "text": "Failover records with one primary Region and two secondaries, with health checks",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: this handles the outage requirement, but while everything is healthy it sends every user to the single primary Region."
+        },
+        {
+          "text": "Latency records for each of the three Regions, with health checks attached",
+          "correct": true,
+          "why": "Correct — latency records answer with the Region measured as lowest latency from the resolver's network, and an associated health check withdraws a failing Region's answer."
+        }
+      ]
+    },
+    {
+      "topic": "EFS, EBS and instance store",
+      "domain": "High-Performing",
+      "stem": "A content management cluster of twelve EC2 instances spread across three Availability Zones must all read and write the same set of uploaded files, using standard POSIX file semantics. Total capacity grows unpredictably and the team does not want to manage volume sizing. The files must survive the loss of any one Availability Zone. Which storage should the architect choose?",
+      "hint": "Note how many instances must write the same files at once, and from how many Availability Zones.",
+      "options": [
+        {
+          "text": "An Amazon EFS file system mounted by every instance in the cluster",
+          "correct": true,
+          "why": "Correct — EFS is a POSIX file system reachable concurrently from mount targets in several zones, and it grows and shrinks automatically with no volume to size."
+        },
+        {
+          "text": "An io2 volume with Multi-Attach enabled and shared by the instances",
+          "correct": false,
+          "why": "Wrong — right-service-wrong-feature: Multi-Attach is limited to instances in one Availability Zone and offers block access that needs a cluster-aware file system."
+        },
+        {
+          "text": "A gp3 volume on each instance with the data synchronised on a schedule",
+          "correct": false,
+          "why": "Wrong — valid-but-inferior-here: scheduled copies do spread the data, but the twelve copies drift between runs and each volume still has to be sized by hand."
+        },
+        {
+          "text": "An instance store volume on each instance holding the uploaded files",
+          "correct": false,
+          "why": "Wrong — common-misconception: instance store is physically attached and fast, but its contents are lost when the instance stops or the host fails."
+        }
+      ]
+    }
+  ]
+}

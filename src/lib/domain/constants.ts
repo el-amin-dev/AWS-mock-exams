@@ -49,8 +49,19 @@ export const EXAM_DOMAINS = [
 export const SINGLE_ANSWER_OPTION_COUNT = 4;
 export const MULTI_ANSWER_OPTION_COUNT = 5;
 
-/** Which unscored outcome decides pass or fail unless the candidate changes it. */
-export const DEFAULT_UNSCORED_STRATEGY: UnscoredStrategy = 'random';
+/**
+ * Which unscored outcome decides pass or fail unless the candidate changes it.
+ *
+ * The default is the worst case, not the random draw the real exam performs. The engine
+ * exists to train against the least favourable outcome the real exam could produce: if the
+ * unscored items happen to fall on the questions that were answered correctly, this is the
+ * result that comes back. Someone who passes on the worst case passes on every case, so a
+ * pessimistic verdict is the only one that never flatters an attempt.
+ *
+ * This changes the verdict basis only. The true score across every question stays the
+ * headline figure regardless of the strategy in force.
+ */
+export const DEFAULT_UNSCORED_STRATEGY: UnscoredStrategy = 'worst';
 
 /**
  * A topic scoring below this fraction is reported as weak and carried into the next

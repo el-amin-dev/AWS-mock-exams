@@ -102,6 +102,7 @@
 			required={session.requiredSelections}
 			revealed={session.isRevealed}
 			tipsAvailable={session.mode === 'practice'}
+			tipSeed={session.attempt?.seed ?? 0}
 			onselect={(index) => session.select(index)}
 			onstrike={(index) => session.strike(index)}
 		/>

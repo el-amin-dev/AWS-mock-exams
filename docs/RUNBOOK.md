@@ -64,6 +64,21 @@ npm run build && npm run preview
 # open http://localhost:4173 and confirm the page renders with no console errors
 ```
 
+End-to-end, using a mock that ships with the repo — this exercises loading, validation,
+grading and the result screen in one pass:
+
+```bash
+npm run dev
+# 1. open http://localhost:5173/mocks/foundations.json
+#    the raw JSON must load — a 404 means the file is missing from static/mocks/
+# 2. open http://localhost:5173, go to ② Load a mock & sit it, select
+#    static/mocks/foundations.json — it must validate with no blocking problems
+# 3. start it, answer a question, submit
+#    the result screen must report a score, the unscored range and per-domain figures
+```
+
+Swap `foundations` for `core-architecture` or `advanced` to check the other two.
+
 ## Services / Ports
 
 | Service         | Port | Start command     |

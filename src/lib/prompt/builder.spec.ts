@@ -98,6 +98,11 @@ describe('buildPrompt — composition', () => {
 		expect(buildPrompt(options())).toContain('Default to Select TWO');
 	});
 
+	/** The report derives the date from the attempt's start time, so asking for it wastes a slot. */
+	it('does not ask the generator for a date', () => {
+		expect(buildPrompt(options())).not.toContain('"date"');
+	});
+
 	it('carries the exam config into the schema', () => {
 		const prompt = buildPrompt(options());
 		expect(prompt).toContain(`"pass_percent": ${DEFAULT_EXAM_CONFIG.passPercent}`);
